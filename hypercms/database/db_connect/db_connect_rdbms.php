@@ -1463,7 +1463,7 @@ function rdbms_deleteobject ($object="", $object_id="")
   // clean input
   $object_id = intval ($object_id);  
 
-  if (($object != "" && (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0)) || $object_id > 0)
+  if (($object != "" && (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0)) || intval ($object_id) > 0)
   {
     // correct object name 
     if (strtolower (@strrchr ($object, ".")) == ".off") $object = @substr ($object, 0, -4);
@@ -1479,7 +1479,7 @@ function rdbms_deleteobject ($object="", $object_id="")
     // query
     $sql = 'SELECT id FROM object ';
 
-    if ($object != "") $sql .= 'WHERE md5_objectpath="'.md5 ($object).'"';
+    if ($object != "") $sql .= 'WHERE md5_objectpath="'.md5 ($object).'" OR objectpath= BINARY "'.$object.'"';
     elseif (intval ($object_id) > 0) $sql .= 'WHERE object_id='.intval ($object_id).'';
   
     $errcode = "50012";
@@ -1559,7 +1559,7 @@ function rdbms_deleteobject ($object="", $object_id="")
         // delete only the object reference and queue entry
         elseif ($row_id && $num_rows > 1)
         {
-          $sql = 'DELETE FROM object WHERE md5_objectpath="'.md5 ($object).'"';
+          $sql = 'DELETE FROM object WHERE md5_objectpath="'.md5 ($object).'" OR objectpath= BINARY "'.$object.'"';
 
           $errcode = "50020";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete10');
@@ -2672,13 +2672,13 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     else $order_by = $db->rdbms_escape_string (trim ($order_by));
 
     // build SQL statement
-    $sql = 'SELECT DISTINCT obj.objectpath, obj.hash, obj.id, obj.media, obj.workflowstatus'.$sql_add_attr .' FROM object AS obj ';
+    $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media, obj.workflowstatus'.$sql_add_attr .' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     $sql .= 'WHERE obj.deleteuser="" ';
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
     // removed "order by substring_index()" due to poor DB performance and moved to array sort
     // $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
-    $sql .= 'ORDER BY '.$order_by;
+    $sql .= 'GROUP BY obj.hash ORDER BY '.$order_by;
 
     if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql .= ' LIMIT '.intval ($starthits).','.intval ($endhits);
     elseif (isset ($maxhits) && intval ($maxhits) > 0) $sql .= ' LIMIT 0,'.intval ($maxhits);
@@ -2765,7 +2765,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     // count searchresults
     if (!empty ($count))
     {
-      $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as cnt FROM object AS obj';
+      $sql = 'SELECT COUNT(DISTINCT obj.hash) as cnt FROM object AS obj';
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (' ', $sql_table).' ';
       $sql .= ' WHERE obj.deleteuser="" ';
       if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' AND '.implode (' AND ', $sql_where);
@@ -4298,7 +4298,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
   else $sql .= 'WHERE obj.deleteuser!="" ';
 
   if ($date != "") $sql .= 'AND obj.deletedate<"'.$date.'" ';  
-  if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
+  if ($maxhits > 0) $sql .= 'GROUP BY obj.hash LIMIT 0,'.intval($maxhits);
 
   $errcode = "50325";
   $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
@@ -4329,7 +4329,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
   // count searchresults
   if (!empty ($count))
   {
-    $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as rowcount FROM object AS obj ';
+    $sql = 'SELECT COUNT(obj.hash) as rowcount FROM object AS obj ';
 
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
 
@@ -4338,6 +4338,8 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
     else $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%]" ';
 
     if ($date != "") $sql .= 'AND deletedate<"'.$date.'" ';
+
+    $sql .= 'GROUP BY obj.hash';
 
     $errcode = "50327";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);

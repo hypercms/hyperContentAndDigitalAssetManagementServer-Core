@@ -395,7 +395,7 @@ function importCSVtextcontent ($site, $location, $file_csv, $user, $type="", $de
                 }
               }
 
-              if ($contentdata != "" && $contentfile != "" && sizeof ($text) > 0 && $type != "" && $art != "" && $user != "")
+              if (!empty ($contentdata) && !empty ($contentfile) && sizeof ($text) > 0 && !empty ($type) && !empty ($art) && !empty ($user))
               {
                 $contentdata_new = settext ($site, $contentdata, $contentfile, $text, $type, $art, $user, $user, $charset);
 

@@ -9534,7 +9534,7 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
   if (!isset ($mgmt_config['passwordminlength'])) $mgmt_config['passwordminlength'] = 10;
 
   // check permissions
-  if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
+  if (($user != "sys" && !empty ($mgmt_config['api_checkpermission'])) || !checkdiskkey())
   {
     if (
       (!valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('usercreate'))) || 
@@ -9546,6 +9546,15 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
     }
+  }
+
+  // check diskkey
+  if (!checkdiskkey())
+  {
+    $result = array();
+    $result['result'] = false;
+    $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+    return $result;
   }
 
   // default theme
@@ -18716,9 +18725,13 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
   if ($action == "emptybin")
   {
     $objectpath_array = array();
+    
+    // superadmin may delete all objects of all users
+    if (getsession ("hcms_superadmin")) $recylcebin_user = "";
+    else $recylcebin_user = $user;
 
     // reset array of all objects based on recycle bin
-    $objectinfo_array = rdbms_getdeletedobjects ($user, "", 10000, array(), false, false);
+    $objectinfo_array = rdbms_getdeletedobjects ($recylcebin_user, "", 10000, array(), false, false);
 
     if (is_array ($objectinfo_array) && sizeof ($objectinfo_array) > 0)
     {

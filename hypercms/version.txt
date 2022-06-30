@@ -3380,7 +3380,7 @@ Release 05/2019
 - Modifications in function showmedia in UI API in order to apply function getmediasize and store non-existing media info in database
 - Moved functions getimagecolors and getimagecolorkey from Media to Get API
 - Implementation of new function getimageinfo in Get API in order to provide all information (MD5 hash, file size, image size, image colors, type, ...) of an image
-- Modifications in explorer_objectlist and search_objectlist in order to to set image size if CSS class is not applied
+- Modifications in explorer_objectlist and search_objectlist in order to set image size if CSS class is not applied
 - Modifications in template engine in order to implement the %publication% template variable for the publication access of a user (used for reports)
 - Implementation of new main configuration setting $mgmt_config['workflow_loop'] in order to enable a loop for workflows
 - Modifications in Workflow Management in order to enable the redirect to the start user (in order to create a loop)
@@ -3440,7 +3440,7 @@ Release 07/2019
 - Update of all language files
 - Modifications in Multiedit (page_multiedit) in order to support the samecontent property and set the "same content"
 - Modifications in Multiedit (page_multiedit) in order to support the locked property and set the "locked" marker for each field
-- Modifications in Multiedit (page_multiedit) in order to to open each selected object by click on the thumbnail
+- Modifications in Multiedit (page_multiedit) in order to open each selected object by click on the thumbnail
 - Modifications in function getvideoinfo in Get API in order to remove .orig file extension for the thumbnail file name
 - Minor changes in function registeruser in Security API
 - Bug fix: Multiple component select box was not able to move components in template engine (removed defaultSelected in JS function moveSelected)
@@ -3801,7 +3801,7 @@ Release 01/2019
 - Modifications in function setmedia in Set API in order to remove the input parameter for current object reference and automatically extract the old object reference for the link management
 - Modifications in function setpagelink in Set API in order to remove the input parameter for current object reference and automatically extract the old object reference for the link management 
 - Modifications in function setcomplink in Set API in order to remove the input parameter for current object reference and automatically extract the old object reference for the link management
-- Modifications in service savecontent in order to remove the request paramaters for current used object references and modify the function calls to setmedia, setpagelink, and setcomplink
+- Modifications in service savecontent in order to remove the request parameters for current used object references and modify the function calls to setmedia, setpagelink, and setcomplink
 - Modifications in function setmedia, setpagelink, and setcomplink in Set API in order to convert the provided object references (call of function convertpath)
 - Modifications in function function convertpath in order to verify the root path provided by the publication configuration
 - Modifications in function rdbms_getduplicate_file in DB Connect in order to exclude objects in the recycle bin
@@ -3839,7 +3839,7 @@ Release 01/2019
 - Implementation of the new function showworkflowstatus in UI API in order to display the workflow status information
 - Design modifications in page_view
 - Modifications in installation routine in order to create the contentcount.dat file. Removed the contentcount.dat file from install directory.
-- Modifications in installation routine in order to to modify the setmedia call due to the removed input parameter of the function
+- Modifications in installation routine in order to modify the setmedia call due to the removed input parameter of the function
 - Modifications in function userlogin in Security API in order to verify if the check.dat file has been saved successfully 
 - Modifications in function savecontainer in Main API in order to verify that the container content tag exists
 - Bug fix: Function rdbms_searchcontent in DB Connect did not escape % and _ in the search expressions as they are used as wildcard characters in the SQL query
@@ -5176,7 +5176,7 @@ Release 06/2021
 - Modifications in function sendresetpassword in Main API in order to save the time of the last password reset of a user for the multifactor authentication
 - Implementation of the new function sendResetPassword in the Workplace Integration module in order to support multifactor authentication
 - Implementation of the new function getUserIP in the Workplace Integration module in order to support IP validation
-- Modifications in the LDAP/AD Connector module in order to to use the provided username and password as first bind option
+- Modifications in the LDAP/AD Connector module in order to use the provided username and password as first bind option
 - Modifications in OpenSearch Connector module in order to verify the basic HTTP authentication parameters
 - Design modifications in page_multiedit, image_rendering and page_rendering in order to set a new width and overflow for the labels
 - Modifications in page_multiedit in order to verify if audio and video rendering is supported by the main configuration and provide a warning message in the options layer
@@ -5896,7 +5896,7 @@ Release 06/2022
 - Modifications in function showgallery in UI API in order to hide objects without access permissions for the user
 - Modifications in function getobjectlist in Get API in order to add text IDs to the default result set
 - Modifications in function rdbms_searchcontent in DB Connect in order to support a new input parameter for the search based on file extensions
-- Modifications in link_edit_explorer, search_objectlist, and text_link_explorer in order to support the new input paramater of function rdbms_searchcontent
+- Modifications in link_edit_explorer, search_objectlist, and text_link_explorer in order to support the new input parameter of function rdbms_searchcontent
 - Modifications in function getobjectlist in Get API in order to support the new input parameter of function rdbms_searchcontent
 - Modifications in function rewrite_targetURI in Main API in order to support the new input parameter of function rdbms_searchcontent
 - Modifications in function showcompexplorer in UI API in order to support the new input parameter of function rdbms_searchcontent
@@ -6070,7 +6070,7 @@ Release 06/2022
 - Bug fix: The daily job used a wrong variable name for the extracted location from the objectpath for the recycle bin
 
 Version 10.0.6
-Release 08/2022
+Release 09/2022
 - Performance improvements for various select and update queries by implementation of the MD5 representation of the objectpath in table object and a new index on attribute objectpath of tbale object (index object_objectpath has not been used by queries)
 - Modifications in function valid_locationname in Security API in order to set the max location path length to 4096 characters
 - Modifications in function userlogin and checkdiskkey in Security API in order to verify that the global $_SERVER['SERVER_ADDR'] exists
@@ -6113,24 +6113,34 @@ Release 08/2022
 - Modifications in function importCSVtextcontent in Meta API in order to support the new input parameters for the report and output puffering headers
 - Modifications in function importCSVtextcontent in Meta API in order to support creation of the report and output puffering headers
 - Modifications in function importCSVtextcontent in Meta API in order to apply function correctfile on the object name for content updates
-- Modifications in control_objectlist_menu in order to to support the new function importCSVtextcontent for the CSV import
+- Modifications in control_objectlist_menu in order to support the new function importCSVtextcontent for the CSV import
 - Modifications in the Import/Export Connector module in order to support the import of text content from CSV files
 - Modifications in import_form in order to add new GUI elements and controls for the CSV import
 - Modifications in import_form in order to support the new import parameters in the import file format (load and save)
 - Modifications in the import script in order to support the import of text content from CSV files
 - Modifications in imexport_explorer in order to support the navigation of assets and pages as root elements
-- Modifications in control_imexport_menu in order to remove the export of asstes and pages und provide a single export action for both
+- Modifications in control_imexport_menu in order to remove the export of assets and pages und provide a single export action for both
 - Modifications in function importobjects in the Import/Export API in order to supportv the new import parameters in the import file format
-- Modifications in function rdbms_getfilesize in DB Connect in order to support a new input paramater and the space used by assets in the recycle bin
+- Modifications in function rdbms_getfilesize in DB Connect in order to support a new input parameter and the space used by assets in the recycle bin
 - Modifications in daily job in order to include the space used by assets in the recycle bin
 - Modifications in popup_upload_html in order to include the space used by assets in the recycle bin
 - Modifications in Home box free_storage_per_publication in order to verify the file size value before saving it to the file
 - Modifications in function importCSVtextcontent in Meta API in order to create log entry if the converted CSV file could not be saved
-- Modifications in daily job in order to call function rdbms_deleteobject before modification of the folder path
+- Modifications in daily job in order to call function rdbms_deleteobject only if function deleteobject failed to delete the object
+- Modifications in function executeREST of the REST API in the Connector module in order to support the multipart/form-data binary file upload
+- Modifications in function executeREST of the REST API in the Connector module in order to set the HTTP header for the 401 error code in case function readSession returns an error
+- Modifications in function rdbms_searchcontent in DB Connect in order to remove DISTINCT and apply GROUP BY for the object hash in the SQL query
+- Modifications in function getobjectlist in Get API in order to provide the total number of objects
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order to add GROUP BY object hash to the SQL statements
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order to include the objectpath besides the md5_objecthash in the SQL query
+- Modifications in function manipulateallobjects in Main API in order to allow superadmins to empty the recylce bin completely including all objects of all users
+- Modifications in function createuser in Main API in order to verify the number of users
+- Removed .emf file extension from image formats in format_ext
 - Design modifications in popup_status
 - Update of the update log in the installation directory
 - Updates in the Import/Export Guide and Users Guide
 - Bug fix: Function manipulateobject in Main API did not extract the objects category properly since it used a reduced object path
 - Bug fix: Function manipulateobject in Main API did not extract the objects category before the accessgeneral function call
 - Bug fix: Function deletefolder in Main API did not extract the objects category before the accessgeneral function call
+- Bug fix: Function rdbms_searchcontent in DB Connect did not apply GROUP BY for the object hash which resulted in an error of the provided result number using LIMIT
 
