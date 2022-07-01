@@ -250,21 +250,21 @@ if ($pagestore != false)
         // wrapper link
         if ($cat == "page" || $setlocalpermission['download'] == 1)
         {
-          if (!empty ($mgmt_config['db_connect_rdbms'])) $filewrapperlink = createwrapperlink ($site, $location, $page, $cat);
+          if (!empty ($mgmt_config['db_connect_rdbms'])) $filewrapperlink = createwrapperlink ($site, $location, $page, $cat, "", "", "", "", true);
           elseif (!empty ($media)) $filewrapperlink = createviewlink ($site, $media, $page);
         }
         
         // download link
         if ($cat == "comp" && $setlocalpermission['download'] == 1)
         {
-          if (!empty ($mgmt_config['db_connect_rdbms']))$filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
+          if (!empty ($mgmt_config['db_connect_rdbms']))$filewrapperdownload = createdownloadlink ($site, $location, $page, $cat, "", "", "", "", true);
           elseif (!empty ($media)) $filewrapperdownload = createviewlink ($site, $media, $page, false, "download");
         }
         
         // object access link
         if ($cat == "page" || $setlocalpermission['download'] == 1)
         {
-          if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat);
+          if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config[$site]['accesslinkuser'])) $fileaccesslink = createobjectaccesslink ($site, $location, $page, $cat, "", "", true);
         }
       }
 

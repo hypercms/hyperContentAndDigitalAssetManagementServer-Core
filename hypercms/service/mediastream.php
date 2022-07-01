@@ -68,17 +68,20 @@ if ($wm != "")
     else
     {
       header ("HTTP/1.1 400 Invalid Request", true, 400);
+      exit;
     }
   }
   // no content available
   else
   {
     header ("HTTP/1.1 400 Invalid Request", true, 400);
+    exit;
   }
 }
 // no input provided
 else
 {
   header ("HTTP/1.1 400 Invalid Request", true, 400);
+  exit;
 }
 ?>

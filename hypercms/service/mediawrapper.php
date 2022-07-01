@@ -317,11 +317,13 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
     else
     {
       header ("HTTP/1.1 400 Invalid Request", true, 400);
+      exit;
     }
   }
   else
   {
     header ("HTTP/1.1 400 Invalid Request", true, 400);
+    exit;
   }
 }
 // page or component
@@ -355,6 +357,7 @@ elseif ($objectpath_esc != "" && is_file ($location.$object))
     else
     {
       header ("HTTP/1.1 400 Invalid Request", true, 400);
+      exit;
     }
   }
   // provide HTML
@@ -367,5 +370,6 @@ elseif ($objectpath_esc != "" && is_file ($location.$object))
 else
 {
   header ("HTTP/1.1 400 Invalid Request", true, 400);
+  exit;
 }
 ?>

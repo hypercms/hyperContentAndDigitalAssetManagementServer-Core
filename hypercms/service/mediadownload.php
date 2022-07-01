@@ -364,12 +364,14 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
     {
       header ("HTTP/1.1 400 Internal Server Error", true, 400);
       echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
+      exit;
     }
   }
   else
   {
     header ("HTTP/1.1 400 Invalid Request", true, 400);
     echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
+    exit;
   }
 }
 // page or component
@@ -404,6 +406,7 @@ elseif ($objectpath_esc != "" && is_file ($location.$object))
     {
       header ("HTTP/1.1 400 Invalid Request", true, 400);
       echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
+      exit;
     }
   }
   // provide HTML
@@ -417,5 +420,6 @@ else
 {
   header ("HTTP/1.1 400 Invalid Request", true, 400);
   echo showinfopage ($hcms_lang['the-requested-object-can-not-be-provided'][$lang], $lang);
+  exit;
 }
 ?>

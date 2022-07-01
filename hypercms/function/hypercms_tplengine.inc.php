@@ -3276,12 +3276,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         // if pathytpe == wrapper (wrapper link)
                         elseif ($mediapathtype == "wrapper" && getmediacontainerid ($temp))
                         {
-                          $temp_new = createwrapperlink ("", "", "", "", "", getmediacontainerid ($temp));
+                          $temp_new = createwrapperlink ("", "", "", "", "", getmediacontainerid ($temp), "", "", true);
                         }
                         // if pathytpe == download (download link)
                         elseif ($mediapathtype == "download" && getmediacontainerid ($temp))
                         {
-                          $temp_new = createdownloadlink ("", "", "", "", "", getmediacontainerid ($temp));
+                          $temp_new = createdownloadlink ("", "", "", "", "", getmediacontainerid ($temp), "", "", true);
                         }
                         // if pathytpe == location (media location path since the object path bis not available)
                         elseif ($mediapathtype == "location")
@@ -5353,13 +5353,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   elseif (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "wrapper" && getmediacontainerid ($file_media))
                   {
                     $url_media = "";
-                    $file_media = createwrapperlink ("", "", "", "", "", getmediacontainerid ($file_media));
+                    $file_media = createwrapperlink ("", "", "", "", "", getmediacontainerid ($file_media), "", "", true);
                   }
                   // if pathytpe == download (download link)
                   elseif (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "download" && getmediacontainerid ($file_media))
                   {
                     $url_media = "";
-                    $file_media = createdownloadlink ("", "", "", "", "", getmediacontainerid ($file_media));
+                    $file_media = createdownloadlink ("", "", "", "", "", getmediacontainerid ($file_media), "", "", true);
                   }
                   // if pathytpe == location (converted location path)
                   elseif (!empty ($mediapathtype[$id][$tagid]) && $mediapathtype[$id][$tagid] == "location")

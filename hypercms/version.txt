@@ -6135,6 +6135,12 @@ Release 09/2022
 - Modifications in function rdbms_getdeletedobjects in DB Connect in order to include the objectpath besides the md5_objecthash in the SQL query
 - Modifications in function manipulateallobjects in Main API in order to allow superadmins to empty the recylce bin completely including all objects of all users
 - Modifications in function createuser in Main API in order to verify the number of users
+- Modifications in function createobjectaccesslink, createdownloadlink, and createwrapperlink in Main API in order to support a new optional input parameter for the recreation of the object and its hash in case it can't be found
+- Modifications in page_info and popup_save_dropbox in order to apply the new input parameter for function createobjectaccesslink, createdownloadlink, and createwrapperlink
+- Modifications in function download in the REST and SOAP API of the Connector module in order to apply the new input parameter for function createdownloadlink and createwrapperlink
+- Modifications in the template engine in order to apply the new input parameter for function createdownloadlink and createwrapperlink
+- Modifications in service getlink in order to apply the new input parameter for function createdownloadlink
+- Modifications in function function getFileContents in the Workplace Integration in order to apply the new input parameter for function createobjectaccesslink and createdownloadlink
 - Removed .emf file extension from image formats in format_ext
 - Design modifications in popup_status
 - Update of the update log in the installation directory
@@ -6143,4 +6149,6 @@ Release 09/2022
 - Bug fix: Function manipulateobject in Main API did not extract the objects category before the accessgeneral function call
 - Bug fix: Function deletefolder in Main API did not extract the objects category before the accessgeneral function call
 - Bug fix: Function rdbms_searchcontent in DB Connect did not apply GROUP BY for the object hash which resulted in an error of the provided result number using LIMIT
+- Bug fix: explorer_preview caused the creation of new object after the have been moved to the recycle bin and could not be found on reload of explorer_preview
+- Bug fix: Function rdbms_setdeletedobject in DB Connect did not exclude the folder object from the SELECT query
 

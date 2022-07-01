@@ -889,7 +889,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
          	}
 
          	// define message
-         	$message = "<p class=hcmsHeadline>".$hcms_lang['refreshing-view-'][$lang]."</p>\n";
+         	$message = "<p class=\"hcmsHeadline\">".$hcms_lang['refreshing-view-'][$lang]."</p>\n";
          	$message .= "<a href=\"page_view.php?view=".url_encode($view)."&site=".url_encode($site)."&cat=".url_encode($cat)."&db_connect=".url_encode($db_connect)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&ctrlreload=no\">".$hcms_lang['manual-refresh'][$lang]."</a>\n";
       	}
       }
@@ -920,7 +920,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
       }
       else
       {
-      	$message = "<p class=hcmsHeadline>".$hcms_lang['functional-error-occured'][$lang]."</p>\n<a href=\"page_view.php?site=".$site."&location=".$location_esc."&page=".$page."\">".$hcms_lang['manual-refresh'][$lang]."</a>";
+      	$message = "<p class=\"hcmsHeadline\">".$hcms_lang['functional-error-occured'][$lang]."</p>\n<a href=\"page_view.php?site=".$site."&location=".$location_esc."&page=".$page."\">".$hcms_lang['manual-refresh'][$lang]."</a>";
       }
     }
   }
@@ -939,7 +939,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
     }
     else
     {
-    	$message = "<p class=hcmsHeadline>".$hcms_lang['content-container-is-missing'][$lang]."</p>\n".$hcms_lang['the-content-of-this-object-is-missing'][$lang]."<br />\n".$hcms_lang['to-create-a-new-content-container-please-delete-the-object-and-create-a-new-one'][$lang]."<br />\n";
+    	$message = "<p class=\"hcmsHeadline\">".$hcms_lang['content-container-is-missing'][$lang]."</p>\n".$hcms_lang['the-content-of-this-object-is-missing'][$lang]."<br />\n".$hcms_lang['to-create-a-new-content-container-please-delete-the-object-and-create-a-new-one'][$lang]."<br />\n";
     }
   }
   else
@@ -954,7 +954,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
     }
     else
     {
-    	$message = "<p class=hcmsHeadline>".$hcms_lang['content-container-is-missing'][$lang]."</p>\n";
+    	$message = "<p class=\"hcmsHeadline\">".$hcms_lang['content-container-is-missing'][$lang]."</p>\n";
     }
   }
 }
@@ -970,7 +970,7 @@ else
   }
   else
   {
-  	$message = "<p class=hcmsHeadline>".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n";
+  	$message = "<p class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-write-permissions-for-the-content-container'][$lang]."</p>\n";
   }
 }
 

@@ -426,7 +426,7 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
       }
     }
     // insert values in table object (new object)
-    elseif (!empty ($container))
+    elseif (!empty ($container_id))
     {
       $sql = 'INSERT INTO object (id, hash, objectpath, md5_objectpath, template, media, container, createdate, date, latitude, longitude, filetype, user) ';
       $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.md5 ($object).'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', "'.$filetype.'", "'.$user.'")';
@@ -4467,7 +4467,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Restore failed (rename) for folder '".$object."' in recycle bin";
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder", md5_objectpath="'.md5 (substr ($object_folder, 0, -8)).'" WHERE md5_objectpath="'.md5 ($object_folder.'/.folder').'"';
+              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder", md5_objectpath="'.md5 (substr ($object_folder, 0, -8)."/.folder").'" WHERE md5_objectpath="'.md5 ($object_folder.'/.folder').'"';
             }
             else
             {
@@ -4490,44 +4490,48 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
             // for all subitems of the selected folder
-            if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
+            if ($done)
             {
-              $sql = 'SELECT object_id, objectpath FROM object WHERE objectpath!= BINARY "'.$object_folder.'/" AND objectpath LIKE BINARY "'.$object_folder.'/%"';
-
-              $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
-
-              if ($done)
+              if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
               {
-                while ($row = $db->rdbms_getresultrow ('select'))
-                {
-                  if (!empty ($row['object_id']))
-                  {
-                    $temp_objectpath = str_replace ($object_folder."/", $object_folder.".recycle/", $row['objectpath']);
-                    $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
+                // exclude the parent folder (IMPORTANT: use old and new MD5 objectpath hash since the UPDATE query might not effect the data before the SELECT query)
+                $sql = 'SELECT object_id, objectpath FROM object WHERE md5_objectpath!="'.md5 (substr ($object_folder, 0, -8)."/.folder").'" AND md5_objectpath!="'.md5 ($object_folder.'/.folder').'" AND objectpath LIKE BINARY "'.$object_folder.'/%"';
 
-                    $errcode = "50072";
-                    $update = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
+                $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+                if ($done)
+                {
+                  while ($row = $db->rdbms_getresultrow ('select'))
+                  {
+                    if (!empty ($row['object_id']))
+                    {
+                      $temp_objectpath = str_replace ($object_folder."/", $object_folder.".recycle/", $row['objectpath']);
+                      $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
+
+                      $errcode = "50072";
+                      $update = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
+                    }
                   }
                 }
               }
-            }
-            elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
-            {
-              $sql = 'SELECT object_id, objectpath FROM object WHERE objectpath LIKE BINARY "'.$object_folder.'/%"';
-
-              $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
-
-              if ($done)
+              elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
               {
-                while ($row = $db->rdbms_getresultrow ('select'))
-                {
-                  if (!empty ($row['object_id']))
-                  {
-                    $temp_objectpath = str_replace ($object_folder."/", substr ($object_folder, 0, -8)."/", $row['objectpath']);
-                    $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
+                $sql = 'SELECT object_id, objectpath FROM object WHERE objectpath LIKE BINARY "'.$object_folder.'/%"';
 
-                    $errcode = "50073";
-                    $update = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
+                $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+                if ($done)
+                {
+                  while ($row = $db->rdbms_getresultrow ('select'))
+                  {
+                    if (!empty ($row['object_id']))
+                    {
+                      $temp_objectpath = str_replace ($object_folder."/", substr ($object_folder, 0, -8)."/", $row['objectpath']);
+                      $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
+
+                      $errcode = "50073";
+                      $update = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
+                    }
                   }
                 }
               }

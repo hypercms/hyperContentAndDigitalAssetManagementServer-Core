@@ -44,7 +44,7 @@ if (valid_locationname ($location) && valid_publicationname ($site) && ($cat == 
     $location = $location.".folder";
   }
   
-  $data['downloadlink'] = createdownloadlink ($site, getlocation($location), getobject($location), $cat);
+  $data['downloadlink'] = createdownloadlink ($site, getlocation($location), getobject($location), $cat, "", "", "", "", true);
   $data['wrapperlink'] = str_replace ("?dl=", "?wl=", $data['downloadlink']);
 
   if (!empty ($data['downloadlink'])) $data['success'] = true;

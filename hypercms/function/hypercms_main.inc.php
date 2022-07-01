@@ -2442,13 +2442,14 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
 // ---------------------- createobjectaccesslink -----------------------------
 // function: createobjectaccesslink()
-// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID or repository media file [string] (optional)
+// input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID or repository media file [string] (optional), 
+//        recreate object and its hash [boolean] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 // description:
 // Creates an access link to any object based on the permissions of the user account defined in the publication settings.
 
-function createobjectaccesslink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="")
+function createobjectaccesslink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $recreate_hash=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
@@ -2491,7 +2492,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
       $object_hash = rdbms_getobject_hash ($objectpath);
 
       // recreate object entry in database
-      if ($object_hash == false)
+      if ($object_hash == false && $recreate_hash == true)
       {
         $object_info = getobjectinfo ($site, $location, $object, $user);
 
@@ -2544,13 +2545,13 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
 // ---------------------- createwrapperlink -----------------------------
 // function: createwrapperlink()
 // input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID or repository media file [string] (optional), 
-//        media file extension or type based on main config settings [string] (optional), media configuration based on main config settings [string] (optional)
+//        media file extension or type based on main config settings [string] (optional), media configuration based on main config settings [string] (optional), recreate object and its hash [boolean] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 // description:
 // In order to track and include external user IDs in the daily statistics you need to manually add the 'user' parameter to the link in the form of: &user=[user-ID]
 
-function createwrapperlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $type="", $mediaconfig="")
+function createwrapperlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $type="", $mediaconfig="", $recreate_hash=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
@@ -2590,7 +2591,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
       $object_hash = rdbms_getobject_hash ($objectpath);
 
       // try to recreate object entry in database
-      if ($object_hash == false)
+      if ($object_hash == false && $recreate_hash == true)
       {
         $object_info = getobjectinfo ($site, $location, $object, $user);
 
@@ -2653,13 +2654,13 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 // ---------------------- createdownloadlink -----------------------------
 // function: createdownloadlink()
 // input: publication name [string] (optional), location [string] (optional), object [string] (optional), category [page,comp] (optional), object ID [string] (optional), container-ID or repository media file [string] (optional),
-//        media file extension or type based on main config settings [string] (optional), media configuration based on main config settings [string] (optional)
+//        media file extension or type based on main config settings [string] (optional), media configuration based on main config settings [string] (optional), recreate object and its hash [boolean] (optional)
 // output: URL for download of the multimedia file of the given object or folder / false on error
 
 // description:
 // In order to track and include external user IDs in the daily statistics you need to manually add the 'user' parameter to the link in the form of: &user=[user-ID]
 
-function createdownloadlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $type="", $mediaconfig="")
+function createdownloadlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $type="", $mediaconfig="", $recreate_hash=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
@@ -2701,7 +2702,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
       $object_hash = rdbms_getobject_hash ($objectpath);
 
       // try to recreate object entry in database
-      if ($object_hash == false)
+      if ($object_hash == false && $recreate_hash == true)
       {
         $object_info = getobjectinfo ($site, $location, $object, $user);
 

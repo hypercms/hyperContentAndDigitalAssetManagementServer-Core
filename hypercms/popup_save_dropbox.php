@@ -88,7 +88,7 @@ if ((!empty ($multiobject) || !empty ($page)) && !empty ($location))
       
       if (empty ($objectInfo['media'])) continue;
       
-			$downlaodlink = createdownloadlink ($site, $objectLocation, $objectFile, $cat);
+			$downlaodlink = createdownloadlink ($site, $objectLocation, $objectFile, $cat, "", "", "", "", true);
 			$objectFileInfo = getfileinfo ($site, $object, $cat);
 			$objectMediaPath = getmedialocation ($site, $objectInfo['media'], "abs_path_media").$site."/".$objectInfo['media'];
 			$objectMediaSize = filesize ($objectMediaPath);
