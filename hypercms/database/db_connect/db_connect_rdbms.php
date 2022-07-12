@@ -1758,8 +1758,11 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   // enable search log by default if not set
   if (!isset ($mgmt_config['search_log'])) $mgmt_config['search_log'] = true;
 
-  // define default search query syntax "like" or "match"
+  // define the default search query syntax "like" or "match"
   if (!isset ($mgmt_config['search_query_match'])) $mgmt_config['search_query_match'] = "match";
+
+  // define the default value for the combination of MATCH AGAINST and LIKE in the search query for textcontent (true has performance disadvantages since the fulltext index will not be used)
+  if (!isset ($mgmt_config['search_combine_like'])) $mgmt_config['search_combine_like'] = false;
 
   // set object_type if the search is image or video related
   if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype)))
@@ -2256,20 +2259,19 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                       // ~	The word following contributes negatively to the relevance of the row (which is different to the '-' operator, which specifically excludes the word, or the '<' operator, which still causes the word to contribute positively to the relevance of the row.
                       // *	The wildcard, indicating zero or more characters. It can only appear at the end of a word.
                       // "	Anything enclosed in the double quotes is taken as a whole (so you can match phrases, for example).
+
                       if (preg_match('/["*()@~<>+-]/', $synonym_expression))
                       {
                         $search_mode = " IN BOOLEAN MODE";
-                        $search_like = "";
                       }
                       // Use LIKE in order to get the desired result if MATCH AGAINST fails due to stopword restrictions
                       else
                       {
                         $search_mode = " IN NATURAL LANGUAGE MODE";
-                        $search_like = ' OR tn'.$i_tn.'.textcontent LIKE "%'.$synonym_expression.'%"';
                       }
                       
                       // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
-                      $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')'.$search_like.'))';
+                      $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')))';
                     }
                   }
 
@@ -2371,20 +2373,19 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                           // ~	The word following contributes negatively to the relevance of the row (which is different to the '-' operator, which specifically excludes the word, or the '<' operator, which still causes the word to contribute positively to the relevance of the row.
                           // *	The wildcard, indicating zero or more characters. It can only appear at the end of a word.
                           // "	Anything enclosed in the double quotes is taken as a whole (so you can match phrases, for example).
+
                           if (preg_match('/["*()@~<>+-]/', $synonym_expression))
                           {
                             $search_mode = " IN BOOLEAN MODE";
-                            $search_like = "";
                           }
                           // Use LIKE in order to get the desired result if MATCH AGAINST fails due to stopword restrictions
                           else
                           {
                             $search_mode = " IN NATURAL LANGUAGE MODE";
-                            $search_like = ' OR obj.textcontent LIKE "%'.$synonym_expression.'%"';
                           }
 
                           // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
-                          $sql_where_textnodes .= 'MATCH (obj.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')'.$search_like.'';
+                          $sql_where_textnodes .= 'MATCH (obj.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')';
                         }
                       }
 

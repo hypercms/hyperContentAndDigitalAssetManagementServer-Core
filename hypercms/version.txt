@@ -6152,6 +6152,8 @@ Release 09/2022
 - Modifications in function rdbms_setmedia in DB Connect in order to execute the SQL statement only if it is available
 - Modifications in function getlistelements in Get API in order to use the System API instead of the service getkeywords (since it might be blocked)
 - Modifications in control_content_menu and control_objectlist_menu in order to display the full location on mouse over
+- Modifications in function rdbms_searchcontent in DB Connect in order to remove the combination of MATCH AGAINST and LIKE for textcontent since the fulltext index will not be used by the query if combined with LIKE
+- Modifications in explorer in order to enable the search in textcontent or the location but not both at the same time since the fulltext index will not be used
 - Update of the update log in the installation directory
 - Updates in the Import/Export Guide and Users Guide
 - Bug fix: Function manipulateobject in Main API did not extract the objects category properly since it used a reduced object path

@@ -2324,8 +2324,8 @@ else
           </div>
           <div style="padding-bottom:3px;">
             <?php echo getescapedtext ($hcms_lang['search-restriction'][$lang]); ?><br/>
-            <label><input type="checkbox" name="search_cat" id="search_cat_file" value="file" onclick="if (this.checked) document.getElementById('search_cat_text').checked=false;" /> <?php echo getescapedtext ($hcms_lang['location'][$lang]."/".$hcms_lang['object'][$lang]." ".$hcms_lang['name'][$lang]); ?></label><br/>
-            <label><input type="checkbox" name="search_cat" id="search_cat_text" value="text" onclick="if (this.checked) document.getElementById('search_cat_file').checked=false;" /> <?php echo getescapedtext ($hcms_lang['text'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_cat" id="search_cat_text" value="text" onclick="if (this.checked) document.getElementById('search_cat_file').checked=false; else document.getElementById('search_cat_file').checked=true;" checked /> <?php echo getescapedtext ($hcms_lang['text'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_cat" id="search_cat_file" value="file" onclick="if (this.checked) document.getElementById('search_cat_text').checked=false; else document.getElementById('search_cat_text').checked=true;" /> <?php echo getescapedtext ($hcms_lang['location'][$lang]."/".$hcms_lang['object'][$lang]." ".$hcms_lang['name'][$lang]); ?></label><br/>
           </div> 
         </div>
         <hr />
