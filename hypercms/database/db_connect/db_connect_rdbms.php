@@ -1227,10 +1227,10 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
       $sql = 'UPDATE object SET ';
       $sql .= implode (", ", $sql_update);
       $sql .= ' WHERE id="'.intval($id).'"';
-    }
 
-    $errcode = "50009";
-    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
+      $errcode = "50009";
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update');
+    }
 
     // save log
     savelog ($db->rdbms_geterror ());    
@@ -1480,7 +1480,7 @@ function rdbms_deleteobject ($object="", $object_id="")
     $sql = 'SELECT id FROM object ';
 
     if ($object != "") $sql .= 'WHERE md5_objectpath="'.md5 ($object).'" OR objectpath= BINARY "'.$object.'"';
-    elseif (intval ($object_id) > 0) $sql .= 'WHERE object_id='.intval ($object_id).'';
+    elseif ($object_id > 0) $sql .= 'WHERE object_id='.$object_id.'';
   
     $errcode = "50012";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select1');
@@ -2231,7 +2231,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   // look for exact expression except for keyword
                   if (!empty ($mgmt_config['search_exact']) && $type != "textk")
                   {
-                    $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND LOWER(tn'.$i_tn.'.textcontent)=LOWER("'.$synonym_expression.'"))';
+                    $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent="'.$synonym_expression.'")';
                   }
                   // look for expression in content
                   else
@@ -3595,8 +3595,8 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
         // search for exact expression except for keyword
         if ($type != "textk")
         {
-          if ($value !=  $value_esc) $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND (LOWER(tn'.$i.'.textcontent)=LOWER("'.$value.'") OR LOWER(tn'.$i.'.textcontent)=LOWER("'.$value_esc.'"))';
-          else $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND LOWER(tn'.$i.'.textcontent)=LOWER("'.$value.'")';
+          if ($value !=  $value_esc) $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND (tn'.$i.'.textcontent="'.$value.'" OR tn'.$i.'.textcontent="'.$value_esc.'")';
+          else $sql_textnodes[] = 'tn'.$i.'.text_id="'.$text_id.'" AND tn'.$i.'.textcontent="'.$value.'"';
         }
         else
         {

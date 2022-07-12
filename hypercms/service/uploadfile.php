@@ -39,6 +39,10 @@ $ftp_file = getrequest ("ftp_file");
 $proxy_file = getrequest ("proxy_file");
 $proxy_file_name = getrequest ("proxy_file_name");
 $proxy_file_link = getrequest ("proxy_file_link");
+// set HTTP header in response
+$http_header = getrequest ("http_header", "bool", true);
+// provide message in response
+$response_message = getrequest ("response_message", "bool", true);
 
 // get publication and category
 $site = getpublication ($location);
@@ -148,6 +152,6 @@ else
 }
 
 // return header and message to uploader
-header ($result['header']);
-echo $result['message'];
+if ($http_header) header ($result['header']);
+if ($response_message) echo $result['message'];
 ?>

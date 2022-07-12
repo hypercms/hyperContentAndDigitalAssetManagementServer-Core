@@ -15,13 +15,13 @@ DROP TABLE IF EXISTS `object`;
 
 CREATE TABLE `object` (
   `object_id` int(11) NOT NULL auto_increment,
-  `hash` char(16) BINARY CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+  `hash` char(16) BINARY NOT NULL DEFAULT '',
   `id` int(11) NOT NULL DEFAULT '0',
   `createdate` datetime NOT NULL default CURRENT_TIMESTAMP,
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `publishdate` datetime DEFAULT NULL,
   `user` char(100) NOT NULL DEFAULT '',
-  `objectpath` varchar(4096) BINARY CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+  `objectpath` varchar(4096) BINARY NOT NULL DEFAULT '',
   `md5_objectpath` char(32) BINARY NOT NULL DEFAULT '',
   `container` char(16) NOT NULL DEFAULT '',
   `template` char(100) BINARY NOT NULL DEFAULT '',
@@ -51,7 +51,7 @@ CREATE TABLE `object` (
   KEY `object_objectpath` (`objectpath`),
   KEY `object_md5_objectpath` (`md5_objectpath`),
   FULLTEXT KEY `object_textcontent` (`textcontent`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `recipient`;
 
@@ -107,7 +107,7 @@ DROP TABLE IF EXISTS `taxonomy`;
 CREATE TABLE `taxonomy` (
   `taxonomykey_id` int(11) NOT NULL auto_increment,
   `id` int(11) NOT NULL,
-  `text_id` char(255) NOT NULL DEFAULT '',
+  `text_id` char(255) BINARY NOT NULL DEFAULT '',
   `taxonomy_id` int(11) NOT NULL DEFAULT '0',
   `lang` char(6) NOT NULL DEFAULT '',
   PRIMARY KEY  (`taxonomykey_id`),
@@ -135,7 +135,7 @@ DROP TABLE IF EXISTS `textnodes`;
 CREATE TABLE `textnodes` (
   `textnodes_id` int(11) NOT NULL auto_increment,
   `id` int(11) NOT NULL DEFAULT '0',
-  `text_id` char(255) NOT NULL DEFAULT '',
+  `text_id` char(255) BINARY NOT NULL DEFAULT '',
   `textcontent` mediumtext DEFAULT NULL,
   `object_id` int(11) DEFAULT NULL,
   `type` char(6) NOT NULL DEFAULT '',

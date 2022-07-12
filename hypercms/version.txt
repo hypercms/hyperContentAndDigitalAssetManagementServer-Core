@@ -5886,7 +5886,7 @@ Release 06/2022
 - Minor modifications in error_codes.txt
 - Modifications in function userlogin in Security API in order to initialize the variable checkresult and validdate
 - Design modifications in server_load, tasks, recent_uploads, recent_downloadlinks, recent_objects, recent_downloads, news, free_storage, free_storage_per_publication, and all_reports home box
-- Modifications in explorer_preview in order to remove click.min.js and enable to browser context menu
+- Modifications in explorer_preview in order to remove click.min.js and enable the standard context menu of the browser
 - Modifications in the home screen in order to remove click.min.js and enable the standard context menu of the browser
 - Modifications in function manipulateobject in Main API in order to rename objects in the database after the object has been copied to the target location for action cut and paste
 - Modifications in function manipulateobject in Main API in order to separate the error messages for copy and delete for action cut and paste (action cut & paste uses copy & delete file operation)
@@ -6143,6 +6143,15 @@ Release 09/2022
 - Modifications in function function getFileContents in the Workplace Integration in order to apply the new input parameter for function createobjectaccesslink and createdownloadlink
 - Removed .emf file extension from image formats in format_ext
 - Design modifications in popup_status
+- Modifications in createtables.sql in order to change the character set and collation of table object to utf8mb4 and utf8mb4_unicode_ci
+- Modifications in createtables.sql in order to remove the character set and collation of column hash and objectpath
+- Implementation of the new function update_database_v10065 in the Update API in order to change the character set and collation of table object
+- Modifications in function updates_all in the Update API in order to add the new function update_database_v10065
+- Modifications in service uploadfile in order to support a new input parameters for the HTTP header or the text message in the response
+- Modifications in various functions in Main API in order to change the HTTP error codes
+- Modifications in function rdbms_setmedia in DB Connect in order to execute the SQL statement only if it is available
+- Modifications in function getlistelements in Get API in order to use the System API instead of the service getkeywords (since it might be blocked)
+- Modifications in control_content_menu and control_objectlist_menu in order to display the full location on mouse over
 - Update of the update log in the installation directory
 - Updates in the Import/Export Guide and Users Guide
 - Bug fix: Function manipulateobject in Main API did not extract the objects category properly since it used a reduced object path
@@ -6151,4 +6160,3 @@ Release 09/2022
 - Bug fix: Function rdbms_searchcontent in DB Connect did not apply GROUP BY for the object hash which resulted in an error of the provided result number using LIMIT
 - Bug fix: explorer_preview caused the creation of new object after the have been moved to the recycle bin and could not be found on reload of explorer_preview
 - Bug fix: Function rdbms_setdeletedobject in DB Connect did not exclude the folder object from the SELECT query
-

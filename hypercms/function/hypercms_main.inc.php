@@ -13467,7 +13467,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // write log
       savelog (@$error);
 
-      $result['header'] = "HTTP/1.1 500 Internal Server Error";
+      $result['header'] = "HTTP/1.1 403 Forbidden";
       $result['message'] = $hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang];
       return $result;
     }
@@ -13510,7 +13510,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // write log
         savelog (@$error);
 
-        $result['header'] = "HTTP/1.1 501 Internal Server Error";
+        $result['header'] = "HTTP/1.1 500 Internal Server Error";
         $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
 
         return $result;
@@ -13538,7 +13538,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // write log
         savelog (@$error);
 
-        $result['header'] = "HTTP/1.1 501 Internal Server Error";
+        $result['header'] = "HTTP/1.1 500 Internal Server Error";
         $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
 
         return $result;
@@ -13594,7 +13594,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // write log
         savelog (@$error);
 
-        $result['header'] = "HTTP/1.1 501 Internal Server Error";
+        $result['header'] = "HTTP/1.1 500 Internal Server Error";
         $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
 
         return $result;
@@ -13613,7 +13613,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // write log
       savelog (@$error);
 
-      $result['header'] = "HTTP/1.1 501 Internal Server Error";
+      $result['header'] = "HTTP/1.1 500 Internal Server Error";
       $result['message'] = $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang];
       return $result;
     }
@@ -13627,7 +13627,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // write log
       savelog (@$error);
 
-      $result['header'] = "HTTP/1.1 502 Internal Server Error";
+      $result['header'] = "HTTP/1.1 400 Bad Request";
       $result['message'] = $hcms_lang['no-file-selected-to-upload'][$lang];
       return $result;
     }
@@ -13644,7 +13644,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // write log
       savelog (@$error);
 
-      $result['header'] = "HTTP/1.1 503 Internal Server Error";
+      $result['header'] = "HTTP/1.1 400 Bad Request";
       $result['message'] = str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $hcms_lang['the-file-name-has-more-than-maxdigits-digits'][$lang]);
       return $result;
     }
@@ -13666,7 +13666,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // error if file exists
       else
       {
-        $result['header'] = "HTTP/1.1 504 Internal Server Error";
+        $result['header'] = "HTTP/1.1 400 Bad Request";
         $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang];
         return $result;
       }
@@ -13686,7 +13686,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // write log
         savelog (@$error);
 
-        $result['header'] = "HTTP/1.1 505 Internal Server Error";
+        $result['header'] = "HTTP/1.1 400 Bad Request";
         $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang];
         return $result;
       }
@@ -13698,7 +13698,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // MIME-Type based: if ($global_files['Filedata']['type'] != $type)
       if (substr_count ($mgmt_config['exclude_files'], substr($global_files['Filedata']['name'], strrpos($global_files['Filedata']['name'], '.'))) > 0)
       {
-        $result['header'] = "HTTP/1.1 506 Internal Server Error";
+        $result['header'] = "HTTP/1.1 400 Bad Request";
         $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-is-of-wrong-type'][$lang];
         return $result;
       }
@@ -13757,7 +13757,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
       if ($result_unzip == false)
       {
-        $result['header'] = "HTTP/1.1 507 Internal Server Error";
+        $result['header'] = "HTTP/1.1 500 Internal Server Error";
         $result['message'] = $hcms_lang['file-could-not-be-extracted'][$lang];
         return $result;
       }
@@ -14287,7 +14287,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   // required input is missing
   else
   {
-    $result['header'] = "HTTP/1.1 509 Internal Server Error";
+    $result['header'] = "HTTP/1.1 400 Bad Request";
     $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
     return $result;
   }
@@ -19888,7 +19888,7 @@ function HTTP_Proxy ($URL, $enable_file=false)
   // invalid input
   else
   {
-    $header = "HTTP/1.1 500 Internal Server Error";
+    $header = "HTTP/1.1 400 Bad Request";
     $response = "Invalid input for PROXY service";
   }
 

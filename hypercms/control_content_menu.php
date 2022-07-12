@@ -489,7 +489,7 @@ else
       {
         echo "
       <td style=\"white-space:nowrap; width:20px;\"><img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" />&nbsp;</td>
-      <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>";
+      <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\" title=\"".str_replace ("/", " &gt; ", trim ($location_name, "/"))."\">".str_replace ("/", " &gt; ", trim ($location_name, "/"))."</td>";
       }
       else 
       {

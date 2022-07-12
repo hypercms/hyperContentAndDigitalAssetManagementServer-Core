@@ -1319,16 +1319,32 @@ function getlistelements ($list_sourcefile)
       elseif (empty ($language)) $language = "en";
 
       // reset source file to service/getkeywords
-      if (!empty ($publication) && !empty ($language) && isset ($taxonomy_id))
+      if (!empty ($publication) && !empty ($language) && intval ($taxonomy_id) >= 0)
       {
         if ($taxonomy_id == "") $taxonomy_id = 0;
+        if ($taxonomy_levels < 0) $taxonomy_levels = 5;
 
-        $list_sourcefile = $mgmt_config['url_path_cms']."service/getkeywords.php?site=".url_encode($publication)."&lang=".url_encode($language)."&id=".url_encode($taxonomy_id)."&levels=".url_encode($taxonomy_levels);
+        // deprecated since the service getkeywords might be blocked:
+        // $list_sourcefile = $mgmt_config['url_path_cms']."service/getkeywords.php?site=".url_encode($publication)."&lang=".url_encode($language)."&id=".url_encode($taxonomy_id)."&levels=".url_encode($taxonomy_levels);
+        // get keywords
+        // if (!empty ($list_sourcefile)) $list .= @file_get_contents ($list_sourcefile);
+
+        // collect keywords of a taxonomy and return as comma seperated list       
+        $keywords_array = gettaxonomy_childs ($publication, $language, $taxonomy_id, $taxonomy_levels);
+
+        if (is_array ($keywords_array) && sizeof ($keywords_array) > 0)
+        {
+          $keywords_array = array_unique ($keywords_array);
+
+          // escape commas
+          foreach ($keywords_array as &$keyword)
+          {
+            $keyword = str_replace (",", "¸", $keyword);
+          }
+
+          $list .= implode (",", $keywords_array);
+        }
       }
-      else $list_sourcefile = "";
-
-      // get keywords
-      if (!empty ($list_sourcefile)) $list .= @file_get_contents ($list_sourcefile);
     }
     // get folder structure parameters
     elseif (is_dir ($list_sourcefile) || strpos ("_".$list_sourcefile, "%comp%/") > 0 || strpos ("_".$list_sourcefile, "%page%/") > 0)

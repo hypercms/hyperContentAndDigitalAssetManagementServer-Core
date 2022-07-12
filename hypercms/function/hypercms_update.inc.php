@@ -1945,7 +1945,7 @@ function update_database_v1006 ()
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-   
+
     // alter table object (objectpath)
     $sql = "ALTER TABLE object MODIFY COLUMN objectpath varchar(4096) BINARY;";
     $errcode = "50661";
@@ -1984,6 +1984,48 @@ function update_database_v1006 ()
 
     // update log
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6|updated to version 10.0.6"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v10065 ----------------------------------------------
+// function: update_database_v10065()
+// input: %
+// output: true / false
+
+// description: 
+// Update table object for support of version 10.0.6.5
+
+function update_database_v10065 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.6.5"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+   
+    // alter table object
+    $sql = "ALTER TABLE object CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+    $errcode = "50670";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table object (objectpath)
+    $sql = "ALTER TABLE object MODIFY COLUMN objectpath varchar(4096) BINARY CHARACTER SET utf8mb4;";
+    $errcode = "50671";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.5|updated to version 10.0.6.5"), "update");
 
     return true;
   }
@@ -2033,6 +2075,7 @@ function updates_all ()
     update_users_v1004 ();
     update_database_v1005 ();
     update_database_v1006 ();
+    update_database_v10065 ();
   }
 }
 
