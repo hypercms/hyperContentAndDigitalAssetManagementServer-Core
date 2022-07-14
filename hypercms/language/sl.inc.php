@@ -1423,4 +1423,9 @@ $hcms_lang['overwrite-existing-files']['sl'] = "Prepiši obstoječe datoteke";
 $hcms_lang['customize-toolbar']['sl'] = "Prilagodi orodno vrstico";
 $hcms_lang['disable-link-in-edit-mode']['sl'] = "V načinu za urejanje deaktivirajte povezavo";
 $hcms_lang['transparent']['sl'] = "pregleden";
+$hcms_lang['search-wildcard-plus']['sl'] = "+ … Prvi znak plus pomeni, da mora biti ta beseda prisotna";
+$hcms_lang['search-wildcard-minus']['sl'] = "- … Prvi znak minus pomeni, da ta beseda ne sme biti prisotna";
+$hcms_lang['search-wildcard-none']['sl'] = "brez operatorja … Privzeto (če ni podano niti + niti -) beseda ni obvezna";
+$hcms_lang['search-wildcard-asterisk']['sl'] = "* … Zvezdica služi kot operator za prirezovanje (ali nadomestni znak). Za razliko od drugih operatorjev jo je treba dodati besedi, na katero vpliva.";
+$hcms_lang['search-wildcard-doublequote']['sl'] = "\" … Besedna zveza, ki je zaprta med dvojnimi narekovaji, mora biti prisotna kot besedna zveza dobesedno, kot je bila vnesena";
 ?>

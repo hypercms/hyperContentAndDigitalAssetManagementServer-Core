@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['fi'] = "Korvaa olemassa olevat tiedostot
 $hcms_lang['customize-toolbar']['fi'] = "Mukauta työkaluriviä";
 $hcms_lang['disable-link-in-edit-mode']['fi'] = "Poista linkki käytöstä muokkaustilassa";
 $hcms_lang['transparent']['fi'] = "läpinäkyvä";
+$hcms_lang['search-wildcard-plus']['fi'] = "+ … Alkuperäinen plusmerkki osoittaa, että tämän sanan on oltava läsnä";
+$hcms_lang['search-wildcard-minus']['fi'] = "- … Etupuolella oleva miinusmerkki osoittaa, että tämä sana ei saa olla läsnä";
+$hcms_lang['search-wildcard-none']['fi'] = "ei operaattoria … Oletuksena (kun ei ole määritetty + eikä -) sana on valinnainen";
+$hcms_lang['search-wildcard-asterisk']['fi'] = "* … Tähti toimii katkaisuoperaattorina (tai jokerimerkkinä). Toisin kuin muut operaattorit, se tulee liittää sanaan, johon vaikuttaa.";
+$hcms_lang['search-wildcard-doublequote']['fi'] = "\" … Lainausmerkkien sisällä olevan lauseen on oltava kirjaimellisesti, sellaisena kuin se kirjoitettiin";
 ?>

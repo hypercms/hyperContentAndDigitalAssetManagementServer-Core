@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['cz'] = "Přepsat existující soubory";
 $hcms_lang['customize-toolbar']['cz'] = "Přizpůsobit panel nástrojů";
 $hcms_lang['disable-link-in-edit-mode']['cz'] = "Deaktivujte odkaz v režimu úprav";
 $hcms_lang['transparent']['cz'] = "průhledný";
+$hcms_lang['search-wildcard-plus']['cz'] = "+ … Znaménko plus na začátku znamená, že toto slovo musí být přítomno";
+$hcms_lang['search-wildcard-minus']['cz'] = "- … Znaménko mínus na začátku znamená, že toto slovo nesmí být přítomno";
+$hcms_lang['search-wildcard-none']['cz'] = "žádný operátor … Ve výchozím nastavení (když není zadáno + ani -) je slovo nepovinné";
+$hcms_lang['search-wildcard-asterisk']['cz'] = "* … Hvězdička slouží jako operátor zkrácení (nebo zástupný znak). Na rozdíl od ostatních operátorů by měla být připojena ke slovu, které má být ovlivněno.";
+$hcms_lang['search-wildcard-doublequote']['cz'] = "\" … Fráze, která je uzavřena mezi znaky dvojitých uvozovek, musí být přítomna jako fráze doslova, tak jak byla napsána";
 ?>

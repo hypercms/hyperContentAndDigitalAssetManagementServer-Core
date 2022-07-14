@@ -122,7 +122,7 @@ if ($multiobject != "")
 elseif ($location != "" && ($page != "" || $folder != ""))
 {
   // folder (page = .folder)
-  if ($folder != "" && is_dir ($location.$folder))
+  if (($folder != "" && is_dir ($location.$folder)) || $page == ".folder" || ($page == "" && is_dir ($location)))
   {
     $page = ".folder";
     $file_info = getfileinfo ($site, $location.$folder, $cat);
@@ -943,9 +943,10 @@ else
 <div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:820px;"; else echo "max-height:100px;"; ?>">
   <div class="hcmsToolbarBlock">
     <?php
+    // parent folder of current location
     if (
          (
-           $from_page == "" && valid_locationname ($abs_path_root) && valid_locationname ($location_down) && (@substr_count ($abs_path_root, $location) < 1 && $setlocalpermission_down['root'] == 1)
+           $from_page == "" && valid_locationname ($abs_path_root) && valid_locationname ($location_down) && substr_count ($abs_path_root, $location) < 1 && $setlocalpermission_down['root'] == 1
          ) 
          || 
          ( 
@@ -959,7 +960,20 @@ else
        "class=\"hcmsButton hcmsButtonSizeSquare\" ".
        "name=\"pic_folder_back\" ".
        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_back.png\" ".
-       "alt=\"".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext ($hcms_lang['go-to-parent-folder'][$lang])."\" />";
+       "alt=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" />";
+    }
+    // parent folder of current object (used for search results)
+    elseif (
+             $from_page != "" && $multiobject_count <= 1 && ($page != "" || $folder != "") && valid_locationname ($abs_path_root) && valid_locationname ($location_down) && @substr_count ($abs_path_root, $location) < 1 && $setlocalpermission_down['root'] == 1
+           )
+    {
+      echo "
+      <img ".
+      "onclick=\"if (locklayer == false) parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."';\" ".
+      "class=\"hcmsButton hcmsButtonSizeSquare\" ".
+      "name=\"pic_folder_back\" ".
+      "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_back.png\" ".
+      "alt=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" />";
     }
     else
     {
@@ -976,7 +990,7 @@ else
     if ($from_page == "" && $cat != "page")
     {
       echo "
-    <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchFilter();\" title=\"".getescapedtext ($hcms_lang['filter-by-file-type'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['filter-by-file-type'][$lang])."\" />";
+    <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"switchFilter();\" title=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" alt=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" />";
     }
     else
     {
@@ -993,7 +1007,7 @@ else
     // object edit buttons
     echo "
     <div id=\"button_obj_edit\" onclick=\"hcms_hideSelector('select_obj_view'); hcms_hideSelector('select_obj_convert'); hcms_switchSelector('select_obj_edit');\" class=\"hcmsButton hcmsButtonSizeWide\">
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_edit\" name=\"pic_obj_edit\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" /><img src=\"".getthemelocation($hcms_themeinvertcolors)."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_edit\" name=\"pic_obj_edit\" alt=\"".getescapedtext($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext($hcms_lang['edit'][$lang])."\" /><img src=\"".getthemelocation($hcms_themeinvertcolors)."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />
 
       <div id=\"select_obj_edit\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:36px; visibility:hidden; z-index:999; width:".(36*7)."px; max-height:38px; overflow:auto; overflow-x:auto; overflow-y:hidden; white-space:nowrap;\">";
 
@@ -1017,7 +1031,7 @@ else
       }
 
       echo "
-      <img onclick=\"document.getElementById('button_obj_edit').display='none'; ".$openlink."\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />";
+      <img onclick=\"document.getElementById('button_obj_edit').display='none'; ".$openlink."\" class=\"hcmsButton hcmsButtonSizeSquare\" name=\"pic_obj_edit\" src=\"".getthemelocation()."img/button_edit.png\" alt=\"".getescapedtext($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />";
     }
     // Edit button to edit the fields which are equal across all selected objects
     elseif ($multiobject_count > 1 && $from_page != "recyclebin")

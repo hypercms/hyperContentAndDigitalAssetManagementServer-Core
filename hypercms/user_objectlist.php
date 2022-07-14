@@ -243,7 +243,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
         else $openUser = "";
 
         // onclick for marking objects
-        $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event); hcms_updateControlUserMenu();\" ";
+        $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event);\" ";
         $setContext = "style=\"display:block;\" onMouseOver=\"hcms_setUsercontext('".$site."', '".$object_array['login'][$key]."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
         $listview .= "

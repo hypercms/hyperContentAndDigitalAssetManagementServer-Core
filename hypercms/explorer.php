@@ -2312,7 +2312,7 @@ else
 
         <!-- fulltext search -->
         <div style="display:block; margin-bottom:3px;">
-          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></span>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['general-search'][$lang]); ?></span> <img src="<?php if ($mgmt_config['search_query_match'] == "match") echo getthemelocation(); ?>img/info.png" class="hcmsIconList" style="cursor:pointer;" title='<?php echo getescapedtext ($hcms_lang['search-wildcard-plus'][$lang]." \r\n".$hcms_lang['search-wildcard-minus'][$lang]." \r\n".$hcms_lang['search-wildcard-none'][$lang]." \r\n".$hcms_lang['search-wildcard-asterisk'][$lang]." \r\n".$hcms_lang['search-wildcard-doublequote'][$lang]); ?>' />
           <img onClick="activateFulltextSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
 

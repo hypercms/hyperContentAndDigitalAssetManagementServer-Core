@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['pt'] = "Sobrescrever arquivos existentes
 $hcms_lang['customize-toolbar']['pt'] = "Personalizar barra de ferramentas";
 $hcms_lang['disable-link-in-edit-mode']['pt'] = "Desative o link no modo de edição";
 $hcms_lang['transparent']['pt'] = "transparente";
+$hcms_lang['search-wildcard-plus']['pt'] = "+ … Um sinal de mais à esquerda indica que esta palavra deve estar presente";
+$hcms_lang['search-wildcard-minus']['pt'] = "- … Um sinal de menos à esquerda indica que esta palavra não deve estar presente";
+$hcms_lang['search-wildcard-none']['pt'] = "sem operador … Por padrão (quando nem + nem - é especificado) a palavra é opcional";
+$hcms_lang['search-wildcard-asterisk']['pt'] = "* … O asterisco serve como operador de truncamento (ou curinga). Ao contrário dos outros operadores, ele deve ser anexado à palavra a ser afetada.";
+$hcms_lang['search-wildcard-doublequote']['pt'] = "\" … Uma frase que está entre aspas duplas deve estar presente como a frase literalmente, como foi digitada";
 ?>

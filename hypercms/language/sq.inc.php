@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['sq'] = "Mbishkruaj skedarët ekzistues";
 $hcms_lang['customize-toolbar']['sq'] = "Personalizo shiritin e veglave";
 $hcms_lang['disable-link-in-edit-mode']['sq'] = "Çaktivizoni lidhjen në modalitetin e modifikimit";
 $hcms_lang['transparent']['sq'] = "transparente";
+$hcms_lang['search-wildcard-plus']['sq'] = "+ … Një shenjë plus kryesore tregon se kjo fjalë duhet të jetë e pranishme";
+$hcms_lang['search-wildcard-minus']['sq'] = "- … Një shenjë kryesore minus tregon se kjo fjalë nuk duhet të jetë e pranishme";
+$hcms_lang['search-wildcard-none']['sq'] = "nuk ka operator … Si parazgjedhje (kur nuk specifikohet as + as -) fjala është opsionale";
+$hcms_lang['search-wildcard-asterisk']['sq'] = "* … Ylli shërben si operatori i shkurtimit (ose shkronjave të egra). Ndryshe nga operatorët e tjerë, ai duhet t'i bashkëngjitet fjalës që do të ndikohet.";
+$hcms_lang['search-wildcard-doublequote']['sq'] = "\" … Një frazë që është e mbyllur brenda karaktereve të thonjëzave të dyfishta duhet të jetë e pranishme si frazë fjalë për fjalë, siç është shkruar";
 ?>

@@ -17,7 +17,7 @@ function usedstorage ($publication)
     if (!is_file ($filesize_mem) || (filemtime ($filesize_mem) + 86400) < time())
     {  
       // this function might require some time for the result in case of large databases
-      $filesize = rdbms_getfilesize ("", "%comp%/".$publication."/");
+      $filesize = rdbms_getfilesize ("", "%comp%/".$publication."/", true);
       if (!empty ($filesize['filesize'])) savefile ($mgmt_config['abs_path_temp'], $publication.".filesize.dat", $filesize['filesize']);
     }
     else $filesize['filesize'] = loadfile ($mgmt_config['abs_path_temp'], $publication.".filesize.dat");

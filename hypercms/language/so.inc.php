@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['so'] = "Dib u qor faylasha jira";
 $hcms_lang['customize-toolbar']['so'] = "Wax ka beddel aaladda";
 $hcms_lang['disable-link-in-edit-mode']['so'] = "Ka daa xiriirinta habka wax ka beddelka";
 $hcms_lang['transparent']['so'] = "hufan";
+$hcms_lang['search-wildcard-plus']['so'] = "+ … Calaamada hormoodka ah ee lagu daray waxay tilmaamaysaa in ereygani uu jiro";
+$hcms_lang['search-wildcard-minus']['so'] = "- … Calaamadda hormoodka ah ee laga jaray waxay tilmaamaysaa in eraygani aanu joogin";
+$hcms_lang['search-wildcard-none']]['so'] = "ma jiro hawlwadeen … Sida caadiga ah (marka + ama aan la cayimin) kelmadu waa ikhtiyaar";
+$hcms_lang['search-wildcard-asterisk']['so'] = "* … Xiddigigu waxa uu u adeegaa sidii hawlwadeenka jar-jarka (ama duurjoogta)";
+$hcms_lang['search-wildcard-doublequote']['so'] = "\" … Weedha lagu dhex lifaaqo jilayaasha xigashada laba jibaaran waa in ay ahaataa sida weedha macno ahaan, sida loo qoray";
 ?>

@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['ms'] = "Timpa fail yang ada";
 $hcms_lang['customize-toolbar']['ms'] = "Peribadikan bar alat";
 $hcms_lang['disable-link-in-edit-mode']['ms'] = "Nyahaktifkan pautan dalam mod edit";
 $hcms_lang['transparent']['ms'] = "telus";
+$hcms_lang['search-wildcard-plus']['ms'] = "+ … Tanda tambah di hadapan menunjukkan bahawa perkataan ini mesti ada";
+$hcms_lang['search-wildcard-minus']['ms'] = "- … Tanda tolak di hadapan menunjukkan bahawa perkataan ini tidak boleh hadir";
+$hcms_lang['search-wildcard-none']['ms'] = "tiada pengendali … Secara lalai (apabila + mahupun - tidak dinyatakan) perkataan itu adalah pilihan";
+$hcms_lang['search-wildcard-asterisk']['ms'] = "* … Asterisk berfungsi sebagai operator pemangkasan (atau wildcard). Tidak seperti operator lain, ia harus dilampirkan pada perkataan yang akan terjejas.";
+$hcms_lang['search-wildcard-doublequote']['ms'] = "\" … Frasa yang disertakan dalam aksara petikan berganda mesti hadir sebagai frasa secara literal, seperti yang ditaip";
 ?>

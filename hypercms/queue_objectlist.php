@@ -111,7 +111,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
           $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($temp_site)."&cat=".url_encode($temp_cat)."&location=".url_encode($temp_location_esc)."&page=".url_encode($temp_object)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"";
           
           // onclick for marking objects
-          $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
+          $selectclick = "onClick=\"hcms_selectObject(this.id, event);\"";
           
           // set context
           $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('".$temp_site."', '".$temp_cat."', '".$temp_location_esc."', '".$temp_object."', '".$temp_object_name."', '".$file_info['type']."', '".$queue_user."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
@@ -160,7 +160,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
         $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', 600, 900);\"";
         
         // onclick for marking objects
-        $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlQueueMenu();\"";
+        $selectclick = "onClick=\"hcms_selectObject(this.id, event);\"";
         
         // set context
         $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('', '".$temp_cat."', '', '".$mailfile."', '".$temp_object_name."', 'mail', '".$queue_user."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";

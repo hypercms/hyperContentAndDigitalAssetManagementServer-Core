@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['pl'] = "Nadpisz istniejące pliki";
 $hcms_lang['customize-toolbar']['pl'] = "Dostosuj pasek narzędzi";
 $hcms_lang['disable-link-in-edit-mode']['pl'] = "Dezaktywuj link w trybie edycji";
 $hcms_lang['transparent']['pl'] = "przezroczysty";
+$hcms_lang['search-wildcard-plus']['pl'] = "+ … Wiodący znak plus wskazuje, że to słowo musi być obecne";
+$hcms_lang['search-wildcard-minus']['pl'] = "- … Wiodący znak minus wskazuje, że to słowo nie może być obecne";
+$hcms_lang['search-wildcard-none']['pl'] = "brak operatora … Domyślnie (gdy nie podano ani + ani -) słowo jest opcjonalne";
+$hcms_lang['search-wildcard-asterisk']['pl'] = "* … Gwiazdka służy jako operator obcięcia (lub symbol wieloznaczny). W przeciwieństwie do innych operatorów, powinna być dołączona do słowa, którego dotyczy.";
+$hcms_lang['search-wildcard-doublequote']['pl'] = "\" … Fraza ujęta w cudzysłów musi występować jako fraza dosłownie, tak jak została wpisana";
 ?>

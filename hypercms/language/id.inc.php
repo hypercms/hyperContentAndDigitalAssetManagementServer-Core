@@ -1425,4 +1425,9 @@ $hcms_lang['overwrite-existing-files']['id'] = "Timpa file yang ada";
 $hcms_lang['customize-toolbar']['id'] = "Sesuaikan bilah alat";
 $hcms_lang['disable-link-in-edit-mode']['id'] = "Nonaktifkan tautan dalam mode edit";
 $hcms_lang['transparent']['id'] = "transparan";
+$hcms_lang['search-wildcard-plus']['id'] = "+ … Tanda tambah di depan menunjukkan bahwa kata ini harus ada";
+$hcms_lang['search-wildcard-minus']['id'] = "- … Tanda minus di depan menunjukkan bahwa kata ini tidak boleh ada";
+$hcms_lang['search-wildcard-none']['id'] = "tidak ada operator … Secara default (ketika + atau - tidak ditentukan) kata adalah opsional";
+$hcms_lang['search-wildcard-asterisk']['id'] = "* … Tanda bintang berfungsi sebagai operator pemotongan (atau karakter pengganti). Tidak seperti operator lain, tanda bintang harus ditambahkan ke kata yang akan terpengaruh.";
+$hcms_lang['search-wildcard-doublequote']['id'] = "\" … Frasa yang diapit oleh tanda kutip ganda harus ada sebagai frasa secara harfiah, seperti saat diketik";
 ?>

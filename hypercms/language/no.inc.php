@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['no'] = "Overskriv eksisterende filer";
 $hcms_lang['customize-toolbar']['no'] = "Tilpass verktøylinjen";
 $hcms_lang['disable-link-in-edit-mode']['no'] = "Deaktiver lenke i redigeringsmodus";
 $hcms_lang['transparent']['no'] = "gjennomsiktig";
+$hcms_lang['search-wildcard-plus']['no'] = "+ … Et ledende plusstegn indikerer at dette ordet må være til stede";
+$hcms_lang['search-wildcard-minus']['no'] = "- … Et ledende minustegn indikerer at dette ordet ikke må være til stede";
+$hcms_lang['search-wildcard-none']['no'] = "ingen operator … Som standard (når verken + eller - er spesifisert) er ordet valgfritt";
+$hcms_lang['search-wildcard-asterisk']['no'] = "* … Stjernen fungerer som trunkerings- (eller jokertegn). I motsetning til de andre operatorene, bør den legges til ordet som skal påvirkes.";
+$hcms_lang['search-wildcard-doublequote']['no'] = "\" … En setning som er omsluttet av doble anførselstegn må være til stede som setningen bokstavelig, slik den ble skrevet inn";
 ?>

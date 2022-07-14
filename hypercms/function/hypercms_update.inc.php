@@ -2032,6 +2032,68 @@ function update_database_v10065 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v10066 ----------------------------------------------
+// function: update_database_v10066()
+// input: %
+// output: true / false
+
+// description: 
+// Update table object for support of version 10.0.6.6
+
+function update_database_v10066 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.6.6"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+   
+    // remove old fulltext index
+    $sql = 'DROP INDEX object_multiple ON object';
+    $errcode = "50680";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index
+    $sql = 'CREATE INDEX object_id ON object (id)';
+    $errcode = "50681";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index
+    $sql = 'CREATE INDEX object_date ON object (`date`)';
+    $errcode = "50682";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index
+    $sql = 'CREATE INDEX object_media ON object (`filesize`,`filetype`,`width`,`height`,`imagetype`)';
+    $errcode = "50683";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index
+    $sql = 'CREATE INDEX object_lat_lng ON object (`latitude`,`longitude`)';
+    $errcode = "50684";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // create new index
+    $sql = 'CREATE FULLTEXT INDEX object_fulltext_objectpath ON object (objectpath)';
+    $errcode = "50685";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.6|updated to version 10.0.6.6"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -2076,6 +2138,7 @@ function updates_all ()
     update_database_v1005 ();
     update_database_v1006 ();
     update_database_v10065 ();
+    update_database_v10066 ();
   }
 }
 

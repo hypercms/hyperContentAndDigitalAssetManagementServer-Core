@@ -622,6 +622,7 @@ $mgmt_config['search_operator'] = "";
 // "match" has performance advantages if no wildcard-character is used and permits the use of special operators
 // Please keep in mind that "match" uses the stopword list of the database and the "like" operator will be used in combination
 // in order to avoid empty search results due to stopwords restrictions of the database
+// "like" cant use any index and will be slower but will lead to more or results since it uses the text content as is
 $mgmt_config['search_query_match'] = "match";
 
 // Maximum number of search results (per page/request)

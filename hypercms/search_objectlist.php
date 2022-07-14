@@ -634,7 +634,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               else $class_image = "class=\"hcmsIconList\"";            
 
               // onclick for marking objects
-              $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
+              $selectclick = "onClick=\"hcms_selectObject(this.id, event);\" ";
 
               // open folder
               if ($action != "recyclebin") $openFolder = "onDblClick=\"parent.location='frameset_objectlist.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc.$folder)."/&token=".$token."';\" ";
@@ -917,7 +917,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             else $openObject = "";
 
             // onclick for marking objects
-            $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
+            $selectclick = "onClick=\"hcms_selectObject(this.id, event);\" ";
             
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";

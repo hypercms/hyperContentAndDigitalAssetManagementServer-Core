@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['nl'] = "bestaande bestanden overschrijve
 $hcms_lang['customize-toolbar']['nl'] = "Werkbalk aanpassen";
 $hcms_lang['disable-link-in-edit-mode']['nl'] = "Link deactiveren in bewerkingsmodus";
 $hcms_lang['transparent']['nl'] = "transparant";
+$hcms_lang['search-wildcard-plus']['nl'] = "+ … Een voorlopend plusteken geeft aan dat dit woord aanwezig moet zijn";
+$hcms_lang['search-wildcard-minus']['nl'] = "- … Een voorlopend minteken geeft aan dat dit woord niet aanwezig mag zijn";
+$hcms_lang['search-wildcard-none']['nl'] = "geen operator … Standaard (wanneer + noch - is opgegeven) is het woord optioneel";
+$hcms_lang['search-wildcard-asterisk']['nl'] = "* … De asterisk dient als de truncatie (of wildcard) operator. In tegenstelling tot de andere operators, moet deze worden toegevoegd aan het woord dat moet worden beïnvloed.";
+$hcms_lang['search-wildcard-doublequote']['nl'] = "\" … Een zin die tussen dubbele aanhalingstekens staat, moet letterlijk aanwezig zijn als de zin, zoals deze werd getypt";
 ?>

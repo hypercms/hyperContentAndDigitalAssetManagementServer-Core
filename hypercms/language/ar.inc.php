@@ -1423,4 +1423,9 @@ $hcms_lang['overwrite-existing-files']['ar'] = "الكتابة فوق الملف
 $hcms_lang['customize-toolbar']['ar'] = "تخصيص شريط الأدوات";
 $hcms_lang ['disable-link-in-edit-mode']['ar'] = "قم بإلغاء تنشيط الارتباط في وضع التحرير";
 $hcms_lang['transparent']['ar'] = "شفاف";
+$hcms_lang['search-wildcard-plus']['ar'] = "+ … تشير علامة الجمع البادئة إلى أن";
+$hcms_lang['search-wildcard-minus']['ar'] = "- … تشير علامة الطرح البادئة إلى أن هذه الكلمة يجب ألا تكون موجودة";
+$hcms_lang['search-wildcard-none']['ar'] = "no operator … افتراضيًا (عندما لا يتم تحديد + ولا -) تكون الكلمة اختيارية";
+$hcms_lang['search-wildcard-asterisk']['ar'] = "* … تعمل العلامة النجمية كعامل اقتطاع (أو حرف بدل). على عكس عوامل التشغيل الأخرى ، يجب إلحاقها بالكلمة لكي تتأثر";
+$hcms_lang['search-wildcard-doublequote']['ar'] = "\" … يجب أن تكون العبارة المحاطة بأحرف اقتباس مزدوجة موجودة كالعبارة حرفياً ، كما تمت كتابتها";
 ?>

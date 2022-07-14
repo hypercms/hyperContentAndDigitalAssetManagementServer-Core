@@ -1425,4 +1425,9 @@ $hcms_lang['overwrite-existing-files']['he'] = "להחליף קבצים קיימ
 $hcms_lang['customize-toolbar']['he'] = "התאם אישית את סרגל הכלים";
 $hcms_lang['disable-link-in-edit-mode']['he'] = "השבת קישור במצב עריכה";
 $hcms_lang['transparent']['he'] = "שָׁקוּף";
+$hcms_lang['search-wildcard-plus']['he'] = "+ … סימן פלוס מוביל מציין שמילה זו חייבת להיות קיימת";
+$hcms_lang['search-wildcard-minus']['he'] = "- … סימן מינוס מוביל מציין שאסור להופיע מילה זו";
+$hcms_lang['search-wildcard-none']['he'] = "No operator … כברירת מחדל (כאשר לא מצוינים + או -) המילה היא אופציונלית";
+$hcms_lang['search-wildcard-asterisk']['he'] = "* … הכוכבית משמשת כאופרטור החיתוך (או התו הכללי). בניגוד לאופרטורים האחרים, יש לצרף אותה למילה שיש להשפיע עליה.";
+$hcms_lang['search-wildcard-doublequote']['he'] = "\" … ביטוי המוקף בתוך תווי מרכאות כפולות חייב להיות נוכח כביטוי פשוטו כמשמעו, כפי שהוקלד";
 ?>

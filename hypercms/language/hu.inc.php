@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['hu'] = "meglévő fájlok felülírása"
 $hcms_lang['customize-toolbar']['hu'] = "Az eszköztár testreszabása";
 $hcms_lang['disable-link-in-edit-mode']['hu'] = "Deaktiválja a linket szerkesztési módban";
 $hcms_lang['transparent']['hu'] = "átlátszó";
+$hcms_lang['search-wildcard-plus']['hu'] = "+ … Egy vezető pluszjel azt jelzi, hogy ennek a szónak jelen kell lennie";
+$hcms_lang['search-wildcard-minus']['hu'] = "- … A bevezető mínusz jel azt jelzi, hogy ez a szó nem lehet jelen";
+$hcms_lang['search-wildcard-none']['hu'] = "nincs operátor … Alapértelmezés szerint (ha sem +, sem - nincs megadva) a szó nem kötelező";
+$hcms_lang['search-wildcard-asterisk']['hu'] = "* … A csillag csonkító (vagy helyettesítő karakter) operátorként szolgál. A többi operátortól eltérően az érintett szóhoz kell hozzáfűzni.";
+$hcms_lang['search-wildcard-doublequote']['hu'] = "\" … A dupla idézőjelek közé zárt kifejezésnek szó szerint kell szerepelnie, ahogyan begépelték";
 ?>

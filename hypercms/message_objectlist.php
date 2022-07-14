@@ -96,7 +96,7 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
       $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$message_time."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', 600, 900);\"";
       
       // onclick for marking objects
-      $selectclick = "onClick=\"hcms_selectObject(this.id, event); hcms_updateControlMessageMenu();\"";
+      $selectclick = "onClick=\"hcms_selectObject(this.id, event);\"";
       
       // set context
       $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setMessagecontext('".$message_user."', '".$mailfile."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";

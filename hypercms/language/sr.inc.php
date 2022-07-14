@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['sr'] = "Pisati preko postojećih fajlov
 $hcms_lang['customize-toolbar']['sr'] = "Prilagodi traku sa alatkama";
 $hcms_lang['disable-link-in-edit-mode']['sr'] = "Deaktivirajte vezu u režimu uređivanja";
 $hcms_lang['transparent']['sr'] = "transparentan";
+$hcms_lang['search-vildcard-plus']['sr'] = "+ ... Vodeći znak plus ukazuje da ova reč mora biti prisutna";
+$hcms_lang['search-vildcard-minus']['sr'] = "- ... Vodeći znak minus ukazuje da ova reč ne sme biti prisutna";
+$hcms_lang['search-vildcard-none']['sr'] = "nema operatora... Podrazumevano (kada nije navedeno ni + ni -) reč je opciona";
+$hcms_lang['search-vildcard-asterisk']['sr'] = "* ... Zvezdica služi kao operator skraćivanja (ili džoker znakova). Za razliku od drugih operatora, treba je dodati reči na koju se utiče.";
+$hcms_lang['search-vildcard-doublekuote']['sr'] = "\" ... Fraza koja je zatvorena u dvostrukim navodnicima mora biti prisutna kao fraza doslovno, onako kako je otkucana";
 ?>

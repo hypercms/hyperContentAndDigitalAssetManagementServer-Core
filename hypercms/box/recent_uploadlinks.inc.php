@@ -93,7 +93,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
             // download link
             $filewrapperdownload = "";
 
-            if ($mgmt_config['db_connect_rdbms'] != "")
+            if (!empty ($mgmt_config['db_connect_rdbms']))
             {
               $filewrapperdownload = createdownloadlink ($item_site, $item_location, $item_object, $item_cat);
             }

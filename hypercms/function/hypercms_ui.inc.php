@@ -864,7 +864,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
     {
       if (!empty ($mgmt_config['db_connect_rdbms']))
       { 
-        $filesize_array = rdbms_getfilesize ("", $location_esc);
+        $filesize_array = rdbms_getfilesize ("", $location_esc, true);
 
         if (!empty ($filesize_array['filesize'])) $filesize = $filesize_array['filesize'];
         if (!empty ($filesize_array['count'])) $filecount = $filesize_array['count'];

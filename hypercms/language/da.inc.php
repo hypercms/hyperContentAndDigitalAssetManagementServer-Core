@@ -1423,5 +1423,10 @@ $hcms_lang['youtube-sign-out']['da'] = "Du skal logge ud fra din Google/YouTube-
 $hcms_lang['overwrite-existing-files']['da'] = "Overskriv eksisterende filer";
 $hcms_lang['customize-toolbar']['da'] = "Tilpas værktøjslinje";
 $hcms_lang['disable-link-in-edit-mode']['da'] = "Deaktiver link i redigeringstilstand";
-$hcms_lang['transparent'][''] = "";
+$hcms_lang['transparent']['da'] = "gennemsigtig";
+$hcms_lang['search-wildcard-plus']['da'] = "+ … Et indledende plustegn indikerer, at dette ord skal være til stede";
+$hcms_lang['search-wildcard-minus']['da'] = "- … Et ledende minustegn indikerer, at dette ord ikke må være til stede";
+$hcms_lang['search-wildcard-none']['da'] = "ingen operator … Som standard (når hverken + eller - er angivet) er ordet valgfrit";
+$hcms_lang['search-wildcard-asterisk']['da'] = "* … Stjernen tjener som trunkeringsoperator (eller jokertegn). I modsætning til de andre operatorer skal den tilføjes til det ord, der skal påvirkes.";
+$hcms_lang['search-wildcard-doublequote']['da'] = "\" … En sætning, der er omgivet af dobbelte anførselstegn, skal være til stede som sætningen bogstaveligt, som den blev skrevet";
 ?>

@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['ro'] = "suprascrie fișierele existente"
 $hcms_lang['customize-toolbar']['ro'] = "Personalizați bara de instrumente";
 $hcms_lang['disable-link-in-edit-mode']['ro'] = "Dezactivați linkul în modul de editare";
 $hcms_lang['transparent']['ro'] = "transparent";
+$hcms_lang['search-wildcard-plus']['ro'] = "+ … Un semn plus înainte indică faptul că acest cuvânt trebuie să fie prezent";
+$hcms_lang['search-wildcard-minus']['ro'] = "- … Un semn minus la început indică faptul că acest cuvânt nu trebuie să fie prezent";
+$hcms_lang['search-wildcard-none']['ro'] = "niciun operator … Implicit (când nu este specificat nici +, nici -) cuvântul este opțional";
+$hcms_lang['search-wildcard-asterisk']['ro'] = "* … Asteriscul servește ca operator de trunchiere (sau wildcard). Spre deosebire de ceilalți operatori, ar trebui să fie atașat cuvântului care urmează să fie afectat.";
+$hcms_lang['search-wildcard-doublequote']['ro'] = "\" … O expresie care este inclusă între ghilimele duble trebuie să fie prezentă ca expresie literal, așa cum a fost introdusă";
 ?>-

@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['it'] = "Sovrascrivi i file esistenti";
 $hcms_lang['customize-toolbar']['it'] = "Personalizza la barra degli strumenti";
 $hcms_lang['disable-link-in-edit-mode']['it'] = "Disattiva il collegamento in modalità di modifica";
 $hcms_lang['transparent']['it'] = "trasparente";
+$hcms_lang['search-wildcard-plus']['it'] = "+ … Un segno più iniziale indica che questa parola deve essere presente";
+$hcms_lang['search-wildcard-minus']['eitn'] = "- … Un segno meno iniziale indica che questa parola non deve essere presente";
+$hcms_lang['search-wildcard-none']['it'] = "nessun operatore … Per impostazione predefinita (quando né + né - è specificato) la parola è opzionale";
+$hcms_lang['search-wildcard-asterisk']['it'] = "* … L'asterisco funge da operatore di troncamento (o jolly). A differenza degli altri operatori, dovrebbe essere aggiunto alla parola da modificare.";
+$hcms_lang['search-wildcard-doublequote']['it'] = "\" … Una frase racchiusa tra virgolette doppie deve essere presente come frase letteralmente, come è stata digitata";
 ?>

@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['tr'] = "Mevcut dosyaların üzerine yaz"
 $hcms_lang['customize-toolbar']['tr'] = "Araç çubuğunu özelleştir";
 $hcms_lang['disable-link-in-edit-mode']['tr'] = "Düzenleme modunda bağlantıyı devre dışı bırak";
 $hcms_lang['transparent']['tr'] = "şeffaf";
+$hcms_lang['search-wildcard-plus']['tr'] = "+ … Baştaki artı işareti bu kelimenin olması gerektiğini belirtir";
+$hcms_lang['search-wildcard-minus']['tr'] = "- … Baştaki bir eksi işareti bu kelimenin olmaması gerektiğini gösterir";
+$hcms_lang['search-wildcard-none']['tr'] = "işlemci yok … Varsayılan olarak (ne + ne de - belirtilmediğinde) kelime isteğe bağlıdır";
+$hcms_lang['search-wildcard-asterisk']['tr'] = "* … Yıldız işareti, kesme (veya joker karakter) operatörü görevi görür. Diğer operatörlerin aksine, etkilenecek kelimeye eklenmelidir.";
+$hcms_lang['search-wildcard-doublequote']['tr'] = "\" … Çift tırnak içine alınmış bir ifade, yazıldığı gibi, kelimenin tam anlamıyla ifade olarak mevcut olmalıdır";
 ?>

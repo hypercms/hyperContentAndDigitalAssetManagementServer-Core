@@ -6153,12 +6153,36 @@ Release 09/2022
 - Modifications in function getlistelements in Get API in order to use the System API instead of the service getkeywords (since it might be blocked)
 - Modifications in control_content_menu and control_objectlist_menu in order to display the full location on mouse over
 - Modifications in function rdbms_searchcontent in DB Connect in order to remove the combination of MATCH AGAINST and LIKE for textcontent since the fulltext index will not be used by the query if combined with LIKE
+- Modifications in function rdbms_searchcontent in DB Connect in order to move from LIKE to MATCH AGAINST for the search in objectpath
+- Modifications in function rdbms_searchcontent in DB Connect in order to replace the template condition for the search_type by objectpath
+- Modifications in function rdbms_searchcontent in DB Connect in order to remove the template condition for the search of the meta.tpl file extension since the format is already covered by the filetype condition 
+- Modifications in function rdbms_searchcontent in DB Connect in order to remove the SQL DATE function and set the time for the start and end date for the use of the index
+- Modifications in function rdbms_replacecontent in DB Connect in order to remove the SQL DATE function and set the time for the start and end date for the use of the index
+- Modifications in function rdbms_searchrecipient in DB Connect in order to remove the SQL DATE function and set the time for the start and end date for the use of the index
+- Modifications in the search Home Screen box in order to implement and support the search for text or in the location and object name 
 - Modifications in explorer in order to enable the search in textcontent or the location but not both at the same time since the fulltext index will not be used
+- Modifications in frameset_objectlist in order to support the parameter seacrh_cat required for the text or location/name based search
+- Implementation of the new function update_database_v10066 in the Update API in order to create a new fulltext index for objectpath
+- Modifications in function updates_all in the Update API in order to add the new function update_database_v10066
+- Modifications in createtables.sql in order to remove object_multiple index and add the new index for id, date, media, and the new fulltext index for objectpath
+- Modifications in explorer_objectlist and search_objectlist in order to remove the JS function call hcms_updateControlObjectListMenu from each folder and object click event
+- Modifications in message_objectlist in order to remove the JS function call hcms_updateControlMessageMenu from each folder and object click event
+- Modifications in queue_objectlist in order to remove the JS function call hcms_updateControlQueueMenu from each folder and object click event
+- Modifications in user_objectlist in order to remove the JS function call hcms_updateControlUserMenu from each folder and object click event
+- Modifications in control_objectlist_menu in order to enable the navigation to the parent folder if a single object has been selected and a form of search result is used
+- Modifications in contextmenu.js in order to avoid the call of JS function hcms_unselectAll twice by JS function hcms_selectObject
+- Modifications in JS function hcms_selectAll and hcms_unselectAll in contextmenu.js in order to support a new input parameter and the update of the control frame based on that parameter
+- Modifications in JS function hcms_selectObject in contextmenu.js in order to call JS function hcms_updateControlObjectListMenu, hcms_updateControlUserMenu, hcms_updateControlQueueMenu, and hcms_updateControlMessageMenu after the objects have been selected
+- Modification in the search Home box and the explorer in order to display the new search help
+- Modifications in function rdbms_getfilesize in DB Connect in order to set the default value for the input parameter $recyclebin to false
+- Modifications in function rdbms_getfilesize in DB Connect in order to apply the input parameter $recyclebin for the object count
 - Update of the update log in the installation directory
 - Updates in the Import/Export Guide and Users Guide
+- Implementation of new texts for the search help in all language files
 - Bug fix: Function manipulateobject in Main API did not extract the objects category properly since it used a reduced object path
 - Bug fix: Function manipulateobject in Main API did not extract the objects category before the accessgeneral function call
 - Bug fix: Function deletefolder in Main API did not extract the objects category before the accessgeneral function call
 - Bug fix: Function rdbms_searchcontent in DB Connect did not apply GROUP BY for the object hash which resulted in an error of the provided result number using LIMIT
 - Bug fix: explorer_preview caused the creation of new object after the have been moved to the recycle bin and could not be found on reload of explorer_preview
 - Bug fix: Function rdbms_setdeletedobject in DB Connect did not exclude the folder object from the SELECT query
+- Bug fix: The explorer of the Import/Export Connector module did not convert the directory path and caused a fallback to the root directory

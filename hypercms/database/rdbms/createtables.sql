@@ -47,9 +47,13 @@ CREATE TABLE `object` (
   `textcontent` mediumtext DEFAULT NULL,
   PRIMARY KEY  (`object_id`),
   UNIQUE KEY `object_objecthash` (`hash`),
-  KEY `object_multiple` (`id`,`date`,`template`,`latitude`,`longitude`,`filesize`,`filetype`,`width`,`height`,`colorkey`,`imagetype`,`deleteuser`),
+  KEY `object_id` (`id`),
+  KEY `object_date` (`date`),
+  KEY `object_media` (`filesize`,`filetype`,`width`,`height`,`imagetype`),
+  KEY `object_lat_lng` (`latitude`,`longitude`),
   KEY `object_objectpath` (`objectpath`),
   KEY `object_md5_objectpath` (`md5_objectpath`),
+  FULLTEXT KEY `object_fulltext_objectpath` (`textcontent`),
   FULLTEXT KEY `object_textcontent` (`textcontent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

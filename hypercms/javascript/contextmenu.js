@@ -70,16 +70,14 @@ function hcms_loadSidebar ()
   // if sidebar is not hidden
   if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.width != "0px" && document.forms['contextmenu_object'])
   {
-    // wait (due to issues with browsers like MS Edge, Chrome)
-    hcms_sleep (200);
-
     var location = document.forms['contextmenu_object'].elements['location'].value;
     var folder = document.forms['contextmenu_object'].elements['folder'].value;
     var page = document.forms['contextmenu_object'].elements['page'].value;
     
     if (allow_tr_submit && location != '' && (folder != '' || page != ''))
     {
-      parent.document.getElementById('sidebarFrame').src='explorer_preview.php?location=' + encodeURIComponent(location) + '&folder=' +  encodeURIComponent(folder) + '&page=' + encodeURIComponent(page);
+      // wait (due to issues with browsers like MS Edge, Chrome)
+      setTimeout (function() { parent.document.getElementById('sidebarFrame').src='explorer_preview.php?location=' + encodeURIComponent(location) + '&folder=' +  encodeURIComponent(folder) + '&page=' + encodeURIComponent(page); }, 300);
     }
     else
     {
@@ -989,6 +987,7 @@ function hcms_endsWith (str, suffix)
 function hcms_selectObject (row_id, event)
 {
   var contextmenu_form = false;
+  var unselected = false;
 
   // extract number from td ID
   if (row_id != '')
@@ -1029,7 +1028,8 @@ function hcms_selectObject (row_id, event)
   // reset object list if multiobject is empty
   if (contextmenu_form.elements['multiobject'].value == "")
   {
-    hcms_unselectAll();
+    hcms_unselectAll(true);
+    unselected = true;
   }
 
   // if ctrl-key is pressed or select area is used
@@ -1051,6 +1051,12 @@ function hcms_selectObject (row_id, event)
         contextmenu_form.elements['multiobject'].value = multiobject_str + '|' + object;
         document.getElementById('g' + row_id).className='hcmsObjectSelected';
         if (document.getElementById('objectgallery')) document.getElementById('t' + row_id).className='hcmsObjectSelected';
+
+        hcms_updateControlObjectListMenu();
+        hcms_updateControlUserMenu();
+        hcms_updateControlQueueMenu();
+        hcms_updateControlMessageMenu();
+ 
         return true;
       }
       else if (multiobject_str != '')
@@ -1070,6 +1076,12 @@ function hcms_selectObject (row_id, event)
 
         document.getElementById('g' + row_id).className='hcmsObjectUnselected';
         if (document.getElementById('objectgallery')) document.getElementById('t' + row_id).className='hcmsObjectUnselected';
+        
+        hcms_updateControlObjectListMenu();
+        hcms_updateControlUserMenu();
+        hcms_updateControlQueueMenu();
+        hcms_updateControlMessageMenu();
+
         return true;
       }
       else return false; 
@@ -1095,6 +1107,12 @@ function hcms_selectObject (row_id, event)
         contextmenu_form.elements['multiobject'].value = multiobject_str + '|' + object;
         document.getElementById('g' + row_id).className='hcmsObjectSelected';
         if (document.getElementById('objectgallery')) document.getElementById('t' + row_id).className='hcmsObjectSelected';
+
+        hcms_updateControlObjectListMenu();
+        hcms_updateControlUserMenu();
+        hcms_updateControlQueueMenu();
+        hcms_updateControlMessageMenu();
+        
         return true;    
       }
       else if (multiobject_str != '')
@@ -1147,7 +1165,13 @@ function hcms_selectObject (row_id, event)
           }          
         }
 
-        contextmenu_form.elements['multiobject'].value =  multiobject_str; 
+        contextmenu_form.elements['multiobject'].value =  multiobject_str;
+
+        hcms_updateControlObjectListMenu();
+        hcms_updateControlUserMenu();
+        hcms_updateControlQueueMenu();
+        hcms_updateControlMessageMenu();
+
         return true;
       }
     }
@@ -1156,7 +1180,7 @@ function hcms_selectObject (row_id, event)
   // if no key is pressed
   else
   {
-    hcms_unselectAll();
+    if (unselected == false) hcms_unselectAll(false);
 
     var td = document.getElementById('h' + row_id + '_0');
     var links = td.getElementsByTagName('A');
@@ -1169,6 +1193,12 @@ function hcms_selectObject (row_id, event)
       contextmenu_form.elements['multiobject'].value = '|' + object;
       document.getElementById('g' + row_id).className = 'hcmsObjectSelected';
       if (document.getElementById('objectgallery')) document.getElementById('t' + row_id).className = 'hcmsObjectSelected';
+
+      hcms_updateControlObjectListMenu();
+      hcms_updateControlUserMenu();
+      hcms_updateControlQueueMenu();
+      hcms_updateControlMessageMenu();
+
       return true;
     }
     else return false; 
@@ -1226,7 +1256,7 @@ function hcms_updateControlUserMenu ()
 }
 
 // update control queue menu
-function hcms_updateControlQueueMenu()
+function hcms_updateControlQueueMenu ()
 {
   if (document.forms['contextmenu_queue'])
   {
@@ -1273,8 +1303,10 @@ function hcms_updateControlMessageMenu ()
 }
 
 // select all objects
-function hcms_selectAll ()
+function hcms_selectAll (updatecontrol)
 {
+  updatecontrol = (typeof updatecontrol !== 'undefined') ?  updatecontrol : true;
+
   // select all
   if (document.getElementById('objectlist'))
   {
@@ -1311,30 +1343,32 @@ function hcms_selectAll ()
   if (document.forms['contextmenu_object'] && document.forms['contextmenu_object'].elements['multiobject'])
   {
     document.forms['contextmenu_object'].elements['multiobject'].value = multiobject;
-    hcms_updateControlObjectListMenu();
+    if (updatecontrol) hcms_updateControlObjectListMenu();
   }
   else if (document.forms['contextmenu_user'] && document.forms['contextmenu_user'].elements['multiobject'])
   {
     document.forms['contextmenu_user'].elements['multiobject'].value = multiobject;
-    hcms_updateControlUserMenu();
+    if (updatecontrol) hcms_updateControlUserMenu();
   }
   else if (document.forms['contextmenu_queue'] && document.forms['contextmenu_queue'].elements['multiobject'])
   {
     document.forms['contextmenu_queue'].elements['multiobject'].value = multiobject;
-    hcms_updateControlQueueMenu();
+    if (updatecontrol) hcms_updateControlQueueMenu();
   }
   else if (document.forms['contextmenu_message'] && document.forms['contextmenu_message'].elements['multiobject'])
   {
     document.forms['contextmenu_message'].elements['multiobject'].value = multiobject;
-    hcms_updateControlMessageMenu();
+    if (updatecontrol) hcms_updateControlMessageMenu();
   }
 
   return true;
 }
 
 // unselect all objects
-function hcms_unselectAll ()
+function hcms_unselectAll (updatecontrol)
 {
+  updatecontrol = (typeof updatecontrol !== 'undefined') ?  updatecontrol : true;
+
   if (document.getElementById('objectlist'))
   {
     var table = document.getElementById('objectlist');   
@@ -1360,22 +1394,22 @@ function hcms_unselectAll ()
   if (document.forms['contextmenu_object'] && document.forms['contextmenu_object'].elements['multiobject'].value)
   {
     document.forms['contextmenu_object'].elements['multiobject'].value = '';
-    hcms_updateControlObjectListMenu();
+    if (updatecontrol) hcms_updateControlObjectListMenu();
   }
   else if (document.forms['contextmenu_user'] && document.forms['contextmenu_user'].elements['multiobject'].value)
   {
     document.forms['contextmenu_user'].elements['multiobject'].value = '';
-    hcms_updateControlUserMenu();
+    if (updatecontrol) hcms_updateControlUserMenu();
   }
   else if (document.forms['contextmenu_queue'] && document.forms['contextmenu_queue'].elements['multiobject'].value)
   {
     document.forms['contextmenu_queue'].elements['multiobject'].value = '';
-    hcms_updateControlQueueMenu();
+    if (updatecontrol) hcms_updateControlQueueMenu();
   }
   else if (document.forms['contextmenu_message'] && document.forms['contextmenu_message'].elements['multiobject'].value)
   {
     document.forms['contextmenu_message'].elements['multiobject'].value = '';
-    hcms_updateControlMessageMenu();
+    if (updatecontrol) hcms_updateControlMessageMenu();
   }
 
   return true; 
@@ -1471,7 +1505,7 @@ function hcms_leftClickContext (e)
     // if no key is pressed and multiobject stores at least 1 object
     if (hcms_keyPressed('', e) == false && object == "" && objectcount >= 1 && is_selectarea == false)
     {
-      hcms_unselectAll();
+      hcms_unselectAll(true);
       hcms_resetContext();
     }
   }
@@ -1649,7 +1683,7 @@ function hcms_endSelectArea ()
   if (is_dragndrop == false && activatelinks == false && selectarea && selectarea.style.display != 'none' && x1 > 0 && y1 > 0 && x3 != 0 && y3 != 0 && x4 != 0 && y4 != 0 && (x4-x3) > 5 && (y4-y3) > 5)
   {    
     // unselect all
-    hcms_unselectAll ();
+    hcms_unselectAll (false);
 
     // select objects in the given area
     if (document.getElementById('objectLayer') && document.getElementById('objectLayer').style.visibility == "visible")

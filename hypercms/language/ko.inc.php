@@ -1424,4 +1424,9 @@ $hcms_lang['overwrite-existing-files']['ko'] = "기존 파일 덮어 쓰기";
 $hcms_lang['customize-toolbar']['ko'] = "도구 모음 사용자 지정";
 $hcms_lang['disable-link-in-edit-mode']['ko'] = "편집 모드에서 링크 비활성화";
 $hcms_lang['transparent']['ko'] = "투명한";
+$hcms_lang['search-wildcard-plus']['ko'] = "+ ... 앞의 더하기 기호는 이 단어가 있어야 함을 나타냅니다.";
+$hcms_lang['search-wildcard-minus']['ko'] = "- ... 앞에 있는 빼기 기호는 이 단어가 없어야 함을 나타냅니다.";
+$hcms_lang['search-wildcard-none']['ko'] = "연산자 없음 ... 기본적으로 (+ 또는 -가 지정되지 않은 경우) 단어는 선택 사항입니다.";
+$hcms_lang['search-wildcard-asterisk']['ko'] = "* ... 별표는 자르기(또는 와일드카드) 연산자 역할을 합니다. 다른 연산자와 달리 영향을 받는 단어에 추가해야 합니다.";
+$hcms_lang['search-wildcard-doublequote']['ko'] = "\" … 큰따옴표로 묶인 문구는 입력한 그대로 그대로 문구로 나타나야 합니다.";
 ?>

@@ -340,8 +340,8 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
           $file_modified = date ("Y-m-d H:i", @filemtime ($location.$folder));
         }
 
-        // onclick for marking objects  
-        $selectclick = "onclick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
+        // onclick for marking objects
+        $selectclick = "onclick=\"hcms_selectObject(this.id, event);\" ";
 
         // open folder
         $openFolder = "ondblclick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\" ";
@@ -663,7 +663,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         $openObject = "ondblclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\"";
 
         // onclick for marking objects      
-        $selectclick = "onclick=\"hcms_selectObject(this.id, event); hcms_updateControlObjectListMenu();\" ";
+        $selectclick = "onclick=\"hcms_selectObject(this.id, event);\" ";
 
         // set context
         $hcms_setObjectcontext = "onmouseover=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$file_info['name']."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";

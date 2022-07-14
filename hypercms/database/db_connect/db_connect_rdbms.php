@@ -1967,34 +1967,54 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           
           $temp_expression = $db->rdbms_escape_string ($temp_expression);
 
-          // escape asterisk to avoid manipulation by specialchr_encode
-          $temp_expression = str_replace ("*", "-hcms_A-", $temp_expression);
-          $temp_expression = str_replace ("?", "-hcms_Q-", $temp_expression);
-          $temp_expression = str_replace ("\"", "-hcms_DQ-", $temp_expression);
+          // escape wildcard characters to avoid manipulation by specialchr_encode
+          $temp_expression = str_replace ("*", "hcmsAS", $temp_expression);
+          $temp_expression = str_replace ("?", "hcmsQM", $temp_expression);
+          $temp_expression = str_replace ("\"", "hcmsDQ", $temp_expression);
+          $temp_expression = str_replace ("@", "hcmsAT", $temp_expression);
+          $temp_expression = str_replace ("<", "hcmsST", $temp_expression);
+          $temp_expression = str_replace (">", "hcmsGT", $temp_expression);
+          $temp_expression = str_replace ("(", "hcmsBS", $temp_expression);
+          $temp_expression = str_replace (")", "hcmsBE", $temp_expression);
+          $temp_expression = str_replace ("~", "hcmsTI", $temp_expression);
+          $temp_expression = str_replace ("+", "hcmsPL", $temp_expression);
+          $temp_expression = str_replace ("-", "hcmsMI", $temp_expression);
           
           // encode special characters for the search in objectpath
           $temp_expression = specialchr_encode ($temp_expression);
           
-          // unescape asterisk
-          $temp_expression = str_replace ("-hcms_DQ-", "\"", $temp_expression);
-          $temp_expression = str_replace ("-hcms_A-", "*", $temp_expression);
-          $temp_expression = str_replace ("-hcms_Q-", "?", $temp_expression);
-           
-          // transform asterisks from search to SQL standard
-          $temp_expression = trim ($temp_expression);
-          $temp_expression = str_replace ("%", '\%', $temp_expression);
-          $temp_expression = str_replace ("_", '\_', $temp_expression);
-          $temp_expression = str_replace ("*", "%", $temp_expression);
-          $temp_expression = str_replace ("?", "_", $temp_expression);
-          if (substr_count ($temp_expression, "%") == 0) $temp_expression = "%".$temp_expression."%";
-          
-          // no exact expression
-          if (substr_count ($temp_expression, "\"") < 2)
+          // unescape wildcard characters
+          $temp_expression = str_replace ("hcmsDQ", "\"", $temp_expression);
+          $temp_expression = str_replace ("hcmsAS", "*", $temp_expression);
+          $temp_expression = str_replace ("hcmsQM", "?", $temp_expression);
+          $temp_expression = str_replace ("hcmsAT", "@", $temp_expression);
+          $temp_expression = str_replace ("hcmsST", "<", $temp_expression);
+          $temp_expression = str_replace ("hcmsGT", ">", $temp_expression);
+          $temp_expression = str_replace ("hcmsBS", "(", $temp_expression);
+          $temp_expression = str_replace ("hcmsBE", ")", $temp_expression);
+          $temp_expression = str_replace ("hcmsTI", "~", $temp_expression);
+          $temp_expression = str_replace ("hcmsPL", "+", $temp_expression);
+          $temp_expression = str_replace ("hcmsMI", "-", $temp_expression);
+
+          // if LIKE query
+          if (strtolower ($mgmt_config['search_query_match']) == "like")
           {
-            // replace spaces with wildcard
-            if (strpos ($temp_expression, "~20") > 0)
+            // transform asterisks from search to SQL standard
+            $temp_expression = trim ($temp_expression);
+            $temp_expression = str_replace ("%", '\%', $temp_expression);
+            $temp_expression = str_replace ("_", '\_', $temp_expression);
+            $temp_expression = str_replace ("*", "%", $temp_expression);
+            $temp_expression = str_replace ("?", "_", $temp_expression);
+            if (substr_count ($temp_expression, "%") == 0) $temp_expression = "%".$temp_expression."%";
+            
+            // no exact expression
+            if (substr_count ($temp_expression, "\"") < 2)
             {
-              $temp_expression_2 = str_replace ("~20", "%", $temp_expression);
+              // replace spaces with wildcard
+              if (strpos ($temp_expression, "~20") > 0)
+              {
+                $temp_expression_2 = str_replace ("~20", "%", $temp_expression);
+              }
             }
           }
           
@@ -2007,9 +2027,32 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           // search in location and object name
           if ($expression_filename != "*Null*")
           {
-            // must be case insensitive
-            if (!empty ($temp_expression_2)) $sql_where['filename'] .= '(obj.objectpath LIKE "'.$temp_expression.'" OR obj.objectpath LIKE "'.$temp_expression_2.'")';
-            else $sql_where['filename'] .= 'obj.objectpath LIKE "'.$temp_expression.'"';
+            // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
+            // But LIKE also is not able to use the fulltext index or any index if a wildcard is used at the beginning and will therefore be slower
+            if (strtolower ($mgmt_config['search_query_match']) == "like")
+            {
+              // must be case insensitive
+              if (!empty ($temp_expression_2)) $sql_where['filename'] .= '(obj.objectpath LIKE "'.$temp_expression.'" OR obj.objectpath LIKE "'.$temp_expression_2.'")';
+              else $sql_where['filename'] .= 'obj.objectpath LIKE "'.$temp_expression.'"';
+            }
+            // search using MATCH AGAINST and the FULLTEXT INDEX
+            else
+            {
+              // if wildcards are used
+              if (preg_match('/["*()@~<>+-]/', $temp_expression))
+              {
+                $sql_where['filename'] .= 'MATCH (obj.objectpath) AGAINST ("'.$temp_expression.'" IN BOOLEAN MODE)';
+              }
+              // if a location path is used the search must be exact and double quotes need to be used for the path expression
+              elseif (strpos ("_".$temp_expression, "/") > 0)
+              {
+                $sql_where['filename'] .= 'MATCH (obj.objectpath) AGAINST (\'"'.$temp_expression.'"\' IN BOOLEAN MODE)';
+              }
+              else
+              {
+                $sql_where['filename'] .= 'MATCH (obj.objectpath) AGAINST ("'.$temp_expression.'" IN NATURAL LANGUAGE MODE)';
+              }
+            }
           }
         }
       }
@@ -2032,8 +2075,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     // query dates
     if (!empty ($date_from) || !empty ($date_to))
     {
-      if ($date_from != "") $sql_where['datefrom'] = 'DATE(obj.date)>="'.$date_from.'"';
-      if ($date_to != "") $sql_where['dateto'] = 'DATE(obj.date)<="'.$date_to.'"';
+      if ($date_from != "") $sql_where['datefrom'] = 'obj.date>="'.$date_from.' 00:00:01"';
+      if ($date_to != "") $sql_where['dateto'] = 'obj.date<="'.$date_to.' 23:59:59"';
     }
       
     // query geo location
@@ -2239,15 +2282,17 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                   // look for expression in content
                   else
                   {
-                    // search for path in textcontent requires LIKE
-                    if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
+                    // depreacted: search for path in textcontent requires LIKE
+                    // if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
 
                     // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
+                    // But LIKE also is not able to use the fulltext index and will be slower
                     if (strtolower ($mgmt_config['search_query_match']) == "like")
                     {
                       if (!empty ($synonym_expression_2)) $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (tn'.$i_tn.'.textcontent LIKE "%'.$synonym_expression.'%" OR tn'.$i_tn.'.textcontent LIKE "%'.$synonym_expression_2.'%"))';
                       else $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND tn'.$i_tn.'.textcontent LIKE "%'.$synonym_expression.'%")';
                     }
+                    // search using MATCH AGAINST and the FULLTEXT INDEX
                     else
                     {
                       // Boolean search permits the use of special operators:
@@ -2353,15 +2398,17 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                       // look for expression in content
                       else
                       {
-                        // search for path in textcontent
-                        if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
+                        // deprecated: search for path in textcontent
+                        // if (strpos ("_".$synonym_expression, "/") > 0) $mgmt_config['search_query_match'] = "like";
 
                         // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
+                        // But LIKE also is not able to use the fulltext index and will be slower
                         if (strtolower ($mgmt_config['search_query_match']) == "like")
                         {
                           if (!empty ($synonym_expression_2)) $sql_where_textnodes .= '(obj.textcontent LIKE "%'.$synonym_expression.'%" OR obj.textcontent LIKE "%'.$synonym_expression_2.'%")';
                           else $sql_where_textnodes .= 'obj.textcontent LIKE "%'.$synonym_expression.'%"';
                         }
+                        // search using MATCH AGAINST and the FULLTEXT INDEX
                         else
                         {
                           // Boolean search permits the use of special operators:
@@ -2451,7 +2498,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if ($search_type == "page" || $search_type == "comp") 
           {
             if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-            $sql_where['object'] .= 'obj.template LIKE BINARY "%.'.$search_type.'.tpl"';
+            $sql_where['object'] .= 'obj.objectpath LIKE BINARY "*.'.$search_type.'*/%"';
           }
 
           // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
@@ -2467,7 +2514,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (!empty ($sql_where['format']))
       {
         // add meta as object type if formats are set
-        $sql_where['format'] = '(('.$sql_where['format'].') AND obj.template LIKE BINARY "%.meta.tpl")';
+        $sql_where['format'] = '('.$sql_where['format'].')';
 
         if (!empty ($sql_where['object']))
         {
@@ -2838,7 +2885,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
           if ($search_type == "page" || $search_type == "comp") 
           {
             if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-            $sql_where['object'] .= 'obj.template LIKE BINARY "%.'.$search_type.'.tpl"';
+            $sql_where['object'] .= 'obj.objectpath LIKE BINARY "*.'.$search_type.'*/"';
           }
 
           // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
@@ -2854,7 +2901,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       if (!empty ($sql_where['format']))
       {
         // add meta as object type if formats are set
-        $sql_where['format'] = '(('.$sql_where['format'].') AND obj.template LIKE BINARY "%.meta.tpl")';
+        $sql_where['format'] = '('.$sql_where['format'].')';
 
         if (!empty ($sql_where['object']))
         {
@@ -2875,8 +2922,8 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     $sql_where['filename'] = 'obj.objectpath LIKE BINARY "'.$folderpath.'%"';
 
     // dates
-    if (!empty ($date_from)) $sql_where['datefrom'] = 'DATE(obj.date)>="'.$date_from.'"';
-    if (!empty ($date_to)) $sql_where['dateto'] = 'DATE(obj.date)<="'.$date_to.'"'; 
+    if (!empty ($date_from)) $sql_where['datefrom'] = 'obj.date>="'.$date_from.' 00:00:01"';
+    if (!empty ($date_to)) $sql_where['dateto'] = 'obj.date<="'.$date_to.'" 23:59:59'; 
 
     // search expression
     if ($search_expression != "")
@@ -3298,8 +3345,8 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
     if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%") ';
     if ($from_user != "") $sql .= 'AND rec.from_user LIKE BINARY "%'.$from_user.'%" ';
     if ($to_user_email != "") $sql .= 'AND (rec.to_user LIKE "%'.$to_user_email.'%" OR rec.email LIKE "%'.$to_user_email.'%") ';
-    if ($date_from != "") $sql .= 'AND DATE(rec.date)>="'.$date_from.'" ';
-    if ($date_to != "") $sql .= 'AND DATE(rec.date)<="'.$date_to.'" ';
+    if ($date_from != "") $sql .= 'AND rec.date>="'.$date_from.' 00:00:01" ';
+    if ($date_to != "") $sql .= 'AND rec.date<="'.$date_to.' 23:59:59" ';
 
     $sql .= 'ORDER BY rec.date DESC ';
 
@@ -5758,7 +5805,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
 // description:
 // Provides the filesize and count of objects for a requested object or location.
 
-function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=false)
+function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=true)
 {
   global $mgmt_config;
 
@@ -5803,7 +5850,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=false)
       if ($object_info['type'] == "Folder") $sqladd .= 'WHERE objectpath LIKE "'.$objectpath.'%"';
       else $sqladd .= 'WHERE objectpath="'.$objectpath.'"';
 
-      // exclude recycled files
+      // exclude recycled files (long query execution time since index will not be used)
       if (empty ($recylcebin)) $sqladd .= ' AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
 
       $sqlfilesize = 'SUM(filesize) AS filesize';
@@ -5824,7 +5871,10 @@ function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=false)
     // count files (exclude recycled files)
     if ($objectpath != "" && !empty ($object_info['type']) && $object_info['type'] == "Folder")
     {
-      $sql = 'SELECT count(objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%" AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"'; 
+      $sql = 'SELECT count(objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%"';
+
+      // exclude recycled files (long query execution time since index will not be used)
+      if (empty ($recylcebin)) $sql .= ' AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
 
       $errcode = "50042";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'selectcount');

@@ -540,7 +540,7 @@ $(document).ready(function ()
             // Put out message if possible
             if (ajax && ajax.readyState != ajax.UNSENT)
             {
-              buildDropboxFileMessage( data, ajax.responseText, false);
+              buildDropboxFileMessage (data, ajax.responseText, false);
             }
           }
         });
@@ -555,7 +555,7 @@ $(document).ready(function ()
           .click (function(event)
           {
             // If we are sending data we stop it or else we remove the entry completely
-            if(ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
+            if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
               buildDropboxFileMessage (data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
@@ -585,10 +585,9 @@ $(document).ready(function ()
     
     // apply the correct css for this div
     data.context.removeClass('file_normal')
-    if(success)
-      data.context.addClass('file_success');
-    else
-      data.context.addClass('file_error');
+
+    if (success) data.context.addClass('file_success');
+    else data.context.addClass('file_error');
     
     // Build name field and buttons
     var name = getFileNameSpan(data.files[0].name);
@@ -596,8 +595,7 @@ $(document).ready(function ()
     
     // Build message field
     msg = $('<div style="font-size:11px;"></div>');
-    msg.html(hcms_entity_decode(text))
-       .addClass('inline file_message');
+    msg.html(hcms_entity_decode(text)).addClass('inline file_message');
        
     // Add everything to the context
     data.context.append(name)
@@ -619,8 +617,7 @@ $(document).ready(function ()
         
     // Size field
     var size = $('<div></div>');
-    size.text(bytesToSize(file.size))
-        .addClass('inline file_size');
+    size.text(bytesToSize(file.size)).addClass('inline file_size');
     
     // Build the buttons
     var buttons = buildDropboxButtons(data);    

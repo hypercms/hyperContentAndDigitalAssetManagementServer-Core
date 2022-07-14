@@ -1425,4 +1425,9 @@ $hcms_lang['overwrite-existing-files']['fr'] = "écraser les fichiers existants"
 $hcms_lang['customize-toolbar']['fr'] = "Personnaliser la barre d'outils";
 $hcms_lang['disable-link-in-edit-mode']['fr'] = "Désactiver le lien en mode édition";
 $hcms_lang['transparent']['fr'] = "transparent";
+$hcms_lang['search-wildcard-plus']['fr'] = "+ … Un signe plus au début indique que ce mot doit être présent";
+$hcms_lang['search-wildcard-minus']['fr'] = "- … Un signe moins au début indique que ce mot ne doit pas être présent";
+$hcms_lang['search-wildcard-none']['fr'] = "aucun opérateur … Par défaut (lorsque ni + ni - n'est spécifié), le mot est facultatif";
+$hcms_lang['search-wildcard-asterisk']['fr'] = "* … L'astérisque sert d'opérateur de troncature (ou caractère générique). Contrairement aux autres opérateurs, il doit être ajouté au mot à affecter.";
+$hcms_lang['search-wildcard-doublequote']['fr'] = "\" … Une phrase entourée de guillemets doubles doit être présente comme la phrase littéralement, telle qu'elle a été tapée";
 ?>
