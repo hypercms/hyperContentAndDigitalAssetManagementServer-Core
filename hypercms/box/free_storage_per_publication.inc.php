@@ -9,7 +9,7 @@ function usedstorage ($publication)
   elseif (!empty ($mgmt_config['storagefactor'])) $factor = $mgmt_config['storagefactor'];
   else $factor = 1.2;
   
-  if ($publication != "")
+  if (valid_publicationname ($publication))
   {
     // memory for file size (should be kept for 24 hours)
     $filesize_mem = $mgmt_config['abs_path_temp'].$publication.".filesize.dat";
@@ -18,6 +18,8 @@ function usedstorage ($publication)
     {  
       // this function might require some time for the result in case of large databases
       $filesize = rdbms_getfilesize ("", "%comp%/".$publication."/", true);
+
+      // save calculated file size for the publication
       if (!empty ($filesize['filesize'])) savefile ($mgmt_config['abs_path_temp'], $publication.".filesize.dat", $filesize['filesize']);
     }
     else $filesize['filesize'] = loadfile ($mgmt_config['abs_path_temp'], $publication.".filesize.dat");
@@ -27,6 +29,7 @@ function usedstorage ($publication)
     {
       // file size in GB
       $filesize['filesize'] = round ((intval ($filesize['filesize']) / 1024 / 1024) * $factor, 2);
+
       return $filesize;
     }
     else return false;
@@ -42,6 +45,7 @@ function maxstorage ($site)
   {
     // storage in GB
     $maxstorage = round (($mgmt_config[$site]['storage_limit'] / 1024), 2);
+
     return $maxstorage;
   }
   else return false;
@@ -63,7 +67,7 @@ if (is_array ($siteaccess))
       require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
       echo "
-  <div id=\"free_storage_per_publication\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
+  <div id=\"free_storage_per_publication\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px;\">
     <div class=\"hcmsHeadline\" style=\"margin:6px 2px;\"><img src=\"".getthemelocation("night")."img/instance.png\" class=\"hcmsIconList\" /> Publication Storage Space</div>
     <hr />
     <div style=\"text-align:right; padding:10px;\">";

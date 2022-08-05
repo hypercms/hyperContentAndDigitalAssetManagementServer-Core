@@ -2457,7 +2457,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               elseif ($hypertagname == "pagetracking")
               {
                 if ($label == "") $labelname = $metaname;
-                else $labelname = $label;
+                else $labelname = getlabel ($label, $lang);
 
                 if ($contentbot != "" && ($buildview == "publish" || $buildview == "unpublish"))
                 {
@@ -2539,7 +2539,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               else
               {
                 if ($label == "") $labelname = $metaname;
-                else $labelname = $label;
+                else $labelname = getlabel ($label, $lang);
+
 
                 if ($buildview == "formedit" || $buildview == "formlock" || $buildview == "formmeta")
                 {
@@ -2763,6 +2764,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // extract text value of checkbox
             $value = getattribute ($hypertag, "value", false);
 
+            if ($value != "") $value = getlabel ($value, $lang);
+
             if (trim ($value) != "" && $groupaccess == true && ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock"))
             {
               // get height in pixel of text field
@@ -2915,13 +2918,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
               // define label
               if ($label == "") $labelname = $artid." - ".$elementid;
-              else $labelname = $artid." - ".$label;
+              else $labelname = $artid." - ".getlabel ($label, $lang);
             }
             else
             {
               // define label
               if ($label == "") $labelname = $id;
-              else $labelname = $label;
+              else $labelname = getlabel ($label, $lang);
             } 
 
             // get visibility on publish
@@ -5683,13 +5686,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
               // define label
               if (empty ($label[$id])) $labelname = $artid." - ".$elementid;
-              else $labelname = $artid." - ".$label[$id];
+              else $labelname = $artid." - ".getlabel ($label[$id], $lang);
             }
             else
             {
               // define label
               if (empty ($label[$id])) $labelname = $id;
-              else $labelname = $label[$id];
+              else $labelname = getlabel ($label[$id], $lang);
             }
 
             // set link bots for non existing hyperCMS tags
@@ -6208,13 +6211,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
               // define label
               if ($label == false || $label == "") $labelname = $artid." - ".$elementid;
-              else $labelname = $artid." - ".$label;
+              else $labelname = $artid." - ".getlabel ($label, $lang);
             }
             else
             {
               // define label
               if ($label == false || $label == "") $labelname = $id;
-              else $labelname = $label;
+              else $labelname = getlabel ($label, $lang);;
             }
 
             // get tag visibility on publish
@@ -7199,6 +7202,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           $label = getattribute ($hypertag, "label");
  
           if ($label == "") $label = getescapedtext ($hcms_lang['geo-location'][$lang], $charset, $lang);
+          else $label = getlabel ($label, $lang);
 
           // get readonly attribute
           $readonly = getattribute (strtolower ($hypertag), "readonly");
@@ -10844,6 +10848,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
           $groupaccess = checkgroupaccess ($groupaccess, $ownergroup);
 
           if ($label == "") $label = $id;
+          else $label = getlabel ($label, $lang);
 
           // id must be unique
           if (!in_array ($id, $id_array) && $groupaccess == true)

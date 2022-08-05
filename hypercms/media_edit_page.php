@@ -154,6 +154,7 @@ else
 $token = createtoken ($user);
 
 if ($label == "") $label = $id;
+else $label = getlabel ($label, $lang);
 
 // set character set in header
 if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);

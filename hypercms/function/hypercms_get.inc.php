@@ -403,6 +403,56 @@ function getscaytlang ($lang="en")
   else return "en_US";
 }
 
+// ----------------------------------------- getlabel ------------------------------------------
+// function: getlabel()
+// input: label string from template tag in the form of en:Title;de:Titel [string], 2-digits language code [string] (optional)
+// output: label value
+
+function getlabel ($label, $lang="en")
+{
+  global $mgmt_config;
+
+  if ($label != "" && $lang != "")
+  {
+    // multiple labels
+    if (substr_count ($label, ";") > 0)
+    {
+      $labels_array = explode (";", $label);
+
+      if (is_array ($labels_array) && sizeof ($labels_array) > 0)
+      {
+        $i = 0;
+        
+        foreach ($labels_array as $label_entry)
+        {
+          list ($langcode, $text) = explode (":", $label_entry);
+          $langcode = trim ($langcode);
+          $result[$langcode] = trim ($text);
+
+          if ($i == 0 || $langcode == "en") $result['default'] = $result[$langcode];
+
+          $i++;
+        }
+      }
+    }
+    // single label and language
+    else
+    {
+      if (substr_count ($label, ":") > 0)
+      {
+        list ($langcode, $text) = explode (":", $label);
+        $result['default'] = $text;
+      }
+      else $result['default'] = $label;
+    }
+
+    if (!empty ($result[$lang])) return $result[$lang];
+    elseif (!empty ($result['default'])) return $result['default'];
+    else return $label;
+  }
+  else return $label;
+}
+
 // ----------------------------------------- getescapedtext ------------------------------------------
 // function: getescapedtext()
 // input: text [string], character set of text [string], 2-digit language code [string]
@@ -1941,14 +1991,15 @@ function getmetadata_container ($container_id, $text_id_array=array())
 
 // ---------------------------------------- getobjectlist ----------------------------------------
 // function: getobjectlist()
-// input: publication name [string] (optional), location [string] (optional), folder hash code [string,array] (optional), search parameters [array] (optional), information and text IDs to be returned e.g. text:Title [array] (optional)
+// input: publication name [string] (optional), location [string] (optional), folder hash code [string,array] (optional), search parameters [array] (optional), information and text IDs to be returned e.g. text:Title [array] (optional), 
+//        verify RESTful API for the publication [boolean] (optional)
 // output: result array / false on error
 // requires: config.inc.php
 
 // description:
 // Get all objects of a location. This is a simplified wrapper for function rdbms_searchcontent.
 
-function getobjectlist ($site="", $location="", $folderhash="", $search=array(), $objectlistcols=array())
+function getobjectlist ($site="", $location="", $folderhash="", $search=array(), $objectlistcols=array(), $checkREST=false)
 {
   global $mgmt_config, $user, $lang, $hcms_lang,
   $rootpermission, $globalpermission, $localpermission,
@@ -1964,8 +2015,41 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   $exclude_dir_esc = array();
   $setlocalpermission = array();
 
+  // verify permission for the RESTful API
+  if ($checkREST == true)
+  {
+    if (valid_publicationname ($site))
+    {
+      require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+      if (empty ($mgmt_config[$site]['connector_rest'])) return false;
+    }
+    else
+    {
+      $site = getpublication ($location);
+
+      if (valid_publicationname ($site))
+      {
+        require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+        if (empty ($mgmt_config[$site]['connector_rest'])) return false;
+      }
+    }
+  }
+
   // define default values (add all text IDs)
-  if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height", "text:temp");
+  if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "template", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height", "text:temp");
+
+  // search is used (exclude limit, samelocation and fileextension)
+  if (is_array ($search))
+  {
+    foreach ($search as $key=>$value)
+    {
+      if ($key != "limit" && $key != "samelocation" && $key != "fileextension" && $value != "" && substr_count ($location, "/") <= 1)
+      {
+        $search_active = true;
+        break;
+      }
+    }
+  }
 
   // query result limit
   if (empty ($search['limit'])) $search['limit'] = 500;
@@ -1979,7 +2063,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   else $search['expression_array'] = "";
 
   // search for file or folder name
-  if (empty ($search['filename'])) $search['filename'] = "";
+  if (empty ($search['filename'])) $search['filename'] = "*Null*";
 
   // format values: audio,binary,compressed,document,flash,image,text,video,unknown
   $filter_names = array ("page", "comp", "image", "document", "text", "video", "audio", "flash", "compressed", "binary");
@@ -2021,19 +2105,6 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   if (empty ($search['geo_border_sw'])) $search['geo_border_sw'] = "";
   if (empty ($search['geo_border_ne'])) $search['geo_border_ne'] = "";
 
-  // search is used (exclude limit)
-  if (is_array ($search))
-  {
-    foreach ($search as $key=>$value)
-    {
-      if ($key != "limit" && $value != "")
-      {
-        $search_active = true;
-        break;
-      }
-    }
-  }
-
   // convert string to array
   if (!empty ($folderhash))
   {
@@ -2056,6 +2127,10 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     // use provided location and verify access permissions
     if (valid_publicationname ($site) && valid_locationname ($location))
     {
+      // convert special characters
+      $location = specialchr_encode ($location);
+
+      // get category
       $cat = getcategory ($site, $location);
 
       // check access permissions
@@ -2069,57 +2144,118 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
 
       // define location
       $search_dir_esc[] = convertpath ($site, $location, $cat);
+
+      // search location has been defined
       $search_dir_active = true;
-      }
+    }
 
-    // use comp- or pageaccess of user
-    if ((!empty ($compaccess)&& is_array ($compaccess)) || (!empty ($pageaccess) && is_array ($pageaccess)))
+    // use compaccess (compaccess[publication][group]=[objectpath])
+    if (!empty ($compaccess) && is_array ($compaccess) && (strpos ("_".$location, "%comp%/") > 0 || empty ($location)))
     {
-      // use compaccess (compaccess[publication][group]=[objectpath])
-      if (strpos ("_".$location, "%comp%/") > 0)
-      {
-        $temp_access = $compaccess;
-        $temp_cat = "comp";
-      }
-      // use pageaccess (pageaccess[publication][group]=[objectpath])
-      elseif (strpos ("_".$location, "%page%/") > 0)
-      {
-        $temp_access = $pageaccess;
-        $temp_cat = "page";
-      }
+      $temp_access = $compaccess;
+      $temp_cat = "comp";
 
-      // access locations/folders of the user
-      if (!empty ($temp_access) && is_array ($temp_access))
+      // component access of user
+      foreach ($compaccess as $temp_site => $value)
       {
-        foreach ($temp_access as $temp_site=>$temp_array)
+        if ($checkREST == true && valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+
+        // verify permission for the RESTful API
+        if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
         {
-          foreach ($temp_array as $temp_group=>$temp_location)
+          foreach ($value as $group_name => $pathes)
           {
             // split access-string into an array
-            $path_array = link_db_getobject ($temp_location);
-
+            $path_array = link_db_getobject ($pathes);
+            
             if (is_array ($path_array))
             {
               foreach ($path_array as $path)
               {
                 // add slash if missing
                 $path = correctpath ($path);
-                
-                $temp_location_esc = convertpath ($temp_site, $path, $temp_cat);
-                $temp_hash_esc = rdbms_getobject_hash ($temp_location_esc);
+
+                $temp_location_esc = convertpath ($temp_site, $path, "comp");
+                $temp_hash = rdbms_getobject_hash ($temp_location_esc);
 
                 // check access permission
-                $ownergroup = accesspermission ($temp_site, $temp_location_esc, $temp_cat);
-                $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, $temp_cat);
+                $ownergroup = accesspermission ($temp_site, $temp_location_esc, "comp");
+                $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "comp");
 
-                if (empty ($search_dir_active) && !empty ($setlocalpermission['root'])) $search_dir_esc[] = $temp_location_esc;
-                elseif (empty ($setlocalpermission['root'])) $exclude_dir_esc[] = $temp_location_esc;
+                // check access permission
+                // set location if no search is used
+                if (empty ($search_dir_active))
+                {
+                  // positive access
+                  if (!empty ($search_active) && !empty ($setlocalpermission['root'])) $search_dir_esc[] = $temp_location_esc;
+                  // set root location
+                  elseif (empty ($search_active)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
+                }
 
-                // root location if no search is used
-                if (empty ($search_active)) $root_dir_esc[$temp_hash_esc]['objectpath'] = $temp_location_esc.".folder";
+                // negative access
+                if (empty ($setlocalpermission['root'])) $exclude_dir_esc[] = $temp_location_esc;
               }
             }
           }
+        }
+        // exclude publication 
+        else
+        {
+          $exclude_dir_esc[] = "%comp%/".$temp_site."/";
+        }
+      }
+    }
+
+    // use pageaccess (pageaccess[publication][group]=[objectpath])
+    if (!empty ($pageaccess) && is_array ($pageaccess) && (strpos ("_".$location, "%page%/") > 0 || empty ($location)))
+    {
+      // page access of user
+      foreach ($pageaccess as $temp_site => $value)
+      {
+        if ($checkREST == true &&  valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+
+        // verify permission for the RESTful API
+        if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
+        {
+          foreach ($value as $group_name => $pathes)
+          {
+            // split access-string into an array
+            $path_array = link_db_getobject ($pathes);
+            
+            if (is_array ($path_array))
+            {
+              foreach ($path_array as $path)
+              {
+                // add slash if missing
+                $path = correctpath ($path);
+
+                $temp_location_esc = convertpath ($temp_site, $path, "page");
+                $temp_hash = rdbms_getobject_hash ($temp_location_esc);
+
+                // check access permission
+                $ownergroup = accesspermission ($temp_site, $temp_location_esc, "page");
+                $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "page");
+
+                // check access permission
+                // set location if no search is used
+                if (empty ($search_dir_active))
+                {
+                  // positive access
+                  if (!empty ($search_active) && !empty ($setlocalpermission['root'])) $search_dir_esc[] = $temp_location_esc;
+                  // set root location
+                  elseif (empty ($search_active)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
+                }
+
+                // negative access
+                if (empty ($setlocalpermission['root'])) $exclude_dir_esc[] = $temp_location_esc;
+              }
+            }
+          }
+        }
+        // exclude publication 
+        else
+        {
+          $exclude_dir_esc[] = "%page%/".$temp_site."/";
         }
       }
     }
@@ -2139,8 +2275,19 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
         }
       }
 
+      // search for object ID
+      if (!empty ($search['object_id']))
+      {
+        $object_info = rdbms_getobject_info ($search['object_id'], $objectlistcols);
+  
+        if (is_array ($object_info) && !empty ($object_info['hash']))
+        {
+          $hash = $object_info['hash'];
+          $result[$hash] = $object_info;
+        }
+      }
       // search
-      if (empty ($root_dir_esc) || (is_array ($root_dir_esc) && sizeof ($root_dir_esc) < 1))
+      elseif (empty ($root_dir_esc) || (is_array ($root_dir_esc) && sizeof ($root_dir_esc) < 1))
       {
         $result = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols, true);
       }
@@ -2157,6 +2304,9 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
         {
           if (!empty ($hash) && !empty ($temp_array['objectpath']))
           {
+            // get object information
+            if (empty ($result[$hash]['location'])) $result[$hash] = rdbms_getobject_info ($hash, $objectlistcols);
+
             // get publication
             $temp_site = getpublication ($temp_array['objectpath']);
             // get category
@@ -2186,12 +2336,35 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
             }
           }
         }
-      } 
+      }
     }
   }
   
   if (is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
+}
+
+// ---------------------------------------- getobjectpathlevel ----------------------------------------
+// function: getobjectpathlevel()
+// input: converted objectpath [string]
+// output: level number / 0 on error
+// requires: config.inc.php
+
+// description:
+// Get the level number of an objectpath
+
+function getobjectpathlevel ($objectpath)
+{
+  if (is_string ($objectpath) && $objectpath != "")
+  {
+    $objectpath = trim ($objectpath);
+    if (substr ($objectpath, -8) == "/.folder") $objectpath = substr ($objectpath, 0, -8);
+    $level = substr_count ($objectpath, "/");
+
+    if ($level > 0) return $level;
+    else return 0;
+  }
+  else return 0;
 }
 
  // ========================================= LOAD CONTENT ============================================
@@ -3960,7 +4133,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
 // output: result array with file size in kB and file count / false on error
 
 // description:
-// This function won't give you a proper result of the file size of multimedia components, if there is no Database installed.
+// This function won't give you a proper result of the file size of multimedia components, if there is no database installed.
 
 function getfilesize ($file)
 {
@@ -3975,7 +4148,7 @@ function getfilesize ($file)
     if ($cat == "comp" && !empty ($mgmt_config['db_connect_rdbms']))
     { 
       // get file size
-      return rdbms_getfilesize ("", $file);
+      return rdbms_getfilesize ("", $file, false);
     }
     // get file size from file system (won't work on multimedia components!)
     elseif ($cat == "page")
@@ -4115,6 +4288,7 @@ function getfiletype ($file_ext)
     elseif (substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0) $filetype = "flash";
     elseif (substr_count (strtolower ($hcms_ext['compressed']).".", $file_ext.".") > 0) $filetype = "compressed";
     elseif (substr_count (strtolower ($hcms_ext['binary']).".", $file_ext.".") > 0) $filetype = "binary";
+    elseif (strtolower ($file_ext) == ".folder") $filetype = "folder";
     else $filetype = "unknown";
 
     return $filetype;
@@ -4349,13 +4523,16 @@ function getimagecolors ($site, $file)
     $thumbnail = $file_info['filename'].".thumb.jpg";
 
     // use thumbnail image file
-    if (is_file ($media_root.$thumbnail))
+    if (is_file ($media_root.$thumbnail) && (exif_imagetype ($media_root.$thumbnail) == IMAGETYPE_JPEG && valid_jpeg ($media_root.$thumbnail)))
     {
       $image = @imagecreatefromjpeg ($media_root.$thumbnail);
     }
     // try original image
     else
     {
+      // remove faulty thumbnail image
+      if (is_file ($media_root.$thumbnail)) unlink ($media_root.$thumbnail);
+
       // prepare media file
       $temp_source = preparemediafile ($site, $media_root, $file, $user);
 
@@ -6802,14 +6979,14 @@ function getdirectoryfiles ($dir, $pattern="")
 
 // ---------------------------------------------- getuserinformation ----------------------------------------------
 // function: getuserinformation()
-// input: user name [string] (optional)
+// input: user name [string] (optional), include permissions for each group [boolean] (optional)
 // output: assoziative array with basic user information [publication->username->attribute] / false
 // requires: config.inc.php
 
 // description:
 // This function creates an assoziative array with user information, e.g. for a user select box.
 
-function getuserinformation ($login="")
+function getuserinformation ($login="", $include_permissions=false)
 {
   global $mgmt_config, $user;
 
@@ -6879,8 +7056,22 @@ function getuserinformation ($login="")
                 $user_array[$pub_temp][$username]['realname'] = $realname[0];
                 $user_array[$pub_temp][$username]['signature'] = $signature[0];
                 $user_array[$pub_temp][$username]['language'] = $language[0];
-                if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = $usergroup[$pub_temp];
+                if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = trim ($usergroup[$pub_temp]);
                 else $user_array[$pub_temp][$username]['usergroup'] = "";
+
+                // include permissions
+                if ($include_permissions == true && !empty ($user_array[$pub_temp][$username]['usergroup']))
+                {
+                  $usergroup_array = link_db_getobject ($user_array[$pub_temp][$username]['usergroup']);
+
+                  if (is_array ($usergroup_array) && sizeof ($usergroup_array) > 0)
+                  {
+                    foreach ($usergroup_array as $usergroup_temp)
+                    {
+                      $user_array[$pub_temp][$username]['permissions'][$usergroup_temp] = getgroupinformation ($pub_temp, $usergroup_temp);
+                    }
+                  }
+                }
               }
             }
           }
@@ -6899,8 +7090,22 @@ function getuserinformation ($login="")
                 $user_array[$pub_temp][$username]['realname'] = $realname[0];
                 $user_array[$pub_temp][$username]['signature'] = $signature[0];
                 $user_array[$pub_temp][$username]['language'] = $language[0];
-                if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = $usergroup[$pub_temp];
+                if (!empty ($usergroup[$pub_temp])) $user_array[$pub_temp][$username]['usergroup'] = trim ($usergroup[$pub_temp]);
                 else $user_array[$pub_temp][$username]['usergroup'] = "";
+
+                // include permissions
+                if ($include_permissions == true && !empty ($user_array[$pub_temp][$username]['usergroup']))
+                {
+                  $usergroup_array = link_db_getobject ($user_array[$pub_temp][$username]['usergroup']);
+
+                  if (is_array ($usergroup_array) && sizeof ($usergroup_array) > 0)
+                  {
+                    foreach ($usergroup_array as $usergroup_temp)
+                    {
+                      $user_array[$pub_temp][$username]['permissions'][$usergroup_temp] = getgroupinformation ($pub_temp, $usergroup_temp);
+                    }
+                  }
+                }
               }
             }
           }
@@ -6911,5 +7116,133 @@ function getuserinformation ($login="")
 
   if (!empty ($user_array) && is_array ($user_array)) return $user_array;
   else return false;
+}
+
+// ---------------------------------------------- getgroupinformation ----------------------------------------------
+// function: getgroupinformation()
+// input: publication name [string], user group name [string]
+// output: assoziative array with the user group information [permission->value] / false
+// requires: config.inc.php
+
+// description:
+// This function creates an assoziative array with the group information and permissions
+
+function getgroupinformation ($site, $usergroup)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && valid_objectname ($usergroup))
+  {
+    // initialize
+    $result = array();
+
+    // load config if site_admin is not set
+    require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+
+    // load usergroup information
+    $usergroupdata = loadfile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
+
+    if (!empty ($usergroupdata))
+    {
+      // get usergroup information
+      $usergroupnode = selectcontent ($usergroupdata, "<usergroup>", "<groupname>", $usergroup);
+
+      if (!empty ($usergroupnode[0]))
+      {
+        // permission string
+        $permission_str = array();
+        $result['globalpermission'] = array();
+        $result['globalpermission'] = array();
+        $result['localpermission'] = array();
+
+        $userpermission = getcontent ($usergroupnode[0], "<permission>");
+
+        if (!empty ($userpermission[0])) $permission_str[$site][$usergroup] = trim ($userpermission[0]);
+        else $permission_str[$site][$usergroup] = "";
+
+        if (isset ($permission_str))
+        {
+          // deseralize the permission string and define root, global and local permissions
+          $result['rootpermission'] = rootpermission ($site, $mgmt_config[$site]['site_admin'], $permission_str);
+
+          $temp = globalpermission ($site, $permission_str);
+          if (!empty ($temp[$site])) $result['globalpermission'] = $temp[$site];
+
+          $temp = localpermission ($site, $permission_str);
+          if (!empty ($temp[$site][$usergroup])) $result['localpermission'] = $temp[$site][$usergroup];
+        }
+
+        // page accsess
+        $result['pageaccess'] = array();
+
+        $userpageaccess = getcontent ($usergroupnode[0], "<pageaccess>");
+
+        if (!empty ($userpageaccess[0]))
+        {
+          // versions before 5.6.3 used folder path instead of object id
+          if (substr_count ($userpageaccess[0], "/") == 0)
+          {
+            $temp_array = explode ("|", $userpageaccess[0]);
+
+            if (is_array ($temp_array))
+            {
+              $folder_path = array();
+
+              foreach ($temp_array as $temp)
+              {
+                if ($temp != "")
+                {
+                  $temp_path = rdbms_getobject ($temp);
+                  if ($temp_path != "") $result['pageaccess'][] = getlocation ($temp_path);
+                }
+              }
+            }
+          }
+          else $result['pageaccess'][] = $userpageaccess[0];
+        }
+
+        // component access
+        $result['compaccess'] = array();
+
+        $usercompaccess = getcontent ($usergroupnode[0], "<compaccess>");
+
+        if (!empty ($usercompaccess[0]))
+        {
+          // versions before 5.6.3 used folder path instead of object id
+          if (substr_count ($usercompaccess[0], "/") == 0)
+          {
+            $temp_array = explode ("|", $usercompaccess[0]);
+
+            if (is_array ($temp_array))
+            {
+              $folder_path = "";
+
+              foreach ($temp_array as $temp)
+              {
+                if ($temp != "")
+                {
+                  $temp_path = rdbms_getobject ($temp);
+                  if ($temp_path != "") $result['compaccess'][] = getlocation ($temp_path);
+                }
+              }
+            }
+          }
+          else $result['compaccess'][]= $usercompaccess[0];
+        }
+
+        // plugin access
+        $userpluginccess = getcontent ($usergroupnode[0], "<plugins>");
+
+        if (!empty ($userpluginccess[0]))
+        {
+          $result['pluginaccess'] = link_db_getobject ($userpluginccess[0]);
+        }
+
+        return $result;
+      }
+    }
+  }
+  
+  return false;
 }
 ?>

@@ -73,8 +73,10 @@ function hcms_loadSidebar ()
     var location = document.forms['contextmenu_object'].elements['location'].value;
     var folder = document.forms['contextmenu_object'].elements['folder'].value;
     var page = document.forms['contextmenu_object'].elements['page'].value;
+    var multiobject = document.forms['contextmenu_object'].elements['multiobject'].value;
+    var multiobject_count = multiobject.split('|').length - 1;
     
-    if (allow_tr_submit && location != '' && (folder != '' || page != ''))
+    if (allow_tr_submit && location != '' && (folder != '' || page != '') && multiobject_count < 2)
     {
       // wait (due to issues with browsers like MS Edge, Chrome)
       setTimeout (function() { parent.document.getElementById('sidebarFrame').src='explorer_preview.php?location=' + encodeURIComponent(location) + '&folder=' +  encodeURIComponent(folder) + '&page=' + encodeURIComponent(page); }, 300);

@@ -87,7 +87,7 @@ function gettagdata ($tag_array)
 
       // define label
       if ($label == "") $labelname = $artid." - ".$elementid;
-      else $labelname = $artid." - ".$label;
+      else $labelname = $artid." - ".getlabel ($label, $lang);;
 
       $return[$id]->labelname = $labelname;
     }
@@ -97,7 +97,7 @@ function gettagdata ($tag_array)
 
       // define label
       if ($label == "") $labelname = $id;
-      else $labelname = $label;
+      else $labelname = getlabel ($label, $lang);;
 
       $return[$id]->labelname = $labelname;
     }

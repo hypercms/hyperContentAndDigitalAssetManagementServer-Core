@@ -1655,7 +1655,7 @@ function includefooter ()
 
 // ---------------------- createfilename -----------------------------
 // function: createfilename()
-// input: path to file or directory [string], file or directory name [string]
+// input: file or directory name [string]
 // output: new filename/false
 
 // description:
@@ -2272,7 +2272,7 @@ function mediapublicaccess ($mediafile)
 {
   global $mgmt_config;
 
-  if ($mediafile != "")
+  if (is_string ($mediafile) && $mediafile != "")
   {
     // if public download is enabled the asset does not need to be published
     if (!empty ($mgmt_config['publicdownload'])) return true;
@@ -2314,7 +2314,7 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
   global $user, $mgmt_config;
 
   // if mediafile is provided as path, extract the media file name
-  if (substr_count ($mediafile, "/") > 0)
+  if (is_string ($mediafile) && substr_count ($mediafile, "/") > 0)
   {
     // extract possible publication name or container ID 
     if (substr_count ($mediafile, "/") == 1) $temp_site = substr ($mediafile, 0, strpos ($mediafile, "/"));
@@ -2366,6 +2366,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   // deconvert location
@@ -2453,6 +2454,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
@@ -2555,6 +2557,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
@@ -2664,6 +2667,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
@@ -2776,6 +2780,7 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if (!empty ($multiobject) && is_array ($multiobject) && (($type == "al" && valid_objectname ($login)) || $type == "dl"))
@@ -4563,7 +4568,9 @@ function restoremediafile ($site, $mediafile)
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
+  $result = array();
   $success = true;
   $restored = false;
   $medialocation = "";
@@ -4633,7 +4640,6 @@ function restoremediafile ($site, $mediafile)
   // write log
   savelog (@$error);
 
-  $result = array();
   $result['result'] = $success;
   $result['restored'] = $restored;
   $result['publication'] = $site;
@@ -5325,6 +5331,7 @@ function loadcontainer ($container, $type="work", $user="")
 {
   global $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
   $contentdata = false;
 
@@ -5968,6 +5975,7 @@ function inherit_db_load ($user)
 {
   global $siteaccess, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   $inherit_db_data = loadlockfile ($user, $mgmt_config['abs_path_data']."config/", "inheritance.dat", 3);
@@ -6031,6 +6039,7 @@ function inherit_db_read ()
 { 
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   $inherit_db_data = loadfile ($mgmt_config['abs_path_data']."config/", "inheritance.dat");
@@ -6286,6 +6295,7 @@ function createinstance ($instance_name, $settings, $user="sys")
 
   // initialize
   $error = array();
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -6587,7 +6597,6 @@ function createinstance ($instance_name, $settings, $user="sys")
   include ($mgmt_config['abs_path_cms']."config.inc.php");
   savelog (@$error);
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -6609,6 +6618,7 @@ function editinstance ($instance_name, $content, $user="sys")
 
   // initialize
   $error = array();
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -6659,7 +6669,6 @@ function editinstance ($instance_name, $content, $user="sys")
   include ($mgmt_config['abs_path_cms']."config.inc.php");
   savelog (@$error);
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -6681,6 +6690,7 @@ function deleteinstance ($instance_name, $user="sys")
 
   // initialize
   $error = array();
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -6808,7 +6818,6 @@ function deleteinstance ($instance_name, $user="sys")
   include ($mgmt_config['abs_path_cms']."config.inc.php");
   savelog (@$error);
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -6832,6 +6841,7 @@ function createpublication ($site_name, $user="sys")
 
   // initialize
   $error = array();
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -6841,7 +6851,6 @@ function createpublication ($site_name, $user="sys")
   {
     if (!checkrootpermission ('site') || !checkrootpermission ('sitecreate'))
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -7215,7 +7224,6 @@ function createpublication ($site_name, $user="sys")
   // save log
   savelog (@$error);
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -7295,6 +7303,7 @@ function editpublication ($site_name, $setting, $user="sys")
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -7305,7 +7314,6 @@ function editpublication ($site_name, $setting, $user="sys")
   {
     if (!checkrootpermission ('site') || !checkrootpermission ('siteedit'))
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -7727,7 +7735,7 @@ function editpublication ($site_name, $setting, $user="sys")
 
 // RESTful API
 // Enable (true) or disable (false) the access to the API
-\$mgmt_config['".$site_name."']['connector_rest'] = ".$connector_soap_new.";
+\$mgmt_config['".$site_name."']['connector_rest'] = ".$connector_rest_new.";
 
 // SOAP API
 // Enable (true) or disable (false) the access to the API
@@ -8097,7 +8105,6 @@ allow_ip = ".$allow_ip_new;
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
   }
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -8118,6 +8125,7 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -8127,7 +8135,6 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
   {
     if (!checkrootpermission ('site') || !checkrootpermission ('siteedit'))
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -8228,7 +8235,6 @@ function editpublicationsetting ($site_name, $setting, $user="sys")
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
   }
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -8250,6 +8256,7 @@ function deletepublication ($site_name, $user="sys")
 
   // initialize
   $error = array();
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -8259,7 +8266,6 @@ function deletepublication ($site_name, $user="sys")
   {
     if (!checkrootpermission ('site') || !checkrootpermission ('sitedelete'))
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -8550,7 +8556,6 @@ function deletepublication ($site_name, $user="sys")
   // save log
   savelog (@$error);
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -8574,6 +8579,7 @@ function createpersonalization ($site, $pers_name, $cat)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $result_ok = false;
 
   // set default language
@@ -8589,7 +8595,6 @@ function createpersonalization ($site, $pers_name, $cat)
         ($cat == "tracking" && (!checkglobalpermission ($site, 'perstrack') || !checkglobalpermission ($site, 'perstrackcreate')))
       )
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -8636,7 +8641,6 @@ function createpersonalization ($site, $pers_name, $cat)
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['a-name-is-required'][$lang]."</span>";
   }
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -8658,6 +8662,7 @@ function deletepersonalization ($site, $pers_name, $cat)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
   // initialize
+  $result = array();
   $result_ok = false;
 
   // set default language
@@ -8673,7 +8678,6 @@ function deletepersonalization ($site, $pers_name, $cat)
         ($cat == "tracking" && (!checkglobalpermission ($site, 'perstrack') || !checkglobalpermission ($site, 'perstrackdelete')))
       )
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -8737,7 +8741,6 @@ function deletepersonalization ($site, $pers_name, $cat)
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['a-name-is-required'][$lang]."</span>";
   }
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -8881,6 +8884,7 @@ function createtemplate ($site, $template, $cat)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -8959,7 +8963,6 @@ function createtemplate ($site, $template, $cat)
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['a-template-name-is-required'][$lang]."</span>";
   }
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -8981,6 +8984,7 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $result_save = false;
   $add_onload = "";
   $show = "";
@@ -9053,7 +9057,6 @@ function edittemplate ($site, $template, $cat, $user, $content="", $extension=""
     }
   }
 
-  $result = array();
   $result['result'] = $result_save;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -9076,6 +9079,7 @@ function deletetemplate ($site, $template, $cat)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $result_ok = false;
 
   // set default language
@@ -9138,7 +9142,6 @@ function deletetemplate ($site, $template, $cat)
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['a-template-name-is-required'][$lang]."</span>";
   }
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -9160,6 +9163,7 @@ function createportal ($site, $template)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $result_ok = false;
   $add_onload = "";
   $show = "";
@@ -9227,7 +9231,6 @@ function createportal ($site, $template)
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['a-template-name-is-required'][$lang]."</span>";
   }
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -9250,6 +9253,7 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
   // initialize
+  $result = array();
   $result_save = false;
   $add_onload = "";
   $show = "";
@@ -9432,7 +9436,6 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
     }
   }
 
-  $result = array();
   $result['result'] = $result_save;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -9454,6 +9457,7 @@ function deleteportal ($site, $template)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
   // initialize
+  $result = array();
   $result_ok = false;
 
   // set default language
@@ -9500,7 +9504,6 @@ function deleteportal ($site, $template)
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['a-template-name-is-required'][$lang]."</span>";
   }
 
-  $result = array();
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -9524,6 +9527,7 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
  
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -9542,7 +9546,6 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
       (valid_publicationname ($site) && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'usercreate')))
     )
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -9552,7 +9555,6 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
   // check diskkey
   if (!checkdiskkey())
   {
-    $result = array();
     $result['result'] = false;
     $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
     return $result;
@@ -9739,7 +9741,6 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -9765,6 +9766,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
 
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $update = false;
   $add_onload = "";
@@ -9798,7 +9800,6 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
       (valid_publicationname ($site) && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'useredit')))
     )
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -10314,7 +10315,6 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -10335,6 +10335,7 @@ function deleteuser ($site, $login, $user="sys")
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $add_onload = "";
   $show = "";
   $success = false;
@@ -10350,7 +10351,6 @@ function deleteuser ($site, $login, $user="sys")
       (valid_publicationname ($site) && (!checkglobalpermission ($site, 'user') || !checkglobalpermission ($site, 'userdelete')))
     )
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -10485,7 +10485,6 @@ function deleteuser ($site, $login, $user="sys")
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -10509,6 +10508,7 @@ function creategroup ($site, $groupname, $user="sys")
 
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -10521,7 +10521,6 @@ function creategroup ($site, $groupname, $user="sys")
   {
     if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'group') || !checkglobalpermission ($site, 'groupcreate'))
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -10634,7 +10633,6 @@ function creategroup ($site, $groupname, $user="sys")
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -10727,6 +10725,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $p
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -10739,7 +10738,6 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $p
   {
     if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'group') || !checkglobalpermission ($site, 'groupedit'))
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -11001,7 +10999,6 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $p
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -11023,6 +11020,7 @@ function deletegroup ($site, $groupname, $user)
 
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -11035,7 +11033,6 @@ function deletegroup ($site, $groupname, $user)
   {
     if (!valid_publicationname ($site) || !checkglobalpermission ($site, 'group') || !checkglobalpermission ($site, 'groupdelete'))
     {
-      $result = array();
       $result['result'] = false;
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
@@ -11163,7 +11160,6 @@ function deletegroup ($site, $groupname, $user)
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -11371,9 +11367,9 @@ function createmediacat ($site, $mediacat_name)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $show = "";
   $add_onload = "";
-  $result = array();
 
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
@@ -11482,10 +11478,10 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 {
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
-  //initialize
+  // initialize
+  $result = array();
   $show = "";
   $add_onload = "";
-  $result = array();
   
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
@@ -11601,6 +11597,7 @@ function deletemediacat ($site, $mediacat_name)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $show = "";
   $add_onload = "";
 
@@ -11699,8 +11696,8 @@ function uploadtomediacat ($site, $mediacat_name, $global_files)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
-  $show = "";
   $result = array();
+  $show = "";
 
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
@@ -11834,6 +11831,8 @@ function deletefrommediacat ($site, $mediafile)
   global $user, $eventsystem, $mgmt_config, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
+
   if (session_id() != "") $session_id = session_id();
   else $session_id = createuniquetoken ();
 
@@ -11917,6 +11916,7 @@ function createfolder ($site, $location, $folder, $user)
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
 
   // initialize
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -11963,7 +11963,6 @@ function createfolder ($site, $location, $folder, $user)
       
       if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['foldercreate']))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -12070,7 +12069,6 @@ function createfolder ($site, $location, $folder, $user)
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -12078,6 +12076,7 @@ function createfolder ($site, $location, $folder, $user)
   $result['name'] = $folder_orig;
   $result['publication'] = $site;
   $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
   $result['cat'] = $cat;
   $result['container'] = $contentfile;
   $result['container_id'] = $container_id;
@@ -12097,6 +12096,9 @@ function createfolder ($site, $location, $folder, $user)
 function createfolders ($site, $location, $folder, $user)
 {
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+
+  // initialize
+  $result = array();
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
@@ -12181,7 +12183,7 @@ function collectfolders ($site, $location, $folder)
 // ---------------------------------------- copyfolders --------------------------------------------
 // function: copyfolders ()
 // input: publication name [string], location (source) [string], new location (destination) [string], folder name [string], user name [string], do not create a copy of the folder if it exist already [boolean] (optional)
-// output: result array equal to createfolder
+// output: result array similar to createfolder
 
 // description:
 // This function copies/creates all folders of the source location using mkdir (only directories will be created!). Used by pasteobject function.
@@ -12189,6 +12191,9 @@ function collectfolders ($site, $location, $folder)
 function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplicates=true)
 { 
   global $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+
+  // initialize
+  $result = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location) && $locationnew != "" && $folder != "")
   {
@@ -12315,6 +12320,7 @@ function deletefolder ($site, $location, $folder, $user)
  
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -12359,7 +12365,6 @@ function deletefolder ($site, $location, $folder, $user)
       
       if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['folderdelete']))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -12434,7 +12439,6 @@ function deletefolder ($site, $location, $folder, $user)
   savelog (@$error); 
  
   // return results
-  $result = array();
   if (!empty ($success)) $folder = "";
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
@@ -12461,6 +12465,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -12506,7 +12511,6 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
       
       if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['folderrename']))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -12677,11 +12681,12 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
         {
           // save new folder name incl. special characters as file parameter
           $filedata = loadfile ($location.$foldernew, ".folder");
-          if ($filedata != "") $filedata = setfilename ($filedata, "name", $foldernew_orig);
-          if ($filedata != "") $result = savefile ($location.$foldernew, ".folder", $filedata);
-          else $result = false;
 
-          if ($result == false)
+          if ($filedata != "") $filedata = setfilename ($filedata, "name", $foldernew_orig);
+          if ($filedata != "") $savefile = savefile ($location.$foldernew, ".folder", $filedata);
+          else $savefile = false;
+
+          if ($savefile == false)
           {
             $errcode = "10265";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder name '".$foldernew_orig."' could not be saved for ".$location_esc.$foldernew;
@@ -12731,7 +12736,6 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -12866,6 +12870,7 @@ function createobject ($site, $location, $page, $template, $user)
 
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $object_exists = false;
   $show = "";
@@ -12973,7 +12978,6 @@ function createobject ($site, $location, $page, $template, $user)
         
         if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['create']))
         {
-          $result = array();
           $result['result'] = false;
           $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
           return $result;
@@ -13300,7 +13304,10 @@ function createobject ($site, $location, $page, $template, $user)
                 if ($mgmt_config['db_connect_rdbms'] != "")
                 {
                   rdbms_createobject ($container_id, $contentorigin, $templatefile, $mediafile, $contentfile, $user); 
-                } 
+                }
+
+                // get object hash
+                $object_hash = rdbms_getobject_hash ($contentorigin);
 
                 $page = $pagefile;
 
@@ -13357,8 +13364,8 @@ function createobject ($site, $location, $page, $template, $user)
       }
     }
   }
-  // only report error if basic input has not been provided
-  elseif ($site != "" && $location != "" && $page != "" && $user != "")
+  // only report error if basic input has been provided
+  elseif ($site != "" && $location != "" && substr_count ($location, "/") >= 2 && $page != "" && $user != "")
   {
     $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
     $show = "<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span><br />\n".$hcms_lang['please-fill-in-a-name'][$lang]."\n";
@@ -13372,11 +13379,12 @@ function createobject ($site, $location, $page, $template, $user)
   savelog (@$error);
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = @$add_onload;
   $result['message'] = @$show;
   $result['object_exists'] = $object_exists;
+  $result['objecthash'] = @$object_hash;
+  $result['objectpath'] = @$contentorigin;
   $result['publication'] = @$site;
   $result['location'] = @$location;
   $result['location_esc'] = @$location_esc;
@@ -13726,7 +13734,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
         if (sizeof ($links) > 0)
         {
-          $result['header'] = "HTTP/1.1 510 Internal Server Error";
+          $result['header'] = "HTTP/1.1 500 Internal Server Error";
           $result['message'] = str_replace ('%files%', implode(", ", $links), $hcms_lang['there-are-files-with-the-same-content-files'][$lang]);
 
           return $result;
@@ -13851,7 +13859,11 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             if (!empty ($result_createobject['result']))
             {
               $show = $hcms_lang['the-object-was-created-successfully'][$lang];
-              $result_createobject['object'] = $location_esc.$result_createobject['object'];
+              $result['objecthash'] = $result_createobject['objecthash'];
+              $result['objectpath'] = $result_createobject['objectpath'];
+              $result['location'] = $result_createobject['location'];
+              $result['location_esc'] = $result_createobject['location_esc'];
+              $result['object'] = $result_createobject['object'];
               $result['container_id'] = $result_createobject['container_id'];
             }
             // on error
@@ -13913,7 +13925,11 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // on success, add location
         if (!empty ($result_createobject['result']))
         {
-          $result['object'] = $result_createobject['object'] = $location_esc.$result_createobject['object'];
+          $result['objecthash'] = $result_createobject['objecthash'];
+          $result['objectpath'] = $result_createobject['objectpath'];
+          $result['location'] = $result_createobject['location'];
+          $result['location_esc'] = $result_createobject['location_esc'];
+          $result['object'] = $result_createobject['object'];
           $result['container_id'] = $result_createobject['container_id'];
         }
         // on error
@@ -13932,12 +13948,16 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // -------------- update existing multimedia object -----------------
       if ($media_update != "")
       {
+        $result['objectpath'] = $location_esc.$page;
+        $result['objecthash'] = rdbms_getobject_hash ($result['objectpath']);
+        $result['location'] = $location;
+        $result['location_esc'] = getlocation ($result['objectpath']);
+        $result['object'] = getobject ($result['objectpath']);
+
         // get container id
         $result['container_id'] = $container_id = getmediacontainerid ($media_update);
         $contentfile = $container_id.".xml";
-
-        $result['object'] = $location_esc.$page;
-
+        
         // update thumbnail file (uploaded file must be of type JPEG)
         if ($createthumbnail == 1)
         {
@@ -14231,7 +14251,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                 // set new page name
                 $page = $pagename = $page_nameonly.$file_ext_new;
                 // define new page
-                $result['object'] = $location_esc.createfilename ($page);
+                $result['objectpath'] = $location_esc.createfilename ($page);
               }
               // on error
               else
@@ -14270,7 +14290,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (is_file ($temp_file)) unlink ($temp_file);
 
     // include object name or object paths (uncompressed ZIP files) in message
-    if (empty ($show_command) && !empty ($result['object'])) $show_command = "[".$result['object']."]";
+    if (empty ($show_command) && !empty ($result['objectpath'])) $show_command = "[".$result['objectpath']."]";
  
     // write log
     savelog (@$error);
@@ -14311,6 +14331,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
   // initialize
   $error = array();
+  $result = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "" && !is_tempfile ($file))
   {
@@ -14522,6 +14543,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 
   // initialize
   $error = array();
+  $result = array();
 
   if (valid_publicationname ($site) && $location_source != "" && valid_locationname ($location_destination))
   {
@@ -14662,6 +14684,7 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
   global $wf_token, $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $hcms_lang, $lang;
 
   // initialize
+  $result = array();
   $processresult = false;
   $show = "";
   $add_onload = "";
@@ -14822,12 +14845,12 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
   }
 
   // return results
-  $result = array();
   $result['result'] = @$processresult;
   $result['add_onload'] = @$add_onload;
   $result['message'] = @$show;
   $result['publication'] = @$site;
   $result['location'] = @$location;
+  $result['location_esc'] = @$location_esc;
   $result['cat'] = @$cat;
   $result['object'] = @$page;
   $result['mediafile'] = @$mediafile_new;
@@ -14855,6 +14878,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
  
   // default values for action = paste before loading the clipboard
   $error = array();
+  $result = array();
   $success = false;
   $method = "";
   $site_source = "";
@@ -16378,6 +16402,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
   $result['message'] = $show;
   $result['publication'] = $site;
   $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
   $result['object'] = $page;
   if (!empty ($pagename_orig)) $result['name'] = $pagename_orig;
   else $result['name'] = false;
@@ -16551,6 +16576,9 @@ function deleteobject ($site, $location, $page, $user)
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
+  // initialize
+  $result = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
     // publication management config
@@ -16571,7 +16599,6 @@ function deleteobject ($site, $location, $page, $user)
       
       if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['delete']))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -16594,7 +16621,14 @@ function deleteobject ($site, $location, $page, $user)
     // return results 
     return $result;
   }
-  else return $result['result'] = false; 
+  else 
+  {
+    $result['result'] = false;
+    $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
+
+    // return results 
+    return $result;
+  }
 }
 
 // ---------------------------------------- renameobject --------------------------------------------
@@ -16611,6 +16645,9 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+
+  // initialize
+  $result = array();
 
   // trim
   $pagenew = trim ($pagenew);
@@ -16641,7 +16678,6 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 
       if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['rename']))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -16664,7 +16700,14 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     // return results 
     return $result;
   }
-  else return $result['result'] = false;
+  else 
+  {
+    $result['result'] = false;
+    $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
+    
+    // return results 
+    return $result;
+  }
 }
 
 // ---------------------------------------- renamefile --------------------------------------------
@@ -16683,6 +16726,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
 
   // initialize
   $error = array();
+  $result = array();
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
@@ -16707,7 +16751,6 @@ function renamefile ($site, $location, $page, $pagenew, $user)
       
       if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['rename']))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -16727,7 +16770,14 @@ function renamefile ($site, $location, $page, $pagenew, $user)
     // return results 
     return $result;
   }
-  else return $result['result'] = false;
+  else 
+  {
+    $result['result'] = false;
+    $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
+    
+    // return results 
+    return $result;
+  }
 }
 
 // ---------------------------------------- cutobject --------------------------------------------
@@ -16745,6 +16795,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
  
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -16786,7 +16837,6 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
       
       if (empty ($setlocalpermission['root']) || (!is_folder ($location.$page) && empty ($setlocalpermission['rename'])) || (is_folder ($location.$page) && empty ($setlocalpermission['folderrename'])))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -16835,9 +16885,12 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
     if (!empty ($eventsystem['oncutobject_post']) && empty ($eventsystem['hide']) && !empty ($success)) 
       oncutobject_post ($site, $cat, $location, $page, $user);
   }
+  else
+  {
+    $show = $hcms_lang['invalid-input-parameters'][$lang];
+  }
  
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -16863,6 +16916,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
  
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -16904,7 +16958,6 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
       
       if (empty ($setlocalpermission['root']) || (!is_folder ($location.$page) && empty ($setlocalpermission['rename'])) || (is_folder ($location.$page) && empty ($setlocalpermission['folderrename'])))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -16957,9 +17010,12 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
         oncopyobject_post ($site, $cat, $location, $page, $user);
     }
   }
+  else
+  {
+    $show = $hcms_lang['invalid-input-parameters'][$lang];
+  }
  
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -16985,6 +17041,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
 
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -17027,7 +17084,6 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
 
       if (empty ($setlocalpermission['root']) || (!is_folder ($location.$page) && empty ($setlocalpermission['rename'])) || (is_folder ($location.$page) && empty ($setlocalpermission['folderrename'])))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -17080,6 +17136,10 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
         oncopyconnectedobject_post ($site, $cat, $location, $page, $user);
     }
   }
+  else
+  {
+    $show = $hcms_lang['invalid-input-parameters'][$lang];
+  }
  
   // return results
   $result = array();
@@ -17105,7 +17165,9 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
 {
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
+  $result = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {
@@ -17126,7 +17188,6 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
       
       if (empty ($setlocalpermission['root']) || (empty ($setlocalpermission['rename']) && empty ($setlocalpermission['folderrename'])))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -17141,6 +17202,7 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
     else
     {
       $result['result'] = false;
+      $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
     }
 
     // eventsystem will be executed in manipulateobject to get access to the pasted object 
@@ -17148,7 +17210,13 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
     // return results 
     return $result;
   }
-  else return $result['result'] = false;
+  else
+  {
+    $result['result'] = false;
+    $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
+
+    return $result;
+  }
 }
 
 // ---------------------------------------- lockobject --------------------------------------------
@@ -17165,6 +17233,7 @@ function lockobject ($site, $location, $page, $user)
  
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -17219,7 +17288,6 @@ function lockobject ($site, $location, $page, $user)
       
       if (empty ($setlocalpermission['root']) || (!is_folder ($location.$page) && empty ($setlocalpermission['create'])) || (is_folder ($location.$page) && empty ($setlocalpermission['foldercreate'])))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -17288,9 +17356,12 @@ function lockobject ($site, $location, $page, $user)
         onlockobject_post ($site, $cat, $location, $page, $user);
     }
   }
+  else
+  {
+    $show = $hcms_lang['invalid-input-parameters'][$lang];
+  }
 
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -17316,6 +17387,7 @@ function unlockobject ($site, $location, $page, $user)
  
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $add_onload = "";
   $show = "";
@@ -17370,7 +17442,6 @@ function unlockobject ($site, $location, $page, $user)
       
       if (empty ($setlocalpermission['root']) || (!is_folder ($location.$page) && empty ($setlocalpermission['create'])) || (is_folder ($location.$page) && empty ($setlocalpermission['foldercreate'])))
       {
-        $result = array();
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
         return $result;
@@ -17431,9 +17502,12 @@ function unlockobject ($site, $location, $page, $user)
         onunlockobject_post ($site, $cat, $location, $page, $user);
     }
   }
+  else
+  {
+    $show = $hcms_lang['invalid-input-parameters'][$lang];
+  }
  
   // return results
-  $result = array();
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -17459,6 +17533,7 @@ function publishobject ($site, $location, $page, $user)
  
   // initialize
   $error = array();
+  $result = array();
   $success = false;
   $buffer_site = "";
   $buffer_location = "";
@@ -17599,7 +17674,6 @@ function publishobject ($site, $location, $page, $user)
                 
                 if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['publish']))
                 {
-                  $result = array();
                   $result['result'] = false;
                   $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
                   return $result;
@@ -18053,6 +18127,7 @@ function publishlinkedobject ($site, $location, $page, $user)
 
   // initialize
   $error = array();
+  $result = array();
 
   // set default language
   if (empty ($lang)) $lang = "en";
@@ -18489,6 +18564,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
 
   // initialize
   $error = array();
+  $result = array();
 
   if ($action == "mail" && is_numeric ($file) && valid_objectname ($user))
   {
@@ -18555,8 +18631,6 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       // if object
       elseif (is_file ($location.$file))
       {
-        // initialize
-        $result = array();
         $result['result'] = true;
 
         $fileinfo = getfileinfo ($site, $file, "");
@@ -18633,7 +18707,9 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 { 
   global $user, $pageaccess, $compaccess, $mgmt_config, $hiddenfolder, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
+  $result = array();
  
   // if selected file is a directory
   if (isset ($root_id) && valid_publicationname ($site) && $cat != "" && valid_locationname ($location))
@@ -19378,6 +19454,7 @@ function savemessage ($data, $type="mail", $user="")
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   if (!empty ($data) && is_array ($data) && (strtolower ($type) == "mail" || strtolower ($type) == "chat") && valid_objectname ($user))
@@ -19421,6 +19498,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   if (!empty($mgmt_config[$site]['remoteclient']))
@@ -19577,6 +19655,7 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   if ($URL != "" && substr_count ($URL, "://") > 0)
@@ -19715,6 +19794,7 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
 {
   global $mgmt_config;
   
+  // initialize
   $error = array();
 
   if ($URL != "" && substr_count ($URL, "://") > 0)
@@ -19788,6 +19868,7 @@ function HTTP_Proxy ($URL, $enable_file=false)
 {
   global $mgmt_config;
   
+  // initialize
   $error = array();
 
   if ($URL != "" && substr_count ($URL, "://") > 0 && !empty ($_REQUEST) && is_array ($_REQUEST))
@@ -19916,6 +19997,7 @@ function loadbalancer ($type)
 {
   global $mgmt_config;
   
+  // initialize
   $error = array();
 
   // if hyperCMS load balancer is used $mgmt_config['url_path_service'] must hold an array
@@ -20575,6 +20657,7 @@ function licensenotification ()
 {
   global $eventsystem, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   // license notification configuration file
@@ -21146,7 +21229,7 @@ function rewrite_homepage ($site, $rewrite_type="forward")
 // --------------------------------------- load_csv -------------------------------------------
 // function: load_csv ()
 // input: path to CSV file [string], delimiter [string] (optional), enclosure [string] (optional), character set of the source data [string] (optional), character set of the output data [string] (optional)
-// output: array / false on error
+// output: result array / false on error
 
 // description:
 // Analyzes the content from the CSV file and detects delimiter and enclosure characters if left empty. On success the data will be returned as array starting with a row index of 1.
@@ -21411,6 +21494,7 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
 {
   global $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
 
   // include hypermailer class
@@ -21742,6 +21826,8 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
 
   // initialize
   $error = array();
+  $result = array();
+  $result['result'] = false;
   
   // set default language
   if (empty ($lang)) $lang = "en";
@@ -22063,8 +22149,9 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
         // test if file could be saved
         if ($savefile == false)
         {
-          return false;
+          $result['message'] = $hcms_lang['the-data-could-not-be-saved'][$lang];
         }
+        // on success
         else
         {
           // set taxonomy
@@ -22075,11 +22162,14 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
 
           // notification
           notifyusers ($site, $location, $page, "onedit", $user);
+
+          $result['result'] = true;
+          $result['message'] = $hcms_lang['the-data-was-saved-successfully'][$lang];
         }
 
         // ----------------------------------- DB Connectivity --------------------------------------   
         // db_connect will save content in provided database connectivity 
-        if (!empty ($db_connect)) 
+        if ($result['result'] == true && !empty ($db_connect)) 
         {      
           // write data
           $test = db_write_container ($site, $contentfile, $contentdatanew, $user);    
@@ -22097,13 +22187,28 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
           onsaveobject_post ($site, $cat, $location, $page, $contentfile, $contentdatanew, $user);
         }
         
-        return true;
+        return $result;
       }
-      else return false;
+      // container could not be loaded
+      else
+      {
+        $result['message'] = $hcms_lang['the-content-container-holds-no-informations'][$lang];
+        return $result;
+      }
     }
-    else return false;
+    // container is locked by other user
+    else
+    {
+      $result['message'] = $hcms_lang['container'][$lang]." ".$hcms_lang['is-used-by'][$lang]." ".$usedby;
+      return $result;
+    }
   }
-  else return false;
+  // ivalid input
+  else
+  {
+    $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
+    return $result;
+  }
 }
 
 // ========================================== CORS =======================================

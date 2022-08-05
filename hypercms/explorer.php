@@ -2470,6 +2470,7 @@ else
             <label><input type="checkbox" name="search_format[]" value="document" />&nbsp;<?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></label><br />
             <label><input type="checkbox" name="search_format[]" value="video" />&nbsp;<?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></label><br />
             <label><input type="checkbox" name="search_format[]" value="audio" />&nbsp;<?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></label><br />
+            <label><input type="checkbox" name="search_format[]" value="folder" />&nbsp;<?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?></label><br />
           </div>
         </div>
         <hr />

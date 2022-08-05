@@ -122,6 +122,7 @@ if (!empty ($list) || !empty ($file))
 $token = createtoken ($user);
 
 if ($label == "") $label = $id;
+else $label = getlabel ($label, $lang);
 ?>
 <!DOCTYPE html>
 <html>

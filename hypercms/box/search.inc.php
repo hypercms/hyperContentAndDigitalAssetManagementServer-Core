@@ -40,7 +40,7 @@ if (empty ($is_mobile) && isset ($siteaccess) && is_array ($siteaccess))
   });
   </script>
 
-  <div id=\"searchbar\" style=\"overflow:auto; margin:60px 0px; width:100%; text-align:center; float:left;\" title='".($mgmt_config['search_query_match'] == "match" ? getescapedtext ($hcms_lang['search-wildcard-plus'][$lang]." \r\n".$hcms_lang['search-wildcard-minus'][$lang]." \r\n".$hcms_lang['search-wildcard-none'][$lang]." \r\n".$hcms_lang['search-wildcard-asterisk'][$lang]." \r\n".$hcms_lang['search-wildcard-doublequote'][$lang]) : "")."'>
+  <div id=\"searchbar\" style=\"overflow:auto; margin:60px 0px; width:100%; text-align:center;\" title='".($mgmt_config['search_query_match'] == "match" ? getescapedtext ($hcms_lang['search-wildcard-plus'][$lang]." \r\n".$hcms_lang['search-wildcard-minus'][$lang]." \r\n".$hcms_lang['search-wildcard-none'][$lang]." \r\n".$hcms_lang['search-wildcard-asterisk'][$lang]." \r\n".$hcms_lang['search-wildcard-doublequote'][$lang]) : "")."'>
     <form name=\"searchform\" method=\"post\" action=\"frameset_objectlist.php\" autocomplete=\"off\">
       <input type=\"hidden\" name=\"search_dir\" value=\"\" />
       <input type=\"hidden\" name=\"action\" value=\"base_search\" />

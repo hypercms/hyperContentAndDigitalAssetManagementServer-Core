@@ -2094,6 +2094,104 @@ function update_database_v10066 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v10069 ----------------------------------------------
+// function: update_database_v10069()
+// input: %
+// output: true / false
+
+// description: 
+// Update table object for support of version 10.0.6.9
+
+function update_database_v10069 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.6.9"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table object
+    $sql = "ALTER TABLE `object` ADD `level` smallint(6) DEFAULT NULL AFTER id;";
+    $errcode = "50690";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // select all content
+    $sql = 'SELECT object_id, objectpath FROM object';
+    $errcode = "50691";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+    if ($result)
+    {
+      while ($row = $db->rdbms_getresultrow('select'))
+      {
+        if (!empty ($row['objectpath']))
+        {
+          $level = getobjectpathlevel ($row['objectpath']);
+
+          // set level
+          if (intval ($level) > 0)
+          {
+            $sql = 'UPDATE object SET level='.intval($level).' WHERE object_id='.intval($row['object_id']);
+            $errcode = "50691";
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+          }
+        }
+      }
+    }
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.9|updated to version 10.0.6.9"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v100610 ----------------------------------------------
+// function: update_database_v100610()
+// input: %
+// output: true / false
+
+// description: 
+// Update table object for support of version 10.0.6.10
+
+function update_database_v100610 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.6.10"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // select all content
+    $sql = 'UPDATE object SET filetype="folder" WHERE objectpath LIKE "%/.folder"';
+    $errcode = "50670";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.10|updated to version 10.0.6.10"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -2139,6 +2237,8 @@ function updates_all ()
     update_database_v1006 ();
     update_database_v10065 ();
     update_database_v10066 ();
+    update_database_v10069 ();
+    update_database_v100610 ();
   }
 }
 

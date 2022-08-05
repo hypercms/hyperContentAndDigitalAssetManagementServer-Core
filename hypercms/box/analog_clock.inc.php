@@ -13,7 +13,7 @@ if (!empty ($hcms_lang_date[$lang]))
 else $date = date ("Y-m-d");
 ?>
 
-<div id="recent" class="hcmsHomeBox" style="margin:10px; width:<?php echo $width; ?>; height:400px; float:left;">
+<div id="recent" class="hcmsHomeBox" style="margin:10px; width:<?php echo $width; ?>; height:400px;">
   <div class="Clock">
     <div class="hour">
       <div class="hr" id="hr"></div>

@@ -22,7 +22,7 @@ if (!empty ($objectinfo_array) && is_array ($objectinfo_array) && sizeof ($objec
     $object_array = array_unique ($object_array);
   
     echo "
-    <div id=\"recent\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px; float:left;\">
+    <div id=\"recent\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px;\">
       <div class=\"hcmsHeadline\" style=\"margin:6px 2px;\"><img src=\"".getthemelocation("night")."img/button_file_copy.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['my-recent-objects'][$lang])."</div>";
 
     array_reverse ($object_array);

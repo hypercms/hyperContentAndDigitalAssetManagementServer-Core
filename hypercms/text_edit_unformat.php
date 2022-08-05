@@ -236,6 +236,7 @@ $token = createtoken ($user);
   <!-- top bar -->
   <?php
   if ($label == "") $label = $id;
+  else $label = getlabel ($label, $lang);
 
   echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page), "objFrame");
   ?>

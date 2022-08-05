@@ -446,7 +446,7 @@ function closePopup ()
   <?php } ?>
 
 <!-- content -->
-<div id="contentScreen" style="position:fixed; top:0; left:0; right:0; height:100%; overflow:auto; z-index:100; transition:all 0.3s linear;">
+<div id="contentScreen" style="position:fixed; top:0; left:0; right:0; height:100%; overflow:auto; z-index:100; transition:all 0.3s linear; <?php if ($is_mobile) echo "text-align:center;"; ?>">
 
   <!-- spacer -->
   <div class="hcmsHomeSpacer" id="homespacer"></div>
@@ -485,5 +485,6 @@ function closePopup ()
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

@@ -1634,7 +1634,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                         // get usergroup information
                         $usergroupnode = selectcontent ($usergroupdata, "<usergroup>", "<groupname>", $group_name);
 
-                        if ($usergroupnode != false)
+                        if (!empty ($usergroupnode[0]))
                         {
                           $userpermission = getcontent ($usergroupnode[0], "<permission>");
                           $userpageaccess = getcontent ($usergroupnode[0], "<pageaccess>");

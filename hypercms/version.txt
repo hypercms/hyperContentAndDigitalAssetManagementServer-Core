@@ -6176,8 +6176,70 @@ Release 09/2022
 - Modification in the search Home box and the explorer in order to display the new search help
 - Modifications in function rdbms_getfilesize in DB Connect in order to set the default value for the input parameter $recyclebin to false
 - Modifications in function rdbms_getfilesize in DB Connect in order to apply the input parameter $recyclebin for the object count
+- Modifications in function rdbms_getfilesize in DB Connect in order to subtract the root folder object file from the file count
+- Modifications in function rdbms_getfilesize in DB Connect in order to include the count and file size in the same SQL statement
+- Modifications in function zipfiles in Media API in order to change the SQL statement to use the deleteuser instead of the objectpath for excluding the objects in the recycle bin
+- Modifications in function zipfiles in Media API in order to change the default ZIP file size limit to 120,000 MB
+- Modifications in various API functions that use function rdbms_getfilesize in order to set the recyclebin parameter
+- Modifications in JS function hcms_loadSidebar in contextmenu.js in order to disable the sidebar view if more than one object has been selected
+- Modifications in frameset_mobile in order to implement and support the search for text or in the location and object name 
+- Modifications in Home Screen in order to center the Home boxes
+- Modifications in main.css of all design themes for the CSS class hcmsHomeBox
+- Modifications in all Home boxes in order to remove the float CSS style
+- Modifications in page_info_stats in order to implement a loading screen, caching for folder statistics and non-blocking execution
+- Implementation of the new function getgroupinformation in Get API in order to provide the set of permissions of a user group
+- Modifications in function getuserinformation in Get API in order to support the new input parameter to include the set of permissions for all group memberships of the user
+- Implementation of the new REST function getuserinformation in the RESTful API
+- Modifications in function userlogin in Security API in order to verify the usergroup node array element
+- Modifications in function getobjectlist in Get API in order to support the search for object ID or hash
+- Modifications in function rdbms_getobject_info in DB Connect in order to include the links to media objects in the result
+- Modifications in function rdbms_getobject_info in DB Connect in order to include the location and object name in the result
+- Modifications in function rdbms_searchuser in DB Connect in order to include the links to media objects in the result
+- Modifications in function rdbms_searchuser in DB Connect in order to include the location and object name in the result
+- Modifications in function rdbms_getobjects in DB Connect in order to include the links to media objects in the result
+- Modifications in function rdbms_getobjects in DB Connect in order to include the location and object name in the result
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order to include the links to media objects in the result
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order to include the location and object name in the result
+- Modifications in function rdbms_searchrecipient in DB Connect in order to include the links to media objects in the result
+- Modifications in function rdbms_searchrecipient in DB Connect in order to include the location and object name in the result
+- Modifications in function createobject in Main API in order to return the object hash in the result
+- Modifications in function uploadfile in Main API in order to return the object hash, objectpath, location, and object in the result
+- Modifications in the RESTful API in order to translate the Systems API results
+- Modifications in the RESTful API test file in order to provide additional comments and move the test parameters to the top section of the source code
+- Removed average file size from Home box free_storage_per_publication due to required database access and delay with large databases
+- Modifications in function createthumbnail_indesign in Media API in order to log an error if the result is not a valid JPEG file
+- Modifications in function getimagecolors in Get API in order to remove a wrong thumbnail file that fails the JPEG verification
+- Modifications in function savecontent in Main API in order to return a result array instead of a boolean value
+- Modifications in various function in Main API in order to initialize the result array at the beginning and not the end of the function code
+- Modifications in various function in Main API in order to return a error message for invalid input parameters
+- Modifications in the RESTful API in order to replace the newlines by periods and remove the HTML tags from the result message
+- Implementation of streaming links for audio and video files in explorer_preview and page_info
+- Design modifications in explorer_preview and page_info in order to apply the word-break style for all direct, stream, wrapper, and download links
+- Modifications in function getobjectlist in Get API in order to support the users page and component access permissions in case the location is missing
+- Modifications in function createobject in Main API in order to verify the location before the error log entry
+- Implementation of the new function getobjectpathlevel in Get API in order to get the level of an objectpath
+- Implementation of the new function update_database_v10069 in Update API in order to update table object and create a new attribute for the objectpath levels and set the value
+- Modifications in function update_all in Update API in order to add the new function update_database_v10069
+- Modifications in various function in DB Connect in order to support the new attribute level in table object
+- Modifications in function rdbms_getobject_info in DB Connect in order to verify that the objectpath array element exists
+- Modifications in daily job in order to delete the temporary files after the invalid users
+- Modifications in function getobjectlist in Get API in order to set the value for an empty "filename" search to *Null* in order to disable the search in textcontent and objectpath at the same time 
+- Modifications in function getfiletype in Get API in order to support the folder type
+- Implementation of the new function update_database_v100610 in Update API in order to update table object and set filtype to "folder" for each folder objects
+- Modifications in function rdbms_searchcontent and rdbms_replacecontent in DB Connect in order to support the filetype "folder"
+- Modifications in explorer in order to support the search for the "folder" file type
+- Modifications in function rbms_searchcontent and rbms_replacecontent in DB Connect in order to support readable locations (convert special characters)
+- Modifications in function rbms_searchcontent in DB Connect in order to add the template to the result array
+- Modifications in function rdbms_getobject_info in DB Connect in order to add the object type to the result array
+- Modifications version_content_compare in order to verify that the variable content_array exists
+- Modifications in function showmedia in UI API in order to initialize the media attributes in case they can't be extracted from the media file
+- Implementation of the new function getlabel in Get API in order to extract the label for a specific language code
+- Modifications in the template engine in order to use function getalbale and support labels and help values with language code prefixes
+- Modifications in all article, component, text, link and media editors in order to use function getalbale and support labels with language code prefixes
+- Modifications in function showinlineeditor in UI API in order to use function getalbale and support labels with language code prefixes
+- Modifications in popup_upload_html in order to set the max items in the upload queue to 500
 - Update of the update log in the installation directory
-- Updates in the Import/Export Guide and Users Guide
+- Updates in the Administrators Guide, Import/Export Guide, Template Designers Guide, and Users Guide
 - Implementation of new texts for the search help in all language files
 - Bug fix: Function manipulateobject in Main API did not extract the objects category properly since it used a reduced object path
 - Bug fix: Function manipulateobject in Main API did not extract the objects category before the accessgeneral function call
@@ -6186,3 +6248,6 @@ Release 09/2022
 - Bug fix: explorer_preview caused the creation of new object after the have been moved to the recycle bin and could not be found on reload of explorer_preview
 - Bug fix: Function rdbms_setdeletedobject in DB Connect did not exclude the folder object from the SELECT query
 - Bug fix: The explorer of the Import/Export Connector module did not convert the directory path and caused a fallback to the root directory
+- Bug fix: Function createthumbnail_indesign in Media API did not verify the created JPEG file format which lead to an issue with the create thumbnail file the analysis of its colors by function getimagecolors in Get API
+- Bug fix: The RESTful function executeREST did not accept a publication value *Null* in the request
+- Bug fix: Function editpublication did set the value for the RERSTful API based on the SOAP API

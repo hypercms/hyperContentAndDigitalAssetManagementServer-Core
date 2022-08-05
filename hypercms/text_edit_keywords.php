@@ -132,6 +132,7 @@ $token = createtoken ($user);
 
 // label
 if ($label == "") $label = $id;
+else $label = getlabel ($label, $lang);
 
 // taxonomy tree view
 if ($display == "taxonomy")

@@ -79,6 +79,7 @@ if (substr_count ($tagname, "art") == 1) $art = "art";
 else $art = "";
 
 if (empty ($label)) $label = $id;
+else $label = getlabel ($label, $lang);
 ?>
 <!DOCTYPE html>
 <html>

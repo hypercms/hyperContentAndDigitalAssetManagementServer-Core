@@ -255,6 +255,9 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     {
       if (!empty ($mgmt_config['db_connect_rdbms'])) $filewrapperdownload = createdownloadlink ($site, $location, $page, $cat);
       elseif (!empty ($mediafile)) $filewrapperdownload = createviewlink ($site, $mediafile, $page, false, "download");
+
+      // streaming link for video and audio files
+      if (!empty ($mediafile) && (is_video ($mediafile) || is_audio ($mediafile))) $filestreamlink = $mgmt_config['url_path_cms']."?wm=".hcms_encrypt ($site."/".$mediafile);
     }
     
     // object access link
@@ -269,10 +272,11 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
       <hr />
       <table class=\"hcmsTableNarrow\">";
 
-      if (!empty ($filedirectlink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['direct-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filedirectlink."</span></td></tr>\n";
-      if (!empty ($filewrapperlink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['wrapper-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filewrapperlink."</span></td></tr>\n";
-      if (!empty ($filewrapperdownload)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['download-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\">".$filewrapperdownload."</span></td></tr>\n";
-      if (!empty ($fileaccesslink)) $linksview .= "<tr><td>".getescapedtext ($hcms_lang['access-link'][$lang])." </br><span class=\"hcmsHeadlineTiny\">".$fileaccesslink."</span></td></tr>\n";
+      if (!empty ($filedirectlink)) $linksview .= "<tr><td style=\"vertical-align:top; padding-top:6px;\">".getescapedtext ($hcms_lang['direct-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\" style=\"word-break:break-all;\">".$filedirectlink."</span></td></tr>\n";
+      if (!empty ($filestreamlink)) $linksview .= "<tr><td style=\"vertical-align:top; padding-top:6px;\">".getescapedtext ($hcms_lang['link'][$lang]." ".$hcms_lang['for-videoplayer'][$lang])." <br/><span class=\"hcmsHeadlineTiny\" style=\"word-break:break-all;\">".$filestreamlink."</span></td></tr>\n";
+      if (!empty ($filewrapperlink)) $linksview .= "<tr><td style=\"vertical-align:top; padding-top:6px;\">".getescapedtext ($hcms_lang['wrapper-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\" style=\"word-break:break-all;\">".$filewrapperlink."</span></td></tr>\n";
+      if (!empty ($filewrapperdownload)) $linksview .= "<tr><td style=\"vertical-align:top; padding-top:6px;\">".getescapedtext ($hcms_lang['download-link'][$lang])." <br/><span class=\"hcmsHeadlineTiny\" style=\"word-break:break-all;\">".$filewrapperdownload."</span></td></tr>\n";
+      if (!empty ($fileaccesslink)) $linksview .= "<tr><td style=\"vertical-align:top; padding-top:6px;\">".getescapedtext ($hcms_lang['access-link'][$lang])." </br><span class=\"hcmsHeadlineTiny\" style=\"word-break:break-all;\">".$fileaccesslink."</span></td></tr>\n";
 
       $linksview .= "
       </table>";

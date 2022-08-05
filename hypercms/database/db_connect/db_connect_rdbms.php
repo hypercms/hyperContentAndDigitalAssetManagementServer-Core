@@ -1430,8 +1430,8 @@ function rdbms_renameobject ($object_old, $object_new)
           $filetype = getfiletype ($fileext);
 
           // update object 
-          if ($filetype != "") $sql = 'UPDATE object SET objectpath="'.$object.'", md5_objectpath="'.md5 ($object).'", filetype="'.$filetype.'" WHERE object_id='.$object_id.'';
-          else $sql = 'UPDATE object SET objectpath="'.$object.'", md5_objectpath="'.md5 ($object).'" WHERE object_id='.$object_id.'';
+          if ($filetype != "") $sql = 'UPDATE object SET level='.getobjectpathlevel($object).', objectpath="'.$object.'", md5_objectpath="'.md5 ($object).'", filetype="'.$filetype.'" WHERE object_id='.$object_id.'';
+          else $sql = 'UPDATE object SET level='.getobjectpathlevel($object).', objectpath="'.$object.'", md5_objectpath="'.md5 ($object).'" WHERE object_id='.$object_id.'';
 
           $errcode = "50011";
           $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);
@@ -1740,7 +1740,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 
 // ----------------------------------------------- search content ------------------------------------------------- 
 // function: rdbms_searchcontent()
-// input: location [string,array] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
+// input: location [string,array] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,folder,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), file extensions without dot [array] (optional)
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
 //        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
@@ -1882,13 +1882,16 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       {
         if ($path != "")
         {
+          // convert special characters
+          $path = specialchr_encode ($path);
+
           // escape characters depending on dbtype
           $path = $db->rdbms_escape_string ($path);
           // replace %
           $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);          
           // where clause for folderpath
           // search only on the same level of the path
-          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE BINARY "'.$path.'%" AND obj.objectpath NOT LIKE BINARY "'.$path.'%/%") OR (obj.objectpath LIKE BINARY "'.$path.'%/.folder" AND obj.objectpath NOT LIKE BINARY "'.$path.'%/%/.folder")';
+          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE BINARY "'.$path.'%" AND obj.level='.getobjectpathlevel($path).')';
           // all objects that are located in the path
           else $sql_temp[] = 'obj.objectpath LIKE BINARY "'.$path.'%"';
         }
@@ -1912,6 +1915,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       {
         if ($path != "")
         {
+          // convert special characters
+          $path = specialchr_encode ($path);
+
           // explicitly exclude folders from result
           if ($path == "/.folder")
           {
@@ -2502,7 +2508,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           }
 
           // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
-          if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary","unknown"))) 
+          if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary","folder","unknown"))) 
           {
             if (!empty ($sql_where['format'])) $sql_where['format'] .= " OR ";
             $sql_where['format'] .= 'obj.filetype="'.$search_type.'"';
@@ -2720,7 +2726,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     else $order_by = $db->rdbms_escape_string (trim ($order_by));
 
     // build SQL statement
-    $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media, obj.workflowstatus'.$sql_add_attr .' FROM object AS obj ';
+    $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media, obj.template, obj.workflowstatus'.$sql_add_attr .' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     $sql .= 'WHERE obj.deleteuser="" ';
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
@@ -2747,9 +2753,10 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
           $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
           $objectpath[$hash]['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
-          $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
-          $objectpath[$hash]['media'] =  $row['media'];
-          $objectpath[$hash]['workflowstatus'] =  $row['workflowstatus'];
+          $objectpath[$hash]['container_id'] = sprintf ("%07d", $row['id']);
+          $objectpath[$hash]['template'] = $row['template'];
+          $objectpath[$hash]['media'] = $row['media'];
+          $objectpath[$hash]['workflowstatus'] = $row['workflowstatus'];
 
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
           if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
@@ -2842,7 +2849,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
 // ----------------------------------------------- replace content -------------------------------------------------
 // function: rdbms_replacecontent()
-// input: location path [string], object-type [string] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), search expression [string], replace expression [string], user name [string] (optional)
+// input: location path [string], object-type [audio,binary,compressed,document,flash,image,text,video,folder,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), search expression [string], replace expression [string], user name [string] (optional)
 // output: result array with object paths of all touched objects / false
 
 // description:
@@ -2864,6 +2871,9 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
     if ($user != "") $user = $db->rdbms_escape_string ($user);
  
+    // convert special characters
+    $folderpath = specialchr_encode ($folderpath);
+
     // replace %
     $folderpath = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $folderpath);
 
@@ -2889,7 +2899,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
           }
 
           // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
-          if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary","unknown"))) 
+          if (in_array ($search_type, array("audio","document","text","image","video","compressed","flash","binary","folder","unknown"))) 
           {
             if (!empty ($sql_where['format'])) $sql_where['format'] .= " OR ";
             $sql_where['format'] .= 'obj.filetype="'.$search_type.'"';
@@ -3213,6 +3223,53 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
           if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
+
+          // object and location name
+          if (is_array ($return_text_id) && (in_array ("object", $return_text_id) || in_array ("location", $return_text_id)))
+          {
+            $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+            $temp_cat = getcategory ($temp_site, $objectpath[$hash]['objectpath']);
+
+            // folder
+            if (getobject ($objectpath[$hash]['objectpath']) == ".folder")
+            {
+              $temp_objectpath = getlocationname ($temp_site, getlocation ($objectpath[$hash]['objectpath']), $temp_cat, "path");
+            }
+            // object
+            else
+            {
+              $temp_objectpath = getlocationname ($temp_site, $objectpath[$hash]['objectpath'], $temp_cat, "path");
+            }
+
+            $objectpath[$hash]['location'] = getlocation ($temp_objectpath);
+            $objectpath[$hash]['object'] = getobject ($temp_objectpath);
+          }
+
+          if (!empty ($row['media']))
+          {
+            // links
+            if (in_array ("wrapperlink", $return_text_id)) $objectpath[$hash]['wrapperlink'] = $mgmt_config['url_path_cms']."?wl=".$hash;
+            if (in_array ("downloadlink", $return_text_id)) $objectpath[$hash]['downloadlink'] = $mgmt_config['url_path_cms']."?dl=".$hash;
+
+            // thumbnail
+            if (in_array ("thumbnail", $return_text_id))
+            {
+              $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+              $mediadir = getmedialocation ($temp_site, $row['media'], "abs_path_media");
+              $media_info = getfileinfo ($temp_site, $row['media'], "comp");
+
+              // try to create the thumbnail if not available
+              if (!empty ($mgmt_config['recreate_preview']) && !file_exists ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg"))
+              {
+                createmedia ($temp_site, $mediadir.$temp_site."/", $mediadir.$temp_site."/", $media_info['file'], "", "thumbnail", false, true);
+              }
+              
+              if (is_file ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") && filesize ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") > 100)
+              {
+                $objectpath[$hash]['thumbnail'] = createviewlink ($temp_site, $media_info['filename'].".thumb.jpg");
+              }
+            }
+          }
         }
       }
     }
@@ -3374,6 +3431,53 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
           if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
           if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
+
+          // object and location name
+          if (is_array ($return_text_id) && (in_array ("object", $return_text_id) || in_array ("location", $return_text_id)))
+          {
+            $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+            $temp_cat = getcategory ($temp_site, $objectpath[$hash]['objectpath']);
+
+            // folder
+            if (getobject ($objectpath[$hash]['objectpath']) == ".folder")
+            {
+              $temp_objectpath = getlocationname ($temp_site, getlocation ($objectpath[$hash]['objectpath']), $temp_cat, "path");
+            }
+            // object
+            else
+            {
+              $temp_objectpath = getlocationname ($temp_site, $objectpath[$hash]['objectpath'], $temp_cat, "path");
+            }
+
+            $objectpath[$hash]['location'] = getlocation ($temp_objectpath);
+            $objectpath[$hash]['object'] = getobject ($temp_objectpath);
+          }
+
+          if (!empty ($row['media']))
+          {
+            // links
+            if (in_array ("wrapperlink", $return_text_id)) $objectpath[$hash]['wrapperlink'] = $mgmt_config['url_path_cms']."?wl=".$hash;
+            if (in_array ("downloadlink", $return_text_id)) $objectpath[$hash]['downloadlink'] = $mgmt_config['url_path_cms']."?dl=".$hash;
+
+            // thumbnail
+            if (in_array ("thumbnail", $return_text_id))
+            {
+              $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+              $mediadir = getmedialocation ($temp_site, $row['media'], "abs_path_media");
+              $media_info = getfileinfo ($temp_site, $row['media'], "comp");
+
+              // try to create the thumbnail if not available
+              if (!empty ($mgmt_config['recreate_preview']) && !file_exists ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg"))
+              {
+                createmedia ($temp_site, $mediadir.$temp_site."/", $mediadir.$temp_site."/", $media_info['file'], "", "thumbnail", false, true);
+              }
+              
+              if (is_file ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") && filesize ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") > 100)
+              {
+                $objectpath[$hash]['thumbnail'] = createviewlink ($temp_site, $media_info['filename'].".thumb.jpg");
+              }
+            }
+          }
         } 
       }
     }
@@ -3939,7 +4043,7 @@ function rdbms_getobject ($object_identifier)
 
 // -------------------------------------------- get object info by unique id or hash ----------------------------------------------- 
 // function: rdbms_getobject_info()
-// input: object identifier (object path Or object hash OR object ID OR access hash) [string], text IDs to be returned [array] (optional)
+// input: object identifier (object path or object hash OR object ID OR access hash) [string], text IDs to be returned [array] (optional)
 // output: array with object info / false
 
 // description:
@@ -4047,7 +4151,10 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
       {
         if (!empty ($row['objectpath']))
         {
+          $hash = $row['hash'];
+
           $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+          $objectpath['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
           $objectpath['container_id'] = sprintf ("%07d", $row['id']);
           $objectpath['template'] = $row['template'];
           $objectpath['hash'] = $row['hash'];
@@ -4091,7 +4198,10 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           }
           elseif (!empty ($row['objectpath'])) 
           {
+            $hash = $row['hash'];
+
             $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+            $objectpath['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
             $objectpath['container_id'] = sprintf ("%07d", $row['id']);
             $objectpath['template'] = $row['template'];
             $objectpath['hash'] = $row['hash'];
@@ -4108,7 +4218,10 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
         }
         elseif (!empty ($row['objectpath']))
         {
+          $hash = $row['hash'];
+
           $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+          $objectpath['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
           $objectpath['container_id'] = sprintf ("%07d", $row['id']);
           $objectpath['template'] = $row['template'];
           $objectpath['hash'] = $row['hash'];
@@ -4122,6 +4235,53 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           if (!empty ($row['height'])) $objectpath['height'] = $row['height'];
           if (!empty ($row['text_id'])) $objectpath['text:'.$row['text_id']] = $row['textcontent'];
         }  
+      }
+    }
+
+    // object and location name
+    if (!empty ($objectpath['objectpath']) && is_array ($return_text_id) && (in_array ("object", $return_text_id) || in_array ("location", $return_text_id)))
+    {
+      $temp_site = getpublication ($objectpath['objectpath']);
+      $temp_cat = getcategory ($temp_site, $objectpath['objectpath']);
+
+      // folder
+      if (getobject ($objectpath['objectpath']) == ".folder")
+      {
+        $temp_objectpath = getlocationname ($temp_site, getlocation ($objectpath['objectpath']), $temp_cat, "path");
+      }
+      // object
+      else
+      {
+        $temp_objectpath = getlocationname ($temp_site, $objectpath['objectpath'], $temp_cat, "path");
+      }
+
+      $objectpath['location'] = getlocation ($temp_objectpath);
+      $objectpath['object'] = getobject ($temp_objectpath);
+    }
+
+    if (!empty ($objectpath['media']))
+    {
+      // links
+      if (in_array ("wrapperlink", $return_text_id)) $objectpath['wrapperlink'] = $mgmt_config['url_path_cms']."?wl=".$hash;
+      if (in_array ("downloadlink", $return_text_id)) $objectpath['downloadlink'] = $mgmt_config['url_path_cms']."?dl=".$hash;
+
+      // thumbnail
+      if (in_array ("thumbnail", $return_text_id))
+      {
+        $temp_site = getpublication ($objectpath['objectpath']);
+        $mediadir = getmedialocation ($temp_site, $objectpath['media'], "abs_path_media");
+        $media_info = getfileinfo ($temp_site, $objectpath['media'], "comp");
+
+        // try to create the thumbnail if not available
+        if (!empty ($mgmt_config['recreate_preview']) && !file_exists ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg"))
+        {
+          createmedia ($temp_site, $mediadir.$temp_site."/", $mediadir.$temp_site."/", $media_info['file'], "", "thumbnail", false, true);
+        }
+        
+        if (is_file ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") && filesize ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") > 100)
+        {
+          $objectpath['thumbnail'] = createviewlink ($temp_site, $media_info['filename'].".thumb.jpg");
+        }
       }
     }
 
@@ -4245,6 +4405,53 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
             if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
             if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
             if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
+
+            // object and location name
+            if (is_array ($return_text_id) && (in_array ("object", $return_text_id) || in_array ("location", $return_text_id)))
+            {
+              $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+              $temp_cat = getcategory ($temp_site, $objectpath[$hash]['objectpath']);
+
+              // folder
+              if (getobject ($objectpath[$hash]['objectpath']) == ".folder")
+              {
+                $temp_objectpath = getlocationname ($temp_site, getlocation ($objectpath[$hash]['objectpath']), $temp_cat, "path");
+              }
+              // object
+              else
+              {
+                $temp_objectpath = getlocationname ($temp_site, $objectpath[$hash]['objectpath'], $temp_cat, "path");
+              }
+
+              $objectpath[$hash]['location'] = getlocation ($temp_objectpath);
+              $objectpath[$hash]['object'] = getobject ($temp_objectpath);
+            }
+
+            if (!empty ($row['media']))
+            {
+              // links
+              if (in_array ("wrapperlink", $return_text_id)) $objectpath[$hash]['wrapperlink'] = $mgmt_config['url_path_cms']."?wl=".$hash;
+              if (in_array ("downloadlink", $return_text_id)) $objectpath[$hash]['downloadlink'] = $mgmt_config['url_path_cms']."?dl=".$hash;
+
+              // thumbnail
+              if (in_array ("thumbnail", $return_text_id))
+              {
+                $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+                $mediadir = getmedialocation ($temp_site, $row['media'], "abs_path_media");
+                $media_info = getfileinfo ($temp_site, $row['media'], "comp");
+
+                // try to create the thumbnail if not available
+                if (!empty ($mgmt_config['recreate_preview']) && !file_exists ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg"))
+                {
+                  createmedia ($temp_site, $mediadir.$temp_site."/", $mediadir.$temp_site."/", $media_info['file'], "", "thumbnail", false, true);
+                }
+                
+                if (is_file ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") && filesize ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") > 100)
+                {
+                  $objectpath[$hash]['thumbnail'] = createviewlink ($temp_site, $media_info['filename'].".thumb.jpg");
+                }
+              }
+            }
           }
         }
       }
@@ -4370,6 +4577,53 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
         if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
         if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
         if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
+
+        // object and location name
+        if (is_array ($return_text_id) && (in_array ("object", $return_text_id) || in_array ("location", $return_text_id)))
+        {
+          $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+          $temp_cat = getcategory ($temp_site, $objectpath[$hash]['objectpath']);
+
+          // folder
+          if (getobject ($objectpath[$hash]['objectpath']) == ".folder")
+          {
+            $temp_objectpath = getlocationname ($temp_site, getlocation ($objectpath[$hash]['objectpath']), $temp_cat, "path");
+          }
+          // object
+          else
+          {
+            $temp_objectpath = getlocationname ($temp_site, $objectpath[$hash]['objectpath'], $temp_cat, "path");
+          }
+
+          $objectpath[$hash]['location'] = getlocation ($temp_objectpath);
+          $objectpath[$hash]['object'] = getobject ($temp_objectpath);
+        }
+
+        if (!empty ($row['media']))
+        {
+          // links
+          if (in_array ("wrapperlink", $return_text_id)) $objectpath[$hash]['wrapperlink'] = $mgmt_config['url_path_cms']."?wl=".$hash;
+          if (in_array ("downloadlink", $return_text_id)) $objectpath[$hash]['downloadlink'] = $mgmt_config['url_path_cms']."?dl=".$hash;
+
+          // thumbnail
+          if (in_array ("thumbnail", $return_text_id))
+          {
+            $temp_site = getpublication ($objectpath[$hash]['objectpath']);
+            $mediadir = getmedialocation ($temp_site, $row['media'], "abs_path_media");
+            $media_info = getfileinfo ($temp_site, $row['media'], "comp");
+
+            // try to create the thumbnail if not available
+            if (!empty ($mgmt_config['recreate_preview']) && !file_exists ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg"))
+            {
+              createmedia ($temp_site, $mediadir.$temp_site."/", $mediadir.$temp_site."/", $media_info['file'], "", "thumbnail", false, true);
+            }
+            
+            if (is_file ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") && filesize ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") > 100)
+            {
+              $objectpath[$hash]['thumbnail'] = createviewlink ($temp_site, $media_info['filename'].".thumb.jpg");
+            }
+          }
+        }
       } 
     }
   }
@@ -4488,7 +4742,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder", md5_objectpath="'.md5 ($object_folder.'.recycle/.folder').'" WHERE md5_objectpath="'.md5 ($object_folder.'/.folder').'"';
+              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", level='.getobjectpathlevel($object_folder.".recycle/.folder").', objectpath="'.$object_folder.'.recycle/.folder", md5_objectpath="'.md5 ($object_folder.'.recycle/.folder').'" WHERE md5_objectpath="'.md5 ($object_folder.'/.folder').'"';
             }
             else
             {
@@ -4515,7 +4769,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Restore failed (rename) for folder '".$object."' in recycle bin";
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder", md5_objectpath="'.md5 (substr ($object_folder, 0, -8)."/.folder").'" WHERE md5_objectpath="'.md5 ($object_folder.'/.folder').'"';
+              else $sql = 'UPDATE object SET deleteuser="", deletedate="", level='.getobjectpathlevel(substr ($object_folder, 0, -8)."/.folder").', objectpath="'.substr ($object_folder, 0, -8).'/.folder", md5_objectpath="'.md5 (substr ($object_folder, 0, -8)."/.folder").'" WHERE md5_objectpath="'.md5 ($object_folder.'/.folder').'"';
             }
             else
             {
@@ -4554,7 +4808,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                     if (!empty ($row['object_id']))
                     {
                       $temp_objectpath = str_replace ($object_folder."/", $object_folder.".recycle/", $row['objectpath']);
-                      $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
+                      $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'", level='.getobjectpathlevel($temp_objectpath).', objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
 
                       $errcode = "50072";
                       $update = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
@@ -4575,7 +4829,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                     if (!empty ($row['object_id']))
                     {
                       $temp_objectpath = str_replace ($object_folder."/", substr ($object_folder, 0, -8)."/", $row['objectpath']);
-                      $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
+                      $sql = 'UPDATE object SET deleteuser="", deletedate="", level='.getobjectpathlevel($temp_objectpath).', objectpath="'.$temp_objectpath.'", md5_objectpath="'.md5 ($temp_objectpath).'" WHERE object_id='.intval($row['object_id']);
 
                       $errcode = "50073";
                       $update = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'update');
@@ -4619,7 +4873,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_file.'.recycle", md5_objectpath="'.md5 ($object_file.'.recycle').'" WHERE md5_objectpath="'.md5 ($object_file).'"';
+              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", level='.getobjectpathlevel($object_file).', objectpath="'.$object_file.'.recycle", md5_objectpath="'.md5 ($object_file.'.recycle').'" WHERE md5_objectpath="'.md5 ($object_file).'"';
             }
           }
           elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
@@ -4640,7 +4894,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_file, 0, -8).'", md5_objectpath="'.md5 (substr ($object_file, 0, -8)).'" WHERE md5_objectpath="'.md5 ($object_file).'"';
+              else $sql = 'UPDATE object SET deleteuser="", deletedate="", level='.getobjectpathlevel(substr ($object_file, 0, -8)).', objectpath="'.substr ($object_file, 0, -8).'", md5_objectpath="'.md5 (substr ($object_file, 0, -8)).'" WHERE md5_objectpath="'.md5 ($object_file).'"';
             }
             else
             {
@@ -5562,7 +5816,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
         if (strpos ($objectpath, ".folder") > 0)
         {
           // select all sub-objects that have not been deleted
-          $sql = 'SELECT id FROM object WHERE objectpath LIKE "'.getlocation ($objectpath).'%" AND deleteuser=""';
+          $sql = 'SELECT id FROM object WHERE objectpath LIKE BINARY "'.getlocation ($objectpath).'%" AND deleteuser=""';
 
           $errcode = "50040";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'ids');
@@ -5710,7 +5964,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       {
         $sqlfilesize = ', SUM(object.filesize) AS filesize';
         $sqltable = "INNER JOIN object ON dailystat.id=object.id";
-        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
+        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE BINARY "'.$location.'%"';
         else $sqlwhere = 'AND object.md5_objectpath="'.md5 ($objectpath).'"';
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
       }
@@ -5730,7 +5984,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       {
         $sqlfilesize = "";
         $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
-        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
+        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE BINARY "'.$location.'%"';
         else $sqlwhere = 'AND object.md5_objectpath="'.md5 ($objectpath).'"';
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
       }
@@ -5805,7 +6059,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
 // description:
 // Provides the filesize and count of objects for a requested object or location.
 
-function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=true)
+function rdbms_getfilesize ($container_id="", $objectpath="", $recyclebin=true)
 {
   global $mgmt_config;
 
@@ -5821,16 +6075,14 @@ function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=true)
     // container id
     if (intval ($container_id) > 0)
     {
-      $container_id = intval ($container_id);
-
-      $sqladd = 'WHERE id='.$container_id;
-      $sqlfilesize = 'filesize';
+      $sqladd = 'WHERE id='.intval ($container_id);
+      $sqlfilesize = 'COUNT(*) AS count, filesize';
     }
     // full media storage
     elseif ($objectpath == "%hcms%")
     {
       $sqladd = '';
-      $sqlfilesize = 'SUM(filesize) AS filesize';
+      $sqlfilesize = 'COUNT(*) AS count, SUM(filesize) AS filesize';
     }
     // object path
     elseif ($objectpath != "")
@@ -5850,13 +6102,13 @@ function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=true)
       if ($object_info['type'] == "Folder") $sqladd .= 'WHERE objectpath LIKE "'.$objectpath.'%"';
       else $sqladd .= 'WHERE objectpath="'.$objectpath.'"';
 
-      // exclude recycled files (long query execution time since index will not be used)
-      if (empty ($recylcebin)) $sqladd .= ' AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
+      // exclude recycled files
+      if (empty ($recyclebin)) $sqladd .= ' AND deleteuser=""';
 
-      $sqlfilesize = 'SUM(filesize) AS filesize';
+      $sqlfilesize = 'COUNT(*) AS count, SUM(filesize) AS filesize';
     }
 
-    $sql = 'SELECT '.$sqlfilesize.' FROM object '.$sqladd;
+    $sql = 'SELECT '.$sqlfilesize.' FROM object '.$sqladd.' LIMIT 1';
 
     $errcode = "50543";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'selectfilesize');
@@ -5865,25 +6117,10 @@ function rdbms_getfilesize ($container_id="", $objectpath="", $recylcebin=true)
     {
       $row = $db->rdbms_getresultrow ('selectfilesize');
       $result['filesize'] = $row['filesize'];
-      $result['count'] = 1;
-    }
+      $result['count'] = $row['count'];
 
-    // count files (exclude recycled files)
-    if ($objectpath != "" && !empty ($object_info['type']) && $object_info['type'] == "Folder")
-    {
-      $sql = 'SELECT count(objectpath) AS count FROM object WHERE objectpath LIKE "'.$objectpath.'%"';
-
-      // exclude recycled files (long query execution time since index will not be used)
-      if (empty ($recylcebin)) $sql .= ' AND objectpath NOT LIKE "%.recycle" AND objectpath NOT LIKE "%.recycle%"';
-
-      $errcode = "50042";
-      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'selectcount');
-
-      if ($done)
-      {
-        $row = $db->rdbms_getresultrow ('selectcount');
-        $result['count'] = $row['count'];
-      }
+      // minus one for the ropot folder object .folder
+      if ($result['count'] > 1) $result['count'] = $result['count'] - 1;
     }
 
     // save log

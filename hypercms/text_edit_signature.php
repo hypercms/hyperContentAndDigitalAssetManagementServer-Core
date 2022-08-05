@@ -117,6 +117,7 @@ if (!empty ($contentbot)) $signature_image = "<img id=\"signatureimage_".$tagnam
 else $signature_image = "";
 
 if ($label == "") $label = $id;
+else $label = getlabel ($label, $lang);
 
 // create secure token
 $token = createtoken ($user);

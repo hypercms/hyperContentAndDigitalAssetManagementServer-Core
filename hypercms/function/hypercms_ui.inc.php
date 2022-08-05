@@ -864,7 +864,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
     {
       if (!empty ($mgmt_config['db_connect_rdbms']))
       { 
-        $filesize_array = rdbms_getfilesize ("", $location_esc, true);
+        $filesize_array = rdbms_getfilesize ("", $location_esc, false);
 
         if (!empty ($filesize_array['filesize'])) $filesize = $filesize_array['filesize'];
         if (!empty ($filesize_array['count'])) $filecount = $filesize_array['count'];
@@ -933,7 +933,7 @@ function showobject ($site, $location, $page, $cat="", $name="")
         <td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".$filesize."</td>
       </tr>";
 
-    if (!empty ($filecount) && $filecount > 1) $mediaview .= "
+    if (!empty ($filecount) && $filecount > 0) $mediaview .= "
       <tr>
         <td style=\"".$col_width."text-align:left; vertical-align:top;\">".getescapedtext ($hcms_lang['number-of-files'][$lang], $hcms_charset, $lang)." </td>
         <td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".$filecount."</td>
@@ -1142,8 +1142,20 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       }
 
       // get media file information from media file (fallback)
-      if (empty ($mediafilesize) && file_exists ($media_root.$mediafile))
+      if (empty ($mediafilesize) && is_file ($media_root.$mediafile))
       {
+        // initialize
+        $imageinfo['filesize'] = NULL;
+        $imageinfo['filetype'] = "";
+        $imageinfo['width'] = NULL;
+        $imageinfo['height'] = NULL;
+        $imageinfo['red'] = NULL;
+        $imageinfo['green'] = NULL;
+        $imageinfo['blue'] = NULL;
+        $imageinfo['colorkey'] = "";
+        $imageinfo['imagetype'] = "";
+        $imageinfo['md5_hash'] = "";
+
         // prepare media file
         $temp = preparemediafile ($site, $media_root, $mediafile, $user);
 
@@ -1173,7 +1185,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // set media info
-        if (is_array ($imageinfo)) rdbms_setmedia ($container_id, $imageinfo['filesize'], $imageinfo['filetype'], $imageinfo['width'], $imageinfo['height'], $imageinfo['red'], $imageinfo['green'], $imageinfo['blue'], $imageinfo['colorkey'], $imageinfo['imagetype'], $imageinfo['md5_hash']);
+        if (is_array ($imageinfo)) rdbms_setmedia ($container_id, $imageinfo['filesize'], $imageinfo['filetype'], $imageinfo['width'], $imageinfo['height'], $imageinfo['red'], $imageinfo['green'], $imageinfo['blue'], @$imageinfo['colorkey'], $imageinfo['imagetype'], $imageinfo['md5_hash']);
       }
 
       // if object will be deleted automatically
@@ -1725,7 +1737,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       {
         // media size
         $style = "";
-        
+
         if ($viewtype != "template")
         {
           $thumbfile = $file_info['filename'].".thumb.jpg";
@@ -1764,11 +1776,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             }
 
             // calculate width or height if one dimension is missing
-            if ($width > 0 && empty ($height))
+            if ($width > 0 && empty ($height) && !empty ($mediaratio))
             {
               $height = round (($width / $mediaratio), 0);
             }
-            elseif (empty ($width) && $height > 0)
+            elseif (empty ($width) && $height > 0 && !empty ($mediaratio))
             {
               $width = round (($height / $mediaratio), 0);
             }
@@ -4152,13 +4164,13 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 
     // define label
     if ($label == "") $labelname = $artid." - ".$elementid;
-    else $labelname = $artid." - ".$label;
+    else $labelname = $artid." - ".getlabel ($label, $lang);;
   }
   else
   {
     // define label
     if ($label == "") $labelname = $id;
-    else $labelname = $label;
+    else $labelname = getlabel ($label, $lang);;
   }
 
   // correct IDs of article

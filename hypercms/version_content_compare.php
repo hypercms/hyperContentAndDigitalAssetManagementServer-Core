@@ -222,7 +222,7 @@ if (sizeof ($showmedia_array) > 1)
   ";
 }
 
-if (is_array ($content_array))
+if (!empty ($content_array) && is_array ($content_array))
 {  
   // compare old version to new version
   foreach ($content_array as $id => $content)

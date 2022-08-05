@@ -1127,6 +1127,19 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
 
             return false;
           }
+          // remove thumbnail file if it is not a valid image
+          elseif (is_file ($location_dest.$newfile) && (exif_imagetype ($location_dest.$newfile) != IMAGETYPE_JPEG || valid_jpeg ($location_dest.$newfile) == false))
+          {
+            $errcode = "20142";
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|createthumbnail_indesign failed to convert file (result is not a valid JPEG): ".$location_dest.$newfile; 
+   
+            // save log
+            savelog (@$error);
+
+            unlink ($location_dest.$newfile);
+
+            return false;
+          }
           // on success
           elseif (is_file ($location_dest.$newfile) && filesize ($location_dest.$newfile) > 0)
           {
@@ -1216,8 +1229,14 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
           fclose ($filehandler);
 
           // remove thumbnail file if it is not a valid image
-          if (exif_imagetype ($location_dest.$newfile) != IMAGETYPE_JPEG || valid_jpeg ($location_dest.$newfile) == false)
+          if (is_file ($location_dest.$newfile) && (exif_imagetype ($location_dest.$newfile) != IMAGETYPE_JPEG || valid_jpeg ($location_dest.$newfile) == false))
           {
+            $errcode = "20220";
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|createthumbnail_indesign failed to convert file (result is not a valid JPEG): ".$location_dest.$newfile; 
+   
+            // save log
+            savelog (@$error);
+
             unlink ($location_dest.$newfile);
 
             return false;
@@ -5493,8 +5512,8 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
 
   if (!empty ($mgmt_compress['.zip']) && valid_publicationname ($site) && is_array ($multiobject_array) && sizeof ($multiobject_array) > 0 && is_dir ($destination) && valid_locationname ($destination) && valid_objectname ($zipfilename) && valid_objectname ($user))
   {
-    // check max file size (set default value to 2000 MB)
-    if (!isset ($mgmt_config['maxzipsize'])) $mgmt_config['maxzipsize'] = 2000;
+    // check max file size (set default value to 1200000 MB)
+    if (!isset ($mgmt_config['maxzipsize'])) $mgmt_config['maxzipsize'] = 1200000;
 
     if (!empty ($mgmt_config['db_connect_rdbms']))
     {
@@ -5512,12 +5531,12 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
         $multiobject = convertpath ($site, $multiobject, "comp");
 
         // get file size in KB
-        $filesize_array = rdbms_getfilesize ("", $multiobject);
+        $filesize_array = rdbms_getfilesize ("", $multiobject, false);
         if (is_array ($filesize_array)) $filesize = $filesize + $filesize_array['filesize'];
       }
 
       // return false if max file size limit in MB is exceeded
-      if ($mgmt_config['maxzipsize'] > 0  && ($filesize / 1024) > $mgmt_config['maxzipsize']) return false;
+      if (intval ($mgmt_config['maxzipsize']) > 0  && ($filesize / 1024) > $mgmt_config['maxzipsize']) return false;
 
       // check if ZIP file exists and there are no new files that need to be excluded or included based on the file size (important: the zip process must not use compression!) and the ZIP file size > 100 kB
       if (is_file ($destination.$zipfilename.".zip") && filesize ($destination.$zipfilename.".zip") > 100000)
@@ -5545,12 +5564,12 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
             // if location path
             if (substr ($multiobject, -1) == "/")
             {
-              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath LIKE BINARY \"".$multiobject."%\" AND objectpath NOT LIKE BINARY \"%.recycle%\" AND date>=\"".$zipfiledate."\"");
+              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath LIKE BINARY \"".$multiobject."%\" AND deleteuser=\"\" AND date>=\"".$zipfiledate."\"");
             }
             // if object path
             else
             {
-              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath= BINARY \"".$multiobject."\" AND objectpath NOT LIKE BINARY \"%.recycle\" AND objectpath NOT LIKE BINARY \"%.recycle/%\" AND date>=\"".$zipfiledate."\"");
+              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath= BINARY \"".$multiobject."\" AND deleteuser=\"\" AND date>=\"".$zipfiledate."\"");
             }
           }
         }

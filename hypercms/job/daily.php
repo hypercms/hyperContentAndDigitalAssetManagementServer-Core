@@ -100,6 +100,45 @@ if (sizeof ($config_files) > 0)
         }
       }
 
+      // ------------------------------------------- TEMP AND SESSION FILES ---------------------------------------------
+      
+      // delete temporary files and ZIP files older than the given value in seconds
+      $location = $mgmt_config['abs_path_temp'];
+      $timespan = 86400; // 24 hours
+      
+      if ($location != "" && $timespan != "" && $scandir = scandir ($location))
+      {
+        foreach ($scandir as $file)
+        {
+          if ($file != "." && $file != ".." && $file != "" && strtolower ($file) != ".htaccess" && strtolower ($file) != "web.config" && strtolower ($file) != "view")
+          {
+            // check media file age and keep_previews setting
+            if (filemtime ($location.$file) + $timespan < time() && (empty ($mgmt_config['keep_previews']) || !is_preview ($file)))
+            {
+              deletefile ($location, $file, 1);
+            }      
+          }
+        }
+      }
+      
+      // delete hyperdav user session files older than the given value in seconds
+      $location = $mgmt_config['abs_path_data']."session/";
+      $timespan = 86400; // 24 hours
+      
+      if ($location != "" && $timespan != "" && $scandir = scandir ($location))
+      {
+        foreach ($scandir as $file)
+        {
+          if ($file != "." && $file != ".." && is_file ($location.$file))
+          {
+            if (filemtime ($location.$file) + $timespan < time())
+            {
+              deletefile ($location, $file, 0);
+            }      
+          }
+        }
+      }
+
       // ------------------------------------------------- EXPORT ---------------------------------------------------
       
       // export job
@@ -216,45 +255,6 @@ if (sizeof ($config_files) > 0)
                 savelog (@$error);
               }
             }
-          }
-        }
-      }
-    
-      // ------------------------------------------- TEMP AND SESSION FILES ---------------------------------------------
-      
-      // delete temporary files and ZIP files older than the given value in seconds
-      $location = $mgmt_config['abs_path_temp'];
-      $timespan = 86400; // 24 hours
-      
-      if ($location != "" && $timespan != "" && $scandir = scandir ($location))
-      {
-        foreach ($scandir as $file)
-        {
-          if ($file != "." && $file != ".." && $file != "" && strtolower ($file) != ".htaccess" && strtolower ($file) != "web.config" && strtolower ($file) != "view")
-          {
-            // check media file age and keep_previews setting
-            if (filemtime ($location.$file) + $timespan < time() && (empty ($mgmt_config['keep_previews']) || !is_preview ($file)))
-            {
-              deletefile ($location, $file, 1);
-            }      
-          }
-        }
-      }
-      
-      // delete hyperdav user session files older than the given value in seconds
-      $location = $mgmt_config['abs_path_data']."session/";
-      $timespan = 86400; // 24 hours
-      
-      if ($location != "" && $timespan != "" && $scandir = scandir ($location))
-      {
-        foreach ($scandir as $file)
-        {
-          if ($file != "." && $file != ".." && is_file ($location.$file))
-          {
-            if (filemtime ($location.$file) + $timespan < time())
-            {
-              deletefile ($location, $file, 0);
-            }      
           }
         }
       }

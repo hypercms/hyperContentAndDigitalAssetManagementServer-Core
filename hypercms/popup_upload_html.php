@@ -61,7 +61,8 @@ $token = createtoken ($user);
 
 // max files in queue
 if ($uploadmode == "single") $maximumQueueItems = 1;
-else $maximumQueueItems = -1;
+// use -1 for no limit
+else $maximumQueueItems = 500;
 
 // check storage limit (MB)
 if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage_limit'] > 0)

@@ -46,6 +46,12 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
+// write and close session (non-blocking other frames)
+if (session_id() != "") session_write_close();
+
+// define timeout for cache in seconds
+$cache_timeout = 60*60*1;
+
 // chart size in pixels
 if (!empty ($is_mobile))
 {
@@ -100,10 +106,25 @@ function closePopup ()
   document.getElementById('popupViewer').src = '<?php echo $mgmt_config['url_path_cms']; ?>loading.php';
   hcms_minMaxLayer('popupLayer');
 }
+
+function previous ()
+{
+  document.getElementById('hcmsLoadScreen').style.display='inline';
+  document.forms['previousform'].submit();
+}
+
+function next ()
+{
+  document.getElementById('hcmsLoadScreen').style.display='inline';
+  document.forms['nextform'].submit();
+}
 </script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
 
 <!-- popup (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="popupLayer" class="hcmsInfoBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
@@ -166,10 +187,10 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
 <div class="hcmsWorkplaceFrame" style="width:<?php echo ($chart_width + 80); ?>px;">
 
   <div class="hcmsHeadline" style="width:240px; margin:8px auto 0px auto; text-align:center; white-space:nowrap;">
-    <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsButtonSizeSquare" onclick="document.forms['previousform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" />
+    <img src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" class="hcmsButton hcmsButtonSizeSquare" onclick="previous();" alt="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['previous-month'][$lang]); ?>" />
     <div style="float:left; width:140px; padding:2px; text-align:center;"><?php echo getescapedtext ($hcms_lang['time-frame'][$lang])."<br />&nbsp;".$date_month."/".$date_year; ?>&nbsp;</div>
     <?php if ($date_month != date ("m", time()) || $date_year != date ("Y", time())) { ?>
-    <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButton hcmsButtonSizeSquare" onclick="document.forms['nextform'].submit();" alt="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>"/>
+    <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButton hcmsButtonSizeSquare" onclick="next();" alt="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['next-month'][$lang]); ?>"/>
     <?php } else { ?>
     <img src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
     <?php } ?>
@@ -183,9 +204,9 @@ if (!empty ($container_id))
 {
   if ($page == ".folder")
   {
-    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc.$page, "", false, 0, 0);
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "", true, 0, 0);
-    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc.$page, "", true, 0, 0);
+    $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc.$page, "", false, 0, $cache_timeout);
+    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "", true, 0, $cache_timeout);
+    $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc.$page, "", true, 0, $cache_timeout);
   }
   elseif ($media != "")
   {

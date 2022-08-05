@@ -104,6 +104,7 @@ if ($value == $contentbot) $checked = " checked";
 else $checked = "";
 
 if ($label == "") $label = $id;
+else $label = getlabel ($label, $lang);
 
 // create secure token
 $token = createtoken ($user);

@@ -17,6 +17,7 @@ CREATE TABLE `object` (
   `object_id` int(11) NOT NULL auto_increment,
   `hash` char(16) BINARY NOT NULL DEFAULT '',
   `id` int(11) NOT NULL DEFAULT '0',
+  `level` smallint(6) DEFAULT NULL,
   `createdate` datetime NOT NULL default CURRENT_TIMESTAMP,
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `publishdate` datetime DEFAULT NULL,

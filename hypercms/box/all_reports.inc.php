@@ -9,7 +9,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
   $button = uniqid();
 
   echo "
-  <div id=\"reportviewer\" class=\"hcmsHomeBox\" style=\"width:".$width."; height:400px; margin:10px; overflow:hidden; float:left;\">
+  <div id=\"reportviewer\" class=\"hcmsHomeBox\" style=\"width:".$width."; height:400px; margin:10px; overflow:hidden;\">
     <div style=\"display:block; padding:0; margin:0;\">
       <div class=\"hcmsHeadline\" style=\"float:left; margin:6px 2px; white-space:nowrap;\"><img src=\"".getthemelocation("night")."img/template.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['report'][$lang])." </div>
       <div style=\"float:left; margin:0px 10px 0px 2px;\">

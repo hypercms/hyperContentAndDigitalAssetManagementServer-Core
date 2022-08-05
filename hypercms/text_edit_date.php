@@ -107,6 +107,7 @@ if (empty ($contentbot) && !empty ($default)) $contentbot = $default;
 $contentbot = str_replace (array("\"", "<", ">"), array("&quot;", "&lt;", "&gt;"), $contentbot);  
 
 if ($label == "") $label = $id;
+else $label = getlabel ($label, $lang);
 
 // create secure token
 $token = createtoken ($user);
