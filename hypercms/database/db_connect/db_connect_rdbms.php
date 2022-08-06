@@ -1866,6 +1866,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
     $sql_table = array();
     $sql_where = array();
+    $sql_relevance = array();
 
     if (!empty ($folderpath))
     {
@@ -2047,15 +2048,18 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               // if wildcards are used
               if (preg_match('/["*()@~<>+-]/', $temp_expression))
               {
+                $sql_relevance[] = 'MATCH (obj.objectpath) AGAINST ("'.$temp_expression.'" IN BOOLEAN MODE) AS relevance';
                 $sql_where['filename'] .= 'MATCH (obj.objectpath) AGAINST ("'.$temp_expression.'" IN BOOLEAN MODE)';
               }
               // if a location path is used the search must be exact and double quotes need to be used for the path expression
               elseif (strpos ("_".$temp_expression, "/") > 0)
               {
+                $sql_relevance[] = 'MATCH (obj.objectpath) AGAINST (\'"'.$temp_expression.'"\' IN BOOLEAN MODE) AS relevance';
                 $sql_where['filename'] .= 'MATCH (obj.objectpath) AGAINST (\'"'.$temp_expression.'"\' IN BOOLEAN MODE)';
               }
               else
               {
+                $sql_relevance[] = 'MATCH (obj.objectpath) AGAINST ("'.$temp_expression.'" IN NATURAL LANGUAGE MODE) AS relevance';
                 $sql_where['filename'] .= 'MATCH (obj.objectpath) AGAINST ("'.$temp_expression.'" IN NATURAL LANGUAGE MODE)';
               }
             }
@@ -2322,6 +2326,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                       }
                       
                       // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
+                      if (sizeof ($sql_relevance) < 1) $sql_relevance[] = 'MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.') AS relevance';
                       $sql_expr_advanced[$i] .= '(tn'.$i_tn.'.text_id="'.$key.'" AND (MATCH (tn'.$i_tn.'.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')))';
                     }
                   }
@@ -2438,6 +2443,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                           }
 
                           // MATCH AGAINST uses stop words (e.g. search for "hello" will not be included in the search result)
+                          $sql_relevance[] = 'MATCH (obj.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.') AS relevance';
                           $sql_where_textnodes .= 'MATCH (obj.textcontent) AGAINST ("'.$synonym_expression.'"'.$search_mode.')';
                         }
                       }
@@ -2721,17 +2727,27 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
     }
 
+    // relevance of matches
+    if (is_array ($sql_relevance) && sizeof ($sql_relevance) > 0)
+    {
+      $sql_relevance_str = ", ".implode (", ", $sql_relevance);
+    }
+    else $sql_relevance_str = "";
+
     // order by
-    if (empty ($order_by)) $order_by = "obj.objectpath";
+    if (empty ($order_by))
+    {
+      // order by relevance if MATCH AGAINST is used
+      if (strpos ($sql_relevance_str, " AS relevance") > 0) $order_by = "relevance DESC, obj.objectpath";
+      else $order_by = "obj.objectpath";
+    }
     else $order_by = $db->rdbms_escape_string (trim ($order_by));
 
     // build SQL statement
-    $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media, obj.template, obj.workflowstatus'.$sql_add_attr .' FROM object AS obj ';
+    $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media, obj.template, obj.workflowstatus'.$sql_add_attr.$sql_relevance_str.' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     $sql .= 'WHERE obj.deleteuser="" ';
     if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
-    // removed "order by substring_index()" due to poor DB performance and moved to array sort
-    // $sql .= ' ORDER BY SUBSTRING_INDEX(obj.objectpath,"/",-1)';
     $sql .= 'GROUP BY obj.hash ORDER BY '.$order_by;
 
     if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql .= ' LIMIT '.intval ($starthits).','.intval ($endhits);

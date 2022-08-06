@@ -6235,9 +6235,13 @@ Release 09/2022
 - Modifications in function showmedia in UI API in order to initialize the media attributes in case they can't be extracted from the media file
 - Implementation of the new function getlabel in Get API in order to extract the label for a specific language code
 - Modifications in the template engine in order to use function getalbale and support labels and help values with language code prefixes
-- Modifications in all article, component, text, link and media editors in order to use function getalbale and support labels with language code prefixes
-- Modifications in function showinlineeditor in UI API in order to use function getalbale and support labels with language code prefixes
+- Modifications in all article, component, text, link and media editors in order to use function getlabel and support labels with language code prefixes
+- Modifications in function showinlineeditor in UI API in order to use function getlabel and support labels with language code prefixes
+- Modifications in function getmetadata in Get API in order to use function getlabel and support labels with language code prefixes
+- Modifications in explorer_objectlist and search_objectlist in order to use function getlabel and support labels with language code prefixes
 - Modifications in popup_upload_html in order to set the max items in the upload queue to 500
+- Modifications in function rbms_searchcontent in DB Connect in order to support the sort by the relevance of the search result in case a fulltext search using MATCH AGAINST is performed
+- Design modifications in explorer in order to migrate the select to radio checkboxes for the AND/OR decision of the advanced search form
 - Update of the update log in the installation directory
 - Updates in the Administrators Guide, Import/Export Guide, Template Designers Guide, and Users Guide
 - Implementation of new texts for the search help in all language files

@@ -2414,11 +2414,9 @@ else
             <div id="contentLayer"></div>
           </div>
           <div style="margin-top:5px;">
-            <label for="search_operator"><?php echo getescapedtext ($hcms_lang['link-fields-with'][$lang]); ?></label><br />
-            <select id="search_operator" name="search_operator" style="width:<?php echo $width_searchfield; ?>px;">
-              <option value="AND" <?php if (empty ($mgmt_config['search_operator']) || (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "AND")) echo "selected"; ?>>AND</option>
-              <option value="OR" <?php if (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "OR") echo "selected"; ?>>OR</option>
-            </select>
+            <label for="search_operator"><?php echo getescapedtext ($hcms_lang['link-fields-with'][$lang]); ?></label> &nbsp;
+            <label><input name="search_operator" id="search_operator_and" type="checkbox" value="AND" onclick="if (this.checked) document.getElementById('search_operator_or').checked = false;" <?php if (empty ($mgmt_config['search_operator']) || (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "AND")) echo "checked"; ?> /> AND</label> &nbsp;
+            <label><input name="search_operator" id="search_operator_or" type="checkbox" value="OR" onclick="if (this.checked) document.getElementById('search_operator_and').checked = false;" <?php if (!empty ($mgmt_config['search_operator']) && strtoupper ($mgmt_config['search_operator']) == "OR") echo "checked"; ?> /> OR</label>
           </div>   
         </div>
         <hr />
