@@ -6268,5 +6268,11 @@ Release 10/2022
 - Modifications in function zipfiles in Media API in order to remove BINARY from the objectpath comparison
 - Modifications in function getmetadata_multiobjects in Get API in order to remove BINARY from the objectpath comparison
 - Modifications in function exportxmlfiles in the Import/Export API in order to remove BINARY from the objectpath comparison
+- Removed md5_objectpath from all function in DB Connect
+- Removed md5_objectpath from createtables.sql
+- Implementation of the new function update_database_v10071 in the Update API in order to drop the index object_md5_objectpath and remove column md5_objectpath from table object
+- Modifications in function update_all in Update API in order to add the new function update_database_v10071
+- Modifications in the main configuration file in the install directory in order to add new commenst to the Relational Database Connectivity section
 - Update of the update log in the installation directory
 - Updates in the Users Guide
+- Bug fix: Function manipulateallobjects did not get the category for each array element

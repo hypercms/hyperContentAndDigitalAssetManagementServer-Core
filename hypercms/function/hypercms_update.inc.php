@@ -2212,7 +2212,7 @@ function update_database_v1007 ()
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // alter table object (case insensitive objectpath)
-    $sql = "ALTER TABLE object MODIFY COLUMN objectpath varchar(4096) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+    $sql = "ALTER TABLE object MODIFY COLUMN objectpath varchar(4096) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $errcode = "50720";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
@@ -2223,6 +2223,48 @@ function update_database_v1007 ()
 
     // update log
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7|updated to version 10.0.7"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v10071 ----------------------------------------------
+// function: update_database_v10071()
+// input: %
+// output: true / false
+
+// description: 
+// Update table object for support of version 10.0.7.1
+
+function update_database_v10071 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.7.1"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // remove old index
+    $sql = 'DROP INDEX object_md5_objectpath ON object';
+    $errcode = "50720";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table object (case insensitive objectpath)
+    $sql = 'ALTER TABLE object DROP COLUMN md5_objectpath';
+    $errcode = "50721";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.1|updated to version 10.0.7.1"), "update");
 
     return true;
   }
@@ -2277,6 +2319,7 @@ function updates_all ()
     update_database_v10069 ();
     update_database_v100610 ();
     update_database_v1007 ();
+    update_database_v10071 ();
   }
 }
 

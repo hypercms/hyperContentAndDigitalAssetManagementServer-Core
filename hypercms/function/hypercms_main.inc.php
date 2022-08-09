@@ -19272,7 +19272,8 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
         {
           if ($objectpath != "")
           {
-            $site = getpublication ($objectpath); 
+            $site = getpublication ($objectpath);
+            $cat = getcategory ($site, $objectpath);
             $folder = getobject ($objectpath); // could be a object file or a folder
             $location = getlocation ($objectpath);  // location without folder
             $location = deconvertpath ($location, "file");
@@ -19304,6 +19305,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           if ($temp_path != "")
           {
             $site = getpublication ($temp_path);
+            $cat = getcategory ($site, $objectpath);
             $location = deconvertpath ($temp_path, "file");
             $folder = getobject ($location); // could be a file or a folder 
             $location = getlocation ($location);  // location without folder

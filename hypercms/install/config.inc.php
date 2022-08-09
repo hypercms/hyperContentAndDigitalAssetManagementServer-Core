@@ -562,8 +562,8 @@ $mgmt_config['application']['asp'] = false;
 $mgmt_config['maxfilesize'] = 0;
 
 // ZIP File
-// Maximum file size to be compressed in ZIP file in MB. set value to 0 to disable limit
-$mgmt_config['maxzipsize'] = 2000;
+// Maximum file size to be compressed in ZIP file in MB. Set value to 0 to disable limit
+$mgmt_config['maxzipsize'] = 0;
 
 // Maximum digits for file names (applies for createobject and uploadfile)
 // Most linux file systems does not support more than 255 bytes
@@ -965,10 +965,11 @@ $mgmt_config['mergepdf'] = "%mergepdf%";
 // -------------------------------- Relational Database Connectivity ----------------------------------
 
 // MySQL integration (or other relational databases via ODBC)
-// The file "db_connect_rdbms.php" provides MySQL and ODBC DB Connectivity.
+// The file "db_connect_rdbms.php" provides MySQL/MariaDB and ODBC DB Connectivity.
 // Run the installation or create a database with UTF-8 support and run the SQL script for table definitions manually.
 
 // Define Database Access
+// You can define a persistent database connection by providing "p:dbhost" for 'dbhost'
 $mgmt_config['db_connect_rdbms'] = "db_connect_rdbms.php";
 $mgmt_config['dbconnect'] = "mysql"; // values: mysql, odbc
 $mgmt_config['dbhost'] = "%dbhost%";
