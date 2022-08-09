@@ -11973,8 +11973,8 @@ function createfolder ($site, $location, $folder, $user)
     if (!empty ($eventsystem['oncreatefolder_pre']) && empty ($eventsystem['hide'])) 
       oncreatefolder_pre ($site, $cat, $location, $folder, $user);
 
-    // check if folder exists already
-    if (is_dir ($location.$folder))
+    // check if folder exists already (case-insensitive)
+    if (is_idir ($location.$folder))
     {
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-folder-name'][$lang]."\n";
@@ -12523,8 +12523,8 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-does-not-exist'][$lang]."</span><br />\n";
     }
-    // folder with the new name exists already
-    elseif (is_dir ($location.$foldernew))
+    // folder with the new name exists already (case insensitive)
+    elseif (is_idir ($location.$foldernew))
     {
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['a-folder-with-the-same-name-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-expression'][$lang]."\n";
@@ -13030,8 +13030,8 @@ function createobject ($site, $location, $page, $template, $user)
           // $page_orig is defined already 
         }
 
-        // check if page already exists
-        if (!is_file ($location.$pagefile) && !is_file ($location.$pagename))
+        // check if page already exists (case-insensitive)
+        if (!is_ifile ($location.$pagefile) && !is_ifile ($location.$pagename))
         {
           // ----------------------------- build content file (xml structure)----------------------------
           $contentstore = "";
@@ -15185,8 +15185,8 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-doesnt-exist-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
           }
-          // if new object exists already (published or unpublished)
-          elseif ((is_file ($location.$pagenew_pub) || is_file ($location.$pagenew_unpub)) && strtolower ($location.$page) != strtolower ($location.$pagenew))
+          // if new object exists already (published or unpublished) (case insensitive)
+          elseif ((is_ifile ($location.$pagenew_pub) || is_ifile ($location.$pagenew_unpub)) && strtolower ($location.$page) != strtolower ($location.$pagenew))
           {
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
@@ -15229,8 +15229,8 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-cannot-cut-and-paste-an-item-in-the-same-location'][$lang]."</span><br />\n";
           }
-          // define file name after pasting if the file exists already
-          elseif ((is_file ($location.$page_sec) || is_file ($location.$page_sec.$add_ext)) && $page_sec != ".folder")
+          // define file name after pasting if the file exists already (case insensitive)
+          elseif ((is_ifile ($location.$page_sec) || is_ifile ($location.$page_sec.$add_ext)) && $page_sec != ".folder")
           {
             // define new file name with copy suffix
             $page_sec = $page_sec_info['filename']."-Copy".$page_sec_info['ext'].$add_ext;
@@ -15238,7 +15238,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
             for ($c=2; $c<=100; $c++)
             {
-              if (is_file ($location.$page_sec) || is_file ($location.$page_sec.$add_ext))
+              if (is_ifile ($location.$page_sec) || is_ifile ($location.$page_sec.$add_ext))
               {
                 // define new file name with copy suffix
                 $page_sec = $page_sec_info['filename']."-Copy".$c.$page_sec_info['ext'].$add_ext;

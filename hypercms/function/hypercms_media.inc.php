@@ -5564,12 +5564,12 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
             // if location path
             if (substr ($multiobject, -1) == "/")
             {
-              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath LIKE BINARY \"".$multiobject."%\" AND deleteuser=\"\" AND date>=\"".$zipfiledate."\"");
+              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath LIKE \"".$multiobject."%\" AND deleteuser=\"\" AND date>=\"".$zipfiledate."\"");
             }
             // if object path
             else
             {
-              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath= BINARY \"".$multiobject."\" AND deleteuser=\"\" AND date>=\"".$zipfiledate."\"");
+              $updates = rdbms_externalquery ("SELECT objectpath FROM object WHERE objectpath=\"".$multiobject."\" AND deleteuser=\"\" AND date>=\"".$zipfiledate."\"");
             }
           }
         }

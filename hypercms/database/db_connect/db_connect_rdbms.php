@@ -873,7 +873,7 @@ function rdbms_setpublicationkeywords ($site, $recreate=false)
 
     // select container IDs with keywords
     $sql = "SELECT DISTINCT textnodes.id FROM textnodes INNER JOIN object ON textnodes.id=object.id WHERE textnodes.textcontent!='' AND textnodes.type='textk'";
-    $sql .= " AND (object.objectpath LIKE BINARY '*page*/".$site_escaped."/%' OR object.objectpath LIKE BINARY '*comp*/".$site_escaped."/%')";
+    $sql .= " AND (object.objectpath LIKE '*page*/".$site_escaped."/%' OR object.objectpath LIKE '*comp*/".$site_escaped."/%')";
 
     $errcode = "50033";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -1023,11 +1023,11 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
         {
           if ($recreate == true)
           {
-            $sql = 'SELECT id FROM object WHERE objectpath LIKE BINARY "*comp*/'.$site.'/%" OR objectpath LIKE BINARY "*page*/'.$site.'/%"';
+            $sql = 'SELECT id FROM object WHERE objectpath LIKE "*comp*/'.$site.'/%" OR objectpath LIKE "*page*/'.$site.'/%"';
           }
           else
           {
-            $sql = 'SELECT object.id FROM object INNER JOIN textnodes ON textnodes.id=object.id LEFT JOIN taxonomy ON taxonomy.id=object.id WHERE (object.objectpath LIKE BINARY "*comp*/'.$site.'/%" OR object.objectpath LIKE BINARY "*page*/'.$site.'/%") AND textnodes.textcontent!="" AND taxonomy.id IS NULL';
+            $sql = 'SELECT object.id FROM object INNER JOIN textnodes ON textnodes.id=object.id LEFT JOIN taxonomy ON taxonomy.id=object.id WHERE (object.objectpath LIKE "*comp*/'.$site.'/%" OR object.objectpath LIKE "*page*/'.$site.'/%") AND textnodes.textcontent!="" AND taxonomy.id IS NULL';
           }
 
           $errcode = "50353";
@@ -1407,7 +1407,7 @@ function rdbms_renameobject ($object_old, $object_new)
     // query
     $sql = 'SELECT object_id, id, objectpath FROM object ';
     // for folder
-    if ($type == "folder") $sql .= 'WHERE objectpath LIKE BINARY "'.$object_old.'/%"';
+    if ($type == "folder") $sql .= 'WHERE objectpath LIKE "'.$object_old.'/%"';
     // for object
     else $sql .= 'WHERE md5_objectpath="'.md5 ($object_old).'"';;
 
@@ -1479,7 +1479,7 @@ function rdbms_deleteobject ($object="", $object_id="")
     // query
     $sql = 'SELECT id FROM object ';
 
-    if ($object != "") $sql .= 'WHERE md5_objectpath="'.md5 ($object).'" OR objectpath= BINARY "'.$object.'"';
+    if ($object != "") $sql .= 'WHERE md5_objectpath="'.md5 ($object).'" OR objectpath="'.$object.'"';
     elseif ($object_id > 0) $sql .= 'WHERE object_id='.$object_id.'';
   
     $errcode = "50012";
@@ -1559,7 +1559,7 @@ function rdbms_deleteobject ($object="", $object_id="")
         // delete only the object reference and queue entry
         elseif ($row_id && $num_rows > 1)
         {
-          $sql = 'DELETE FROM object WHERE md5_objectpath="'.md5 ($object).'" OR objectpath= BINARY "'.$object.'"';
+          $sql = 'DELETE FROM object WHERE md5_objectpath="'.md5 ($object).'" OR objectpath="'.$object.'"';
 
           $errcode = "50020";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete10');
@@ -1654,7 +1654,7 @@ function rdbms_deletepublicationkeywords ($site)
     $site = $db->rdbms_escape_string ($site);
   
     // select containers of publication
-    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE BINARY "*comp*/'.$site.'/%" OR objectpath LIKE BINARY "*page*/'.$site.'/%"';
+    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE "*comp*/'.$site.'/%" OR objectpath LIKE "*page*/'.$site.'/%"';
 
     $errcode = "50053";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
@@ -1709,7 +1709,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
     $site = $db->rdbms_escape_string ($site);
 
     // select containers of publication
-    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE BINARY "*comp*/'.$site.'/%" OR objectpath LIKE BINARY "*page*/'.$site.'/%"';
+    $sql = 'SELECT DISTINCT id FROM object WHERE objectpath LIKE "*comp*/'.$site.'/%" OR objectpath LIKE "*page*/'.$site.'/%"';
 
     $errcode = "50053";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
@@ -1892,9 +1892,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);          
           // where clause for folderpath
           // search only on the same level of the path
-          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE BINARY "'.$path.'%" AND obj.level='.getobjectpathlevel($path).')';
+          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE "'.$path.'%" AND obj.level='.getobjectpathlevel($path).')';
           // all objects that are located in the path
-          else $sql_temp[] = 'obj.objectpath LIKE BINARY "'.$path.'%"';
+          else $sql_temp[] = 'obj.objectpath LIKE "'.$path.'%"';
         }
       }
 
@@ -1923,7 +1923,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if ($path == "/.folder")
           {
             // where clause for excludepath
-            $sql_temp[] = 'obj.objectpath NOT LIKE BINARY "%'.$path.'"';
+            $sql_temp[] = 'obj.objectpath NOT LIKE "%'.$path.'"';
           }
           else
           {
@@ -1932,7 +1932,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
             // replace %
             $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);
             // where clause for excludepath
-            $sql_temp[] = 'obj.objectpath NOT LIKE BINARY "'.$path.'%"';
+            $sql_temp[] = 'obj.objectpath NOT LIKE "'.$path.'%"';
           }
         }
       }
@@ -2510,7 +2510,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if ($search_type == "page" || $search_type == "comp") 
           {
             if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-            $sql_where['object'] .= 'obj.objectpath LIKE BINARY "*.'.$search_type.'*/%"';
+            $sql_where['object'] .= 'obj.objectpath LIKE "*.'.$search_type.'*/%"';
           }
 
           // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
@@ -2911,7 +2911,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
           if ($search_type == "page" || $search_type == "comp") 
           {
             if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-            $sql_where['object'] .= 'obj.objectpath LIKE BINARY "*.'.$search_type.'*/"';
+            $sql_where['object'] .= 'obj.objectpath LIKE "*.'.$search_type.'*/"';
           }
 
           // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
@@ -2945,7 +2945,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     }  
 
     // folder path
-    $sql_where['filename'] = 'obj.objectpath LIKE BINARY "'.$folderpath.'%"';
+    $sql_where['filename'] = 'obj.objectpath LIKE "'.$folderpath.'%"';
 
     // dates
     if (!empty ($date_from)) $sql_where['datefrom'] = 'obj.date>="'.$date_from.' 00:00:01"';
@@ -3213,7 +3213,7 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
     $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     $sql .= 'WHERE obj.objectpath!="" AND obj.user="'.$user.'" ';
-    if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%") ';
+    if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%") ';
     $sql .= 'ORDER BY obj.date DESC ';
     if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
@@ -3296,7 +3296,7 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as rowcount FROM object AS obj ';
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
       $sql .= 'WHERE obj.objectpath!="" AND obj.user="'.$user.'" ';
-      if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+      if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%")';
 
       $errcode = "50021";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -3415,7 +3415,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 
     $sql .= 'WHERE obj.objectpath!="" ';
 
-    if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%") ';
+    if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%") ';
     if ($from_user != "") $sql .= 'AND rec.from_user LIKE BINARY "%'.$from_user.'%" ';
     if ($to_user_email != "") $sql .= 'AND (rec.to_user LIKE "%'.$to_user_email.'%" OR rec.email LIKE "%'.$to_user_email.'%") ';
     if ($date_from != "") $sql .= 'AND rec.date>="'.$date_from.' 00:00:01" ';
@@ -3503,7 +3503,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as rowcount FROM object AS obj ';
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-      if ($site != "" && $site != "*Null*") $sql .= ' WHERE obj.user="'.$user.'" AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+      if ($site != "" && $site != "*Null*") $sql .= ' WHERE obj.user="'.$user.'" AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%")';
 
       $errcode = "50027";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -3604,8 +3604,8 @@ function rdbms_getkeywords ($sites="")
     {
       $site = $db->rdbms_escape_string ($site);
 
-      if ($i < 1) $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE BINARY "*page*/'.$site.'/%" OR object.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
-      else $sql .= ' OR (object.objectpath LIKE BINARY "*page*/'.$site.'/%" OR object.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+      if ($i < 1) $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
+      else $sql .= ' OR (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
 
       $i++;
     }
@@ -3613,7 +3613,7 @@ function rdbms_getkeywords ($sites="")
   else if ($sites != "" && $sites != "*Null*")
   {
     $site = $db->rdbms_escape_string ($sites);
-    $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE BINARY "*page*/'.$site.'/%" OR object.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+    $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
   }
 
   $sql .= ' GROUP BY keywords.keyword_id ORDER BY keywords.keyword';
@@ -3671,8 +3671,8 @@ function rdbms_getemptykeywords ($sites="")
     {
       $site = $db->rdbms_escape_string ($site);
       
-      if ($i < 1) $sql_objectpath .= ' (object.objectpath LIKE BINARY "*page*/'.$site.'/%" OR object.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
-      else $sql_objectpath .= ' OR (object.objectpath LIKE BINARY "*page*/'.$site.'/%" OR object.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+      if ($i < 1) $sql_objectpath .= ' (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
+      else $sql_objectpath .= ' OR (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
 
       $i++;
     }
@@ -3682,7 +3682,7 @@ function rdbms_getemptykeywords ($sites="")
   else if ($sites != "" && $sites != "*Null*")
   {
     $site = $db->rdbms_escape_string ($sites);
-    $sql .= ' (object.objectpath LIKE BINARY "*page*/'.$site.'/%" OR object.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+    $sql .= ' (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
   }
 
   $sql .= ' AND textnodes.type="textk" AND textnodes.textcontent=""';
@@ -3778,7 +3778,7 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
 
     $sql .= ' INNER JOIN object ON object.id=tn1.id';
     $sql .= ' WHERE (tn1.type="textu" OR tn1.type="textl" OR tn1.type="textc" OR tn1.type="textd" OR tn1.type="textk")';
-    $sql .= ' AND (object.objectpath LIKE BINARY "*page*/'.$site.'/%" OR object.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+    $sql .= ' AND (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
     $sql .= ' AND tn1.text_id="'.$get_text_id.'"';
     if (is_array ($sql_textnodes) && sizeof ($sql_textnodes) > 0) $sql .= ' AND '.implode (" AND ", $sql_textnodes);
 
@@ -4813,7 +4813,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
               if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
               {
                 // exclude the parent folder (IMPORTANT: use old and new MD5 objectpath hash since the UPDATE query might not effect the data before the SELECT query)
-                $sql = 'SELECT object_id, objectpath FROM object WHERE md5_objectpath!="'.md5 (substr ($object_folder, 0, -8)."/.folder").'" AND md5_objectpath!="'.md5 ($object_folder.'/.folder').'" AND objectpath LIKE BINARY "'.$object_folder.'/%"';
+                $sql = 'SELECT object_id, objectpath FROM object WHERE md5_objectpath!="'.md5 (substr ($object_folder, 0, -8)."/.folder").'" AND md5_objectpath!="'.md5 ($object_folder.'/.folder').'" AND objectpath LIKE "'.$object_folder.'/%"';
 
                 $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
 
@@ -4834,7 +4834,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
               }
               elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
               {
-                $sql = 'SELECT object_id, objectpath FROM object WHERE objectpath LIKE BINARY "'.$object_folder.'/%"';
+                $sql = 'SELECT object_id, objectpath FROM object WHERE objectpath LIKE "'.$object_folder.'/%"';
 
                 $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
 
@@ -5118,7 +5118,7 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
     $object = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object);    
 
     // get object ids of all objects (also all object of folders)
-    if (getobject ($object) == ".folder") $sql = 'SELECT object_id FROM object WHERE objectpath LIKE BINARY "'.substr (trim($object), 0, strlen (trim($object))-7).'%"';
+    if (getobject ($object) == ".folder") $sql = 'SELECT object_id FROM object WHERE objectpath LIKE "'.substr (trim($object), 0, strlen (trim($object))-7).'%"';
     else $sql = 'SELECT object_id FROM object WHERE md5_objectpath="'.md5 ($object).'"';
 
     $errcode = "50049";
@@ -5356,7 +5356,7 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
     // get recipients
     $sql = 'SELECT que.queue_id, que.action, que.date, que.published_only, que.cmd, que.user, que.object_id, obj.objectpath FROM queue AS que LEFT JOIN object AS obj ON obj.object_id=que.object_id WHERE 1=1';
     if (!empty ($action)) $sql .= ' AND que.action="'.$action.'"';
-    if (!empty ($site)) $sql .= ' AND (obj.objectpath LIKE BINARY "*page*/'.$site.'/%" OR obj.objectpath LIKE BINARY "*comp*/'.$site.'/%")';
+    if (!empty ($site)) $sql .= ' AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%")';
     if (!empty ($date)) $sql .= ' AND que.date<="'.$date.'"'; 
     if (!empty ($user)) $sql .= ' AND que.user="'.$user.'"';
     if (!empty ($object_id)) $sql .= ' AND que.object_id="'.$object_id.'"';
@@ -5738,7 +5738,7 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
     $folderpath = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $folderpath);
 
     $sql = 'SELECT DISTINCT obj.objectpath as path, tnd.textcontent as cnt FROM object AS obj, textnodes AS tnd ';
-    $sql .= 'WHERE obj.id=tnd.id AND obj.objectpath LIKE BINARY "'.$folderpath.'%" AND tnd.text_id="'.$text_id.'" AND "'.$date_begin.'" <= STR_TO_DATE(tnd.textcontent, "'.$format.'") AND "'.$date_end.'" >= STR_TO_DATE(tnd.textcontent, "'.$format.'")';    
+    $sql .= 'WHERE obj.id=tnd.id AND obj.objectpath LIKE "'.$folderpath.'%" AND tnd.text_id="'.$text_id.'" AND "'.$date_begin.'" <= STR_TO_DATE(tnd.textcontent, "'.$format.'") AND "'.$date_end.'" >= STR_TO_DATE(tnd.textcontent, "'.$format.'")';    
     $errcode = "50036";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
@@ -5832,7 +5832,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
         if (strpos ($objectpath, ".folder") > 0)
         {
           // select all sub-objects that have not been deleted
-          $sql = 'SELECT id FROM object WHERE objectpath LIKE BINARY "'.getlocation ($objectpath).'%" AND deleteuser=""';
+          $sql = 'SELECT id FROM object WHERE objectpath LIKE "'.getlocation ($objectpath).'%" AND deleteuser=""';
 
           $errcode = "50040";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'ids');
@@ -5980,7 +5980,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       {
         $sqlfilesize = ', SUM(object.filesize) AS filesize';
         $sqltable = "INNER JOIN object ON dailystat.id=object.id";
-        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE BINARY "'.$location.'%"';
+        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
         else $sqlwhere = 'AND object.md5_objectpath="'.md5 ($objectpath).'"';
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
       }
@@ -6000,7 +6000,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       {
         $sqlfilesize = "";
         $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
-        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE BINARY "'.$location.'%"';
+        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
         else $sqlwhere = 'AND object.md5_objectpath="'.md5 ($objectpath).'"';
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
       }

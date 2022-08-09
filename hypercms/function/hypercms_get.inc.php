@@ -1445,7 +1445,7 @@ function getlistelements ($list_sourcefile)
 
 function getmetadata ($location, $object, $container="", $separator="\r\n", $template="")
 {
-	global $mgmt_config;
+	global $mgmt_config, $lang;
 
   // deconvert location
   if (@substr_count ($location, "%page%") > 0 || @substr_count ($location, "%comp%") > 0)
@@ -1553,7 +1553,7 @@ function getmetadata ($location, $object, $container="", $separator="\r\n", $tem
 
                 if ($id != "")
                 {
-                  if ($label != "") $labels[$id] = $label;
+                  if ($label != "") $labels[$id] = getlabel ($label, $lang);
                   else $labels[$id] = str_replace ("_", " ", $id);
 
                   $position[$id] = $i;
@@ -1570,45 +1570,8 @@ function getmetadata ($location, $object, $container="", $separator="\r\n", $tem
         if (strtolower ($separator) != "array") $metadata = "";
         else $metadata = array();
 
-        // if no template and no labels are defined
-        if (!is_array ($labels))
-        {
-  				$textnode = getcontent ($contentdata, "<text>");
-
-  				if ($textnode != false)
-          {
-  					foreach ($textnode as $buffer)
-            {
-              // get info from container
-  						$text_id = getcontent ($buffer, "<text_id>");
-
-              // dont include comments or articles (they use :) or JSON string of faces definition
-              if (strpos ($text_id[0], ":") == 0 && $text_id[0] != "Faces-JSON")
-              {
-                $label = str_replace ("_", " ", $text_id[0]);
-
-                $text_content = getcontent ($buffer, "<textcontent>", true);
-                
-                // strip tags and replace double by single quotes
-                if (!empty ($text_content[0]) && strpos ("_".$text_content[0], "\"") > 0)
-                {
-                  $text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
-                }
-
-                // add space after comma
-                if (!empty ($text_content[0]) && strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
-                {
-                  $text_content[0] = str_replace (",", ", ", $text_content[0]);
-                }
-
-    						if (strtolower ($separator) != "array") $metadata[] = $label.": ".$text_content[0];
-                else $metadata[$label] = $text_content[0];
-              }
-  					}
-  				}
-        }
         // if labels were defined (labels are not unique)
-        elseif (is_array ($labels) && sizeof ($labels) > 0)
+        if (is_array ($labels) && sizeof ($labels) > 0)
         {
           foreach ($labels as $id => $label)
           {
@@ -1644,6 +1607,43 @@ function getmetadata ($location, $object, $container="", $separator="\r\n", $tem
 						if (strtolower ($separator) != "array") $metadata[$pos] = $label.": ".$text_str;
             else $metadata["<!--".$pos."-->".$label] = $text_str;
           }
+        }
+        // if no template and therefore no labels are defined
+        else
+        {
+  				$textnode = getcontent ($contentdata, "<text>");
+
+  				if ($textnode != false)
+          {
+  					foreach ($textnode as $buffer)
+            {
+              // get info from container
+  						$text_id = getcontent ($buffer, "<text_id>");
+
+              // dont include comments or articles (they use :) or JSON string of faces definition
+              if (strpos ($text_id[0], ":") == 0 && $text_id[0] != "Faces-JSON")
+              {
+                $label = str_replace ("_", " ", $text_id[0]);
+
+                $text_content = getcontent ($buffer, "<textcontent>", true);
+                
+                // strip tags and replace double by single quotes
+                if (!empty ($text_content[0]) && strpos ("_".$text_content[0], "\"") > 0)
+                {
+                  $text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
+                }
+
+                // add space after comma
+                if (!empty ($text_content[0]) && strpos ($text_content[0], ",") > 0 && strpos ($text_content[0], ", ") < 1)
+                {
+                  $text_content[0] = str_replace (",", ", ", $text_content[0]);
+                }
+
+    						if (strtolower ($separator) != "array") $metadata[] = $label.": ".$text_content[0];
+                else $metadata[$label] = $text_content[0];
+              }
+  					}
+  				}
         }
 
         // convert array to string
@@ -1691,7 +1691,7 @@ function getmetadata_multiobjects ($multiobject_array, $user, $include_subfolder
           if (getobject ($multiobject) == ".folder") $folderpath = getlocation ($multiobject);
           else $folderpath = $multiobject; 
 
-          $temp_array = rdbms_externalquery ('SELECT objectpath FROM object WHERE objectpath LIKE BINARY "'.$folderpath.'%" AND objectpath!= BINARY "'.$folderpath.'.folder"');
+          $temp_array = rdbms_externalquery ('SELECT objectpath FROM object WHERE objectpath LIKE "'.$folderpath.'%" AND objectpath!="'.$folderpath.'.folder"');
 
           if (is_array ($temp_array) && sizeof ($temp_array) > 0)
           {

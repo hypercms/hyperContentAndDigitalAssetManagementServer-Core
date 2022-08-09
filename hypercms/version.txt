@@ -6070,8 +6070,8 @@ Release 06/2022
 - Bug fix: The daily job used a wrong variable name for the extracted location from the objectpath for the recycle bin
 
 Version 10.0.6
-Release 09/2022
-- Performance improvements for various select and update queries by implementation of the MD5 representation of the objectpath in table object and a new index on attribute objectpath of tbale object (index object_objectpath has not been used by queries)
+Release 08/2022
+- Performance improvements for various select and update queries by implementation of the MD5 representation of the objectpath in table object and a new index on attribute objectpath of table object (index object_objectpath has not been used by queries)
 - Modifications in function valid_locationname in Security API in order to set the max location path length to 4096 characters
 - Modifications in function userlogin and checkdiskkey in Security API in order to verify that the global $_SERVER['SERVER_ADDR'] exists
 - Modifications in createtables.sql in order to set the max length for objectpath in table object to 4096 characters and define it as BINARY
@@ -6120,7 +6120,7 @@ Release 09/2022
 - Modifications in the import script in order to support the import of text content from CSV files
 - Modifications in imexport_explorer in order to support the navigation of assets and pages as root elements
 - Modifications in control_imexport_menu in order to remove the export of assets and pages und provide a single export action for both
-- Modifications in function importobjects in the Import/Export API in order to supportv the new import parameters in the import file format
+- Modifications in function importobjects in the Import/Export API in order to support the new import parameters in the import file format
 - Modifications in function rdbms_getfilesize in DB Connect in order to support a new input parameter and the space used by assets in the recycle bin
 - Modifications in daily job in order to include the space used by assets in the recycle bin
 - Modifications in popup_upload_html in order to include the space used by assets in the recycle bin
@@ -6147,7 +6147,7 @@ Release 09/2022
 - Modifications in createtables.sql in order to remove the character set and collation of column hash and objectpath
 - Implementation of the new function update_database_v10065 in the Update API in order to change the character set and collation of table object
 - Modifications in function updates_all in the Update API in order to add the new function update_database_v10065
-- Modifications in service uploadfile in order to support a new input parameters for the HTTP header or the text message in the response
+- Modifications in service uploadfile in order to support a new input parameter for the HTTP header or the text message in the response
 - Modifications in various functions in Main API in order to change the HTTP error codes
 - Modifications in function rdbms_setmedia in DB Connect in order to execute the SQL statement only if it is available
 - Modifications in function getlistelements in Get API in order to use the System API instead of the service getkeywords (since it might be blocked)
@@ -6160,9 +6160,9 @@ Release 09/2022
 - Modifications in function rdbms_replacecontent in DB Connect in order to remove the SQL DATE function and set the time for the start and end date for the use of the index
 - Modifications in function rdbms_searchrecipient in DB Connect in order to remove the SQL DATE function and set the time for the start and end date for the use of the index
 - Modifications in the search Home Screen box in order to implement and support the search for text or in the location and object name 
-- Modifications in explorer in order to enable the search in textcontent or the location but not both at the same time since the fulltext index will not be used
-- Modifications in frameset_objectlist in order to support the parameter seacrh_cat required for the text or location/name based search
-- Implementation of the new function update_database_v10066 in the Update API in order to create a new fulltext index for objectpath
+- Modifications in explorer in order to enable the search in textcontent or the location but not both at the same time since the full-text index will not be used
+- Modifications in frameset_objectlist in order to support the parameter search_cat required for the text or location/name based search
+- Implementation of the new function update_database_v10066 in the Update API in order to create a new full-text index for objectpath
 - Modifications in function updates_all in the Update API in order to add the new function update_database_v10066
 - Modifications in createtables.sql in order to remove object_multiple index and add the new index for id, date, media, and the new fulltext index for objectpath
 - Modifications in explorer_objectlist and search_objectlist in order to remove the JS function call hcms_updateControlObjectListMenu from each folder and object click event
@@ -6225,7 +6225,7 @@ Release 09/2022
 - Modifications in daily job in order to delete the temporary files after the invalid users
 - Modifications in function getobjectlist in Get API in order to set the value for an empty "filename" search to *Null* in order to disable the search in textcontent and objectpath at the same time 
 - Modifications in function getfiletype in Get API in order to support the folder type
-- Implementation of the new function update_database_v100610 in Update API in order to update table object and set filtype to "folder" for each folder objects
+- Implementation of the new function update_database_v100610 in Update API in order to update table object and set filetype to "folder" for each folder objects
 - Modifications in function rdbms_searchcontent and rdbms_replacecontent in DB Connect in order to support the filetype "folder"
 - Modifications in explorer in order to support the search for the "folder" file type
 - Modifications in function rbms_searchcontent and rbms_replacecontent in DB Connect in order to support readable locations (convert special characters)
@@ -6234,13 +6234,13 @@ Release 09/2022
 - Modifications version_content_compare in order to verify that the variable content_array exists
 - Modifications in function showmedia in UI API in order to initialize the media attributes in case they can't be extracted from the media file
 - Implementation of the new function getlabel in Get API in order to extract the label for a specific language code
-- Modifications in the template engine in order to use function getalbale and support labels and help values with language code prefixes
+- Modifications in the template engine in order to use function getlabel and support labels and help values with language code prefixes
 - Modifications in all article, component, text, link and media editors in order to use function getlabel and support labels with language code prefixes
 - Modifications in function showinlineeditor in UI API in order to use function getlabel and support labels with language code prefixes
 - Modifications in function getmetadata in Get API in order to use function getlabel and support labels with language code prefixes
 - Modifications in explorer_objectlist and search_objectlist in order to use function getlabel and support labels with language code prefixes
 - Modifications in popup_upload_html in order to set the max items in the upload queue to 500
-- Modifications in function rbms_searchcontent in DB Connect in order to support the sort by the relevance of the search result in case a fulltext search using MATCH AGAINST is performed
+- Modifications in function rbms_searchcontent in DB Connect in order to support the sort by the relevance of the search result in case a full-text search using MATCH AGAINST is performed
 - Design modifications in explorer in order to migrate the select to radio checkboxes for the AND/OR decision of the advanced search form
 - Update of the update log in the installation directory
 - Updates in the Administrators Guide, Import/Export Guide, Template Designers Guide, and Users Guide
@@ -6254,4 +6254,19 @@ Release 09/2022
 - Bug fix: The explorer of the Import/Export Connector module did not convert the directory path and caused a fallback to the root directory
 - Bug fix: Function createthumbnail_indesign in Media API did not verify the created JPEG file format which lead to an issue with the create thumbnail file the analysis of its colors by function getimagecolors in Get API
 - Bug fix: The RESTful function executeREST did not accept a publication value *Null* in the request
-- Bug fix: Function editpublication did set the value for the RERSTful API based on the SOAP API
+- Bug fix: Function editpublication did set the value for the RESTful API based on the SOAP API
+
+Version 10.0.7
+Release 10/2022
+- Migrate from case sensitive to case insensitive object and folder names in compliance with MS Windows file and directory names
+- Modifications in function createfolder, createobject, renameobject, renamefolder, and manipulateobject in the Main API in order to use function is_ifile and is_idir for case-insensitive object and folder name support
+- Implementation of the new function update_database_v1007 in Update API in order to update table object and create a new attribute for the objectpath levels and set the value
+- Modifications in function update_all in Update API in order to add the new function update_database_v1007
+- Modifications in createtables.sql in order to change the attribute objectpath of table object to a case insensitive collation
+- Modifications in various functions in DB Connect in order to remove BINARY from the objectpath comparison
+- Modifications in service recognizefaces in order to remove BINARY from the objectpath comparison
+- Modifications in function zipfiles in Media API in order to remove BINARY from the objectpath comparison
+- Modifications in function getmetadata_multiobjects in Get API in order to remove BINARY from the objectpath comparison
+- Modifications in function exportxmlfiles in the Import/Export API in order to remove BINARY from the objectpath comparison
+- Update of the update log in the installation directory
+- Updates in the Users Guide

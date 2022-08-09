@@ -2176,7 +2176,7 @@ function update_database_v100610 ()
 
     // select all content
     $sql = 'UPDATE object SET filetype="folder" WHERE objectpath LIKE "%/.folder"';
-    $errcode = "50670";
+    $errcode = "50710";
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
 
     // save log
@@ -2186,6 +2186,43 @@ function update_database_v100610 ()
 
     // update log
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.10|updated to version 10.0.6.10"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v1007 ----------------------------------------------
+// function: update_database_v1007()
+// input: %
+// output: true / false
+
+// description: 
+// Update table object for support of version 10.0.7
+
+function update_database_v1007 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.7"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table object (case insensitive objectpath)
+    $sql = "ALTER TABLE object MODIFY COLUMN objectpath varchar(4096) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+    $errcode = "50720";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7|updated to version 10.0.7"), "update");
 
     return true;
   }
@@ -2239,6 +2276,7 @@ function updates_all ()
     update_database_v10066 ();
     update_database_v10069 ();
     update_database_v100610 ();
+    update_database_v1007 ();
   }
 }
 

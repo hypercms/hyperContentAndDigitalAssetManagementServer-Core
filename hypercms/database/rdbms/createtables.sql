@@ -22,7 +22,7 @@ CREATE TABLE `object` (
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `publishdate` datetime DEFAULT NULL,
   `user` char(100) NOT NULL DEFAULT '',
-  `objectpath` varchar(4096) BINARY NOT NULL DEFAULT '',
+  `objectpath` varchar(4096) NOT NULL DEFAULT '',
   `md5_objectpath` char(32) BINARY NOT NULL DEFAULT '',
   `container` char(16) NOT NULL DEFAULT '',
   `template` char(100) BINARY NOT NULL DEFAULT '',
