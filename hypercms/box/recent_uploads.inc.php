@@ -4,7 +4,7 @@ $maxcount = 20;
 $object_array = array();
 
 // get downloads stats of user (use higher limit since folders will not be displayed)
-if (!empty ($user)) $stats_array = rdbms_getmediastat ("", "", "upload", "", "", $user, false, 60);
+if (!empty ($user)) $stats_array = rdbms_getmediastat ("", "", "upload", "", "", $user, false, 60, 0);
 
 // prepare array
 if (!empty ($stats_array) && is_array ($stats_array) && sizeof ($stats_array) > 0)

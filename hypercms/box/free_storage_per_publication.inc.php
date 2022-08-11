@@ -8,7 +8,7 @@ function usedstorage ($publication)
   if (!empty ($mgmt_config[$publication]['storagefactor'])) $factor = $mgmt_config[$publication]['storagefactor'];
   elseif (!empty ($mgmt_config['storagefactor'])) $factor = $mgmt_config['storagefactor'];
   else $factor = 1.2;
-  
+
   if (valid_publicationname ($publication))
   {
     // memory for file size (should be kept for 24 hours)
@@ -80,7 +80,7 @@ if (is_array ($siteaccess))
       // get used storage space
       $usedstorage = usedstorage ($site);
   
-      if (is_array ($usedstorage))
+      if (isset ($usedstorage['filesize']))
       {
         $space_used = $usedstorage['filesize'];
       }
@@ -98,7 +98,7 @@ if (is_array ($siteaccess))
           elseif ($space_used >= $space_total) $percentage = 100;
         }
       }
-      
+
       echo "<h2>".$site."</h2>\n";
       
       if ($space_total > 0)
@@ -125,20 +125,6 @@ if (is_array ($siteaccess))
         echo "Free <span style=\"font-size:28px;".$style."\">".number_format (($space_free), 2, ".", " ")." GB</span>";
       }
       else echo "Free <span style=\"font-size:28px;\">Not available</span>";
-
-      echo "<br /><br />";
-
-      $filesize_array = getfilesize ("%comp%/".$site."/.folder");
-
-      if (!empty ($filesize_array['filesize']) && !empty ($filesize_array['count']))
-      {
-        $filesize = $filesize_array['filesize'];
-        $filecount = $filesize_array['count'];
-
-        echo "Average file size <span style=\"font-size:28px;\">".number_format (($filesize / $filecount / 1024), 2, ".", " ")." MB</span>";
-      }
-      
-      echo "<br /><br />";
       
       if ($space_total > 0) $percentage = round ((($space_total - $space_free) / $space_total), 4) * 100;
       if ($percentage > 100) $percentage = 100;
@@ -149,7 +135,7 @@ if (is_array ($siteaccess))
       else $css_color = "hcmsPriorityLow";
       
       if ($percentage  >= 0) echo "
-      <table style=\"width:100%; padding:0; border:1px solid #000000; border-collapse:collapse;\">
+      <table style=\"margin-top:30px; width:100%; padding:0; border:1px solid #000000; border-collapse:collapse;\">
         <tr> 
           <td>
             <div class=\"".$css_color."\" style=\"width:".ceil($percentage)."%; height:32px; text-align:center; font-size:26px; line-height:32px; overflow:hidden;\">".ceil($percentage)." %</div>

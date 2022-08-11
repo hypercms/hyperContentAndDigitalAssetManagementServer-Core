@@ -6273,6 +6273,13 @@ Release 10/2022
 - Implementation of the new function update_database_v10071 in the Update API in order to drop the index object_md5_objectpath and remove column md5_objectpath from table object
 - Modifications in function update_all in Update API in order to add the new function update_database_v10071
 - Modifications in the main configuration file in the install directory in order to add new commenst to the Relational Database Connectivity section
+- Modifications in page_info_stats in order to remove the duplicate call of function rdbms_getmediastat for the chart and the table view
+- Modifications in function rdbms_getmediastat in DB connect in order to support a permanent cache for the results
+- Modifications in function rdbms_getmediastat in DB connect in order to support an automatic cache timeout based on the end date
+- Modifications in service getaccessstats in order to set the cache timeout to "auto"
+- Modifications in page_info_stats in order to set the cache timeout to "auto"
+- Modifications in Home boxes recent_downloads, recent_uploadlinks, and recent_uploads in order to set a cache timeout of 0
+- Modifications in page_info_recipients in order to set a cache timeout of 0
 - Update of the update log in the installation directory
-- Updates in the Users Guide
+- Updates in the Installation and Users Guide
 - Bug fix: Function manipulateallobjects did not get the category for each array element

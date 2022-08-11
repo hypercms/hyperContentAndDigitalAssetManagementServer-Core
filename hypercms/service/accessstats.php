@@ -30,8 +30,8 @@ checkusersession ($user);
 // write and close session (non-blocking other frames)
 if (session_id() != "") session_write_close();
 
-// define timeout for cache in seconds
-$cache_timeout = 60*60*1;
+// define timeout for cache in seconds or use "auto"
+$cache_timeout = "auto";
 
 // chart size in pixels
 if (!empty ($is_mobile))

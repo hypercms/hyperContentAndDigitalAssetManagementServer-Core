@@ -133,11 +133,11 @@ if ($result_array != false && sizeof ($result_array) > 0)
 
       if (is_array ($object_info))
       {
-        $result_stats = rdbms_getmediastat ($result['date'], "", "download", $object_info['container_id'], "", $result['to_user'], false);
+        $result_stats = rdbms_getmediastat ($result['date'], "", "download", $object_info['container_id'], "", $result['to_user'], false, 0, 0);
       }
       else
       {
-        $result_stats = rdbms_getmediastat ($result['date'], "", "download", "", $location_esc.$page, $result['to_user'], false);
+        $result_stats = rdbms_getmediastat ($result['date'], "", "download", "", $location_esc.$page, $result['to_user'], false, 0, 0);
       }
 
       if (is_array ($result_stats))

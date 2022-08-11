@@ -49,8 +49,8 @@ checkusersession ($user, false);
 // write and close session (non-blocking other frames)
 if (session_id() != "") session_write_close();
 
-// define timeout for cache in seconds
-$cache_timeout = 60*60*1;
+// define timeout for cache in seconds or use "auto"
+$cache_timeout = "auto";
 
 // chart size in pixels
 if (!empty ($is_mobile))
@@ -126,7 +126,7 @@ function next ()
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
 
-<!-- popup (do not used nested fixed positioned div-layers due to MS IE and Edge issue) -->
+<!-- popup (do not use nested fixed positioned div-layers due to MS IE and Edge issue) -->
 <div id="popupLayer" class="hcmsInfoBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
   <div style="display:block; padding-bottom:5px;">
     <div id="popupTitle" class="hcmsHeadline" style="float:left; margin:6px;"></div>
@@ -373,15 +373,6 @@ if (!empty ($container_id))
   
   <div style="margin:10px 0px 0px 40px;">
   <?php
-  if ($page == ".folder")
-  {
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc.$page, "", false);
-  }
-  elseif ($media != "")
-  {
-    $result_download = rdbms_getmediastat ($date_from, $date_to, "download", intval ($container_id), "", "", false);
-  }
-  
   if (is_array ($result_download)) 
   { 
     echo "
@@ -443,5 +434,6 @@ if (!empty ($container_id))
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>
