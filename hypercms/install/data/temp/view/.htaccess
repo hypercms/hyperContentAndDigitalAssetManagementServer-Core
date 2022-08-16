@@ -1,5 +1,8 @@
+# Display errors
 php_flag display_errors 1
+
 # Apache 2.2
-Allow from all
+# Allow from all
+
 # Apache 2.4
 Require all granted
