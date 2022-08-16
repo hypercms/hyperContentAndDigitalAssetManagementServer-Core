@@ -600,10 +600,14 @@ if (is_array ($result))
 
     if (!empty ($activelanguage) && is_array ($activelanguage))
     {
+      $i = 0;
+
       foreach ($activelanguage as $langcode => $langname)
       {
         echo "
-      <option value=\"".$langcode."\"".($temp_targetlang == $langcode ? "selected=\"selected\"" : "").">".$langname."</option>";
+      <option value=\"".$langcode."\"".(($temp_targetlang == $langcode || (empty ($temp_targetlang) && $i == 1)) ? "selected=\"selected\"" : "").">".$langname."</option>";
+      
+        $i++;
       }
     }
 

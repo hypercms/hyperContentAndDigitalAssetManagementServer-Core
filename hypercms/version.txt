@@ -6280,6 +6280,11 @@ Release 10/2022
 - Modifications in page_info_stats in order to set the cache timeout to "auto"
 - Modifications in Home boxes recent_downloads, recent_uploadlinks, and recent_uploads in order to set a cache timeout of 0
 - Modifications in page_info_recipients in order to set a cache timeout of 0
+- Modifications in function createuser in order to remove user if checkdiskkey failed
+- Modifications in Taxonomy editor media_taxonomy in order to select the 2nd target language as default language
+- Modifications in popup_status in order to set a default value for the variable headline
+- Dropped support for Apache 2.2 htaccess directives in the install directory (still available as comments) 
 - Update of the update log in the installation directory
 - Updates in the Installation and Users Guide
 - Bug fix: Function manipulateallobjects did not get the category for each array element
+- Bug fix: format_ext used dot without a file extension in key 'cad'

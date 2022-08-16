@@ -272,7 +272,7 @@ if ($pagestore != false)
       }
 
       if (!empty ($filedirectlink)) echo "<tr><td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['direct-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top; word-break:break-all;\">".$filedirectlink."</td></tr>\n";
-      if (!empty ($filestreamlink)) $linksview .= "<tr><td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['link'][$lang]." ".$hcms_lang['for-videoplayer'][$lang])." <br/><span class=\"hcmsHeadlineTiny\" style=\"vertical-align:top; word-break:break-all;\">".$filestreamlink."</span></td></tr>\n";
+      if (!empty ($filestreamlink)) echo "<tr><td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['link'][$lang]." ".$hcms_lang['for-videoplayer'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top; word-break:break-all;\">".$filestreamlink."</td></tr>\n";
       if (!empty ($filewrapperlink)) echo "<tr><td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['wrapper-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top; word-break:break-all;\">".$filewrapperlink."</td></tr>\n";
       if (!empty ($filewrapperdownload)) echo "<tr><td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['download-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top; word-break:break-all;\">".$filewrapperdownload."</td></tr>\n";
       if (!empty ($fileaccesslink)) echo "<tr><td style=\"vertical-align:top;\">".getescapedtext ($hcms_lang['access-link'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top; word-break:break-all;\">".$fileaccesslink."</td></tr>\n";

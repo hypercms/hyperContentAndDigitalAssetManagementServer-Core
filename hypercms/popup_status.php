@@ -469,6 +469,7 @@ elseif ($action == "emptybin") $headline = getescapedtext ($hcms_lang['empty-rec
 elseif ($action == "restore" || $action == "deleteunmark") $headline = getescapedtext ($hcms_lang['restore'][$lang]);
 elseif ($action == "publish") $headline = getescapedtext ($hcms_lang['publish'][$lang]);
 elseif ($action == "unpublish") $headline = getescapedtext ($hcms_lang['unpublish'][$lang]);
+else $headline = "";
 
 echo showtopbar ($headline." ".$status_progress, $lang);
 ?>

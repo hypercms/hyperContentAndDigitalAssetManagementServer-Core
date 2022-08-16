@@ -9538,8 +9538,16 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
   // set default
   if (!isset ($mgmt_config['passwordminlength'])) $mgmt_config['passwordminlength'] = 10;
 
+  // check diskkey
+  if (!checkdiskkey())
+  {
+    $result['result'] = false;
+    $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+    return $result;
+  }
+
   // check permissions
-  if (($user != "sys" && !empty ($mgmt_config['api_checkpermission'])) || !checkdiskkey())
+  if (($user != "sys" && !empty ($mgmt_config['api_checkpermission'])))
   {
     if (
       (!valid_publicationname ($site) && (!checkrootpermission ('user') || !checkrootpermission ('usercreate'))) || 
@@ -9550,14 +9558,6 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
       $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
       return $result;
     }
-  }
-
-  // check diskkey
-  if (!checkdiskkey())
-  {
-    $result['result'] = false;
-    $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
-    return $result;
   }
 
   // default theme
@@ -9692,6 +9692,18 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
 
           if ($show == "" && $test != false)
           {
+            // recheck diskkey
+            if (!checkdiskkey())
+            {
+              $result['result'] = false;
+              $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+
+              // remove new user
+              deleteuser ($site, $login, "sys");
+              
+              return $result;
+            }
+
             // eventsystem
             if (!empty ($eventsystem['oncreateuser_post']) && empty ($eventsystem['hide'])) 
               oncreateuser_post ($login, $user);
