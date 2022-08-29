@@ -2271,6 +2271,85 @@ function update_database_v10071 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v10073 ----------------------------------------------
+// function: update_database_v10073()
+// input: %
+// output: true / false
+
+// description: 
+// Update the taxonomy index for support of version 10.0.7.3
+
+function update_database_v10073 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.7.3"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // remove old index
+    $sql = 'DROP INDEX taxonomy_multiple ON taxonomy';
+    $errcode = "50730";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table object (case insensitive objectpath)
+    $sql = 'CREATE INDEX taxonomy_multiple ON taxonomy (id, text_id, taxonomy_id)';
+    $errcode = "50731";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.3|updated to version 10.0.7.3"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v10074 ----------------------------------------------
+// function: update_database_v10074()
+// input: %
+// output: true / false
+
+// description: 
+// Update the taxonomy index for support of version 10.0.7.4
+
+function update_database_v10074 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.7.4"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table object (case insensitive objectpath)
+    $sql = 'CREATE INDEX object_deleteuser ON object (deleteuser)';
+    $errcode = "50740";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.4|updated to version 10.0.7.4"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -2320,6 +2399,8 @@ function updates_all ()
     update_database_v100610 ();
     update_database_v1007 ();
     update_database_v10071 ();
+    update_database_v10073 ();
+    update_database_v10074 ();
   }
 }
 

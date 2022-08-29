@@ -607,14 +607,14 @@ function getsynonym ($text, $lang="")
 
 // ----------------------------------------- gettaxonomy_sublevel ------------------------------------------
 // function: gettaxonomy_sublevel()
-// input: publication name [string], language code [string] (optional), taxonomy parent ID [string] (optional)
+// input: publication name [string], language code [string] (optional), taxonomy parent ID [string] (optional), sort by name [boolean] (optional)
 // output: array holding all keywords of the next taxonomy level / false on error
 
 // description:
 // Returns the sorted keywords of a taxonomy level (multilingual support based on taxonomies).
 // The global variable $taxonomy can be used to pass the taxonomy as array.
 
-function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
+function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0", $sort=true)
 {
   global $mgmt_config, $taxonomy;
 
@@ -638,8 +638,10 @@ function gettaxonomy_sublevel ($site, $lang="en", $tax_id="0")
     // remove root element
     if (!empty ($result[$tax_id])) unset ($result[$tax_id]);
 
-    // return sorted array
-    natcasesort ($result);
+    // sort array
+    if ($sort == true) natcasesort ($result);
+    
+    // return array 
     return $result;
   }
   else return false;
@@ -1992,14 +1994,14 @@ function getmetadata_container ($container_id, $text_id_array=array())
 // ---------------------------------------- getobjectlist ----------------------------------------
 // function: getobjectlist()
 // input: publication name [string] (optional), location [string] (optional), folder hash code [string,array] (optional), search parameters [array] (optional), information and text IDs to be returned e.g. text:Title [array] (optional), 
-//        verify RESTful API for the publication [boolean] (optional)
+//        verify RESTful API for the publication [boolean] (optional), return all levels even if the user has no access permission to parent folder [boolean] (optional)
 // output: result array / false on error
 // requires: config.inc.php
 
 // description:
 // Get all objects of a location. This is a simplified wrapper for function rdbms_searchcontent.
 
-function getobjectlist ($site="", $location="", $folderhash="", $search=array(), $objectlistcols=array(), $checkREST=false)
+function getobjectlist ($site="", $location="", $folderhash="", $search=array(), $objectlistcols=array(), $checkREST=false, $return_all_levels=true)
 {
   global $mgmt_config, $user, $lang, $hcms_lang,
   $rootpermission, $globalpermission, $localpermission,
@@ -2038,12 +2040,12 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   // define default values (add all text IDs)
   if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "template", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height", "text:temp");
 
-  // search is used (exclude limit, samelocation and fileextension)
+  // search is used (exclude limit and samelocation)
   if (is_array ($search))
   {
     foreach ($search as $key=>$value)
     {
-      if ($key != "limit" && $key != "samelocation" && $key != "fileextension" && $value != "" && substr_count ($location, "/") <= 1)
+      if ($key != "limit" && $key != "samelocation" && $value != "" && substr_count ($location, "/") <= 1)
       {
         $search_active = true;
         break;
@@ -2133,15 +2135,6 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       // get category
       $cat = getcategory ($site, $location);
 
-      // check access permissions
-      if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
-      {
-        $ownergroup = accesspermission ($site, $location, $cat);
-        $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
-
-        if (empty ($setlocalpermission['root'])) return false;
-      }
-
       // define location
       $search_dir_esc[] = convertpath ($site, $location, $cat);
 
@@ -2193,7 +2186,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
                 }
 
                 // negative access
-                if (empty ($setlocalpermission['root'])) $exclude_dir_esc[] = $temp_location_esc;
+                if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
               }
             }
           }
@@ -2247,7 +2240,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
                 }
 
                 // negative access
-                if (empty ($setlocalpermission['root'])) $exclude_dir_esc[] = $temp_location_esc;
+                if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
               }
             }
           }
@@ -2324,7 +2317,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
             $setlocalpermission = setlocalpermission ($temp_site, $temp_ownergroup, $temp_cat);
 
             // add permissions for valid result row
-            if ($temp_ownergroup != false && $setlocalpermission['root'] == 1 && is_file ($temp_location.$temp_object))
+            if ((!empty ($setlocalpermission['root']) || $return_all_levels == true) && is_file ($temp_location.$temp_object))
             {
               // add users local permissions
               $result[$hash]['permission'] = $setlocalpermission;
@@ -2343,6 +2336,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   if (is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
 }
+
 
 // ---------------------------------------- getobjectpathlevel ----------------------------------------
 // function: getobjectpathlevel()
@@ -6689,6 +6683,56 @@ function getoption ($string, $option)
     else return false;
   }
   else return false;
+}
+
+// ----------------------------- getthumbnailsize --------------------------------
+// function: getthumbnailsize()
+// input: %
+// output: result array including the width and height for thumbnail images
+
+// description:
+// Returns the size to be used for thumbnail images defined by the main configuration.
+
+function getthumbnailsize ()
+{
+  global $mgmt_config, $mgmt_imageoptions;
+
+  // default values if setting is missing the main configuration
+  $result = array();
+  $result['width'] = 380;
+  $result['height'] = 220;
+
+  // if Image conversion software is provided
+  if (is_array ($mgmt_imageoptions) && sizeof ($mgmt_imageoptions) > 0)
+  {
+    reset ($mgmt_imageoptions);
+
+    // supported extensions for image rendering
+    foreach ($mgmt_imageoptions as $imageoptions_ext => $imageoptions)
+    {
+      // check file extension
+      if (substr_count (strtolower ($imageoptions_ext).".", ".jpg.") > 0 && !empty ($imageoptions['thumbnail']))
+      {
+        if (strpos ("_".$imageoptions['thumbnail'], "-s ") > 0)
+        {
+          $imagesize = getoption ($imageoptions['thumbnail'], "-s");
+
+          if (!empty ($imagesize) && strpos ($imagesize, "x") > 0)
+          {
+            list ($imagewidth, $imageheight) = explode ("x", $imagesize);
+
+            if (intval ($imagewidth) > 0 && intval ($imageheight) > 0)
+            {
+              $result['width'] = intval ($imagewidth);
+              $result['height'] = intval ($imageheight);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return $result;
 }
 
 // ------------------------------ getcharset ----------------------------------

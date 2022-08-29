@@ -134,23 +134,23 @@ if (sizeof ($config_files) > 0)
             if (filemtime ($location.$file) + $timespan < time())
             {
               deletefile ($location, $file, 0);
-            }      
+            }
           }
         }
       }
 
       // ------------------------------------------------- EXPORT ---------------------------------------------------
-      
+
       // export job
       if (function_exists ("exportobjects")) exportobjects ();
-      
+
       // ------------------------------------------------- IMPORT ---------------------------------------------------
-      
+
       // import job
       if (function_exists ("importobjects")) importobjects ();
-  
+
       // ------------------------------------------- EMPTY RECYCLE BIN ----------------------------------------------
-      
+
       // permanently delete all objects from recycle bin
       if (function_exists ("rdbms_getdeletedobjects") && !empty ($mgmt_config['recycledays']) && $mgmt_config['recycledays'] > 0)
       {
@@ -158,7 +158,7 @@ if (sizeof ($config_files) > 0)
         $date = date ("Y-m-d", time() - $mgmt_config['recycledays']*24*60*60);
         
         // remove all objects permanently that have been marked for deletion before the defined date
-        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, "", false, false);
+        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, array("user"), false, false);
         
         if (is_array ($objectpath_array) && sizeof ($objectpath_array) > 0)
         {
@@ -169,13 +169,13 @@ if (sizeof ($config_files) > 0)
               // if folder object remove .folder
               if (getobject ($objectpath['objectpath']) == ".folder") $objectpath['objectpath'] = getlocation ($objectpath['objectpath']);
 
-              if (!empty ($objectpath['objectpath'])) processobjects ("delete", getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), 0, "sys");
+              if (!empty ($objectpath['objectpath'])) processobjects ("delete", getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), 0, $objectpath['user']);
             }
           }
         }
 
         // remove objects from file system and database in case they could not be deleted by function processobjects
-        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, "", false, true);
+        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, , array("user"), false, true);
 
         if (is_array ($objectpath_array) && sizeof ($objectpath_array) > 0)
         {
@@ -190,7 +190,7 @@ if (sizeof ($config_files) > 0)
               if (getobject ($objectpath['objectpath']) == ".folder") $objectpath['objectpath'] = getlocation ($objectpath['objectpath']);
 
               // delete object
-              $temp = deleteobject (getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), "sys");
+              $temp = deleteobject (getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), $objectpath['user']);
 
               // delete database entry in case deleteobject failed
               if (empty ($temp['result'])) rdbms_deleteobject ($temp_location, "");
@@ -220,12 +220,21 @@ if (sizeof ($config_files) > 0)
           }
 
           // ---------------------------------------------- UPDATE TAXONOMY ----------------------------------------------
-          
-          // remove disabled taxonomies from DB
-          if (function_exists ("rdbms_deletepublicationtaxonomy")) rdbms_deletepublicationtaxonomy ($site, false);
+         
+          // recreate taxonomy relations for all objects
+          $recreate_taxonomy = false;
 
-          // set taxonomies in DB for objects with no taxonomy references
-          if (function_exists ("rdbms_setpublicationtaxonomy")) rdbms_setpublicationtaxonomy ($site, false);
+          // import new taxonomy and analyze content of all objects in order to define the taxonomy relations
+          if (function_exists ("importtaxonomy")) $recreate_taxonomy = importtaxonomy ($site, true); 
+
+          if ($recreate_taxonomy == false)
+          {
+            // remove disabled taxonomy relations
+            if (function_exists ("rdbms_deletepublicationtaxonomy")) rdbms_deletepublicationtaxonomy ($site, false);
+
+            // set taxonomies relations for objects with no taxonomy references or for all objects
+            if (function_exists ("rdbms_setpublicationtaxonomy")) rdbms_setpublicationtaxonomy ($site, false);
+          }
 
           // ----------------------------------------------- STORAGE SPACE -----------------------------------------------
           // calculate used storage space

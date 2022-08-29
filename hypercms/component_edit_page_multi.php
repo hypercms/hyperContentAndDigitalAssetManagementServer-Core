@@ -350,6 +350,7 @@ function hcms_saveEvent ()
                 {
                   $item_files[$i] = $entry;
                 }
+                
                 $i++;
               }
             }

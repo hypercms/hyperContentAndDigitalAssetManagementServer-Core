@@ -1131,7 +1131,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
          $siteaccess, $adminpermission, $setlocalpermission, $token, $is_mobile, $is_iphone, $viewportwidth,
          $mgmt_lang_shortcut_default, $hcms_charset, $hcms_lang_name, $hcms_lang_shortcut, $hcms_lang_codepage, $hcms_lang_date, $hcms_lang, $lang;
 
+  // initialize
   $error = array();
+
+  // remember session ID
+  if (session_id() != "") $session_id = session_id();
+  else $session_id = "";
 
   // define default values for the result array
   $cat = "";
@@ -1327,9 +1332,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       else $templatefile = getfilename ($pagedata, "template");
 
       // ---------------------- load version for history view ----------------------------
-      if (is_file ($mgmt_config['abs_path_temp'].session_id().".dates.php"))
+      if (is_file ($mgmt_config['abs_path_temp'].$session_id.".dates.php"))
       {
-        include ($mgmt_config['abs_path_temp'].session_id().".dates.php");
+        include ($mgmt_config['abs_path_temp'].$session_id.".dates.php");
 
         // allow only preview mode for history view
         $buildview = "preview";
@@ -3916,8 +3921,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                     if ($list_sourcefile != "")
                     {
                       $list .= getlistelements ($list_sourcefile);
-                      // replace commas
-                      $list = str_replace (",", "|", $list);
+                      // replace commas and vertical bars
+                      $list = str_replace (",", "|", str_replace("|", "&#124;", $list));
                     }
 
                     // extract text list
@@ -7449,20 +7454,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if ($test == true)
               {
                 // add session parameter
-                if (session_id() != "") $pageview_parameter = "?PHPSESSID=".session_id();
+                if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
                 else $pageview_parameter = "?hcms_session['hcms']=void";
 
                 // add language setting from session
                 if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
 
                 // close session file
-                session_write_close();
+                suspendsession ();
 
                 // execute code
                 $viewstore = file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.php".$pageview_parameter);
 
                 // reopen session file
-                session_start();
+                revokesession ("", "", $session_id);
 
                 // error handling
                 $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.php");
@@ -7486,19 +7491,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if ($test == true)
               {
                 // add session parameter
-                if (session_id() != "") $pageview_parameter = "?PHPSESSID=".session_id();
+                if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
                 else $pageview_parameter = "?hcms_session['hcms']=void";
 
                 // add language setting from session
                 if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
  
                 // close session file
-                session_write_close();
+                suspendsession ();
 
                 $viewstore = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.".$templateext.$pageview_parameter);
 
                 // reopen session file
-                session_start();
+                revokesession ("", "", $session_id);
 
                 // error handling
                 $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.".$templateext);
@@ -7538,20 +7543,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if ($result_save == true)
               {
                 // add user name from session
-                if (session_id() != "") $pageview_parameter = "?PHPSESSID=".session_id();
+                if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
                 else $pageview_parameter = "?hcms_session['hcms']=void";
 
                 // add language setting from session
                 if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
 
                 // close session file
-                session_write_close();
+                suspendsession ();
 
                 // execute code of generator (e.g. create a PDF file)
                 $viewstore_save = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".generate.php".$pageview_parameter);
 
                 // reopen session file
-                session_start();
+                revokesession ("", "", $session_id);
 
                 // error handling
                 $viewstore = errorhandler ($viewstore_buffer, $viewstore_save, $unique_id.".generate.php");
@@ -7606,20 +7611,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               if ($result_save == true)
               {
                 // add user name from session
-                if (session_id() != "") $pageview_parameter = "?PHPSESSID=".session_id();
+                if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
                 else $pageview_parameter = "?hcms_session['hcms']=void";
 
                 // add language setting from session
                 if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
 
                 // close session file
-                session_write_close();
+                suspendsession ();
 
                 // execute code
                 $viewstore = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.php".$pageview_parameter);
 
                 // reopen session file
-                session_start();
+                revokesession ("", "", $session_id);
 
                 // error handling
                 $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.php");
@@ -9486,7 +9491,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   // call recognize faces service
   function recognizeFacesService ()
   {
-    setTimeout (function () { document.location.href='".cleandomain($mgmt_config['url_path_cms'])."service/recognizefaces.php".((!empty ($recognizefaces_service) && substr ($user, 0, 4) == "sys:") ? "?PHPSESSID=".session_id() : "")."'; }, 2000);
+    setTimeout (function () { document.location.href='".cleandomain($mgmt_config['url_path_cms'])."service/recognizefaces.php".((!empty ($recognizefaces_service) && substr ($user, 0, 4) == "sys:") ? "?PHPSESSID=".$session_id : "")."'; }, 2000);
   }
 
   // collect frames from video and recognize faces
@@ -10451,7 +10456,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     <input type=\"hidden\" name=\"wf_token\" value=\"".$wf_token."\" />
     <input type=\"hidden\" name=\"token\" value=\"".$token."\" />
     <input type=\"hidden\" name=\"service\" value=\"".(!empty ($recognizefaces_service) ? "recognizefaces" : "savecontent")."\" />
-    ".((!empty ($recognizefaces_service) && substr ($user, 0, 4) == "sys:") ? "<input type=\"hidden\" name=\"PHPSESSID\" value=\"".session_id()."\" />" : "")."
+    ".((!empty ($recognizefaces_service) && substr ($user, 0, 4) == "sys:") ? "<input type=\"hidden\" name=\"PHPSESSID\" value=\"".$session_id."\" />" : "")."
     <input type=\"hidden\" name=\"medianame\" id=\"medianame\" value=\"\" />
     <input type=\"hidden\" name=\"mediadata\" id=\"mediadata\" value=\"\" />
     <input type=\"hidden\" name=\"faces\" id=\"faces\" value=\"\" />
@@ -10876,8 +10881,8 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
                 if ($list_sourcefile != "")
                 {
                   $list .= getlistelements ($list_sourcefile);
-                  // replace commas by
-                  $list = str_replace (",", "|", $list);
+                  // replace commas and vertical bars
+                  $list = str_replace (",", "|", str_replace("|", "&#124;", $list));
                 }
 
                 // extract text list

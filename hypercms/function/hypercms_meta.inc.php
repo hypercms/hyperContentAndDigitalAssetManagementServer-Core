@@ -479,6 +479,98 @@ function importCSVtextcontent ($site, $location, $file_csv, $user, $type="", $de
   }
 }
 
+
+ // ----------------------------------------- importtaxonomy ------------------------------------------
+// function: importtaxonomy()
+// input: publication name [string], recreate taxonomy relations for all objects of the publication [boolean] (optional)
+// output: true / false
+
+// description:
+// Executes the import job for the taxonomy of a publication.
+
+function importtaxonomy ($site, $recreate=false)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site))
+  {
+    // target CSV file
+    $file_csv = $mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv";
+
+    // import profile file
+    $import_profile = $mgmt_config['abs_path_data']."config/".$site.".taxonomy.import.dat";
+
+    if (!empty ($mgmt_config['abs_path_data']) && is_file ($import_profile))
+    {
+      // load import jobs
+      $record_array = file ($import_profile);
+
+      if (is_array ($record_array) && sizeof ($record_array) > 0)
+      {
+        foreach ($record_array as $record)
+        {
+          if (trim ($record) != "")
+          {
+            // taxonomy import profile since version 10.0.7
+            list ($site, $job, $period, $importtype, $importfile, $delimiter, $enclosure, $deletefiles) = explode ("|", trim ($record));
+
+            // if job is activated
+            if (
+                  !empty ($job) && 
+                  (
+                    // for each first day of the month
+                    ($period == "monthly" && date ("d", time()) == "01") ||
+                    // for each sunday
+                    ($period == "weekly" && strtolower (date ("D", time())) == "sun") || 
+                    // for each day
+                    $period == "daily"
+                  )
+            )
+            {
+              // get file contents
+              if (!empty ($importfile))
+              {
+                $filedata = file_get_contents ($importfile);
+
+                // load or get file
+                if (!empty ($filedata)) $save = savefile (getlocation ($file_csv), getobject ($file_csv), $filedata);
+
+                // remove source file
+                if (!empty ($deletefiles) && is_file ($importfile)) unlink ($importfile);
+          
+                if (!empty ($save) && is_file ($file_csv))
+                {
+                  // load imported CSV file and try to detect enclosure and character set
+                  $import = load_csv ($file_csv, $delimiter , "", "", "utf-8");
+
+                  // the index starts with 1
+                  if (is_array ($import) && !empty ($import[1]['level']))
+                  {
+                    $result = create_csv ($import, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
+
+                    if ($result && $recreate == true)
+                    {
+                      // remove taxonomy relations for all objects
+                      if (function_exists ("rdbms_deletepublicationtaxonomy")) rdbms_deletepublicationtaxonomy ($site, true);
+
+                      // set taxonomies relations for all objects
+                      if (function_exists ("rdbms_setpublicationtaxonomy")) rdbms_setpublicationtaxonomy ($site, true);
+                    }
+                  }
+                }
+              }
+            }
+
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 // --------------------------------------- loadtaxonomy -------------------------------------------
 // function: loadtaxonomy ()
 // input: publication name [string], return rows starting with row number [integer] (optional), return number of rows [integer] (optional), return total number of rows [boolean] (optional), load default taxonomy [bollean] (optional)
@@ -618,15 +710,22 @@ function loadtaxonomy ($site, $start=1, $perpage=100000, $count=false, $load_def
 
 // --------------------------------------- savetaxonomy -------------------------------------------
 // function: savetaxonomy ()
-// input: publication name [string], new taxonomy with row number and languages as keys [array], replace rows starting with row number [integer], replace rows ending with row number [integer]
+// input: publication name [string], new taxonomy with row number and languages as keys [array], replace rows starting with row number [integer], replace rows ending with row number [integer], 
+//        text IDs to analyze [array] (optional)
 // output: true / false
 
 // description:
 // Generates an array from a taxonomy definition file located in data/include/ to be used for presentation or CSV export.
 
-function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
+function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop, $text_ids="*Null*")
 {
   global $mgmt_config;
+
+  // save text IDs
+  if ($text_ids != "*Null*" && valid_publicationname ($site))
+  {
+    savefile ($mgmt_config['abs_path_data']."include/", $site.".taxonomy.filter.csv", $text_ids);
+  }
 
   // load taxonomy
   $taxonomy_old = loadtaxonomy ($site);
@@ -776,7 +875,7 @@ function savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop)
 
 function createtaxonomy ($site_name="", $recreate=false)
 {
-  global $mgmt_config;
+  global $mgmt_config, $user;
 
   // collect and compare files
   $dir = $mgmt_config['abs_path_data']."include/";
@@ -889,6 +988,9 @@ function createtaxonomy ($site_name="", $recreate=false)
 
             if (!empty ($recreate) && $savefile == true)
             {
+              // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
+              $session_id = suspendsession ("createtaxonomy.".$site, $user);
+
               // remove and recreate the taxonomy for all objects of the publication
               if (in_array ("default", $site_memory) && empty ($done_setpublicationtaxonomy))
               {
@@ -902,6 +1004,9 @@ function createtaxonomy ($site_name="", $recreate=false)
 
               $errcode = "00209";
               $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|".$errcode."|Taxonomy of publication '".$site."' has been created";
+
+              // restart session (that has been previously closed for non-blocking procedure)
+              revokesession ("createtaxonomy.".$site, $user, $session_id);
             }
             else
             {
@@ -1898,6 +2003,168 @@ function geo2decimal ($coordinate, $hemisphere)
   return $sign * ($degrees + $minutes/60 + $seconds/3600);
 }
 
+
+// ------------------------- krita_getdata -----------------------------
+// function: krita_getdata()
+// input: path to image file [string]
+// output: result array / false on error
+
+function krita_getdata ($file)
+{
+  global $user, $mgmt_config, $mgmt_uncompress, $hcms_ext;
+
+	if (is_file ($file) && !empty ($mgmt_uncompress['.zip']))
+  {
+    if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
+
+    $result = array();
+
+    // get file info
+    $file_info = getfileinfo ("", $file, "comp");
+
+    // check file extension
+    if (substr_count (strtolower ($hcms_ext['image']).".", $file_info['ext'].".") == 0) return false;
+
+    // get publication, location and media file name
+    $site = getpublication ($file);
+    $location = getlocation ($file);
+    $media = getobject ($file);
+
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $media, $user);
+
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+    {
+      $file = $temp['templocation'].$temp['tempfile'];
+    }
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
+    {
+      $file = $temp['location'].$temp['file'];
+    }
+
+    // temporary directory for extracting file
+    $temp_name = uniqid ("index");
+    $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
+
+    // create temporary directory for extraction
+    @mkdir ($temp_dir, $mgmt_config['fspermission']);
+
+    // kra is a ZIP-file with the images preview.png, mergedimage.png, and content placed in the file documentinfo.xml
+    $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($file)."\" -d \"".shellcmd_encode ($temp_dir)."\"";
+
+    // execute and redirect stderr (2) to stdout (1)
+    @exec ($cmd." 2>&1", $output, $errorCode);
+
+    if ($errorCode && is_array ($output))
+    {
+      $errcode = "20141";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$file."' \t".implode ("\t", $output); 
+    } 
+    elseif (is_file ($temp_dir."documentinfo.xml"))
+    {
+      // load file
+      $content = @file_get_contents ($temp_dir."documentinfo.xml");
+
+      if ($content != false)
+      {
+        // get encoding/charset
+        $xml_encoding = gethtmltag ($content, "?xml");
+        if ($xml_encoding != false) $charset_temp = getattribute ($xml_encoding, "encoding");
+        
+        // remove multiple white spaces
+        $content = preg_replace ('/\s+/', ' ', $content);
+
+        // convert content if source charset is not UTF-8 (XML-Containers of multimedia files must use UTF-8 encoding)
+        if (!empty ($charset_temp) && strtolower ($charset_temp) != "utf-8")
+        {
+          $content = convertchars ($content, $charset_temp, "UTF-8");
+        }
+
+        $title = getcontent ($content, "<title>");
+        $description = getcontent ($content, "<description>");
+        $subject = getcontent ($content, "<subject>");
+        $abstract = getcontent ($content, "<abstract>");
+        $keyword = getcontent ($content, "<keyword>");
+        $initialcreator = getcontent ($content, "<initial-creator>");
+        $language = getcontent ($content, "<language>");
+        $license = getcontent ($content, "<license>");
+        
+        if (!empty ($title[0])) $result['title'] = $title[0];
+        if (!empty ($description[0])) $result['description'] = $description[0];
+        if (!empty ($subject[0])) $result['subject'] = $subject[0];
+        if (!empty ($abstract[0])) $result['abstract'] = $abstract[0];
+        if (!empty ($keyword[0])) $result['keyword'] = $keyword[0];
+        if (!empty ($initialcreator[0])) $result['initial-creator'] = $initialcreator[0];
+        if (!empty ($language[0])) $result['language'] = $language[0];
+        if (!empty ($license[0])) $result['license'] = $license[0];
+      }
+
+      // remove temp directory
+      deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+    }
+
+    // delete temp file
+    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+
+    return $result;
+	}
+  else return false;
+}
+
+// ------------------------- krita_create -----------------------------
+// function: krita_create()
+// input: publication name [string], text from content container [array]
+// output: KRA tag array / false on error
+
+// description:
+// Defines XMP tag array based on the media mapping of a publication
+
+function krita_create ($site, $text)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && is_array ($text) && !empty ($mgmt_config['abs_path_data']))
+  {
+    // try to load mapping configuration file of publication
+    if (is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
+    {
+      @include ($mgmt_config['abs_path_data']."config/".$site.".media.map.php");
+    }
+
+    $result = array();
+
+    // look in mapping definition (name => id)
+    if (isset ($mapping) && is_array ($mapping))
+    {
+      foreach ($mapping as $tag => $id)
+      {
+        // extract type prefix and text ID
+        if (strpos ($id, ":") > 0) list ($type, $id) = explode (":", $id); 
+
+        // set XMP tag (tag => value)
+        if ($tag != "" && $id != "" && isset ($text[$id]) && (substr ($tag, 0, 4) == "kra:"))
+        {
+          $result[$tag] = $text[$id];
+        }
+      }
+
+      return $result;
+    }
+    else
+    {
+      $errcode = "10144";
+      $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Media mapping of publication '".$site."' could not be loaded";
+
+      savelog (@$error);
+
+      return false;
+    }
+  }
+  else return false;
+}
+
 // ------------------------- exif_getdata -----------------------------
 // function: exif_getdata()
 // input: path to image file [string]
@@ -2697,7 +2964,7 @@ function iptc_create ($site, $text)
 // output: true / false on error
 
 // description:
-// Prepares the PHP mapping array from the provided mapping definition and saves media mapping file
+// Prepares the PHP mapping array from the provided mapping definition and saves the media mapping file
 
 function createmapping ($site, $mapping)
 {
@@ -3042,6 +3309,16 @@ id3:track => ''
 id3:genre => ''
 id3:tracknumber => ''
 id3:band => ''
+
+// KRITA namespace tags (KRA files)
+kra:title => 'textu:Title'
+kra:description => 'textu:Description'
+kra:subject => ''
+kra:abstract => ''
+kra:keyword => 'textk:Keywords'
+kra:initial-creator => 'textu:Creator'
+kra:license => 'textu:Copyright'
+kra:language => ''
 
 // Image Resolution defines Quality [Print, Web]
 hcms:quality => 'textl:Quality'
@@ -3589,6 +3866,78 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
               {
                 $errcode = "20607";
                 $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write XMP meta data to container with ID: ".$container_id;
+              }
+            }
+          }
+        }
+
+        // ------------------- KRITA -------------------
+ 
+        // get KRITA data from file
+        $kra_data = krita_getdata ($medialocation.$mediafile);
+
+        // inject meta data based on mapping
+        if (is_array ($kra_data))
+        {
+          // source charset
+          $charset_source = "UTF-8"; 
+
+          reset ($mapping);
+
+          foreach ($mapping as $key => $text_id)
+          {
+            // only for KRITA tags (audio files)
+            if (strpos ("_".$key, "kra:") > 0 && $text_id != "")
+            {
+              // get KRITA tag name
+              if (strpos ($key, ":") > 0) list ($namespace, $key) = explode (":", $key);
+
+              // get type and text ID
+              if (strpos ($text_id, ":") > 0) list ($type, $text_id) = explode (":", $text_id);
+              elseif (substr_count (strtolower ($text_id), "keyword") > 0) $type = "textk";
+              else $type = "textu";
+
+              if (!empty ($type)) $type_array[$text_id] = $type;
+
+              // get data
+              if (!empty ($kra_data[$key])) $kra3str = $kra_data[$key];
+              else $kra3str = "";
+
+              if ($kra3str != "")
+              {
+                // clean keywords
+                if ($type == "textk")
+                {
+                  $keywords = splitkeywords ($kra3str, $charset_dest);
+
+                  if (is_array ($keywords)) $kra3str = implode (",", $keywords);
+                  else $kra3str = "";
+                }
+
+                // remove tags
+                $kra3str = strip_tags ($kra3str);
+
+                // encode to UTF-8
+                if (!is_utf8 ($kra3str)) $kra3str = utf8_encode ($kra3str);
+
+                // textnodes search index in database
+                $text_array[$text_id] = $kra3str;
+                          
+                $containerdata_new = setcontent ($containerdata, "<text>", "<textcontent>", "<![CDATA[".$kra3str."]]>", "<text_id>", $text_id, true);
+
+                if ($containerdata_new == false)
+                {
+                  $containerdata_new = addcontent ($containerdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $text_id);
+                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textcontent>", "<![CDATA[".$kra3str."]]>", "<text_id>", $text_id, true);
+                  $containerdata_new = setcontent ($containerdata_new, "<text>", "<textuser>", $user, "<text_id>", $text_id, true);
+                }
+
+                if ($containerdata_new != false) $containerdata = $containerdata_new;
+                else
+                {
+                  $errcode = "20645";
+                  $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Failed to write KRITA meta data to container with ID: ".$container_id;
+                }
               }
             }
           }

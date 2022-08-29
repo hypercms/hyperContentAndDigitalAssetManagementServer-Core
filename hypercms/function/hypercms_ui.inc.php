@@ -1803,7 +1803,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                  !empty ($mediaratio) && ($thumb_size['width'] >= 180 || $thumb_size['height'] >= 180) && 
                  is_annotation () && 
                  (!is_file ($thumb_root.$annotation_file) || filemtime ($thumb_root.$annotation_file) < filemtime ($thumb_root.$thumbfile)) && 
-                 is_supported ($mgmt_imagepreview, $file_info['orig_ext']) && 
+                 (is_supported ($mgmt_imagepreview, $file_info['orig_ext'])  || is_kritaimage ($file_info['orig_ext'])) && 
                  $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1
                )
             {
@@ -1827,10 +1827,45 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 // define image format
                 $mgmt_imageoptions['.jpg.jpeg']['annotation'] = '-s '.$width_render.'x'.$height_render.' -q 100 -f jpg';
 
-                // create new image for annotations
-                $result = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, 'jpg', 'annotation', true, false);
+                // use existing converted image file in case of RAW or KRITA image
+                if (is_rawimage ($file_info['orig_ext']) || is_kritaimage ($file_info['orig_ext']))
+                {
+                  // prepare media file
+                  $temp_file = preparemediafile ($site, $thumb_root, $file_info['filename'].".jpg", $user);
 
-                if ($result)
+                  // if encrypted
+                  if (!empty ($temp_file['result']) && !empty ($temp_file['crypted']) && !empty ($temp_file['templocation']) && !empty ($temp_file['tempfile']))
+                  {
+                    $temp_location = $temp_file['templocation'];
+                    $temp_mediafile = $temp_file['tempfile'];
+                  }
+                  // if restored
+                  elseif (!empty ($temp_file['result']) && !empty ($temp_file['restored']) && !empty ($temp_file['location']) && !empty ($temp_file['file']))
+                  {
+                    $temp_location = $temp_file['location'];
+                    $temp_mediafile = $temp_file['file'];
+                  }
+                  // use existing file
+                  else
+                  {
+                    $temp_location = $thumb_root;
+                    $temp_mediafile = $file_info['filename'].".jpg";
+                  }
+
+                  // create new image for annotations
+                  if (!empty ($temp_location) && !empty ($temp_mediafile))
+                  {
+                    $result = createmedia ($site, $temp_location, $thumb_root, $temp_mediafile, 'jpg', 'annotation', true, false);
+                  }
+                }
+
+                // create new image for annotations using the original image file
+                if (empty ($result) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
+                {
+                  $result = createmedia ($site, $thumb_root, $thumb_root, $mediafile_orig, 'jpg', 'annotation', true, false);
+                }
+
+                if (!empty ($result))
                 {
                   $mediafile = $result;
                   $previewimage_path = $thumb_root.$result;
@@ -4699,8 +4734,8 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
         if ($list_sourcefile != "")
         {
           $list .= getlistelements ($list_sourcefile);
-          // replace commas
-          $list = str_replace (",", "|", $list);
+          // replace commas and vertical bars
+          $list = str_replace (",", "|", str_replace("|", "&#124;", $list));
         }
 
         // extract text list
@@ -5987,7 +6022,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
               if (substr_count ($currentobject, $docroot.$object) == 1) $add_css = $navi_config['attr_li_active'];
               else $add_css = ""; 
 
-              $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$navi['link']."|".$navi['title'];
+              $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$navi['link']."|".str_replace("|", "&#124;", $navi['title']);
               $navitem[$navi['order'].'.'.$i]['sub'] = "";
 
               $i++;

@@ -137,7 +137,7 @@ $report = getserverload();
 
 if (!empty ($report) && is_array ($report))
 {
-  $serverload = array ($mgmt_config['today']."|".$report['load']."|".$report['cpu']."|".$report['memory']);
+  $serverload = array ($mgmt_config['today']."|".str_replace("|", "&#124;", $report['load'])."|".str_replace("|", "&#124;", $report['cpu'])."|".str_replace("|", "&#124;", $report['memory']));
   
   savelog ($serverload, "serverload");
   

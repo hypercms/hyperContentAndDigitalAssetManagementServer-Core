@@ -68,29 +68,8 @@ if (checktoken ($token, $user) && valid_publicationname ($site))
 {
   $file_csv = $mgmt_config['abs_path_data']."include/".$site.".taxonomy.csv";
    
-  // import from CSV file
-  if ($action == "import" && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-  {
-    if (!empty ($_FILES["importfile"]) && move_uploaded_file ($_FILES["importfile"]["tmp_name"], $file_csv))
-    {
-      // load imported CSV file and try to detect delimiter, enclosure, and character set
-      $import = load_csv ($file_csv, "", "", "", "utf-8");
-
-      // the index starts with 1
-      if (is_array ($import) && !empty ($import[1]['level']))
-      {
-        $save = create_csv ($import, $site.".taxonomy.csv", $mgmt_config['abs_path_data']."include/", ";", '"', "utf-8", "utf-8", false);
-      }
-      
-      // remove uploaded file on error
-      // if (empty ($save)) unlink ($file_csv);
-    }
-    
-    if (!empty ($save)) $show = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang]);
-    else $show = getescapedtext ($hcms_lang['the-data-could-not-be-saved'][$lang]);
-  }
   // export as CSV
-  elseif ($action == "export" && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
+  if ($action == "export" && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
   {
     if (is_file ($file_csv)) $export = load_csv ($file_csv, ";", '"', "utf-8", "utf-8");
     else $export = loadtaxonomy ($site);
@@ -305,13 +284,13 @@ function checkForm_import ()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tplcreate'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createtplLayer','','show', 'importLayer','','hide', 'hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"hcms_showHideLayers('createtplLayer','','show', 'hcms_messageLayer','','hide')\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpldelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletetemplate();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"deletetemplate();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
@@ -320,19 +299,19 @@ function checkForm_import ()
   <div class="hcmsToolbarBlock">
     <?php
     if (!empty ($mgmt_config['db_connect_rdbms']) && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location='frameset_licensenotification.php?site=".url_encode($site)."&cat=comp'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" alt=\"".getescapedtext ($hcms_lang['license-notification'][$lang])."\" title=\"".getescapedtext ($hcms_lang['license-notification'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location='frameset_licensenotification.php?site=".url_encode($site)."&cat=comp'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" alt=\"".getescapedtext ($hcms_lang['license-notification'][$lang])."\" title=\"".getescapedtext ($hcms_lang['license-notification'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?> 
     <?php
     if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location='media_mapping.php?site=".url_encode($site)."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_mapping.png\" alt=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" title=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location='media_mapping.php?site=".url_encode($site)."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_mapping.png\" alt=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" title=\"".getescapedtext ($hcms_lang['meta-data-mapping'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_mapping.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location='media_hierarchy.php?site=".url_encode($site)."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_hierarchy.png\" alt=\"".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location='media_hierarchy.php?site=".url_encode($site)."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_hierarchy.png\" alt=\"".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['meta-data-hierarchy'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_hierarchy.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
@@ -340,19 +319,19 @@ function checkForm_import ()
   <div class="hcmsToolbarBlock">
     <?php
     if (!empty ($mgmt_config[$site]['taxonomy']) && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location='media_taxonomy.php?site=".url_encode($site)."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_taxonomy.png\" alt=\"".getescapedtext ($hcms_lang['taxonomy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['taxonomy'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location='media_taxonomy.php?site=".url_encode($site)."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_taxonomy.png\" alt=\"".getescapedtext ($hcms_lang['taxonomy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['taxonomy'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_hierarchy.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (!empty ($mgmt_config[$site]['taxonomy']) && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createtplLayer','','hide', 'importLayer','','show', 'deletetplLayer','','hide', 'edittplLayer','','hide', 'hcms_messageLayer','','hide'); resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_import.png\" alt=\"".getescapedtext ($hcms_lang['taxonomy'][$lang]." ".$hcms_lang['import-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['taxonomy'][$lang]." ".$hcms_lang['import-list-comma-delimited'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location='media_taxonomy_import.php?site=".url_encode($site)."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_import.png\" alt=\"".getescapedtext ($hcms_lang['taxonomy'][$lang]." ".$hcms_lang['import-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['taxonomy'][$lang]." ".$hcms_lang['import-list-comma-delimited'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_import.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
     <?php
     if (!empty ($mgmt_config[$site]['taxonomy']) && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"location.href='?action=export&site=".url_encode($site)."&cat=".url_encode($cat)."&token=".$token_new."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_export_page.png\" alt=\"".getescapedtext ($hcms_lang['taxonomy'][$lang]." ".$hcms_lang['export-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['taxonomy'][$lang]." ".$hcms_lang['export-list-comma-delimited'][$lang])."\" />\n";}
+    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"location.href='?action=export&site=".url_encode($site)."&cat=".url_encode($cat)."&token=".$token_new."'; resettemplate();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_export_page.png\" alt=\"".getescapedtext ($hcms_lang['taxonomy'][$lang]." ".$hcms_lang['export-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['taxonomy'][$lang]." ".$hcms_lang['export-list-comma-delimited'][$lang])."\" />\n";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_export_page.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";}
     ?>
@@ -384,35 +363,6 @@ function checkForm_import ()
           <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createtplLayer','','hide');" />
         </td>        
       </tr>  
-    </table>
-  </form>
-</div>
-
-<!-- import CSV data -->
-<div id="importLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden">
-  <form name="import" action="" method="post" enctype="multipart/form-data" onsubmit="return checkForm_import();">
-    <input type="hidden" name="action" value="import" />
-    <input type="hidden" name="site" value="<?php echo $site; ?>" />
-    <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
-    <input type="hidden" name="token" value="<?php echo $token_new; ?>">
-    
-    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
-      <tr>
-        <td>
-          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang]); ?></span><br />
-          <span style="white-space:nowrap;">
-            <input name="importfile" type="file" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" accept="text/*" />
-            <img src="<?php echo getthemelocation(); ?>img/button_info.png" class="hcmsButtonSizeSquare" style="cursor:pointer;" title="Example:
-    level;de;en;it
-    1;Typ;Type;Tipo
-    2;Abenteuer;Adventure;Avventura" />
-            <img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_import();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
-          </span>
-        </td>
-        <td style="width:38px; text-align:right; vertical-align:top;">
-          <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('importLayer','','hide');" />
-        </td>      
-      </tr>
     </table>
   </form>
 </div>

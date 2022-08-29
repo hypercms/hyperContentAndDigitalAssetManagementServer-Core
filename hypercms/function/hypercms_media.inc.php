@@ -27,11 +27,11 @@ function valid_jpeg ($filepath)
     if (fseek ($filehandler, -2, SEEK_END) !== 0 || fread ($filehandler, 2) !== "\xFF\xD9")
     {
       fclose ($filehandler);
-      return false;
     }
     else return true;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------------------------- ocr_extractcontent --------------------------------------------
@@ -256,9 +256,9 @@ function ocr_extractcontent ($site, $location, $file)
     savelog (@$error);
 
     if (!empty ($file_content)) return $file_content;
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------------------------- indexcontent --------------------------------------------
@@ -267,7 +267,7 @@ function ocr_extractcontent ($site, $location, $file)
 // output: true / false
 
 // description:
-// This function extracts the text content of multimedia objects and writes it the text to the container.
+// This function extracts the text content of multimedia objects and writes the text to the container.
 // The given charset of the publication (not set by default), container or publication (not set by default) will be used.
 // The default character set of default.meta.tpl is UTF-8, so all content should be saved in UTF-8.
 
@@ -833,7 +833,6 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
         return $file_content;
       }
-      else return false;
     }
   }
 
@@ -910,9 +909,10 @@ function unindexcontent ($site, $location, $file, $container, $container_content
         }
         else return savecontainer ($container, $type, $container_contentnew, $user);
       }
-      else return false;
     }
   }
+
+  return false;
 }
 
 // ------------------------------------------ reindexcontent --------------------------------------------- 
@@ -994,7 +994,8 @@ function reindexcontent ($site, $container_id_array="")
 
     return true;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- base64_to_file -----------------------------
@@ -1025,9 +1026,9 @@ function base64_to_file ($base64_string, $location, $file)
 
       return $file;
     }
-    else return false;
   }
-  else return false; 
+  
+  return false; 
 }
 
 // ---------------------- exec_in_background -----------------------------
@@ -1137,8 +1138,6 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
             savelog (@$error);
 
             unlink ($location_dest.$newfile);
-
-            return false;
           }
           // on success
           elseif (is_file ($location_dest.$newfile) && filesize ($location_dest.$newfile) > 0)
@@ -1260,8 +1259,6 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
  
           // save log
           savelog (@$error);
- 
-          return false;
         } 
       }
       else
@@ -1271,13 +1268,107 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
  
         // save log
         savelog (@$error);
- 
-        return false;
       } 
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
+}
+
+// ---------------------- createthumbnail_krita -----------------------------
+// function: createthumbnail_krita()
+// input: publication name [string], path to source dir [string], path to destination dir [string], file name [string]
+// output: new file name / false on error (saves only thumbnail media file in destination location, only jpeg format is supported as output)
+
+// description:
+// Creates a thumbnail by extracting the thumbnail from a Krita file and transferes the generated image via remoteclient.
+
+function createthumbnail_krita ($site, $location_source, $location_dest, $file)
+{
+  global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $user;
+
+  // initialize
+  $error = array();
+  $result = false;
+
+  if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && !empty ($mgmt_uncompress['.zip']))
+  {
+    // add slash if not present at the end of the location string
+    $location_source = correctpath ($location_source);
+    $location_dest = correctpath ($location_dest);
+
+    // prepare media file
+    $temp_source = preparemediafile ($site, $location_source, $file, $user);
+
+    // if encrypted
+    if (!empty ($temp_source['result']) && !empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty ($temp_source['tempfile']))
+    {
+      $location_source = $temp_source['templocation'];
+      $file = $temp_source['tempfile'];
+    }
+    // if restored
+    elseif (!empty ($temp_source['result']) && !empty ($temp_source['restored']) && !empty ($temp_source['location']) && !empty ($temp_source['file']))
+    {
+      $location_source = $temp_source['location'];
+      $file = $temp_source['file'];
+    }
+
+    // verify local media file
+    if (!is_file ($location_source.$file)) return false;
+
+    // get file name without extension
+    $file_name = strrev (substr (strstr (strrev ($file), "."), 1));
+
+    // new file name
+    $newfile = $file_name.".thumb.jpg"; 
+
+    // temporary directory for extracting file
+    $temp_name = uniqid ("index");
+    $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
+
+    // create temporary directory for extraction
+    @mkdir ($temp_dir, $mgmt_config['fspermission']);
+
+    // kra is a ZIP-file with the images preview.png, mergedimage.png, and content placed in the file documentinfo.xml
+    $cmd = $mgmt_uncompress['.zip']." \"".shellcmd_encode ($location_source.$file)."\" -d \"".shellcmd_encode ($temp_dir)."\"";
+
+    // execute and redirect stderr (2) to stdout (1)
+    @exec ($cmd." 2>&1", $output, $errorCode);
+
+    if ($errorCode && is_array ($output))
+    {
+      $errcode = "20144";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$location.$file."' \t".implode ("\t", $output); 
+    } 
+    else
+    {
+      // convert thumbnail to proper format and size
+      if (is_file ($temp_dir."preview.png"))
+      {
+        $thumb_size = getthumbnailsize ();
+
+        $temp_file = convertimage ($site, $temp_dir."preview.png", $temp_dir, "jpg", "RGB", "", $thumb_size['width'], $thumb_size['height'], 0, "px", 72, "", false);
+
+        // move temporary thumbnail file to destination
+        if ($temp_file != "" && is_file ($temp_dir.$temp_file))
+        {
+          rename ($temp_dir.$temp_file, $location_dest.$newfile); 
+          $result = $newfile;
+        }
+      }
+
+      // get merged image
+      if (is_file ($temp_dir."mergedimage.png"))
+      {
+        copy ($temp_dir."mergedimage.png", $location_dest.$file_name.".jpg");
+      }
+
+      // remove temp directory
+      deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+    }
+  }
+  
+  return $result;
 }
 
 // ---------------------- createthumbnail_video -----------------------------
@@ -1686,11 +1777,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     if (!is_file ($location_source.$file) || filesize ($location_source.$file) < 100) return false;
 
     // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
-    if (session_id() != "")
-    {
-      $session_id = session_id();
-      session_write_close();
-    }
+    $session_id = suspendsession ();
 
     // get file size of media file in kB
     $filesize_orig = round (@filesize ($location_source.$file) / 1024, 0);
@@ -1744,7 +1831,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     // convert RAW image to equivalent JPEG image if not already converted
     if (is_rawimage ($file_ext))
     {
-      if  (!is_file ($location_dest.$file_name.".jpg") || filemtime ($location_dest.$file_name.".jpg") < filemtime ($location_source_orig.$file_orig))
+      if (!is_file ($location_dest.$file_name.".jpg") || filemtime ($location_dest.$file_name.".jpg") < filemtime ($location_source_orig.$file_orig))
       {
         // if image conversion software is given
         if (is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0)
@@ -1818,7 +1905,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
         if (!is_file ($location_source.$file)) 
         {
           // restart session (that has been previously closed for non-blocking procedure)
-          if (empty (session_id()) && $session_id != "") createsession();
+          revokesession ("", "", $session_id);
 
           return false;
         }
@@ -1858,7 +1945,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
 
     if (!array_key_exists ('thumbnail', $mgmt_imageoptions['.jpg.jpeg'])) 
-      $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 220x220 -f jpg";
+      $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 380x220 -f jpg";
 
     // Default gif options
     if (!array_key_exists ('.gif', $mgmt_imageoptions))
@@ -1980,6 +2067,37 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
       elseif ($file_ext == ".indd" && ($type == "thumbnail" || $type == "origthumb"))
       {
         $newfile = createthumbnail_indesign ($site, $location_source, $location_dest, $file);
+
+        // get media information from thumbnail
+        if ($newfile != false)
+        {
+          $converted = true;
+
+          $imagecolor = getimagecolors ($site, $newfile);
+
+          if ($imagewidth_orig < 1 || $imageheight_orig < 1)
+          {
+            $temp = getmediasize ($location_dest.$newfile);
+
+            if ($temp != false)
+            {
+              $imagewidth_orig = $temp['width'];
+              $imageheight_orig = $temp['height'];
+            }
+          }
+
+          // write media information to container and DB
+          if (!empty ($container_id) && !empty ($setmediainfo))
+          {
+            $setmedia = rdbms_setmedia ($container_id, $filesize_orig, $filetype_orig, $imagewidth_orig, $imageheight_orig, $imagecolor['red'], $imagecolor['green'], $imagecolor['blue'], $imagecolor['colorkey'], $imagecolor['imagetype'], $md5_hash);
+          }
+        }
+      }
+      // ---------------------- if Krita file ------------------------
+      // the extracted thumbnail will be used as it is
+      elseif ($file_ext == ".kra" && ($type == "thumbnail" || $type == "origthumb"))
+      {
+        $newfile = createthumbnail_krita ($site, $location_source, $location_dest, $file);
 
         // get media information from thumbnail
         if ($newfile != false)
@@ -2792,7 +2910,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   else
                   {
                     // restart session (that has been previously closed for non-blocking procedure)
-                    if (empty (session_id()) && $session_id != "") createsession();
+                    revokesession ("", "", $session_id);
 
                     return false;
                   }
@@ -3769,7 +3887,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     savelog (@$error);
 
     // restart session (that has been previously closed for non-blocking procedure)
-    if (empty (session_id()) && $session_id != "") createsession();
+    revokesession ("", "", $session_id);
 
     // return result
     if ($converted == true && !empty ($newfile)) return $newfile;

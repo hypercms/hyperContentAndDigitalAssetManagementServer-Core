@@ -27,6 +27,7 @@ else $mgmt_plugin = array();
 // input parameters
 $location = getrequest_esc ("location", "locationname", false);
 $rnr = getrequest_esc ("rnr", "locationname", false);
+$explorer_view = getrequest ("view", "objectname");
 $search_delete = getrequest ("search_delete");
 $token = getrequest ("token");
 
@@ -51,7 +52,7 @@ if (linking_valid() == true)
 $error = array();
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // delete entry from saved search log
 function searchlog_delete ($search_delete_id, $user)
@@ -546,7 +547,7 @@ function generateTaxonomyTree ($site, $tax_id, $runningNumber=1)
     $result = array();
 
     // get taxonomy keyword list
-    $tax_array = gettaxonomy_sublevel ($site, $lang, $tax_id);
+    $tax_array = gettaxonomy_sublevel ($site, $lang, $tax_id, false);
 
     if (is_array ($tax_array) && sizeof ($tax_array) > 0)
     {
@@ -1388,9 +1389,6 @@ else
     contextxmove = false;
     contextymove = true;
 
-    // define global variable for popup window name used in contextmenu.js
-    var session_id = '<?php echo session_id(); ?>';
-
     $(function ()
     {
       // fix the html of the existing menupoint for jstree to work correctly (no newline and no more than one space)
@@ -1651,7 +1649,7 @@ else
       
         if (check == true)
         {
-          document.location='?search_delete=' + element.options[element.selectedIndex].value + '&token=<?php echo $token_new; ?>';
+          document.location='?view=search&search_delete=' + element.options[element.selectedIndex].value + '&token=<?php echo $token_new; ?>';
         }
       }
     }
@@ -1665,8 +1663,8 @@ else
     // show search layer
     function showSearch ()
     {
-      hcms_showFormLayer('search',0);
-      hcms_hideFormLayer('menu');+
+      hcms_showFormLayer('search', 0);
+      hcms_hideFormLayer('menu');
       parent.maxSearchFrame();
     }
 
@@ -1676,6 +1674,7 @@ else
       window.scrollTo (0, 0);
       hcms_hideFormLayer('search');
       hcms_showFormLayer('menu',0);
+      parent.maxNavFrame();
     }
 
     // color search options
@@ -1778,7 +1777,7 @@ else
       {
         if (document.getElementById('keywordsFrame').src.indexOf('explorer_keywords.php') == -1)
         {
-          document.getElementById('keywordsFrame').src = "explorer_keywords.php";
+          document.getElementById('keywordsFrame').src = "explorer_keywords.php?ts=<?php echo time(); ?>";
         }
       
         document.forms['searchform_advanced'].elements['action'].value = 'base_search';
@@ -2116,8 +2115,7 @@ else
           // reload page for a new saved search
           if (document.forms['searchform_advanced'].elements['search_save'].checked == true)
           {
-            document.forms['searchform_advanced'].elements['search_save'].checked = false;
-            window.setTimeout('location.reload()', 1000);
+            window.setTimeout(function(){location.href='explorer.php?view=search';}, 1000);
           }
 
           return true;
@@ -2137,8 +2135,12 @@ else
       // initialize search form
       initializeSearch();
 
-      // maximize navigation frame
-      parent.maxNavFrame();
+      <?php
+      // display search form
+      if ($explorer_view == "search") echo "showSearch();";
+      // display navigation
+      else echo "showNav();";
+      ?>
 
       // search history
       <?php
@@ -2448,7 +2450,7 @@ else
         </div>
 
         <div id="keywordsLayer" style="display:none; clear:right;">
-          <iframe id="keywordsFrame" name="keywordsFrame" width="0" height="0" frameborder="0"  style="width:0; height:0; frameborder:0;"></iframe> 
+          <iframe id="keywordsFrame" name="keywordsFrame" width="0" height="0" frameborder="0" style="width:0; height:0; frameborder:0;"></iframe> 
           <div id="keywordsTarget" style="width:100%; min-height:64px; max-height:500px; overflow:auto; background:url('<?php echo getthemelocation(); ?>/img/loading.gif') no-repeat center center;">
           </div>
         </div>
@@ -2640,7 +2642,7 @@ else
 
         <!-- save search -->
         <div style="display:block; margin-bottom:3px;">
-          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></span>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['saved-searches'][$lang]); ?></span>
           <img onClick="activateSaveSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
         <div id="saveLayer" style="display:none; clear:right;">
@@ -2654,7 +2656,6 @@ else
             {
               echo "
           <div style=\"padding-bottom:3px;\">
-            <label>".getescapedtext ($hcms_lang['saved-searches'][$lang])."</label><br/>
             <select id=\"search_execute\" name=\"search_execute\" style=\"width:".($width_searchfield - 32)."px;\" onchange=\"selectedSavedSearch();\">
               <option value=\"\">".getescapedtext ($hcms_lang['select'][$lang])."</option>";
               
@@ -2696,7 +2697,7 @@ else
 
                     if (sizeof ($temp_array) > 0) $search_parameter['text'] = implode (", ", $temp_array);
                   }
-                  elseif (!empty ($search_expression)) $search_parameter['text'] = $search_expression;
+                  elseif (!empty ($search_expression)) $search_parameter['text'] = ($search_cat == "text" ? getescapedtext ($hcms_lang['text'][$lang]) : getescapedtext ($hcms_lang['location'][$lang]))." ".getescapedtext ($hcms_lang['search-expression'][$lang])." (".$search_expression.")";
                   
                   // file based search
                   $search_format = json_decode ($search_format, true);
@@ -2729,12 +2730,10 @@ else
             }
           }
           ?>
-          <label><input type="checkbox" name="search_save" value="1" /> <?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></label><br/>
-
         </div>
         <hr />
-        
-        <button type="button" class="hcmsButtonGreen" style="width:100%;" onclick="startSearch('post');"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?></button>
+        <label><input type="checkbox" name="search_save" value="1" /> <?php echo getescapedtext ($hcms_lang['save-search'][$lang]); ?></label><br/><br/>
+        <button type="button" class="hcmsButtonGreen" style="width:100%;" onclick="startSearch('post');"><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?></button>
       </form>
     </div>
         

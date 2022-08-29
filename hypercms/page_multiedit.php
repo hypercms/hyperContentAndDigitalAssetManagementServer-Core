@@ -41,7 +41,7 @@ $token = createtoken ($user);
 // function to collect tag data
 function gettagdata ($tag_array)
 {
-  global $mgmt_config, $site, $is_mobile;
+  global $mgmt_config, $site, $lang, $is_mobile;
 
   $return = array();
 
@@ -478,6 +478,7 @@ foreach ($tagdata_array as $id => $tagdata)
     }
   }
 
+  // loop through each text content (value)
   foreach ($allTexts as $temp_text) 
   {
     // if the current element isn't ignored we continue
@@ -486,6 +487,7 @@ foreach ($tagdata_array as $id => $tagdata)
     // set content or default value
     $value = (array_key_exists ($id, $temp_text) ? $temp_text[$id] : $tagdata->defaultvalue);
 
+    // use value if no content exists for the text ID
     if (!isset ($tagdata->fieldvalue)) 
     {
       $tagdata->fieldvalue = $value;
@@ -522,21 +524,22 @@ foreach ($tagdata_array as $id => $tagdata)
       // content will be edited/replaced or is locked
       else
       {
-        // content is different
+        // content is different and field will be locked
         if ($tagdata->fieldvalue != $value)
         {
           //$tagdata->fieldvalue = "";
           if ($tagdata->type == "k") $tagdata->fieldvalue = $tagdata->fieldvalue.",".$value;
           else $tagdata->fieldvalue = $tagdata->fieldvalue." ".$value;
+
           $tagdata->ignore = true;
           $tagdata->samecontent = false;
           $tagdata->locked = true;
           $tagdata->constraint = "";
         }
-        // content is the same
+        // content is the same and field will be unlocked
         else
         {
-          $tagdata->fieldvalue = $value;
+          //$tagdata->fieldvalue = $value;
           $tagdata->ignore = false;
           $tagdata->samecontent = true;
           $tagdata->locked = false;
@@ -2535,18 +2538,24 @@ $().ready(function() {
         $disabled = ($tagdata->locked == true ? 'DISABLED="DISABLED" READONLY="READONLY"' : "");
         $id = $tagdata->hypertagname.'_'.$key;
         $label = $tagdata->labelname;
-        
+
         // add id to memory
         if ($tagdata->locked == false)
         {
           $text_ids[] = $id;
         }
+
+        // skip signature
+        if ($tagdata->type != "s")
+        {
         ?>
         <div class="hcmsFormRowLabel <?php echo $id; ?>">
           <label for="<?php echo $id; ?>"><b><?php if (trim ($label) != "") { echo $label; if ($tagdata->samecontent == true) echo " *"; } ?></b></label>
         </div>
         <div class="hcmsFormRowContent <?php echo $id; ?>">
         <?php
+        }
+
         // unformatted text
         if ($tagdata->type == "u") 
         {
@@ -2558,7 +2567,7 @@ $().ready(function() {
         elseif ($tagdata->type == "k") 
         {
           $list = "";
-        
+
           // extract text list
           $list .= $tagdata->list;
 
@@ -2573,7 +2582,7 @@ $().ready(function() {
             $temp_array = array_unique ($temp_array);
 
             if ($tagdata->locked == false) echo showtaxonomytree ($site, $container_id_array, $key, $tagdata->hypertagname, $lang, $tagdata->file, ($tagdata->width - 24), ($tagdata->height - 24), $charset);
-            else echo "<textarea type=\"text\" id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:99%; height:".($tagdata->height - 24)."px;\" ".$disabled.">".implode (", ",$temp_array)."</textarea>";
+            else echo "<textarea type=\"text\" id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:99%; height:".($tagdata->height - 24)."px;\" ".$disabled.">".implode (",",$temp_array)."</textarea>";
             ?>
           </div>
           <?php
@@ -2581,42 +2590,45 @@ $().ready(function() {
           // keyword list view (default)
           else
           {
-            // extract source file (file path or URL) for text list
-            if ($tagdata->file != "")
+            if (empty ($disabled))
             {
-              $list_add = getlistelements ($tagdata->file);
-              
-              if ($list_add != "") $list .= ",".$list_add;
-            }
-
-            // extract text list
-            $onlylist = strtolower ($tagdata->onlylist);
-            
-            // get list entries
-            if ($list != "")
-            {
-              // replace line breaks
-              $list = str_replace ("\r\n", ",", $list);
-              $list = str_replace ("\n", ",", $list);
-              $list = str_replace ("\r", ",", $list);
-              // escape single quotes
-              $list = str_replace ("'", "\\'", $list);
-              // create array
-              $list_array = explode (",", $list);
-              // create keyword string for Javascript
-              $keywords = "['".implode ("', '", $list_array)."']";
-              
-              $keywords_tagit = "availableTags:".$keywords.", ";
-
-              if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+              // extract source file (file path or URL) for text list
+              if ($tagdata->file != "")
               {
-                $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+                $list_add = getlistelements ($tagdata->file);
+                
+                if ($list_add != "") $list .= ",".$list_add;
               }
+
+              // extract text list
+              $onlylist = strtolower ($tagdata->onlylist);
+              
+              // get list entries
+              if ($list != "")
+              {
+                // replace line breaks
+                $list = str_replace ("\r\n", ",", $list);
+                $list = str_replace ("\n", ",", $list);
+                $list = str_replace ("\r", ",", $list);
+                // escape single quotes
+                $list = str_replace ("'", "\\'", $list);
+                // create array
+                $list_array = explode (",", $list);
+                // create keyword string for Javascript
+                $keywords = "['".implode ("', '", $list_array)."']";
+                
+                $keywords_tagit = "availableTags:".$keywords.", ";
+
+                if ($onlylist == "true" || $onlylist == "yes" || $onlylist == "1")
+                {
+                  $keywords_tagit .= "beforeTagAdded: function(event, ui) { if ($.inArray(ui.tagLabel, ".$keywords.") == -1) { return false; } }, ";
+                }
+              }
+              else $keywords_tagit = "";
+
+              $add_onload .= "
+              $('#".$id."').tagit({".$keywords_tagit."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
             }
-            else $keywords_tagit = "";
-            
-            $add_onload .= "
-            $('#".$id."').tagit({".$keywords_tagit."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$id."')});";
           ?>
           <div style="display:inline-block; width:<?php echo $tagdata->width; ?>px;">
             <input type="text" id="<?php echo $id; ?>" name="<?php echo $tagdata->hypertagname; ?>[<?php echo $key; ?>]" style="width:100%;" <?php echo $disabled; ?> value="<?php if ($tagdata->locked == false) echo $tagdata->fieldvalue; ?>" />

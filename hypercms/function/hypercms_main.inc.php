@@ -1179,7 +1179,7 @@ function is_document ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ($hcms_ext['cleartxt'].$hcms_ext['bintxt']).".", ".".$ext.".") > 0) return true;
+    if (substr_count (strtolower ("_".$hcms_ext['cleartxt'].$hcms_ext['bintxt']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -1206,7 +1206,7 @@ function is_image ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ($hcms_ext['image']).".", ".".$ext.".") > 0) return true;
+    if (substr_count (strtolower ("_".$hcms_ext['image']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -1233,7 +1233,31 @@ function is_rawimage ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ($hcms_ext['rawimage']).".", ".".$ext.".") > 0) return true;
+    if (substr_count (strtolower ("_".$hcms_ext['rawimage']).".", ".".$ext.".") > 0) return true;
+    else return false;
+  }
+  else return false;
+}
+
+// -------------------------------- is_kritaimage --------------------------------
+// function: is_kritaimage()
+// input: file name or file extension [string]
+// output: true / false
+
+// description:
+// This function determines if a certain file is a KRITA image
+
+function is_kritaimage ($file)
+{
+  global $mgmt_config, $hcms_ext;
+
+  if ($file != "")
+  {
+    // get file extension
+    if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
+    else $ext = $file;
+
+    if (substr_count ("_.kra.", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -5057,7 +5081,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 // output: stream of file content / false on error
 
 // description:
-// This functions provides a file via http for view or download
+// This functions provides a file via http for view or download. The session will be closed and not recreated for non-blocking.
 
 function downloadfile ($filepath, $name, $force="wrapper", $user="")
 {
@@ -5115,11 +5139,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     }
 
     // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
-    if (session_id() != "")
-    {
-      $session_id = session_id();
-      session_write_close();
-    }
+    $session_id = suspendsession ();
 
     // eventsystem
     if (!empty ($eventsystem['onfiledownload_pre'])) onfiledownload_pre ($site, $location, $media, $name, $user);
@@ -5305,9 +5325,6 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 
     // write log
     savelog (@$error);
-
-    // restart session (that has been previously closed for non-blocking procedure)
-    if (empty (session_id()) && $session_id != "") createsession();
 
     // return result
     if ($force == "noheader" && !empty ($filedata)) return $filedata;
@@ -8459,19 +8476,21 @@ function deletepublication ($site_name, $user="sys")
           deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".page.msg.dat", 0);
         }
 
-        // taxonomy configuration file
-        $dir_temp = $mgmt_config['abs_path_data']."include/";
-        $scandir = scandir ($dir_temp);
-
-        if ($scandir)
+        // taxonomy import profile
+        if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".taxonomy.import.dat"))
         {
-          foreach ($scandir as $entry)
-          {
-            if (is_file ($dir_temp.$entry) && strpos ("_".$entry, $site_name.".") > 0 && (strpos ($entry, ".taxonomy.dat") > 0 || strpos ($entry, ".taxonomy.inc.php") > 0))
-            {
-              deletefile ($dir_temp, $entry, 0);
-            }
-          }
+          deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".taxonomy.import.dat", 0);
+        }
+
+        // taxonomy configuration files
+        if (is_file ($mgmt_config['abs_path_data']."include/".$site_name.".taxonomy.csv"))
+        {
+          deletefile ($mgmt_config['abs_path_data']."include/", $site_name.".taxonomy.csv", 0);
+        }
+
+        if (is_file ($mgmt_config['abs_path_data']."include/".$site_name.".taxonomy.inc.php"))
+        {
+          deletefile ($mgmt_config['abs_path_data']."include/", $site_name.".taxonomy.inc.php", 0);
         }
  
         // remove site_name value from inheritance database
@@ -13437,14 +13456,6 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   $result = array();
   $result['result'] = false;
 
-  // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
-  if (session_id() != "")
-  {
-    $session_id = session_id();
-    session_write_close();
-  }
-  else $session_id = createuniquetoken ();
-
   // set default language
   if (empty ($lang)) $lang = "en";
 
@@ -13455,6 +13466,16 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
+
+    // define process name
+    $process_name = "uploadfile.".$site.".".md5($location.$global_files['Filedata']['name']);
+
+    // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the executing script to finish execution before it can start)
+    if (session_id() != "")
+    {
+      $session_id = suspendsession ($process_name, $user);
+    }
+    else $session_id = createuniquetoken ();
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -14308,7 +14329,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     savelog (@$error);
     
     // restart session (that has been previously closed for non-blocking procedure)
-    if (empty (session_id()) && $session_id != "") createsession();
+    revokesession ($process_name, $user, $session_id);
 
     // return message and command to flash object
     $result['result'] = true;
@@ -15797,7 +15818,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
           // log delete
           $errcode = "00111";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object ".$location_esc.$page." has been deleted by user '".$user."' (".getuserip().")";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object ".$location_esc.$page." with container ID ".$contentfile_id." has been deleted by user '".$user."' (".getuserip().")";
 
           $page = "";
           $pagename = "";
@@ -19951,13 +19972,13 @@ function HTTP_Proxy ($URL, $enable_file=false)
     curl_setopt_array ($ch, $options);
 
     // write and close session (important: curl_exec might hang otherwise)
-    session_write_close();
+    $session_id = suspendsession ();
 
     // send the request
     $response = curl_exec ($ch);
 
     // start session again
-    session_start();
+    revokesession ("", "", $session_id);
 
     // get http response code after EXEC
     $info = curl_getinfo ($ch);
@@ -20059,6 +20080,32 @@ function loadbalancer ($type)
 }
 
 // ================================= LOG FILE OPERATIONS =====================================
+
+// ------------------------------------- createlogentry ------------------------------------------
+
+// function: createlogentry ()
+// input: log entry values [array]
+// output: log entry / false on error
+
+// description:
+// Escapes vertical bars and retuns a valid log entry.
+
+function createlogentry ($values)
+{
+  global $mgmt_config;
+
+  if (is_array ($values))
+  {
+    foreach ($values as &$value)
+    {
+      // escape |
+      $value = str_replace ("|", "&#124;", $value);
+    }
+
+    return implode ("|", $values);
+  }
+  else return false;
+}
 
 // --------------------------------------- savelog -------------------------------------------
 // function: savelog()

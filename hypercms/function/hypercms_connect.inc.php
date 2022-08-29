@@ -215,14 +215,56 @@ function ftp_filelist ($conn_id, $path=".", $passive=true)
       {
         $chunks = preg_split ("/\s+/", $child);
 
-        list ($item['rights'], $item['number'], $item['user'], $item['group'], $item['size'], $item['month'], $item['day'], $item['time']) = $chunks;
+        // UNIX FTP server
+        if (sizeof ($chunks) > 8 && is_numeric ($chunks[4]))
+        {
+          list ($item['rights'], $item['number'], $item['user'], $item['group'], $item['size'], $item['month'], $item['day'], $item['time']) = $chunks;
 
-        // file or directory
-        $item['type'] = $chunks[0][0] === 'd' ? 'directory' : 'file';
+          // file or directory
+          $item['type'] = $chunks[0][0] === "d" ? "directory" : "file";
 
-        array_splice ($chunks, 0, 8);
+          // modified date
+          $item['date'] = date ("Y-m-d", strtotime ($item['month']." ".$item['day']." ".$item['time']));
 
-        $name = implode (" ", $chunks);
+          // remove elements 0 to 8 from array
+          array_splice ($chunks, 0, 8);
+
+          // get name
+          $name = implode (" ", $chunks);
+        }
+        // Windows FTP server
+        else
+        {
+          // initialize since these values do not exist
+          $item['rights'] = "";
+          $item['number'] = "";
+          $item['user'] = "";
+          $item['group'] = "";
+          $item['size'] = "";
+
+          // directory
+          if (strpos (strtolower ($child), "<dir>") > 0)
+          {
+            list ($item['date'], $item['time'], $item['type']) = $chunks;
+            $item['type'] = "directory";
+          }
+          // file
+          else
+          {
+            list ($item['date'], $item['time'], $item['size']) = $chunks;
+            $item['type'] = "file";
+          }
+          
+          // convert MM-DD-YY to MM/DD/YY
+          $item['date'] = str_replace ("-", "/", $item['date']);
+          $item['date'] = date ("Y-m-d", strtotime ($item['date']." ".$item['time']));
+
+          // remove elements 0 to 3 from array
+          array_splice ($chunks, 0, 3);
+
+          // get name
+          $name = implode (" ", $chunks); 
+        }
 
         if ($item['type'] == "directory") $folders[$name] = $item;
         else $files[$name] = $item;
@@ -235,6 +277,7 @@ function ftp_filelist ($conn_id, $path=".", $passive=true)
 
       return $items;
     }
+
     else return false;
   }
   else return false;

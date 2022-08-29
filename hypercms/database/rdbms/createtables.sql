@@ -52,6 +52,7 @@ CREATE TABLE `object` (
   KEY `object_media` (`filesize`,`filetype`,`width`,`height`,`imagetype`),
   KEY `object_lat_lng` (`latitude`,`longitude`),
   KEY `object_objectpath` (`objectpath`),
+  KEY `object_deleteuser` (`deleteuser`),
   FULLTEXT KEY `object_fulltext_objectpath` (`objectpath`),
   FULLTEXT KEY `object_textcontent` (`textcontent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -114,7 +115,7 @@ CREATE TABLE `taxonomy` (
   `taxonomy_id` int(11) NOT NULL DEFAULT '0',
   `lang` char(6) NOT NULL DEFAULT '',
   PRIMARY KEY  (`taxonomykey_id`),
-  KEY `taxonomy_multiple` (`id`,`taxonomy_id`)
+  KEY `taxonomy_multiple` (`id`,`text_id`,`taxonomy_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 DROP TABLE IF EXISTS `keywords`;

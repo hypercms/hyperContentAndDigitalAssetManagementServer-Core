@@ -270,10 +270,10 @@ else
               $link = "<a href=\"?path=".url_encode($path.$name."/")."&multi=".$multi."\" style=\"font-weight:normal;\">".showshorttext($name, 40)."</a>";
             }
             // if file
-            else
+            elseif ($file['type'] == "file")
             {
               // icon
-              if ($file['type'] == "file") $file_info = getfileinfo ($site, $name, "comp");
+              $file_info = getfileinfo ($site, $name, "comp");
               
               // file size
               if ($file['size'] > 0) $file_size = number_format (ceil ($file['size'] / 1024), 0, ".", " ");
@@ -287,8 +287,7 @@ else
               $link = showshorttext ($name, 40);
             }
             
-            $date = date ("Y-m-d", strtotime ($file['month']." ".$file['day']." ".$file['time']));
-            $date = showdate ($date, "Y-m-d", $hcms_lang_date[$lang]);
+            $date = showdate ($file['date'], "Y-m-d", $hcms_lang_date[$lang]);
             
             // output
             echo "

@@ -25,6 +25,7 @@ $perpage = getrequest ("perpage", "numeric", 20);
 $saveindex_start = getrequest ("saveindex_start", "numeric");
 $saveindex_stop = getrequest ("saveindex_stop", "numeric");
 $taxonomy = getrequest ("taxonomy", "array");
+$text_ids = getrequest_esc ("text_ids");
 $temp_sourcelang = getrequest ("temp_sourcelang");
 $temp_targetlang = getrequest ("temp_targetlang");
 $token = getrequest ("token");
@@ -95,7 +96,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && !
       }
     }
 
-    $savefile = savetaxonomy ($site, $taxonomy_new, $saveindex_start, $saveindex_stop);
+    $savefile = savetaxonomy ($site, $taxonomy_new, $saveindex_start, $saveindex_stop, $text_ids);
     
     if ($savefile == false)   
     {  
@@ -110,7 +111,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && !
 
     if (sizeof ($taxonomy) > 0)
     {
-      $savefile = savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop);
+      $savefile = savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop, $text_ids);
     
       if ($savefile == false)   
       {  
@@ -125,7 +126,7 @@ if (!empty ($mgmt_config['abs_path_data']) && valid_publicationname ($site) && !
   // save as CSV
   elseif ($action == "save")
   {
-    $savefile = savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop);
+    $savefile = savetaxonomy ($site, $taxonomy, $saveindex_start, $saveindex_stop, $text_ids);
     
     if ($savefile == false)   
     {  
@@ -205,8 +206,10 @@ function startpoint (row)
   var form = document.forms['taxonomyform'];
 
   hcms_showFormLayer ('savelayer', 0);
+
   if (changed == true) form.elements['action'].value = "save";
   else form.elements['action'].value = "scroll";
+  
   form.elements['start'].value = row;
   form.submit();
 }
@@ -424,6 +427,10 @@ $(document).ready(function(){
       changed = true;
     }
   });
+
+  <?php if (is_suspendedsession ("createtaxonomy.".$site, $user)) { ?>
+  hcms_showFormLayer ('savelayer', 0);
+  <?php } ?>
 });
 </script>
 </head>
@@ -458,10 +465,17 @@ if (is_array ($languages))
   }
 }
 
+// set default language
 if (sizeof ($activelanguage) < 1) $activelanguage['en'] = "English";
 
 // load taxonomy
 if (!empty ($loadtaxonomy)) $result = loadtaxonomy ($site, $start, $perpage, true, $restoretaxonomy);
+
+// load taxonomy filter
+if (is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.filter.csv"))
+{
+  $text_ids = loadfile ($mgmt_config['abs_path_data']."include/", $site.".taxonomy.filter.csv");
+}
 
 // no taxonomy available, set first taxonomy element
 if (empty ($result))
@@ -688,9 +702,25 @@ if (is_array ($result))
 
   </div>
   <br/>
+  <br/>
+  <hr />
+
+  <!-- text ID filter -->
+  <table class="hcmsTableStandard" style="margin-top:10px;">
+    <tr>
+      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['text-id'][$lang]." ".$hcms_lang['search-restriction'][$lang])." (".getescapedtext ($hcms_lang['use-as-delimiter'][$lang]).")"; ?></td>
+      <td><input name="text_ids" type="text" style="width:350px;" onkeyup="changed=true;" value="<?php if (!empty ($text_ids)) echo $text_ids; ?>" /></td>
+    </tr>
+  </table>
+
+  <hr />
 
   <!-- save buttons -->
   <table class="hcmsTableStandard" style="margin-top:10px;">
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
     <tr>
       <td><?php echo getescapedtext ($hcms_lang['save-settings'][$lang]); ?> </td>
       <td><img name="Button1" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="savetaxonomy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
@@ -700,11 +730,11 @@ if (is_array ($result))
       <td><img name="Button2" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="reindex()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
     </tr>
     <tr>
-      <td><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?> </div>
+      <td><?php echo getescapedtext ($hcms_lang['delete'][$lang]." ".$hcms_lang['taxonomy'][$lang]); ?> </div>
       <td><img name="Button3" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="deletetaxonomy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button3','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
     </tr>
     <tr>
-      <td><?php echo getescapedtext ($hcms_lang['restore'][$lang]." (".$hcms_lang['standard'][$lang].")"); ?> </div>
+      <td><?php echo getescapedtext ($hcms_lang['restore'][$lang]." (".$hcms_lang['standard'][$lang]." ".$hcms_lang['taxonomy'][$lang].")"); ?> </div>
       <td><img name="Button4" type="button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="restoretaxonomy()" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button4','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /></td>
     </tr>
   </table>

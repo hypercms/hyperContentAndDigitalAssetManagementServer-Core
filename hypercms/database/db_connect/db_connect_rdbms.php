@@ -107,7 +107,7 @@ class hcms_db
       {
         $time_start = microtime(true);
         $log = array();
-        $log[] = $mgmt_config['today']."|QUERY: ".$sql;
+        $log[] = $mgmt_config['today']."|QUERY (".$errcode."): ".$sql;
       }
     
       $result = $this->_db->query ($sql);
@@ -123,7 +123,7 @@ class hcms_db
       
       if ($result == false)
       {
-        $this->_error[] = $date."|db_connect_rdbms.php|error|".$errcode."|".$this->_db->error.", SQL: ".$sql;
+        $this->_error[] = $date."|db_connect_rdbms.php|error|".$errcode."|".$this->_db->error.", SQL: ".str_replace("|", "&#124;", $sql);
         $this->_result[$num] = false;
         return false;
       }
@@ -139,7 +139,7 @@ class hcms_db
       
       if ($result == false)
       {
-        $this->_error[] = $date."|db_connect_rdbms.php|error|".$errcode."|ODBC Error Number: ".odbc_error().", SQL: ".$sql;
+        $this->_error[] = $date."|db_connect_rdbms.php|error|".$errcode."|ODBC Error Number: ".odbc_error().", SQL: ".str_replace("|", "&#124;", $sql);
         $this->_result[$num] = false;
         return false;
       }
@@ -384,7 +384,7 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
       
       if ($result_delete)
       {
-        $errcode = "20911";
+        $errcode = "40911";
         $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Duplicate object '".$object."' (ID: ".$container_id_duplicate.") already existed in database and has been deleted";
       
         savelog (@$error);
@@ -421,15 +421,15 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
     {
       if ($row = $db->rdbms_getresultrow ('media'))
       {
-        $sql = 'INSERT INTO object (id, hash, objectpath, template, media, container, createdate, date, latitude, longitude, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash, user) ';
-        $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', '.intval($row['filesize']).', "'.$filetype.'", '.intval($row['width']).', '.intval($row['height']).', '.intval($row['red']).', '.intval($row['green']).', '.intval($row['blue']).', "'.$db->rdbms_escape_string($row['colorkey']).'", "'.$db->rdbms_escape_string($row['imagetype']).'", "'.$db->rdbms_escape_string($row['md5_hash']).'", "'.$user.'")';
+        $sql = 'INSERT INTO object (id, level, hash, objectpath, template, media, container, createdate, date, latitude, longitude, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash, user) ';
+        $sql .= 'VALUES ('.$container_id.', '.getobjectpathlevel($object).', "'.$hash.'", "'.$object.'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', '.intval($row['filesize']).', "'.$filetype.'", '.intval($row['width']).', '.intval($row['height']).', '.intval($row['red']).', '.intval($row['green']).', '.intval($row['blue']).', "'.$db->rdbms_escape_string($row['colorkey']).'", "'.$db->rdbms_escape_string($row['imagetype']).'", "'.$db->rdbms_escape_string($row['md5_hash']).'", "'.$user.'")';
       }
     }
     // insert values in table object (new object)
     elseif (!empty ($container_id))
     {
-      $sql = 'INSERT INTO object (id, hash, objectpath, template, media, container, createdate, date, latitude, longitude, filetype, user) ';
-      $sql .= 'VALUES ('.$container_id.', "'.$hash.'", "'.$object.'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', "'.$filetype.'", "'.$user.'")';
+      $sql = 'INSERT INTO object (id, level, hash, objectpath, template, media, container, createdate, date, latitude, longitude, filetype, user) ';
+      $sql .= 'VALUES ('.$container_id.', '.getobjectpathlevel($object).', "'.$hash.'", "'.$object.'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', "'.$filetype.'", "'.$user.'")';
     }
 
     $errcode = "50001";
@@ -977,7 +977,9 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
 {
   global $mgmt_config;
 
+  // initialize
   $site_array = array();
+  $text_id_array = array();
 
   if (valid_publicationname ($site))
   {
@@ -1021,10 +1023,12 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
         // select containers of publication
         if (trim ($site) != "")
         {
+          // recreate full taxonomy relations
           if ($recreate == true)
           {
             $sql = 'SELECT id FROM object WHERE objectpath LIKE "*comp*/'.$site.'/%" OR objectpath LIKE "*page*/'.$site.'/%"';
           }
+          // update taxonomy relations
           else
           {
             $sql = 'SELECT object.id FROM object INNER JOIN textnodes ON textnodes.id=object.id LEFT JOIN taxonomy ON taxonomy.id=object.id WHERE (object.objectpath LIKE "*comp*/'.$site.'/%" OR object.objectpath LIKE "*page*/'.$site.'/%") AND textnodes.textcontent!="" AND taxonomy.id IS NULL';
@@ -1046,10 +1050,22 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
               include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
             }
 
-            while ($row = $db->rdbms_getresultrow ('containers'))
+            // load text ID filter values
+            if (is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.filter.csv"))
             {
-              // set taxonomy for container
-              if (!empty ($row['id'])) settaxonomy ($site, $row['id'], "", $taxonomy);
+              $text_ids = loadfile ($mgmt_config['abs_path_data']."include/", $site.".taxonomy.filter.csv");
+
+              // prepare text IDs
+              $text_id_array = splitstring ($text_ids);
+            }
+
+            if (!empty ($taxonomy) && is_array ($taxonomy))
+            {
+              while ($row = $db->rdbms_getresultrow ('containers'))
+              {
+                // set taxonomy for container
+                if (!empty ($row['id'])) settaxonomy ($site, $row['id'], "", $taxonomy, $text_id_array);
+              }
             }
           }
         }
@@ -1430,8 +1446,8 @@ function rdbms_renameobject ($object_old, $object_new)
           $filetype = getfiletype ($fileext);
 
           // update object 
-          if ($filetype != "") $sql = 'UPDATE object SET level='.getobjectpathlevel($object).', objectpath="'.$object.'", objectpath="'.$object.'", filetype="'.$filetype.'" WHERE object_id='.$object_id.'';
-          else $sql = 'UPDATE object SET level='.getobjectpathlevel($object).', objectpath="'.$object.'", objectpath="'.$object.'" WHERE object_id='.$object_id.'';
+          if ($filetype != "") $sql = 'UPDATE object SET level='.getobjectpathlevel($object).', objectpath="'.$object.'", filetype="'.$filetype.'" WHERE object_id='.$object_id.'';
+          else $sql = 'UPDATE object SET level='.getobjectpathlevel($object).', objectpath="'.$object.'" WHERE object_id='.$object_id.'';
 
           $errcode = "50011";
           $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], $i++);
@@ -1480,7 +1496,7 @@ function rdbms_deleteobject ($object="", $object_id="")
     $sql = 'SELECT id FROM object ';
 
     if ($object != "") $sql .= 'WHERE objectpath="'.$object.'"';
-    elseif ($object_id > 0) $sql .= 'WHERE object_id='.$object_id.'';
+    elseif ($object_id > 0) $sql .= 'WHERE object_id='.$object_id;
   
     $errcode = "50012";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select1');
@@ -1689,7 +1705,7 @@ function rdbms_deletepublicationkeywords ($site)
 // output: true / false
 
 // description:
-// Deletes the taxonomy definition of a publication.
+// Deletes the taxonomy relations of all objects of a publication.
 
 function rdbms_deletepublicationtaxonomy ($site, $force=false)
 {
@@ -1701,7 +1717,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
     require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
   }
 
-  // if taxonomy is disabled
+  // if taxonomy is disabled or force is set
   if (empty ($mgmt_config[$site]['taxonomy']) || $force == true)
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -1721,7 +1737,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
         if (!empty ($row['id']))
         {
           // delete taxonomy
-          $sql = 'DELETE FROM taxonomy WHERE id="'.$row['id'].'"';
+          $sql = 'DELETE FROM taxonomy WHERE id='.intval($row['id']);
 
           $errcode = "50054";
           $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -1769,6 +1785,18 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   {
     $object_type = array("image", "video", "flash");
   }
+
+  // initialize
+  $sql_table = array();
+  $sql_table['taxonomy'] = "";
+  $sql_table['textnodes'] = "";
+  $sql_where = array();
+  $sql_relevance = array();
+  $sql_taxonomy_id = array();
+  $sql_expr_taxonomy = array();
+  $sql_expr_advanced = array();
+  $sql_where_textnodes = "";
+  $sql_order_by = "";
 
   // if hierarchy URL has been provided
   if (!empty ($expression_array[0]) && strpos ("_".$expression_array[0], "%hierarchy%/") > 0)
@@ -1838,8 +1866,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     }
   }
 
-  if (!empty ($folderpath) || is_array ($object_type) || !empty ($date_from) || !empty ($date_to) || !empty ($template) || is_array ($expression_array) || !empty ($expression_filename) || !empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype))
+  if (!empty ($folderpath) || is_array ($object_type) || !empty ($date_from) || !empty ($date_to) || !empty ($template) || is_array ($expression_array) || !empty ($expression_filename) || !empty ($fileextension) || !empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype))
   {
+    // connect
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     if (is_array ($object_type)) foreach ($object_type as &$value) $value = $db->rdbms_escape_string ($value);
@@ -1863,10 +1892,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       $operator = strtoupper ($mgmt_config['search_operator']);
     }
     else $operator = "AND";
-
-    $sql_table = array();
-    $sql_where = array();
-    $sql_relevance = array();
 
     if (!empty ($folderpath))
     {
@@ -2115,11 +2140,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       $sql_where['template'] = 'obj.template="'.$template.'"';
     }
     
-    // query search expression
-    $sql_table['textnodes'] = "";
-    $sql_expr_advanced = array();
-    $sql_where_textnodes = "";
-
     if (is_array ($expression_array) && sizeof ($expression_array) > 0)
     {
       $i = 1;
@@ -2140,7 +2160,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           // clean expression replace | with space
           $expression = str_replace ("|", " ", strip_tags($expression));
 
-          $expression_log[] = $mgmt_config['today']."|".$user."|".$expression;
+          $expression_log[] = $mgmt_config['today']."|".str_replace("|", "&#124;", $user)."|".str_replace("|", "&#124;", $expression);
         }
         
         // extract type from text ID
@@ -2206,26 +2226,27 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                 // add taxonomy table
                 if ($i_tx == 1)
                 {
-                  $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
+                  //  (deprecated since version 10.0.7)
+                  // $sql_table['taxonomy'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
                 }
                 elseif ($i_tx > 1)
                 {
                   $j = $i_tx - 1;
-                  $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
+                  $sql_table['taxonomy'] .= ' LEFT JOIN taxonomy AS tx'.$i_tx.' ON tx'.$j.'.id=tx'.$i_tx.'.id';
                 }
   
-                $sql_expr_advanced[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
+                $sql_expr_taxonomy[$i] .= '(tx'.$i_tx.'.text_id="'.$key.'" AND tx'.$i_tx.'.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).'))';
                   
                 $i_tx++;
               }
               // general search in taxonomy (only one search expression possible -> break out of loop)
               else
               {
-                // add taxonomy table
-                $sql_table['textnodes'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
+                // add taxonomy table (deprecated since version 10.0.7)
+                // $sql_table['taxonomy'] .= ' LEFT JOIN taxonomy AS tx1 ON obj.id=tx1.id';
                 
-                $sql_expr_advanced[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
-    
+                $sql_expr_taxonomy[$i] = 'tx1.taxonomy_id IN ('.implode (",", array_keys ($taxonomy_ids)).')';
+
                 break;
               }
             }
@@ -2719,8 +2740,12 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       {
         $sql_attr[] = "tng.text_id";
         $sql_attr[] = "tng.textcontent";
-        if (empty ($sql_table['textnodes'])) $sql_table['textnodes'] = "";
-        if (strpos ($sql_table['textnodes'], " ON obj.id=tng.id ") < 1) $sql_table['textnodes']  .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id';
+
+        if (empty ($sql_table['textnodes']) || (!empty ($sql_table['textnodes']) && strpos ($sql_table['textnodes'], " ON obj.id=tng.id ") < 1))
+        {
+          if (empty ($sql_table['textnodes'])) $sql_table['textnodes'] = "";
+          $sql_table['textnodes'] .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id';
+        }
       }
 
       // add attributes to search query
@@ -2738,20 +2763,58 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     if (empty ($order_by))
     {
       // order by relevance if MATCH AGAINST is used
-      if (strpos ($sql_relevance_str, " AS relevance") > 0) $order_by = "relevance DESC, obj.objectpath";
-      else $order_by = "obj.objectpath";
+      if (strpos ($sql_relevance_str, " AS relevance") > 0) $sql_order_by = "relevance DESC, obj.objectpath";
+      else $sql_order_by = "obj.objectpath";
     }
-    else $order_by = $db->rdbms_escape_string (trim ($order_by));
+    else $sql_order_by = $db->rdbms_escape_string (trim ($order_by));
 
-    // build SQL statement
+    // limit
+    if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql_limit = ' LIMIT '.intval ($starthits).','.intval ($endhits);
+    elseif (isset ($maxhits) && intval ($maxhits) > 0) $sql_limit = ' LIMIT 0,'.intval ($maxhits);
+
+    // build pre SQL query for taxonomy since version 10.0.7 (pre query since the JOIN is very slow with large taxonomies)
+    if (!empty ($sql_expr_taxonomy) && sizeof ($sql_expr_taxonomy) > 0)
+    {
+      $sql_taxonomy = 'SELECT tx1.id FROM taxonomy AS tx1 INNER JOIN object AS obj ON obj.id=tx1.id '.(!empty ($sql_table['taxonomy']) ? $sql_table['taxonomy'] : "").' WHERE obj.deleteuser="" AND '.$sql_where['folderpath'].' AND '.implode (" ".$operator." ", $sql_expr_taxonomy).$sql_limit;
+
+      $errcode = "50083";
+      $done = $db->rdbms_query ($sql_taxonomy, $errcode, $mgmt_config['today']);
+
+      if ($done)
+      {
+        while ($row = $db->rdbms_getresultrow ())
+        {
+          if (!empty ($row['id']))
+          {
+            $sql_taxonomy_id[] = $row['id'];
+          }
+        }
+      }
+
+      // unset used table 
+      unset ($sql_table['taxonomy']);
+      unset ($sql_where['folderpath']);
+    } 
+
+    // build main SQL statement
     $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media, obj.template, obj.workflowstatus'.$sql_add_attr.$sql_relevance_str.' FROM object AS obj ';
-    if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-    $sql .= 'WHERE obj.deleteuser="" ';
-    if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
-    $sql .= 'GROUP BY obj.hash ORDER BY '.$order_by;
 
-    if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql .= ' LIMIT '.intval ($starthits).','.intval ($endhits);
-    elseif (isset ($maxhits) && intval ($maxhits) > 0) $sql .= ' LIMIT 0,'.intval ($maxhits);
+    if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
+
+    // if taxonomy pre query is used 
+    if (!empty ($sql_taxonomy))
+    {
+      if (sizeof ($sql_taxonomy_id) > 0) $sql .= 'WHERE obj.id IN ('.implode (',', $sql_taxonomy_id).') ';
+      else $sql .= 'WHERE obj.id=0 ';
+    }
+    else
+    {
+      $sql .= 'WHERE obj.deleteuser="" ';
+    }
+
+    if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
+
+    $sql .= 'GROUP BY obj.hash ORDER BY '.$sql_order_by.$sql_limit;
 
     $errcode = "50082";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -3021,7 +3084,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
             $textcontent = str_replace ($search_expression, $replace_expression_esc, $textcontent); 
             $textcontent = str_replace ($search_expression_esc, $replace_expression_esc, $textcontent);                 
 
-            // replace expression in container
+            // get container ID
             $container_id = substr ($container_file, 0, strpos ($container_file, ".xml"));
 
             // save container, execute query and load container if container ID changed
@@ -3031,10 +3094,10 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
               {
                 // save container
                 $result_save = savecontainer ($container_id_prev, "work", $containerdata, $user);
-                
+
                 if ($result_save == false)
                 {
-                  $errcode = "10911";
+                  $errcode = "10101";
                   $error[] = $mgmt_config['today']."|db_connect_rdbms.php|error|".$errcode."|Container '".$container_id_prev."' could not be saved";  
 
                   // save log
@@ -3043,7 +3106,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
                 else
                 {
                   // update content in database
-                  $errcode = "50024";
+                  $errcode = "50102";
                   
                   foreach ($sql_array as $sql)
                   {
@@ -3105,7 +3168,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 
     if ($result_save == false)
     {
-      $errcode = "10911";
+      $errcode = "10103";
       $error[] = $mgmt_config['today']."|db_connect_rdbms.php|error|".$errcode."|Container '".$container_id_prev."' could not be saved";  
 
       // save log
@@ -3114,7 +3177,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     else
     {
       // update content in database
-      $errcode = "50040";
+      $errcode = "50104";
 
       foreach ($sql_array as $sql)
       {
@@ -3526,13 +3589,13 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 
 // ----------------------------------------------- get content -------------------------------------------------
 // function: rdbms_getcontent()
-// input: publication name [string], container ID [integer], filter for text-ID [string] (optional), filter for type [string] (optional), filter for user name [string] (optional)
+// input: publication name [string], container ID [integer], filter for text IDs [array] (optional), filter for type [string] (optional), filter for user name [string] (optional)
 // output: result array with text ID as key and content as value / false
 
 // description:
 // Selects content for a container in the database.
 
-function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user="")
+function rdbms_getcontent ($site, $container_id, $text_ids=array(), $type="", $user="")
 {
   global $mgmt_config;
 
@@ -3545,12 +3608,27 @@ function rdbms_getcontent ($site, $container_id, $text_id="", $type="", $user=""
     if ($type == "u" || $type == "f" || $type == "l" || $type == "c" || $type == "d" || $type == "k") $type = "text".$type;
 
     $container_id = intval ($container_id);
-    if ($text_id != "") $text_id = $db->rdbms_escape_string($text_id);
     if ($type != "") $type = $db->rdbms_escape_string($type);
     if ($user != "") $user = $db->rdbms_escape_string($user);
 
     $sql = 'SELECT text_id, textcontent FROM textnodes WHERE id='.$container_id;
-    if ($text_id != "") $sql .= ' AND text_id="'.$text_id.'"';
+
+    if (is_array ($text_ids) && sizeof ($text_ids) > 0)
+    {
+      $sql_temp = array();
+
+      foreach ($text_ids as $text_id)
+      {
+        if ($text_id != "")
+        {
+          $text_id = $db->rdbms_escape_string($text_id);
+          $sql_temp[] = 'text_id="'.$text_id.'"';
+        }
+      }
+
+      if (sizeof ($sql_temp) > 0) $sql .= ' AND ('.implode (" OR ", $sql_temp).')';
+    }
+
     if ($type != "") $sql .= ' AND type="'.$type.'"';
     if ($user != "") $sql .= ' AND user="'.$user.'"';
           
@@ -3594,7 +3672,7 @@ function rdbms_getkeywords ($sites="")
 
   $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
-  $sql = 'SELECT keywords.keyword_id, keywords.keyword, COUNT(keywords_container.id) AS count FROM keywords INNER JOIN keywords_container ON keywords.keyword_id=keywords_container.keyword_id';
+  $sql = 'SELECT keywords.keyword_id, keywords.keyword, COUNT(DISTINCT keywords_container.id) AS count FROM keywords INNER JOIN keywords_container ON keywords.keyword_id=keywords_container.keyword_id';
 
   if (is_array ($sites) && sizeof ($sites) > 0)
   {
@@ -3604,7 +3682,7 @@ function rdbms_getkeywords ($sites="")
     {
       $site = $db->rdbms_escape_string ($site);
 
-      if ($i < 1) $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
+      if ($i < 1) $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE object.deleteuser="" AND (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
       else $sql .= ' OR (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
 
       $i++;
@@ -3613,7 +3691,11 @@ function rdbms_getkeywords ($sites="")
   else if ($sites != "" && $sites != "*Null*")
   {
     $site = $db->rdbms_escape_string ($sites);
-    $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
+    $sql .= ' INNER JOIN object ON object.id=keywords_container.id WHERE object.deleteuser="" AND (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
+  }
+  else
+  {
+    $sql = ' INNER JOIN object ON object.id=keywords_container.id WHERE object.deleteuser=""';
   }
 
   $sql .= ' GROUP BY keywords.keyword_id ORDER BY keywords.keyword';
@@ -3660,7 +3742,7 @@ function rdbms_getemptykeywords ($sites="")
 
   $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
-  $sql = 'SELECT COUNT(object.id) AS count FROM object INNER JOIN textnodes ON textnodes.id=object.id WHERE';
+  $sql = 'SELECT COUNT(DISTINCT object.id) AS count FROM object INNER JOIN textnodes ON textnodes.id=object.id WHERE';
 
   if (is_array ($sites))
   {
@@ -3685,7 +3767,7 @@ function rdbms_getemptykeywords ($sites="")
     $sql .= ' (object.objectpath LIKE "*page*/'.$site.'/%" OR object.objectpath LIKE "*comp*/'.$site.'/%")';
   }
 
-  $sql .= ' AND textnodes.type="textk" AND textnodes.textcontent=""';
+  $sql .= ' AND object.deleteuser="" AND textnodes.type="textk" AND textnodes.textcontent=""';
 
   $errcode = "50542";
   $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
@@ -4564,7 +4646,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
   // users objects including subitems in the recycle bin
   elseif ($user != "" && $subitems == true) $sql .= 'WHERE (obj.deleteuser="'.$user.'" OR obj.deleteuser="['.$user.']") ';
   // all objects in the recycle bin without subitems
-  elseif ($subitems == false) $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%]" ';
+  elseif ($subitems == false) $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%" ';
   // all objects including subitems in the recycle bin
   else $sql .= 'WHERE obj.deleteuser!="" ';
 
@@ -4653,7 +4735,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
 
     if ($user != "") $sql .= 'WHERE obj.deleteuser="'.$user.'" ';
     elseif ($subitems == true) $sql .= 'WHERE obj.deleteuser!="" ';
-    else $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%]" ';
+    else $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%" ';
 
     if ($date != "") $sql .= 'AND deletedate<"'.$date.'" ';
 
@@ -4692,6 +4774,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 
   if (is_array ($objects) && sizeof ($objects) > 0 && $user != "" && (strtolower ($mark) == "set" || strtolower ($mark) == "unset"))
   {
+    // initialie
     $result = true;
     $session_id = "";
 
@@ -4758,7 +4841,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", level='.getobjectpathlevel($object_folder.".recycle/.folder").', objectpath="'.$object_folder.'.recycle/.folder", objectpath="'.$object_folder.'.recycle/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
+              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
             }
             else
             {
@@ -4785,7 +4868,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Restore failed (rename) for folder '".$object."' in recycle bin";
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="", deletedate="", level='.getobjectpathlevel(substr ($object_folder, 0, -8)."/.folder").', objectpath="'.substr ($object_folder, 0, -8).'/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
+              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
             }
             else
             {
@@ -4815,17 +4898,13 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
               if (!empty ($sql))
               {
                 // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
-                if (session_id() != "")
-                {
-                  $session_id = session_id();
-                  session_write_close();
-                }
+                $session_id = suspendsession ();
   
                 $errcode = "50072";
                 $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
   
                 // restart session (that has been previously closed for non-blocking procedure)
-                if (empty (session_id()) && $session_id != "") createsession();
+                revokesession ("", "", $session_id);
               }
             }
           }
@@ -5805,7 +5884,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
           // select all sub-objects that have not been deleted
           $sql = 'SELECT id FROM object WHERE objectpath LIKE "'.getlocation ($objectpath).'%" AND deleteuser=""';
 
-          $errcode = "50040";
+          $errcode = "50760";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'ids');
 
           if ($done)
@@ -6864,6 +6943,53 @@ function rdbms_optimizedatabase ()
     return true;
   }
   else return false;
+}
+
+// ------------------------------------------ rdbms_setobjectpathlevel ----------------------------------------------
+// function: rdbms_setobjectpathlevel()
+// input: %
+// output: true / false
+
+// description: 
+// Updates the level of all objects with no level in the database
+
+function rdbms_setobjectpathlevel ()
+{
+  global $mgmt_config;
+
+  // connect to MySQL
+  $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+  // select all content
+  $sql = 'SELECT object_id, objectpath FROM object WHERE level<1';
+  $errcode = "50771";
+  $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+  if ($result)
+  {
+    while ($row = $db->rdbms_getresultrow('select'))
+    {
+      if (!empty ($row['objectpath']))
+      {
+        $level = getobjectpathlevel ($row['objectpath']);
+
+        // set level
+        if (intval ($level) > 0)
+        {
+          $sql = 'UPDATE object SET level='.intval($level).' WHERE object_id='.intval($row['object_id']);
+          $errcode = "50772";
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+        }
+      }
+    }
+  }
+
+  // save log
+  savelog ($db->rdbms_geterror ());
+  savelog (@$error);
+  $db->rdbms_close();
+
+  return true;
 }
 
 // -----------------------------------------------  external SQL query-------------------------------------------------

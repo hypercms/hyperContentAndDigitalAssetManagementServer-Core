@@ -1371,7 +1371,9 @@ function initialize ()
               foreach ($labels[$site][$cat] as $text_id => $label)
               {
                 if (!empty ($text_id)) 
-                {                
+                {
+                  $label = getlabel ($label, $lang);
+
                   echo "
             <label><input onclick=\"setcolumns()\" type=\"checkbox\" name=\"column[".$text_id."]\" value=\"1\" ".(!empty ($objectlistcols[$site][$cat][$text_id]) ? "checked=\"checked\"" : "")."/>&nbsp;".getescapedtext ($label)."</label><br />";
                 }
@@ -1439,7 +1441,7 @@ function initialize ()
             else
             {
               // use label
-              if (!empty ($labels[$site][$cat][$key])) $title = $labels[$site][$cat][$key];
+              if (!empty ($labels[$site][$cat][$key])) $title = getlabel ($labels[$site][$cat][$key], $lang);
               // use text ID
               else $title = ucfirst (str_replace ("_", " ", substr ($key, 5)));
               
@@ -1515,7 +1517,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 // status bar without buttons
 else
 {
-  if ($objects_counted > 0) $next_start = $objects_counted + 1;
+  if ($objects_counted >= 0) $next_start = $objects_counted + 1;
   else $next_start = 0;
 ?>
 <!-- status bar -->

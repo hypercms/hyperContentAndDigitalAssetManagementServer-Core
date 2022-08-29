@@ -79,9 +79,6 @@ $servertime->InstallClockHead();
 ?>
 <script type="text/javascript">
 
-// search window state
-var search = false;
-
 // callback for hcms_geolocation
 function hcms_geoposition (position)
 {
@@ -128,16 +125,14 @@ function showHome ()
 
 function showSearch ()
 {
-  search = true;
   parent.frames['navFrame'].showSearch();
   maxSearchFrame();
 }
 
 function switchNav ()
 {
-  if (search == true)
+  if (parent.frames['navFrame'].hcms_isHiddenLayer('search') == false)
   {
-    search = false;
     parent.frames['navFrame'].showNav();
     maxNavFrame ();
   }
@@ -156,9 +151,8 @@ function switchNav ()
 
 function switchSearch ()
 {
-  if (search == false)
+  if (parent.frames['navFrame'].hcms_isHiddenLayer('search') == true)
   {
-    search = true;
     parent.frames['navFrame'].showSearch();
     maxSearchFrame ();
   }
@@ -356,7 +350,6 @@ function setSearchLocation (location, name)
 {
   if (document.getElementById('navFrame'))
   {
-    search = true;
     document.getElementById('navFrame').contentWindow.setSearchLocation (location, name);
     maxSearchFrame();
   }

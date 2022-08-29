@@ -62,9 +62,11 @@ $objects_total = 0;
 $thumbnailsize_small = 120;
 $thumbnailsize_medium = 160;
 $thumbnailsize_large = 180;
+$objects_counted = 0;
 
-// SQL limit (result does not contain unique objetpaths if content is returned!)
-$limit = 500;
+// SQL limit (result does not contain unique objetpaths if content is returned)
+$limit_standard = 1000;
+$limit_large = 2000;
 
 // search parameters as URL coded query string (exluding the limit parameter)
 unset ($_REQUEST['start']);
@@ -205,7 +207,9 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // save search parameters
 if (!empty ($search_save))
 {
-  $search_record = uniqid()."|".$mgmt_config['today']."|".$action."|".$site."|".$search_dir."|".$date_from."|".$date_to."|".$template."|".json_encode($search_textnode)."|".$search_expression."|".$search_cat."|".json_encode($search_format)."|".$search_filesize."|".$search_imagewidth."|".$search_imageheight."|".json_encode($search_imagecolor)."|".$search_imagetype."|".$geo_border_sw."|".$geo_border_ne."|".$object_id."|".$container_id;
+  $search_values = array (uniqid(), $mgmt_config['today'], $action, $site, $search_dir, $date_from, $date_to, $template, json_encode($search_textnode), $search_expression, $search_cat, json_encode($search_format), $search_filesize, $search_imagewidth, $search_imageheight, json_encode($search_imagecolor), $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id);
+
+  $search_record = createlogentry ($search_values);
 
   savelog (array($search_record), $user.".search");
 }
@@ -278,7 +282,7 @@ checkusersession ($user);
 $token = createtoken ($user);
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // search operator for multiple fields in advanced search
 if ($search_operator == "AND" || $search_operator == "OR")
@@ -294,18 +298,18 @@ if ($action == "linking")
 // deleted objects of a user
 elseif ($action == "recyclebin" && $user != "")
 {
-  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ("", "", $limit, @array_keys ($objectlistcols_reduced), false, false);
-  else $object_array = rdbms_getdeletedobjects ($user, "", $limit, @array_keys ($objectlistcols_reduced), false, false);
+  if (!empty ($adminpermission)) $object_array = rdbms_getdeletedobjects ("", "", $limit_large, @array_keys ($objectlistcols_reduced), false, false);
+  else $object_array = rdbms_getdeletedobjects ($user, "", $limit_large, @array_keys ($objectlistcols_reduced), false, false);
 }
 // collect all objects of given user 
 elseif ($action == "user_files" && $login != "" && $site != "" && (($site == "*Null*" && checkrootpermission ('user')) || checkglobalpermission ($site, 'user')))
 {
-  $object_array = rdbms_searchuser ($site, $login, $limit, @array_keys ($objectlistcols_reduced)); 
+  $object_array = rdbms_searchuser ($site, $login, $limit_large, @array_keys ($objectlistcols_reduced)); 
 }
 // search for sender, recipient or date sent
 elseif ($action == "recipient")
 {
-  $object_array = rdbms_searchrecipient ($site, $from_user, $to_user, $date_from, $date_to, $limit, @array_keys ($objectlistcols_reduced));
+  $object_array = rdbms_searchrecipient ($site, $from_user, $to_user, $date_from, $date_to, $limit_large, @array_keys ($objectlistcols_reduced));
 }
 // favorites of user
 elseif ($action == "favorites" && $user != "")
@@ -438,7 +442,7 @@ elseif ($action == "base_search" || $search_dir != "")
     // start search
     else
     {
-      $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_fileextension, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $limit, @array_keys ($objectlistcols_reduced));
+      $object_array = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search_format, $date_from, $date_to, $template, $search_textnode, $search_filename, $search_fileextension, $search_filesize, $search_imagewidth, $search_imageheight, $search_imagecolor, $search_imagetype, $geo_border_sw, $geo_border_ne, $limit_standard, @array_keys ($objectlistcols_reduced));
     }
   }
 }
@@ -630,7 +634,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               }
 
               // listview - view option for locked multimedia objects
-              if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+              if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"hcmsIconList hcmsIconOff\"";
               else $class_image = "class=\"hcmsIconList\"";            
 
               // onclick for marking objects
@@ -926,7 +930,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;
             
             // listview - view option for un/published objects
-            if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+            if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"hcmsIconList hcmsIconOff\"";
             else $class_image = "class=\"hcmsIconList\"";
             
             // listview - view option for locked objects
@@ -1033,7 +1037,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if (is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg"))
               {
                 // galleryview - view option for locked multimedia objects
-                if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
+                if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
                 else $class_image = "class=\"lazyload hcmsImageItem\"";
 
                 $thumbnail = "<div id=\"m".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name))."\" ".$class_image." /></div>";
@@ -1042,7 +1046,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               else
               {
                 // galleryview - view option for locked multimedia objects
-                if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
+                if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"hcmsIconOff\"";
                 else $class_image = "";
                         
                 $thumbnail = "<div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
@@ -1052,7 +1056,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             else
             {
               // galleryview - view option for locked multimedia objects
-              if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
+              if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"hcmsIconOff\"";
               else $class_image = "";
                       
               $thumbnail = "<div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
@@ -1112,7 +1116,6 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
 // objects counted
 if ($items_row > 0) $objects_counted = $items_row;
-else $objects_counted = 0;
 ?>
 <!DOCTYPE html>
 <html>
@@ -1289,9 +1292,6 @@ var explorerview = "<?php echo getescapedtext ($temp_explorerview); ?>";
 // verify sidebar
 if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.width > 0) var sidebar = true;
 else var sidebar = false;
-
-// define global variable for popup window name used in contextmenu.js
-var session_id = '<?php echo session_id(); ?>';
 
 function checktype (type)
 {
@@ -1609,7 +1609,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
             else
             {
               // use label
-              if (!empty ($labels_reduced[$key])) $title = $labels_reduced[$key];
+              if (!empty ($labels_reduced[$key])) $title = getlabel ($labels_reduced[$key], $lang);
               // use text ID
               else $title = ucfirst (str_replace ("_", " ", substr ($key, 5)));
               
@@ -1686,7 +1686,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 // status bar without buttons
 else
 {
-  if ($objects_counted > 0) $next_start = $objects_counted + 1;
+  if ($objects_counted >= 0) $next_start = $objects_counted + 1;
   else $next_start = 0;
 ?>
 <!-- status bar -->

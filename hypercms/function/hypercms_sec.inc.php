@@ -1813,7 +1813,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         $mailer->Send();
 
         // deletefile ($mgmt_config['abs_path_data'], "check.dat", 0);
-        $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-licence-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
+        $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-license-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
         $checkresult = false;
 
         // warning
@@ -1829,7 +1829,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       $mailer->Subject = "hyperCMS ALERT";
       $mailer->Body = "hyperCMS alert (check.dat is missing) for ".$mgmt_config['url_path_cms']."\n";
       $mailer->Send();
-      $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-licence-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
+      $result['message'] = $hcms_lang['your-action-is-not-confirm-to-the-license-agreement'][$lang]." <a href=\"mailto:support@hypercms.net\">support@hypercms.net</a>";
       $checkresult = false;
 
       // warning
@@ -2553,13 +2553,13 @@ function writesessiondata ()
 
 // ------------------------- createsession -----------------------------
 // function: createsession()
-// input: session name [string] (optional)
+// input: session name [string] (optional), session ID [string] (optional)
 // output: true
 
 // description:
 // Creates a session for the user. This function accesses session variables directly.
 
-function createsession ($name="hyperCMS")
+function createsession ($name="hyperCMS", $session_id="")
 {
   global $mgmt_config;
 
@@ -2573,9 +2573,10 @@ function createsession ($name="hyperCMS")
   }
 
   // start session
-  if (session_id() == "" || !isset ($_SESSION) || session_name() != $name)
+  if ((session_id() == "" || !isset ($_SESSION)) && !headers_sent())
   {
-    session_name ($name);
+    if (!empty ($name) || session_name() != $name) session_name ($name);
+    if (!empty ($session_id)) session_id ($session_id);
     session_start ();
   }
 
@@ -2723,6 +2724,101 @@ function killsession ($user="", $destroy_php=true, $remove=false)
   if ($destroy_php == true) @session_destroy();
 
   return true;
+}
+
+// ---------------------- suspendsession -----------------------------
+// function: suspendsession()
+// input: process name [string] (optional), user name [string] (optional)
+// output: session ID / false on error
+// requires: hypercms_api.inc.php
+
+// description:
+// Suspends the session by writing the session data and closing it.
+
+function suspendsession ($name="", $user="")
+{
+  global $mgmt_config;
+
+  // create process directory if missing
+  if (!is_dir ($mgmt_config['abs_path_data']."process/")) mkdir ($mgmt_config['abs_path_data']."process/");
+
+  // get session ID
+  if (session_id() != "") $session_id = session_id();
+  else $session_id = "";
+
+  // create process file if process name and user name have been provided
+  if (valid_objectname ($name) && valid_objectname ($user) && is_dir ($mgmt_config['abs_path_data']."process/"))
+  {
+    $data = date ("Y-m-d H:i:s")."|".$session_id;
+
+    savefile ($mgmt_config['abs_path_data']."process/", $name.".".$user.".dat", $data);
+  }
+
+  // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
+  if ($session_id != "")
+  {
+    session_write_close();
+
+    return $session_id;
+  }
+
+  return false;
+}
+
+// ---------------------- revokesession -----------------------------
+// function: revokesession()
+// input: process name [string] (optional), user name [string] (optional), session ID [string] (optional)
+// output: session ID / false on error
+// requires: hypercms_api.inc.php
+
+// description:
+// Revokes the session.
+
+function revokesession ($name="", $user="", $session_id="")
+{
+  global $mgmt_config;
+
+  // delete process file if process name and user name have been provided
+  if (valid_objectname ($name) && valid_objectname ($user) && is_file ($mgmt_config['abs_path_data']."process/".$name.".".$user.".dat"))
+  {
+    deletefile ($mgmt_config['abs_path_data']."process/", $name.".".$user.".dat", 0);
+  }
+
+  // restart session (that has been previously closed for non-blocking procedure)
+  if (empty (session_id()))
+  {
+    return createsession ("hyperCMS", $session_id);
+  }
+
+  return false;
+}
+
+// ---------------------- is_suspendedsession -----------------------------
+// function: is_suspendedsession()
+// input: process name [string] (optional), user name [string] (optional)
+// output: true / false
+// requires: hypercms_api.inc.php
+
+// description:
+// Verifies if a process file of a suspended session exists.
+
+function is_suspendedsession ($name="", $user="")
+{
+  global $mgmt_config;
+
+  $process_file = $mgmt_config['abs_path_data']."process/".$name.".".$user.".dat";
+
+  // verify process file if process name and user name have been provided
+  if (valid_objectname ($name) && valid_objectname ($user) && is_file ($process_file))
+  {
+    // if process file is not older than 2 hour
+    if (filemtime ($process_file) > (time() - 60*60*2))
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // ---------------------- checkdiskkey -----------------------------

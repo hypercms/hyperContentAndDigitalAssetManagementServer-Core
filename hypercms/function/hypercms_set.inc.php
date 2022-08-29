@@ -159,13 +159,16 @@ function settemplate ($site, $location, $object, $template, $recursive=false)
 // description:
 // Analyzes the content regarding all taxonomy keywords, saves results in database and returns an array (multilingual support based on taxonomies).
 
-function settaxonomy ($site, $container_id, $langcode="", $taxonomy="")
+function settaxonomy ($site, $container_id, $langcode="", $taxonomy=array())
 {
   global $mgmt_config;
 
   if (valid_publicationname ($site) && intval ($container_id) > 0 && is_array ($mgmt_config))
   {
+    // initialize
+    $result = array();
     $langcount = array();
+    $text_id_array = array();
 
     // load publication management config
     if (!isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
@@ -177,23 +180,33 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy="")
     if (strtolower ($site) == "default" || (valid_publicationname ($site) && !empty ($mgmt_config[$site]['taxonomy'])))
     { 
       // load taxonomy of publication
-      if (!is_array ($taxonomy) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+      if (!is_array ($taxonomy) || sizeof ($taxonomy) < 1)
       {
-        include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+        if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php"))
+        {
+          include ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.inc.php");
+        }
+        // load default taxonomy
+        elseif (is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+        {
+          include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+        }
       }
-      // load default taxonomy
-      elseif (!is_array ($taxonomy) && is_file ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php"))
+
+      // load text ID filter values
+      if (is_file ($mgmt_config['abs_path_data']."include/".$site.".taxonomy.filter.csv"))
       {
-        include ($mgmt_config['abs_path_data']."include/default.taxonomy.inc.php");
+        $text_ids = loadfile ($mgmt_config['abs_path_data']."include/", $site.".taxonomy.filter.csv");
+
+        // prepare text IDs
+        $text_id_array = splitstring ($text_ids);
       }
- 
+
       // search for taxonomy keyword and its childs
       if (!empty ($taxonomy) && is_array ($taxonomy) && sizeof ($taxonomy) > 0)
       {
-        $result = array();
-
         // get content of container
-        $text_array = rdbms_getcontent ($site, $container_id);
+        $text_array = rdbms_getcontent ($site, $container_id, $text_id_array);
 
         if (is_array ($text_array) && sizeof ($text_array) > 0)
         {
@@ -267,7 +280,17 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy="")
             // content is empty
             elseif ($text_id != "")
             {
-              // result array in order to delete all taxonomy entries for the text ID
+              // empty result array in order to delete all taxonomy entries for the text ID
+              $result[$text_id]['en'][0] = "";
+            }
+          }
+
+          // remove taxonomy entries for all provided text IDs if no result is available
+          if (sizeof ($result) < 1)
+          {
+            foreach ($text_array as $text_id => $text)
+            {
+              // empty result array in order to delete all taxonomy entries for the text ID
               $result[$text_id]['en'][0] = "";
             }
           }

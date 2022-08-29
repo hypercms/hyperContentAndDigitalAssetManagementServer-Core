@@ -153,7 +153,7 @@ switch ($function)
         $message = str_replace ($message, '&gt;&gt; <a href="#" onclick="'.$message.'">Object-Link</a>', $message);
       }
  	
-    	fwrite (fopen ($chat_log, 'a'), $date."|".$sites."|".$user."|<span>".$nickname."</span>".$message = str_replace ("\n", " ", $message)."\n"); 
+    	fwrite (fopen ($chat_log, 'a'), str_replace("|", "&#124;", $date)."|".str_replace("|", "&#124;", $sites)."|".str_replace("|", "&#124;", $user)."|<span>".str_replace("|", "&#124;", $nickname)."</span>".$message = str_replace ("\n", " ", str_replace("|", "&#124;", $message))."\n"); 
     }
     
     break;
@@ -183,7 +183,7 @@ switch ($function)
       if (!empty ($chat_relations)) file_put_contents ($chat_relations_log, $chat_relations);
       
       // write to chat log
-    	fwrite (fopen ($chat_log, 'a'), $date."|".$sites."|".$user."|<span>".$from_user_clean."</span> &gt;&gt; <span data-action=\"invite\">".$to_user_clean."</span>\n");
+    	fwrite (fopen ($chat_log, 'a'), str_replace("|", "&#124;", $date)."|".str_replace("|", "&#124;", $sites)."|".str_replace("|", "&#124;", $user)."|<span>".str_replace("|", "&#124;", $from_user_clean)."</span> &gt;&gt; <span data-action=\"invite\">".str_replace("|", "&#124;", $to_user_clean)."</span>\n");
 
       // send message to user
       sendmessage ($user, $to_user, str_replace ("%user%", "'".$user."'", $hcms_lang['user-wants-to-chat-with-you'][$lang]), $hcms_lang['open-link'][$lang].": ".$mgmt_config['url_path_cms']."\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang]);
@@ -210,7 +210,7 @@ switch ($function)
     }
     
     // write to chat log
-  	fwrite (fopen ($chat_log, 'a'), $date."|".$sites."|".$user."|<span>".$host_user_clean."</span> &lt;&lt; <span data-action=\"invite\">".$hcms_lang['all-users'][$lang]."</span>\n");
+  	fwrite (fopen ($chat_log, 'a'), str_replace("|", "&#124;", $date)."|".str_replace("|", "&#124;", $sites)."|".str_replace("|", "&#124;", $user)."|<span>".str_replace("|", "&#124;", $host_user_clean)."</span> &lt;&lt; <span data-action=\"invite\">".str_replace("|", "&#124;", $hcms_lang['all-users'][$lang])."</span>\n");
       
     break;
     

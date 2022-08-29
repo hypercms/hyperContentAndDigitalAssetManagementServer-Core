@@ -6272,7 +6272,7 @@ Release 10/2022
 - Removed md5_objectpath from createtables.sql
 - Implementation of the new function update_database_v10071 in the Update API in order to drop the index object_md5_objectpath and remove column md5_objectpath from table object
 - Modifications in function update_all in Update API in order to add the new function update_database_v10071
-- Modifications in the main configuration file in the install directory in order to add new commenst to the Relational Database Connectivity section
+- Modifications in the main configuration file in the install directory in order to add new comments to the Relational Database Connectivity section
 - Modifications in page_info_stats in order to remove the duplicate call of function rdbms_getmediastat for the chart and the table view
 - Modifications in function rdbms_getmediastat in DB connect in order to support a permanent cache for the results
 - Modifications in function rdbms_getmediastat in DB connect in order to support an automatic cache timeout based on the end date
@@ -6283,8 +6283,92 @@ Release 10/2022
 - Modifications in function createuser in order to remove user if checkdiskkey failed
 - Modifications in Taxonomy editor media_taxonomy in order to select the 2nd target language as default language
 - Modifications in popup_status in order to set a default value for the variable headline
-- Dropped support for Apache 2.2 htaccess directives in the install directory (still available as comments) 
+- Dropped support for Apache 2.2 htaccess directives in the install directory (still available as comments)
+- Modifications in function ftp_filelist in Connect API in order to support Windows FTP servers besides UNIX FTP servers
+- Modifications in popup_ftp in order to support the new date element of the result of function ftp_filelist
+- Modifications in function deletepublication in order to remove the new taxonomy import profile of a publication
+- Modifications in the LDAP Connector of the Connector module in order to escape | in the log entries
+- Modifications in DB Connect in order to escape | in the log entries
+- Modifications in template engine in order to escape | in the list entries of the template tags
+- Modifications in function createnavigation in UI API in order to escape | in the navigation entries
+- Modifications in the minutely job in order to escape | in the server load log entries
+- Modifications in the chat service in order to escape | in the chat log entries
+- Implementation of the new function createlogentry in Main API in order to create a valid log entry
+- Modifications in search_objectlist in order to use the new function createlogentry when saving the search parameters
+- Modifications in explorer in order to support a new view input parameter to select the navigation tree or search form
+- Implementation of the new JS function hcms_isHiddenLayer in main.js
+- Modifications in local JS function switchNav and switchSearch in frameset_main in order to use the new JS function hcms_isHiddenLayer for the search form layer
+- Modifications in frameset_main in order to remove the search window state since its state will be verified by JS function hcms_isHiddenLayer
+- Modifications in explorer in order to modify always show the save search option
+- Modifications in explorer in order to display the information if the saved search expression is text or location based
+- Modifications in the Import/Export Connector module in order to change the order of the import and export icon in the toolbar
+- Modifications in the Import/Export Connector module in order to support the new date element of the result of function ftp_filelist
+- Modifications in the Import/Export Connector module in order to support the publication name in the export profile
+- Modifications in the Import/Export Connector module in order to only display saved import and export profiles that match the users publication access permissions
+- Modifications in the Import/Export Connector module in order to apply the new function createlogentry
+- Implementation of the new media_taxonomy_import with support of daily import jobs and the automatic import of a remote CSV file
+- Removed CSV import logic from control_template_menu since it has been moved to media_taxonomy_import
+- Implementation of the new function importtaxonomy in Meta API in order to support the automated import of a taxonomy
+- Modifications in the daily job in order to support the automated import of a taxonomy
+- Modifications in the daily job in order to support the recreation of the full taxonomy relations for all objects in case a new taxonomy has been imported
+- Modifications in function rdbms_searchcontent in DB Connect in order to improve the performance by seperating the taxonomy query from the main query (the JOIN of table object and taxonomy was slow with large taxonomies)
+- Modifications in function rdbms_getkeywords in DB Connect in order to include deleteuser in the SQL query
+- Implementation of the new function update_database_v10073 in the Update API in order to update the taxonomy index
+- Modifications in function update_all in Update API in order to add the new function update_database_v10073
+- Modifications in createtables.sql in DB connect in order to add the attribute text_id to the index taxonomy_multiple
+- Modifications in function rdbms_query in DB Connect in order to add the error codes for identifiaction of the executed SQL query to the SQL log
+- Modifications in function rdbms_getemptykeywords in order to include deleteuser in the SQL query
+- Modifications in explorer in order to append a time stamp to the URL for explorer_keywords in order to avoid caching
+- Modifications in function settaxonomy in Set API in order to support text IDs as input for the analysis of the content
+- Modifications in rdbms_getcontent in DB Connect in order to support multiple text IDs as input array
+- Modifications in taxonomy editor in order to support text IDs as input for the analysis of the content
+- Modifications in function createtaxonomy in Meta API in order to write and close the session before the analysis of the content and restart the session afterwars for non-blocking download
+- Implementaton of process logging using the new directory process in the internal repository
+- Implementation of the new data/process directory in the install directory
+- Implementation of the new function suspendsession, revokesession, and is_suspendedsession in Security API
+- Modifications in function createsession in order to support the session ID as new input parameter
+- Modifications in all system components in order to replace the PHP functions session_write_close and session_start by the new functions suspendsesion and revokesession
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order optimize SQL query
+- Modifications in createtables.sql in DB Connect in order to create a new index object_deleteuser
+- Implementation of the new function update_database_v10074 in Update API
+- Modifications in function update_all in Update API in order to add the new function update_database_v10074
+- Removed deprecated JS variable session_id that in all system components
+- Modifications in search_objectlist in order to define different max. result limits for different serach queries (standard max. 1000, large max. 2000 results)
+- Modifications in function gettaxonomy_sublevel in Get API in order to support a new input parameter for sorting the result
+- Modifications in explorer in order to disable the sort of the taxonomy expressions in the navigation tree
+- Modifications in search_objectlist in order to display all deleted objects and folders without being greyed out
+- Modifications in daily job in order to get the user of the objects in the recycle bin and provide them to function processobjects and deleteobject
+- Implementation of the new function rdbms_setobjectpathlevel in DB Connect in order to set the level of all objects in the database
+- Implementation of the new function getthumbnailsize in Get API in order to return the size for thumbnails defined in the main configuration for images
+- Implementation of the new function krita_getdata and krita_create in the Meta API in order to support krita files
+- Modifications in function setmetadata in the Meta API in order to support krita files
+- Implementation of the new function is_kritaimage in Main API in order to support krita files
+- Modifications in function getmapping in the Meta API in order to support the metadata mapping for krita files
+- Modifications in function setmetadata in the Meta API in order to support the metadata mapping for krita files
+- Modifications in function showmedia in UI API in order to support krita files
+- Modifications in function getobjectlist in Get API in order to support the new input parameter return_all_levels (return also folder without access permissions of the user)
+- Modifications in the RESTful API in order to set the new parameter return_all_levels for function getobjectlist
+- Modifications in service getfacedefinitions in order to exit the service after the JSON result has been returned
+- Modifications in function downloadfile in Main API in order to close and not recreate the session due
+- Modifications in function createsession in Security API in order to verify if the headers have been sent before createing a session
+- Modifications in page_multiedit in order to disable the keyword field if the variable disabled is not empty
+- Added .kra file extenions as image to format_ext
+- Added .7z file extenions as compressed to format_ext
+- Updates in the default taxonomy
 - Update of the update log in the installation directory
-- Updates in the Installation and Users Guide
+- Updates in the Installation, Template, and Users Guide
+- Updates in the language files
 - Bug fix: Function manipulateallobjects did not get the category for each array element
 - Bug fix: format_ext used dot without a file extension in key 'cad'
+- Bug fix: The folder explorer of the Import/Export Connector module did URL encode the input parameters for the local JS function sendOption
+- Bug fix: The browsing using the taxonomy tree is slow with large taxonomies due to the SQL join of table object and taxonomy using index object_objectpath and taxonomy_multiple
+- Bug fix: Function rdbms_getkeywords in DB Connect did not include deleteuser in the query
+- Bug fix: search_objectlist did not count only 1 object in the search result
+- Bug fix: explorer_objectlist did not count only 1 object if the paging was not used
+- Bug fix: Function rdbms_getkeywords in DB connect did not apply DISTINCT before couting the container IDs
+- Bug fix: Function rdbms_getemptykeywords in DB connect did not apply DISTINCT before couting the container IDs
+- Bug fix: Function settaxonomy in Set API did not remove the taxonomy entries if no taxonomy result has been found for a specific text ID
+- Bug fix: Function deletepublication did not remove the CSV file of a taxonomy
+- Bug fix: Function rdbms_searchcontent did not include the textnodes table in the SQL query in case the variables for collecting the table joins has not been set
+- Bug fix: Corrected lnaguage code cz to cs for Czech in the language file, stopword list, tesseract languages, search engine, and main configuration
+- Bug fix: Function rdbms_setdeletedobjects in DB Connect di set the level for folders 
