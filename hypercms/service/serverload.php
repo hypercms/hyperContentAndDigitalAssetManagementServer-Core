@@ -40,7 +40,7 @@ else
 }
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 if (isset ($siteaccess) && is_array ($siteaccess))
 { 

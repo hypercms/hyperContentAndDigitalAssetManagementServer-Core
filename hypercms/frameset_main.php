@@ -32,7 +32,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE HTML>
 <html lang="<?php if (!empty ($lang)) echo $lang; ?>">
@@ -134,17 +134,17 @@ function switchNav ()
   if (parent.frames['navFrame'].hcms_isHiddenLayer('search') == false)
   {
     parent.frames['navFrame'].showNav();
-    maxNavFrame ();
+    maxNavFrame();
   }
   else if (document.getElementById('navLayer'))
   {
     if (document.getElementById('navLayer').style.width == '<?php echo $width_navigation; ?>px')
     {
-      minNavFrame ();
+      minNavFrame();
     }
     else
     {
-      maxNavFrame ();
+      maxNavFrame();
     }
   }
 }
@@ -154,17 +154,17 @@ function switchSearch ()
   if (parent.frames['navFrame'].hcms_isHiddenLayer('search') == true)
   {
     parent.frames['navFrame'].showSearch();
-    maxSearchFrame ();
+    maxSearchFrame();
   }
   else if (document.getElementById('navLayer'))
   {
     if (document.getElementById('navLayer').style.width == '<?php echo $width_search; ?>px')
     {
-      minNavFrame ();
+      minNavFrame();
     }
     else
     {
-      maxSearchFrame ();
+      maxSearchFrame();
     }
   }
 }

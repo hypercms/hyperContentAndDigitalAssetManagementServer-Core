@@ -106,8 +106,8 @@ if ($contentbot == false)
 // set default value given eventually by tag
 if (empty ($contentbot) && !empty ($default)) $contentbot = $default;
 
-// encode script code
-$contentbot = scriptcode_encode ($contentbot);
+// prepare keywords
+$contentbot = preparekeywords ($contentbot, "string", true);
 
 // get list options
 $list_result = "";

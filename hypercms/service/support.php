@@ -44,5 +44,6 @@ if (!empty ($file))
   header ('Content-Length: '.filesize ($file));
 
   readfile ($file);
+  exit;
 }
 ?>

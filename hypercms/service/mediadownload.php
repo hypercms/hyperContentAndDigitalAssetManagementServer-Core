@@ -401,6 +401,7 @@ elseif ($objectpath_esc != "" && is_file ($location.$object))
     if ($pdf_result)
     {
       downloadfile ($pdf_file, $name.".pdf", "download", $user);
+      exit;
     }
     else
     {
@@ -413,6 +414,7 @@ elseif ($objectpath_esc != "" && is_file ($location.$object))
   else
   {
     downloadobject ($location, $object, $container, $lang, $user);
+    exit;
   }
 }
 // no content available

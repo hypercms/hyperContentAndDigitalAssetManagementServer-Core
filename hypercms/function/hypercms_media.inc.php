@@ -212,10 +212,6 @@ function ocr_extractcontent ($site, $location, $file)
                 else
                 {
                   $file_content .= loadfile_fast ($temp_dir, $temp_name.".txt")." ";
-
-                  // remove temp files
-                  if (is_file ($temp_dir.$temp_file)) deletefile ($temp_dir, $temp_file, false);
-                  if (is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", false);
                 }
               }
               // no more temp files to scan
@@ -242,9 +238,6 @@ function ocr_extractcontent ($site, $location, $file)
             else
             {
               $file_content = loadfile_fast ($temp_dir, $temp_name.".txt");
-
-              // remove temp files
-              if (is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", false);
               break;
             }
           }
@@ -252,6 +245,10 @@ function ocr_extractcontent ($site, $location, $file)
       }
     }
 
+    // remove temp files
+    if (!empty ($temp_file) && is_file ($temp_dir.$temp_file)) deletefile ($temp_dir, $temp_file, false);
+    if (!empty ($temp_name) && is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", false);
+    
     // save log
     savelog (@$error);
 
@@ -419,10 +416,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
             // remove multiple white spaces
             $file_content = preg_replace ('/\s+/', ' ', $file_content);
           }
- 
-          // remove temp directory
-          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
         }
+
+        // remove temp directory
+        if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
       }
       // ------------------------ MS WORD -----------------------
       // get file content from MS Word before 2007 (doc) in UTF-8
@@ -492,10 +489,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
               $file_content = convertchars ($file_content, $charset_temp, "UTF-8");
             }
           }
-
-          // remove temp directory
-          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
         } 
+
+        // remove temp directory
+        if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
       }
       // ------------------------ MS EXCEL -----------------------
       // get file content from MS EXCEL 2007 (xlsx) in UTF-8
@@ -541,10 +538,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
               $file_content = convertchars ($file_content, $charset_temp, "UTF-8");
             }
           }
- 
-          // remove temp directory
-          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
         } 
+
+        // remove temp directory
+        if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
       }
       // ------------------------ MS Powerpoint -----------------------
       // get file content from MS Powerpoint before 2007 (ppt) in UTF-8
@@ -659,10 +656,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
               }
             }
           }
- 
-          // remove temp directory
-          deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
-        } 
+        }
+
+        // remove temp directory
+        if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
       }
       // -------------------------- TEXT -------------------------
       // get file content from readable formats
@@ -1362,10 +1359,10 @@ function createthumbnail_krita ($site, $location_source, $location_dest, $file)
       {
         copy ($temp_dir."mergedimage.png", $location_dest.$file_name.".jpg");
       }
-
-      // remove temp directory
-      deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
     }
+
+    // remove temp directory
+    if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
   }
   
   return $result;

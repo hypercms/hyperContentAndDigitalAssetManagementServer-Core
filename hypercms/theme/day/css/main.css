@@ -34,6 +34,7 @@ input, select, textarea, button, .hcmsTextArea
   text-decoration: none;
   display: inline-block;
   vertical-align: middle;
+  outline: none;
   border: 1px solid #C0C0C0;
   background-color: #FFFFFF;
   margin: 1px 1px 1px 0px;
@@ -846,12 +847,12 @@ a.hcmsNavigator
 
 .hcmsLoadScreen
 {
+  position: fixed;
 	z-index: 999999;
 	display: none;
 	width: 100%;
 	height: 100%;
 	background: url("../img/loading.gif") no-repeat center center #eeeeee;
-	position: fixed;
 	filter: alpha(opacity=90); -moz-opacity: 0.9; opacity: 0.9;
 }
 

@@ -968,5 +968,6 @@ if ($service)
   if (!empty ($mail_links) && is_array ($mail_links)) $result['links'] = $mail_links;  
   
   echo json_encode ($result);
+  exit;
 }
 ?>

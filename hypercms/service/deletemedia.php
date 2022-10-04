@@ -75,4 +75,5 @@ if ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1 && va
 
 header ('Content-Type: application/json; charset=utf-8');
 print json_encode ($data);
+exit;
 ?>

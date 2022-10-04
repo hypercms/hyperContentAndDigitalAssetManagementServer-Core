@@ -23,8 +23,6 @@ $forward = getrequest ("forward");
 $view = getrequest ("view");
 $contenttype = getrequest_esc ("contenttype");
 $service = getrequest ("service");
-$location = getrequest_esc ("location", "locationname");
-$page = getrequest_esc ("page", "objectname");
 $db_connect = getrequest_esc ("db_connect", "objectname");
 $ctrlreload = getrequest_esc ("ctrlreload");
 $tagname = getrequest_esc ("tagname", "objectname");
@@ -37,6 +35,15 @@ $list = getrequest_esc ("list");
 $file = getrequest_esc ("file");
 $onlylist = getrequest_esc ("onlylist");
 $constraint = getrequest_esc ("constraint");
+
+
+// check savetype
+if ($savetype == "none")
+{
+  header ('Content-Type: application/json; charset=utf-8');
+  echo json_encode (array('message' => ""));
+  exit;
+}
 
 // token
 $wf_token = getrequest_esc ("wf_token");
@@ -78,6 +85,9 @@ if (empty ($setlocalpermission['root']) || empty ($setlocalpermission['create'])
 // check session of user
 checkusersession ($user, false);
 
+// suspend session for non-blocking
+suspendsession ();
+
 // --------------------------------- logic section ----------------------------------
 
 // initialize
@@ -99,7 +109,7 @@ function appendcontent_helper ($xmlcontent, $text, $delimiter=" ")
       if (!empty ($temp_content[0])) $text[$key] = $temp_content[0].$delimiter.$value;
     }
   }
-  
+
   return $text;
 }
 
@@ -987,7 +997,8 @@ if ($auto)
 
   // request from autosave
   header ('Content-Type: application/json; charset=utf-8');
-	echo json_encode (array('message' => implode(", ", $message)));  
+	echo json_encode (array('message' => implode(", ", $message)));
+  exit;
 }
 else
 {

@@ -150,6 +150,7 @@ if ($savetype == "auto" || $savetype == "")
 {
   header ('Content-Type: application/json; charset=utf-8');
   echo json_encode ($output);
+  exit;
 }
 // refresh after save and open
 elseif ($savetype == "editor_so")

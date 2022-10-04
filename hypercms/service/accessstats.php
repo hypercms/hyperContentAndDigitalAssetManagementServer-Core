@@ -28,7 +28,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // define timeout for cache in seconds or use "auto"
 $cache_timeout = "auto";

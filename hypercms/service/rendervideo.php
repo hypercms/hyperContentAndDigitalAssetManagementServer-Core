@@ -55,6 +55,15 @@ $brightness = getrequest ("brightness");
 $contrast = getrequest ("contrast");
 $saturation = getrequest ("saturation");
 
+
+// check savetype
+if ($savetype == "none")
+{
+  header ('Content-Type: application/json; charset=utf-8');
+  echo json_encode (array('message' => ""));
+  exit;
+}
+
 // get publication and category
 $site = getpublication ($location);
 $cat = getcategory ($site, $location);
@@ -413,6 +422,7 @@ if ($savetype == "auto" || $savetype == "")
   
   header ('Content-Type: application/json; charset=utf-8');
   echo json_encode ($output);
+  exit;
 }
 // refresh after save and open
 elseif ($savetype == "editor_so")

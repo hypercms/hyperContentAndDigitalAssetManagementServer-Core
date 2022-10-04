@@ -3462,6 +3462,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           $add_onload .= "
     $('#".$hypertagname."_".$id."').tagit({".$keywords_tagit.(!empty ($disabled) ? "readOnly:true, " : "")."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$hypertagname."_".$id."')});";
 
+                          // prepare keywords
+                          $contentbot = preparekeywords ($contentbot, "string", true);
+
                           $formitem[$key] = "
                           <div class=\"hcmsFormRowLabel ".$hypertagname."_".$id."\">
                             <b>".$labelname."</b>
@@ -3543,6 +3546,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                           $add_onload .= "
     $('#".$hypertagname."_".$id."').tagit({".$keywords_tagit.(!empty ($disabled) ? "readOnly:true, " : "")."singleField:true, allowSpaces:true, singleFieldDelimiter:',', singleFieldNode:$('#".$hypertagname."_".$artid."_".$elementid."')});";
+
+                          // prepare keywords
+                          $contentbot = preparekeywords ($contentbot, "string", true);
 
                           $formitem[$key] = "
                           <div class=\"hcmsFormRowLabel ".$hypertagname."_".$artid."_".$elementid."\">

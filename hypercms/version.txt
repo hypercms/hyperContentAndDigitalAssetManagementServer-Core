@@ -6036,6 +6036,7 @@ Release 06/2022
 - Modifications in popup_status in order to apply function ceil for the processed percentage of objects in the status bar
 - Modifications in search_objectlist in order to set all input parameters for call of function rdbms_getdeletedobjects
 - Modifications in function rdbms_getdeletedobjects in DB Connect in order to support the subitems in the recycle bin for a specific user
+- Modifications in function getcharset in Get API in order to read HTML 5 tag with highest priority
 - Update of the update log in the installation directory
 - Added new text to all language files for the new transparent setting in the portal designer
 - Updates in the Administrators Guide, Installation Guide, Template Designers Guide, Connector Guide and Workflow Management Guide
@@ -6322,7 +6323,7 @@ Release 10/2022
 - Modifications in function settaxonomy in Set API in order to support text IDs as input for the analysis of the content
 - Modifications in rdbms_getcontent in DB Connect in order to support multiple text IDs as input array
 - Modifications in taxonomy editor in order to support text IDs as input for the analysis of the content
-- Modifications in function createtaxonomy in Meta API in order to write and close the session before the analysis of the content and restart the session afterwars for non-blocking download
+- Modifications in function createtaxonomy in Meta API in order to write and close the session before the analysis of the content and restart the session afterwards for non-blocking download
 - Implementaton of process logging using the new directory process in the internal repository
 - Implementation of the new data/process directory in the install directory
 - Implementation of the new function suspendsession, revokesession, and is_suspendedsession in Security API
@@ -6333,7 +6334,7 @@ Release 10/2022
 - Implementation of the new function update_database_v10074 in Update API
 - Modifications in function update_all in Update API in order to add the new function update_database_v10074
 - Removed deprecated JS variable session_id that in all system components
-- Modifications in search_objectlist in order to define different max. result limits for different serach queries (standard max. 1000, large max. 2000 results)
+- Modifications in search_objectlist in order to define different max. result limits for different search queries (standard max. 1000, large max. 2000 results)
 - Modifications in function gettaxonomy_sublevel in Get API in order to support a new input parameter for sorting the result
 - Modifications in explorer in order to disable the sort of the taxonomy expressions in the navigation tree
 - Modifications in search_objectlist in order to display all deleted objects and folders without being greyed out
@@ -6350,13 +6351,32 @@ Release 10/2022
 - Modifications in the RESTful API in order to set the new parameter return_all_levels for function getobjectlist
 - Modifications in service getfacedefinitions in order to exit the service after the JSON result has been returned
 - Modifications in function downloadfile in Main API in order to close and not recreate the session due
-- Modifications in function createsession in Security API in order to verify if the headers have been sent before createing a session
+- Modifications in function createsession in Security API in order to verify if the headers have been sent before creating a session
 - Modifications in page_multiedit in order to disable the keyword field if the variable disabled is not empty
+- Implementation of the new function preparekeywords in Main API in order to prepare a list of comma separated keywords for the use in the system
+- Modifications in page_multiedit in order to use function preparekeywords
+- Modifications in text_edit_keywords in order to use function preparekeywords
+- Modifications in template engine in order to use function preparekeywords
+- Modifications in service savecontent in order to suspend the user session after the permission check (non-blocking service)
+- Modifications in page_multiedit in order to log events in the browser console
+- Modifications in local JS function checkImageForm in page_multiedit in order to return false if no image editing option has been activated
+- Modifications in service renderimage, rendervideo, and savecontent in order to support the new savetype value "none" that stops further execution of the service and return a JSON response
+- Modifications in page_multiedit in order to support parallel requests for text, image, and video content for faster saving of multiple objects
+- Modifications in page_multiedit in order to implement the new local JS function textchanged to submit text content if it has been changed
+- Modifications in REST API of the Connector module in order to remove the "add_onload" key from the result if it exists
+- Modifications in various services in order to exit after the JSON response
+- Modifications in function manipulateobject in Main API in order to remove deprecated code
+- Modifications in function ocr_extractcontent, indexcontent, and createthumbnail_krita in Media API in order to verify if the temporary directory used for the extraction exists and delete it in any case
+- Modifications in function krita_getdata in Meta API in order to verify if the temporary directory used for the extraction exists and delete it in any case
+- Implementation of the new fullscreen function for the home screen in order to display the background image without any home boxes and design elements 
+- Modifications in JS function hcms_showFormLayer and hcms_switchFormLayer main.js in order to 
+- Modifications in page_multiedit in order due to issues with the display of the saving screen with Chromium browsers
+- Modifications in rich_calendar.js in javascript library ni order to add the document type
 - Added .kra file extenions as image to format_ext
 - Added .7z file extenions as compressed to format_ext
 - Updates in the default taxonomy
 - Update of the update log in the installation directory
-- Updates in the Installation, Template, and Users Guide
+- Updates in the Connector, Installation, Template, and Users Guide
 - Updates in the language files
 - Bug fix: Function manipulateallobjects did not get the category for each array element
 - Bug fix: format_ext used dot without a file extension in key 'cad'
@@ -6365,10 +6385,19 @@ Release 10/2022
 - Bug fix: Function rdbms_getkeywords in DB Connect did not include deleteuser in the query
 - Bug fix: search_objectlist did not count only 1 object in the search result
 - Bug fix: explorer_objectlist did not count only 1 object if the paging was not used
-- Bug fix: Function rdbms_getkeywords in DB connect did not apply DISTINCT before couting the container IDs
-- Bug fix: Function rdbms_getemptykeywords in DB connect did not apply DISTINCT before couting the container IDs
+- Bug fix: Function rdbms_getkeywords in DB connect did not apply DISTINCT before counting the container IDs
+- Bug fix: Function rdbms_getemptykeywords in DB connect did not apply DISTINCT before counting the container IDs
 - Bug fix: Function settaxonomy in Set API did not remove the taxonomy entries if no taxonomy result has been found for a specific text ID
 - Bug fix: Function deletepublication did not remove the CSV file of a taxonomy
 - Bug fix: Function rdbms_searchcontent did not include the textnodes table in the SQL query in case the variables for collecting the table joins has not been set
-- Bug fix: Corrected lnaguage code cz to cs for Czech in the language file, stopword list, tesseract languages, search engine, and main configuration
-- Bug fix: Function rdbms_setdeletedobjects in DB Connect di set the level for folders 
+- Bug fix: Corrected language code cz to cs for Czech in the language file, stopword list, tesseract languages, search engine, and main configuration
+- Bug fix: Function rdbms_setdeletedobjects in DB Connect di set the level for folders
+- Bug fix: page_multiedit included a nested label tag for "save image as"
+- Bug fix: The JSON string in PUT requests has not been correctly resolved by the REST API of the Connector module 
+- Bug fix: The daily job used a wrong set of input parameters for the call of function rdbms_getdeletedobjects
+- Bug fix: Function rdbms_settaxonomyin DB Connect did not escape the text ID before executing the SQL DELETE query
+- Bug fix: Function createmediaobjects in Main API did not apply function createmediafile to the folder name before the verification if the folder exists already
+- Bug fix: Function rdbms_getmediastat in DB Connect did not recognize a timeout value of 0 and treated it as "auto"
+- Bug fix: The input style in main.css of the day design theme did not define the outline style
+- Bug fix: Function ocr_extractcontent in Media API did not verify the temporary file name before deleting it
+- Bug fix: Function iptc_writefile in Meta API did not verify that the file exists before call of function iptcembed

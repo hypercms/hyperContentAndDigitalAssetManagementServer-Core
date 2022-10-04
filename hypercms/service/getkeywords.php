@@ -29,7 +29,7 @@ if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."con
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // collect keywords of a taxonomy and return as comma seperated list
 if ($id >= 0)

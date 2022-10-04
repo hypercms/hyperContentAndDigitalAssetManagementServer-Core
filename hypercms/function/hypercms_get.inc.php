@@ -2040,12 +2040,12 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   // define default values (add all text IDs)
   if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "template", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height", "text:temp");
 
-  // search is used (exclude limit and samelocation)
+  // search is used
   if (is_array ($search))
   {
     foreach ($search as $key=>$value)
     {
-      if ($key != "limit" && $key != "samelocation" && $value != "" && substr_count ($location, "/") <= 1)
+      if (($key == "samelocation" && $value == false) || ($key != "samelocation" && $key != "fileextension" && $key != "limit" && $value != ""))
       {
         $search_active = true;
         break;
@@ -2142,113 +2142,150 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       $search_dir_active = true;
     }
 
-    // use compaccess (compaccess[publication][group]=[objectpath])
-    if (!empty ($compaccess) && is_array ($compaccess) && (strpos ("_".$location, "%comp%/") > 0 || empty ($location)))
+    // publication and location not specified, use publication access
+    if ($search_dir_active == false && $search_active == false)
     {
-      $temp_access = $compaccess;
-      $temp_cat = "comp";
-
-      // component access of user
-      foreach ($compaccess as $temp_site => $value)
+      if (!empty ($siteaccess) && is_array ($siteaccess))
       {
-        if ($checkREST == true && valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
-
-        // verify permission for the RESTful API
-        if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
+        foreach ($siteaccess as $temp_site)
         {
-          foreach ($value as $group_name => $pathes)
+          // assets
+          if (strpos ("_".$location, "%comp%/") > 0)
           {
-            // split access-string into an array
-            $path_array = link_db_getobject ($pathes);
-            
-            if (is_array ($path_array))
-            {
-              foreach ($path_array as $path)
-              {
-                // add slash if missing
-                $path = correctpath ($path);
-
-                $temp_location_esc = convertpath ($temp_site, $path, "comp");
-                $temp_hash = rdbms_getobject_hash ($temp_location_esc);
-
-                // check access permission
-                $ownergroup = accesspermission ($temp_site, $temp_location_esc, "comp");
-                $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "comp");
-
-                // check access permission
-                // set location if no search is used
-                if (empty ($search_dir_active))
-                {
-                  // positive access
-                  if (!empty ($search_active) && !empty ($setlocalpermission['root'])) $search_dir_esc[] = $temp_location_esc;
-                  // set root location
-                  elseif (empty ($search_active)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
-                }
-
-                // negative access
-                if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
-              }
-            }
+            $temp_objectpath_esc = "%comp%/".$temp_site."/.folder";
+            $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
+            $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
           }
-        }
-        // exclude publication 
-        else
-        {
-          $exclude_dir_esc[] = "%comp%/".$temp_site."/";
+          // pages
+          elseif (strpos ("_".$location, "%page%/") > 0)
+          {
+            $temp_objectpath_esc = "%page%/".$temp_site."/.folder";
+            $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
+            $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+          }
+          // both
+          else
+          {
+            $temp_objectpath_esc = "%comp%/".$temp_site."/.folder";
+            $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
+            $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+
+            $temp_objectpath_esc = "%page%/".$temp_site."/.folder";
+            $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
+            $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+          }
         }
       }
     }
-
-    // use pageaccess (pageaccess[publication][group]=[objectpath])
-    if (!empty ($pageaccess) && is_array ($pageaccess) && (strpos ("_".$location, "%page%/") > 0 || empty ($location)))
+    // if a sepcific location has been requested
+    else
     {
-      // page access of user
-      foreach ($pageaccess as $temp_site => $value)
+      // use compaccess (compaccess[publication][group]=[objectpath])
+      if (!empty ($compaccess) && is_array ($compaccess) && (strpos ("_".$location, "%comp%/") > 0 || empty ($location)))
       {
-        if ($checkREST == true &&  valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+        $temp_access = $compaccess;
+        $temp_cat = "comp";
 
-        // verify permission for the RESTful API
-        if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
+        // component access of user
+        foreach ($compaccess as $temp_site => $value)
         {
-          foreach ($value as $group_name => $pathes)
+          if ($checkREST == true && valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+
+          // verify permission for the RESTful API
+          if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
           {
-            // split access-string into an array
-            $path_array = link_db_getobject ($pathes);
-            
-            if (is_array ($path_array))
+            foreach ($value as $group_name => $pathes)
             {
-              foreach ($path_array as $path)
+              // split access-string into an array
+              $path_array = link_db_getobject ($pathes);
+              
+              if (is_array ($path_array))
               {
-                // add slash if missing
-                $path = correctpath ($path);
-
-                $temp_location_esc = convertpath ($temp_site, $path, "page");
-                $temp_hash = rdbms_getobject_hash ($temp_location_esc);
-
-                // check access permission
-                $ownergroup = accesspermission ($temp_site, $temp_location_esc, "page");
-                $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "page");
-
-                // check access permission
-                // set location if no search is used
-                if (empty ($search_dir_active))
+                foreach ($path_array as $path)
                 {
-                  // positive access
-                  if (!empty ($search_active) && !empty ($setlocalpermission['root'])) $search_dir_esc[] = $temp_location_esc;
-                  // set root location
-                  elseif (empty ($search_active)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
-                }
+                  // add slash if missing
+                  $path = correctpath ($path);
 
-                // negative access
-                if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
+                  $temp_location_esc = convertpath ($temp_site, $path, "comp");
+                  $temp_hash = rdbms_getobject_hash ($temp_location_esc);
+
+                  // check access permission
+                  $ownergroup = accesspermission ($temp_site, $temp_location_esc, "comp");
+                  $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "comp");
+
+                  // check access permission
+                  // set location if no search location has been requested
+                  if ($search_dir_active == false && $return_all_levels == false)
+                  {
+                    // positive access
+                    if (!empty ($setlocalpermission['root'])) $search_dir_esc[] = $temp_location_esc;
+                    else $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+                  }
+
+                  // negative access
+                  if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
+                }
               }
             }
           }
+          // exclude publication 
+          else
+          {
+            $exclude_dir_esc[] = "%comp%/".$temp_site."/";
+          }
         }
-        // exclude publication 
-        else
+      }
+
+      // use pageaccess (pageaccess[publication][group]=[objectpath])
+      if (!empty ($pageaccess) && is_array ($pageaccess) && (strpos ("_".$location, "%page%/") > 0 || empty ($location)))
+      {
+        // page access of user
+        foreach ($pageaccess as $temp_site => $value)
         {
-          $exclude_dir_esc[] = "%page%/".$temp_site."/";
+          if ($checkREST == true &&  valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+
+          // verify permission for the RESTful API
+          if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
+          {
+            foreach ($value as $group_name => $pathes)
+            {
+              // split access-string into an array
+              $path_array = link_db_getobject ($pathes);
+              
+              if (is_array ($path_array))
+              {
+                foreach ($path_array as $path)
+                {
+                  // add slash if missing
+                  $path = correctpath ($path);
+
+                  $temp_location_esc = convertpath ($temp_site, $path, "page");
+                  $temp_hash = rdbms_getobject_hash ($temp_location_esc);
+
+                  // check access permission
+                  $ownergroup = accesspermission ($temp_site, $temp_location_esc, "page");
+                  $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "page");
+
+                  // check access permission
+                  // set location if no search location has been requested
+                  if ($search_dir_active == false && $return_all_levels == false)
+                  {
+                    // positive access
+                    if (!empty ($setlocalpermission['root'])) $search_dir_esc[] = $temp_location_esc;
+                    else $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+                  }
+
+                  // negative access
+                  if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
+                }
+              }
+            }
+          }
+          // exclude publication 
+          else
+          {
+            $exclude_dir_esc[] = "%page%/".$temp_site."/";
+          }
         }
       }
     }
@@ -6756,8 +6793,20 @@ function getcharset ($site, $data)
     // if HTML page and no pagecontentype can be defined by the editor
     if (strpos (strtolower ($data), "pagecontenttype") == 0)
     {
+      // meta tag charset (HTML5)
+      if (strpos (strtolower ($data), " charset=") > 0)
+      {
+        // get tag defined by the value of attribute charset=""
+        $contenttypetag = gethtmltag (strtolower ($data), "charset");
+
+        if ($contenttypetag != false)
+        {
+          $charset = getattribute ($contenttypetag, "charset");
+          if (!empty ($charset)) $contenttype = "text/html; charset=".$charset;
+        }
+      }
       // meta tag http-equiv
-      if (strpos (strtolower ($data), " http-equiv=") > 0 && strpos (strtolower ($data), "content-type") > 0)
+      elseif (strpos (strtolower ($data), " http-equiv=") > 0 && strpos (strtolower ($data), "content-type") > 0)
       {
         // get tag defined by the value of attribute http-equiv="content-type"
         $contenttypetag = gethtmltag (strtolower ($data), "content-type");
@@ -6776,18 +6825,6 @@ function getcharset ($site, $data)
 
           if (strpos ($contenttype, "charset") > 0) $charset = getattribute ($contenttype, "charset");
           else $charset = trim ($contenttype);
-        }
-      }
-      // meta tag charset (HTML5)
-      elseif (strpos (strtolower ($data), " charset=") > 0)
-      {
-        // get tag defined by the value of attribute charset=""
-        $contenttypetag = gethtmltag (strtolower ($data), "charset");
-
-        if ($contenttypetag != false)
-        {
-          $charset = getattribute ($contenttypetag, "charset");
-          if (!empty ($charset)) $contenttype = "text/html; charset=".$charset;
         }
       }
     } 

@@ -47,7 +47,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // define timeout for cache in seconds or use "auto"
 $cache_timeout = "auto";
@@ -198,6 +198,7 @@ $next_date_to = date ("Y-m-t", strtotime ("+1 month", strtotime ($date_from)));
   <div style="clear:both;"></div>
 
 <?php 
+
 // show results
 // -------------------------- daily statistics --------------------------
 if (!empty ($container_id))

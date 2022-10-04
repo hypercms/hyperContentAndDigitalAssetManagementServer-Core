@@ -316,6 +316,26 @@ function setwallpaper ()
   <?php } ?>
 }
 
+function switchFullscreen ()
+{
+  var layer_back = document.getElementById('contentScreen');
+  
+  if (layer_back)
+  {
+    if (layer_back.style.display == 'none')
+    {
+      // show
+      layer_back.style.display = 'inline';
+    }
+    else
+    {
+      // hide
+      layer_back.style.display = 'none';
+      parent.minNavFrame();
+    }
+  }
+}
+
 function switchInfo (id)
 {
   var layer_top = document.getElementById(id);
@@ -392,6 +412,7 @@ function closePopup ()
   <!-- plus/minus button -->
   <div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
     <img id="button_plusminus" onClick="switchInfo('menubox');" class="hcmsButtonTiny" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
+    <img id="button_fullscreen" onClick="switchFullscreen();" class="hcmsButtonTiny" style="width:22px; height:22px;" src="<?php echo getthemelocation(); ?>img/edit_drag.png" alt="<?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]); ?>" />
   </div>
 
   <!-- add / remove home boxes menu -->
@@ -456,7 +477,7 @@ function closePopup ()
   if (!$is_mobile && !empty ($mgmt_config['update_info']) && update_software ("check"))
   {
     echo "
-  <div id=\"updateinfo\" class=\"hcmsHomeBox hcmsPriorityAlarm\" style=\"position:fixed; top:8px; right:80px; text-align:center;\">
+  <div id=\"updateinfo\" class=\"hcmsHomeBox hcmsPriorityAlarm\" style=\"position:fixed; top:8px; right:110px; text-align:center;\">
     <div class=\"hcmsHeadline\" style=\"padding:0px 4px; white-space:nowrap;\"><img src=\"".getthemelocation()."img/info.png\" class=\"hcmsIconList\" /> A software update is available</div>
   </div>";
   }

@@ -2100,10 +2100,10 @@ function krita_getdata ($file)
         if (!empty ($language[0])) $result['language'] = $language[0];
         if (!empty ($license[0])) $result['license'] = $license[0];
       }
-
-      // remove temp directory
-      deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
     }
+
+    // remove temp directory
+    if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
 
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
@@ -2830,7 +2830,7 @@ function iptc_writefile ($file, $iptc, $keep_data=true, $movetempfile=true)
         }
 
         // embed the IPTC data (only JPEG files)
-        $content = iptcembed ($data, $file);
+        if (is_file ($file)) $content = iptcembed ($data, $file);
       }
 
       // write the new image data to the file

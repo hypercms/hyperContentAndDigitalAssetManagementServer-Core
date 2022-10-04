@@ -36,7 +36,7 @@ checkusersession ($user);
 $data = array('success' => false);
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 if (valid_locationname ($location) && valid_publicationname ($site) && ($cat == "page" || $cat == "comp"))
 {   
@@ -55,4 +55,5 @@ if (valid_locationname ($location) && valid_publicationname ($site) && ($cat == 
 
 header ('Content-Type: application/json; charset=utf-8');
 print json_encode ($data);
+exit;
 ?>

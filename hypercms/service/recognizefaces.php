@@ -25,7 +25,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+$session_id = suspendsession ();
 
 if (is_facerecognition ($user))
 {
@@ -79,13 +79,14 @@ if (is_facerecognition ($user))
       {
         header ('Content-Type: text/html; charset='.$charset);
         echo $viewstore;
+        exit;
       }
     }
   }
   else
   {
     echo "<!DOCTYPE html>\n";
-    echo "<html lang=\"".getsession("hcms_lang", "en")."\">\n";
+    echo "<html lang=\"".(!empty ($lang) ? : $lang : "en")."\">\n";
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";

@@ -926,28 +926,33 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
       // $taxonomy_array[text_id][lang][taxonomy_id] = taxonomy_keyword
       foreach ($taxonomy_array as $text_id=>$tx_lang_array)
       {
-        // delete taxonomy entries with same text ID
-        $sql = 'DELETE FROM taxonomy WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
-             
-        $errcode = "50201";
-        $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete');
-              
-        foreach ($tx_lang_array as $lang=>$tx_keyword_array)
+        if ($text_id != "")
         {
-          foreach ($tx_keyword_array as $taxonomy_id=>$taxonomy_keyword)
+          $text_id = $db->rdbms_escape_string($text_id);
+
+          // delete taxonomy entries with same text ID
+          $sql = 'DELETE FROM taxonomy WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
+              
+          $errcode = "50201";
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete');
+                
+          foreach ($tx_lang_array as $lang=>$tx_keyword_array)
           {
-            if ($text_id != "" && intval ($taxonomy_id) > 0 && $lang != "")
+            foreach ($tx_keyword_array as $taxonomy_id=>$taxonomy_keyword)
             {
-              $text_id = $db->rdbms_escape_string($text_id);
-              $taxonomy_id = intval ($taxonomy_id);
-              $lang = $db->rdbms_escape_string($lang);
+              if ($text_id != "" && intval ($taxonomy_id) > 0 && $lang != "")
+              {
+                $text_id = $db->rdbms_escape_string($text_id);
+                $taxonomy_id = intval ($taxonomy_id);
+                $lang = $db->rdbms_escape_string($lang);
 
-              // insert new taxonomy entries    
-              $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';      
-              $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", '.$taxonomy_id.', "'.$lang.'")';  
+                // insert new taxonomy entries    
+                $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';      
+                $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", '.$taxonomy_id.', "'.$lang.'")';  
 
-              $errcode = "50202";
-              $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');
+                $errcode = "50202";
+                $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');
+              }
             }
           }
         }
@@ -5970,7 +5975,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   $cached = false;
 
   // define automatic cache timeout
-  if ($cache_timeout == "auto")
+  if (is_string ($cache_timeout) && strtolower ($cache_timeout) == "auto")
   {
     // use permanent cache if the date range ends before today
     if ($date_to != "" && $date_to < date ("Y-m-d")) $cache_timeout = -1;

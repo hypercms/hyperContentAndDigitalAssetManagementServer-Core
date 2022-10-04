@@ -24,7 +24,7 @@ checkusersession ($user);
 $data = array();
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 $data['usersonline'] = getusersonline ($siteaccess);
 
@@ -33,4 +33,5 @@ else $data['success'] = false;
 
 header ('Content-Type: application/json; charset=utf-8');
 print json_encode ($data);
+exit;
 ?>

@@ -4679,7 +4679,7 @@ function restoremediafile ($site, $mediafile)
 // output: result array / false on error
 
 // description:
-// Prepares a media file for use in the system (load from cloud, decrypt content)
+// Prepares a media file for the use in the system (load from cloud, decrypt content)
 
 function preparemediafile ($site, $medialocation, $mediafile, $user="")
 {
@@ -4710,6 +4710,33 @@ function preparemediafile ($site, $medialocation, $mediafile, $user="")
     else $createtempfile['restored'] = false;
 
     return $createtempfile;
+  }
+  else return false;
+}
+
+// ------------------------------------------ preparekeywords --------------------------------------------
+// function: preparekeywords()
+// input: string with keywords separated by commas [string], result type [string,array] (optional), sort [boolean] (optional)
+// output: keywords as comma separated string or result array / false on error
+
+// description:
+// Prepares a list of comma separated keywords for the use in the system
+
+function preparekeywords ($keywords, $result="string", $sort=true)
+{
+  global $mgmt_config;
+
+  if (is_string ($keywords))
+  {
+    $keywords = scriptcode_encode ($keywords);
+    $keywords_array = explode (",", $keywords);
+    $keywords_array = array_unique ($keywords_array);
+    if ($sort == true) natcasesort ($keywords_array);
+
+    if (strtolower ($result) == "string") $keywords_result = implode (",", $keywords_array);
+    else $keywords_result = $keywords_array;
+
+    return $keywords_result;
   }
   else return false;
 }
@@ -13019,16 +13046,6 @@ function createobject ($site, $location, $page, $template, $user)
       if (!empty ($eventsystem['oncreateobject_pre']) && empty ($eventsystem['hide'])) 
         oncreateobject_pre ($site, $cat, $location, $page, $template, $user);
 
-      // define variables depending on content category
-      if ($cat == "page")
-      {
-        $dir_name = "dir";
-      }
-      elseif ($cat == "comp")
-      {
-        $dir_name = "comp_dir";
-      } 
-
       // ------------------------------- read template file information -------------------------------- 
       // load template file
       $result = loadtemplate ($site, $templatefile);
@@ -14623,7 +14640,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             if (substr_count ($folder_new, "#U") > 0) $folder_new = convert_unicode2utf8 ($folder_new); 
 
             // check if folder exists already 
-            if (!object_exists ($location_destination.$folder_new))
+            if (!object_exists ($location_destination.createfilename ($folder_new)))
             {
               // create folder
               $createfolder = createfolder ($site, $location_destination, $folder_new, $user);
@@ -15097,23 +15114,6 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       }
     }
 
-    // define variables depending on content category
-    if ($filetype != "Page" && $filetype != "Component")
-    {
-      $dir_name = "dir";
-      $access = $compaccess;
-    }
-    elseif ($filetype != "Page")
-    {
-      $dir_name = "dir";
-      $access = $pageaccess;
-    }
-    elseif ($cat == "comp")
-    {
-      $dir_name = "comp_dir";
-      $access = $compaccess;
-    }
-
     // ----------------------------- define file name and check if file is writeable ------------------------------
     // pagenewname ... file name without management file extension
     // pagenew ... real filename with management extension (.off)
@@ -15234,7 +15234,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       elseif ($action == "page_paste" && ($method == "copy" || $method == "linkcopy" || $method == "cut"))
       {
         // check if user has access to paste file in current location
-        if (!empty ($access) && accesspermission ($site, $location, $cat) == false)
+        if (accesspermission ($site, $location, $cat) == false)
         {
           // no access permission
           $add_onload = "";
@@ -16927,6 +16927,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
+  $result['location'] = $location_esc;
   $result['object'] = $page;
   $result['objecttype'] = $filetype;
   $result['clipboard'] = $clipboard; 
@@ -17052,6 +17053,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
+  $result['location'] = $location_esc;
   $result['object'] = $page;
   $result['objecttype'] = $filetype; 
   $result['clipboard'] = $clipboard;
@@ -17179,6 +17181,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
+  $result['location'] = $location_esc;
   $result['object'] = $page;
   $result['objecttype'] = $filetype;
   $result['clipboard'] = $clipboard; 
@@ -17218,7 +17221,7 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
       $cat = getcategory ($site, $location);
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
-      
+
       if (empty ($setlocalpermission['root']) || (empty ($setlocalpermission['rename']) && empty ($setlocalpermission['folderrename'])))
       {
         $result['result'] = false;
@@ -17240,7 +17243,6 @@ function pasteobject ($site, $location, $user, $clipboard_array=array())
 
     // eventsystem will be executed in manipulateobject to get access to the pasted object 
  
-    // return results 
     return $result;
   }
   else

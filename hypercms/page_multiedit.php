@@ -170,7 +170,10 @@ function gettagdata ($tag_array)
 
 
 // get multiple objects
-$multiobject_array = explode ("|", $multiobject);
+$multiobject_array = link_db_getobject ($multiobject);
+
+if (is_array ($multiobject_array)) $multiobject = implode ("|", $multiobject_array);
+else $multiobject = "";
 
 $add_onload = "";
 $js_tpl_code = "";
@@ -189,240 +192,243 @@ $container_id_array = array();
 $thumbnailsize = 120;
 
 // run through each object
-foreach ($multiobject_array as $object) 
+if (is_array ($multiobject_array))
 {
-  // ignore empty entries
-  $object = trim ($object);
-  if (empty ($object)) continue;
-
-  $count++;
-  $site_item = getpublication ($object);
-  $location_item_esc = getlocation ($object);
-  $location_item= deconvertpath ($location_item_esc, "file");
-  $cat_item = getcategory ($site_item, $object);
-  $file_item = getobject ($object);
-
-  if (empty ($site))
+  foreach ($multiobject_array as $object) 
   {
-    $site = $site_item;
-  }
-  elseif ($site != $site_item)
-  {
-    $error = getescapedtext ($hcms_lang['the-files-must-be-from-the-same-publication'][$lang]);
-    break;
-  }
-  
-  // ------------------------------ permission section --------------------------------
-  
-  // check access permissions
-  $ownergroup = accesspermission ($site_item, $location_item_esc, $cat_item);
-  $setlocalpermission = setlocalpermission ($site_item, $ownergroup, $cat_item);
-  
-  // check localpermissions for DAM usage only
-  if (!empty ($mgmt_config[$site]['dam']) && $setlocalpermission['root'] != 1)
-  {
-    killsession ($user);
-    break;
-  }
-  // check for general root element access since localpermissions are checked later
-  elseif (
-           !checkpublicationpermission ($site) || 
-           (!valid_objectname ($file_item) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
-           !valid_publicationname ($site) || !valid_locationname ($location_item) || !valid_objectname ($cat_item)
-         ) 
-  {
-    killsession ($user);
-    break;
-  }
-  
-  // --------------------------------- logic section ----------------------------------
+    // ignore empty entries
+    $object = trim ($object);
+    if (empty ($object)) continue;
 
-  $groups[] = $ownergroup;
-  
-  // object information
-  $objectinfo_item = getobjectinfo ($site_item, $location_item, $file_item);
+    $count++;
+    $site_item = getpublication ($object);
+    $location_item_esc = getlocation ($object);
+    $location_item= deconvertpath ($location_item_esc, "file");
+    $cat_item = getcategory ($site_item, $object);
+    $file_item = getobject ($object);
 
-  // location name
-  $locationname = getlocationname ($site_item, $location_item_esc, $cat_item);
-
-  // define link to open object
-  if ($setlocalpermission['root'] == 1)
-  {
-    $openobject = "onclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site_item)."&cat=".url_encode($cat_item)."&location=".url_encode($location_item_esc)."&page=".url_encode($file_item)."&token=".$token."', '".$objectinfo_item['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").")\"";
-  }
-  else $openobject = "";
-  
-  // media  
-  if (!empty ($objectinfo_item['media']))
-  {
-    $mediafile = $objectinfo_item['media'];
-    $media_info = getfileinfo ($site, $mediafile, "comp");
-    $thumbnail = $media_info['filename'].".thumb.jpg";
-    $mediadir = getmedialocation ($site, $objectinfo_item['media'], "abs_path_media").$site."/";
-
-    // check media
-    if (is_image ($media_info['ext'])) $is_image = true;
-    if (is_video ($media_info['ext'])) $is_video = true;
-    if (is_audio ($media_info['ext'])) $is_audio = true;
-
-    // prepare media file
-    $temp = preparemediafile ($site, $mediadir, $thumbnail, $user);
-
-    // if encrypted
-    if (!empty ($temp['result']) && !empty ($temp['crypted']) && is_file ($temp['templocation'].$temp['tempfile']))
+    if (empty ($site))
     {
-      $mediadir = $temp['templocation'];
-      $thumbnail = $temp['tempfile'];
+      $site = $site_item;
     }
-    // if restored
-    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && is_file ($temp['location'].$temp['file']))
+    elseif ($site != $site_item)
     {
-      $mediadir = $temp['location'];
-      $thumbnail = $temp['file'];
+      $error = getescapedtext ($hcms_lang['the-files-must-be-from-the-same-publication'][$lang]);
+      break;
     }
-
-    // thumbnails preview
-    if (is_file ($mediadir.$thumbnail))
+    
+    // ------------------------------ permission section --------------------------------
+    
+    // check access permissions
+    $ownergroup = accesspermission ($site_item, $location_item_esc, $cat_item);
+    $setlocalpermission = setlocalpermission ($site_item, $ownergroup, $cat_item);
+    
+    // check localpermissions for DAM usage only
+    if (!empty ($mgmt_config[$site]['dam']) && $setlocalpermission['root'] != 1)
     {
-      $imgsize = getmediasize ($mediadir.$thumbnail);
+      killsession ($user);
+      break;
+    }
+    // check for general root element access since localpermissions are checked later
+    elseif (
+            !checkpublicationpermission ($site) || 
+            (!valid_objectname ($file_item) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
+            !valid_publicationname ($site) || !valid_locationname ($location_item) || !valid_objectname ($cat_item)
+          ) 
+    {
+      killsession ($user);
+      break;
+    }
+    
+    // --------------------------------- logic section ----------------------------------
 
-      // calculate image ratio to define CSS for image container div-tag
-      if (!empty ($imgsize['height']))
+    $groups[] = $ownergroup;
+    
+    // object information
+    $objectinfo_item = getobjectinfo ($site_item, $location_item, $file_item);
+
+    // location name
+    $locationname = getlocationname ($site_item, $location_item_esc, $cat_item);
+
+    // define link to open object
+    if ($setlocalpermission['root'] == 1)
+    {
+      $openobject = "onclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site_item)."&cat=".url_encode($cat_item)."&location=".url_encode($location_item_esc)."&page=".url_encode($file_item)."&token=".$token."', '".$objectinfo_item['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").")\"";
+    }
+    else $openobject = "";
+    
+    // media  
+    if (!empty ($objectinfo_item['media']))
+    {
+      $mediafile = $objectinfo_item['media'];
+      $media_info = getfileinfo ($site, $mediafile, "comp");
+      $thumbnail = $media_info['filename'].".thumb.jpg";
+      $mediadir = getmedialocation ($site, $objectinfo_item['media'], "abs_path_media").$site."/";
+
+      // check media
+      if (is_image ($media_info['ext'])) $is_image = true;
+      if (is_video ($media_info['ext'])) $is_video = true;
+      if (is_audio ($media_info['ext'])) $is_audio = true;
+
+      // prepare media file
+      $temp = preparemediafile ($site, $mediadir, $thumbnail, $user);
+
+      // if encrypted
+      if (!empty ($temp['result']) && !empty ($temp['crypted']) && is_file ($temp['templocation'].$temp['tempfile']))
       {
-        // if thumbnail is smaller than defined thumbnail size
-        if ($imgsize['height'] < $thumbnailsize) $thumbnailsize_new = $imgsize['height'];
-        else $thumbnailsize_new = $thumbnailsize;
+        $mediadir = $temp['templocation'];
+        $thumbnail = $temp['tempfile'];
       }
-      // default value
+      // if restored
+      elseif (!empty ($temp['result']) && !empty ($temp['restored']) && is_file ($temp['location'].$temp['file']))
+      {
+        $mediadir = $temp['location'];
+        $thumbnail = $temp['file'];
+      }
+
+      // thumbnails preview
+      if (is_file ($mediadir.$thumbnail))
+      {
+        $imgsize = getmediasize ($mediadir.$thumbnail);
+
+        // calculate image ratio to define CSS for image container div-tag
+        if (!empty ($imgsize['height']))
+        {
+          // if thumbnail is smaller than defined thumbnail size
+          if ($imgsize['height'] < $thumbnailsize) $thumbnailsize_new = $imgsize['height'];
+          else $thumbnailsize_new = $thumbnailsize;
+        }
+        // default value
+        else
+        {
+          $thumbnailsize_new = $thumbnailsize;
+        }
+
+        $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'], true)."\" class=\"hcmsImageItem\" style=\"height:".$thumbnailsize_new."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";;
+      }
+      // no thumbnail available
       else
-      {
-        $thumbnailsize_new = $thumbnailsize;
+      {                 
+        $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; height:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
       }
-
-      $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".createviewlink ($site, $thumbnail, $objectinfo_item['name'], true)."\" class=\"hcmsImageItem\" style=\"height:".$thumbnailsize_new."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";;
     }
-    // no thumbnail available
+    // standard thumbnail for non-multimedia objects
     else
     {                 
       $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; height:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
     }
-  }
-  // standard thumbnail for non-multimedia objects
-  else
-  {                 
-    $mediapreview .= "<div id=\"image".$count."\" style=\"margin:3px; height:".$thumbnailsize."px; float:left; cursor:pointer;\" ".$openobject."><img src=\"".getthemelocation()."img/".$objectinfo_item['icon']."\" style=\"border:0; height:".$thumbnailsize."px;\" alt=\"".$locationname.$objectinfo_item['name']."\" title=\"".$locationname.$objectinfo_item['name']."\" /></div>";
-  }
 
-  // collect container IDs
-  $container_id_array[] = $objectinfo_item['container_id'];
+    // collect container IDs
+    $container_id_array[] = $objectinfo_item['container_id'];
 
-  // container
-  $content = loadcontainer ($objectinfo_item['container_id'], "work", $user);
-  
-  if (empty ($template))
-  {
-    $template = $objectinfo_item['template'];
-  }
-  elseif ($template != $objectinfo_item['template'])
-  {
-    $error = getescapedtext ($hcms_lang['the-objects-must-use-the-same-template'][$lang]);
-    break;
-  }
-  
-  if (empty ($templatedata))
-  {
-    // load template
-    $tcontent = loadtemplate ($site_item, $template);
-    $templatedata = $tcontent['content'];
-
-    // try to get DB connectivity
-    $db_connect = "";
-    $dbconnect_array = gethypertag ($templatedata, "dbconnect", 0);
-
-    if ($dbconnect_array != false)
+    // container
+    $content = loadcontainer ($objectinfo_item['container_id'], "work", $user);
+    
+    if (empty ($template))
     {
-      foreach ($dbconnect_array as $hypertag)
-      {
-        $db_connect = getattribute ($hypertag, "file");
-        
-        if (!empty ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
-        { 
-          // include db_connect function
-          @include_once ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
-          break;
-        }
-      }
+      $template = $objectinfo_item['template'];
+    }
+    elseif ($template != $objectinfo_item['template'])
+    {
+      $error = getescapedtext ($hcms_lang['the-objects-must-use-the-same-template'][$lang]);
+      break;
     }
     
-    // =========================================== JavaScript code ============================================
-
-    // only for form views
-    if (preg_match ("/\[JavaScript:scriptbegin/i", $templatedata))
+    if (empty ($templatedata))
     {
-      // replace hyperCMS script code                  
-      while (@substr_count (strtolower($templatedata), "[javascript:scriptbegin") > 0)
-      {
-        $jstagstart = strpos (strtolower($templatedata), "[javascript:scriptbegin");
-        $jstagend = strpos (strtolower($templatedata), "scriptend]", $jstagstart + strlen ("[javascript:scriptbegin")) + strlen ("scriptend]");
-        $jstag = substr ($templatedata, $jstagstart, $jstagend - $jstagstart);
-       
-        // remove JS code
-        $templatedata = str_replace ($jstag, "", $templatedata);
+      // load template
+      $tcontent = loadtemplate ($site_item, $template);
+      $templatedata = $tcontent['content'];
 
-        // assign code
-        if (trim ($jstag))
+      // try to get DB connectivity
+      $db_connect = "";
+      $dbconnect_array = gethypertag ($templatedata, "dbconnect", 0);
+
+      if ($dbconnect_array != false)
+      {
+        foreach ($dbconnect_array as $hypertag)
         {
-          // remove tags
-          $jstag = str_ireplace ("[javascript:scriptbegin", "", $jstag);
-          $jstag = str_ireplace ("scriptend]", "", $jstag);
-          $js_tpl_code .= "\n".$jstag;
+          $db_connect = getattribute ($hypertag, "file");
+          
+          if (!empty ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+          { 
+            // include db_connect function
+            @include_once ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
+            break;
+          }
+        }
+      }
+      
+      // =========================================== JavaScript code ============================================
+
+      // only for form views
+      if (preg_match ("/\[JavaScript:scriptbegin/i", $templatedata))
+      {
+        // replace hyperCMS script code                  
+        while (@substr_count (strtolower($templatedata), "[javascript:scriptbegin") > 0)
+        {
+          $jstagstart = strpos (strtolower($templatedata), "[javascript:scriptbegin");
+          $jstagend = strpos (strtolower($templatedata), "scriptend]", $jstagstart + strlen ("[javascript:scriptbegin")) + strlen ("scriptend]");
+          $jstag = substr ($templatedata, $jstagstart, $jstagend - $jstagstart);
+        
+          // remove JS code
+          $templatedata = str_replace ($jstag, "", $templatedata);
+
+          // assign code
+          if (trim ($jstag))
+          {
+            // remove tags
+            $jstag = str_ireplace ("[javascript:scriptbegin", "", $jstag);
+            $jstag = str_ireplace ("scriptend]", "", $jstag);
+            $js_tpl_code .= "\n".$jstag;
+          }
         }
       }
     }
-  }
 
-  $texts = getcontent ($content, "<text>");
+    $texts = getcontent ($content, "<text>");
 
-  // Means that there where no entries found so we make an empty array
-  if (!is_array ($texts)) $texts = array();
+    // Means that there where no entries found so we make an empty array
+    if (!is_array ($texts)) $texts = array();
 
-  $newtext = array();
+    $newtext = array();
 
-  foreach ($texts as $text)
-  {
-    $id = getcontent ($text, "<text_id>");
-
-    // read content using db_connect
-    $db_connect_data = false; 
-
-    if (isset ($db_connect) && $db_connect != "") 
+    foreach ($texts as $text)
     {
-      $db_connect_data = db_read_text ($site, $objectinfo_item['container_id'], $content, $id, "", $user);
+      $id = getcontent ($text, "<text_id>");
 
-      if ($db_connect_data != false) 
+      // read content using db_connect
+      $db_connect_data = false; 
+
+      if (isset ($db_connect) && $db_connect != "") 
       {
-        $textcontent = $db_connect_data['text'];      
-        // set true
-        $db_connect_data = true;                    
+        $db_connect_data = db_read_text ($site, $objectinfo_item['container_id'], $content, $id, "", $user);
+
+        if ($db_connect_data != false) 
+        {
+          $textcontent = $db_connect_data['text'];      
+          // set true
+          $db_connect_data = true;                    
+        }
       }
+
+      // read content from content container
+      if ($db_connect_data == false) $textcontent = getcontent ($text, "<textcontent>", true);
+
+      // stop here and continue if we didn't find anything
+      if (!is_array ($id) || !is_array ($textcontent)) continue;
+
+      $id = $id[0];
+      $textcontent = trim ($textcontent[0]);
+
+      // ignore comments
+      if (substr ($id, 0, strlen ('comment')) == "comment") continue;
+
+      $newtext[$id] = $textcontent;
     }
 
-    // read content from content container
-    if ($db_connect_data == false) $textcontent = getcontent ($text, "<textcontent>", true);
-
-    // stop here and continue if we didn't find anything
-    if (!is_array ($id) || !is_array ($textcontent)) continue;
-
-    $id = $id[0];
-    $textcontent = trim ($textcontent[0]);
-
-    // ignore comments
-    if (substr ($id, 0, strlen ('comment')) == "comment") continue;
-
-    $newtext[$id] = $textcontent;
+    $allTexts[] = $newtext;
   }
-
-  $allTexts[] = $newtext;
 }
 
 // fetch all texts
@@ -487,6 +493,9 @@ foreach ($tagdata_array as $id => $tagdata)
     // set content or default value
     $value = (array_key_exists ($id, $temp_text) ? $temp_text[$id] : $tagdata->defaultvalue);
 
+    // only for keywords
+    if ($tagdata->type == "k") $value = preparekeywords ($value, "string", true);
+
     // use value if no content exists for the text ID
     if (!isset ($tagdata->fieldvalue)) 
     {
@@ -539,7 +548,7 @@ foreach ($tagdata_array as $id => $tagdata)
         // content is the same and field will be unlocked
         else
         {
-          //$tagdata->fieldvalue = $value;
+          $tagdata->fieldvalue = $value;
           $tagdata->ignore = false;
           $tagdata->samecontent = true;
           $tagdata->locked = false;
@@ -750,8 +759,18 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 
 <script type="text/javascript">
 
-var image_checked = false;
-var video_checked = false;
+var text_changed = false;
+var image_changed = false;
+var video_changed = false;
+var next_text = 0;
+var next_image = 0;
+var next_video = 0;
+
+// ----- text has been changed -----
+function textchanged ()
+{
+  text_changed = true;
+}
 
 // ----- Form view lock and unlock -----
 function unlockFormBy (element)
@@ -947,28 +966,54 @@ function cal_on_autoclose (cal)
 
 // ----- Save -----
 
+function saveconfirm ()
+{
+  // show save layer
+  hcms_showFormLayer ('saveLayer', 0);
+
+  // use delay due to issues with Chromium applying styles when AJAX is used
+  setTimeout (function() {savecontent (false);}, 300);
+
+  return true;
+}
+
 // save content
 function savecontent (reload)
 {
   var checkcontent = true;
   var checkimage = false;
   var checkvideo = false;
+
+  // reset
+  next_text = 0;
+  next_image = 0;
+  next_video = 0;
   
   <?php echo $add_constraint; ?>
-  
+
   <?php if (!$mixedmedia) { ?>
-  <?php if ($is_image) { ?>
-  if (checkcontent == true) checkcontent = checkimage = checkImageForm();
-  <?php } elseif ($is_video) { ?>     
-  if (checkcontent == true) checkcontent = checkvideo = checkVideoForm();
-  <?php } ?>
+    <?php if ($is_image) { ?>
+    if (checkcontent == true) checkcontent = checkimage = checkImageForm();
+    <?php } elseif ($is_video) { ?>     
+    if (checkcontent == true) checkcontent = checkvideo = checkVideoForm();
+    <?php } ?>
   <?php } ?>
 
+  // set default
+  // textchanged();
+
+  // nothing has been changed
+  if (text_changed == false && image_changed == false && video_changed == false)
+  {
+    alert (hcms_entity_decode ('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n '));
+    hcms_hideFormLayer ('saveLayer');
+
+    return false;
+  }
+
+  // content has been successfully checked
   if (checkcontent == true)
   {
-    // show savelayer
-    $('#savelayer').show();
-
     // update all CKEDitor instances
     for (var instanceName in CKEDITOR.instances)
     {
@@ -976,7 +1021,7 @@ function savecontent (reload)
     }
     
     // get objects from multiobject and content fields
-    var obj = document.getElementById('multiobject').value.split("|");
+    var multiobject = document.getElementById('multiobject').value.split("|");
     var fields = document.getElementById('text_ids').value.split("|");
 
     // init content post data
@@ -1117,139 +1162,509 @@ function savecontent (reload)
         }
       }
     }
-    
-    // save each object
-    for (nr in obj) 
+
+    // count objects
+    var totalobjects = multiobject.length;    
+    console.log('Total number of ' + totalobjects + ' objects will be processed');
+
+    // save text, image, and video
+    savetext (multiobject, postdata_content);
+    saveimage (multiobject, postdata_image);
+    savevideo (multiobject, postdata_video);
+
+    // hide save layer
+    hcms_hideFormLayer ('saveLayer');
+
+    // show message
+    hcms_showFormLayer ('messageLayer', 3);
+
+    // reload form
+    if (image_changed == true || video_changed == true) reload = true;
+
+    if (reload == true)
     {
-      file = obj[nr];
-      
-      // ignore empty values
-      if($.trim(file) == "") continue;
-      
-      // for each selected object the location and object name must be provided
-      var len = file.lastIndexOf('/')+1;
-      
-      postdata_content['page'] = file.slice(len);
-      postdata_content['location'] = file.slice(0, len);
-
-      // save content
-      $.ajax({
-          'type': "POST",
-          'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php",
-          'data': postdata_content,
-          'async': false,
-          'dataType': 'json'
-        }).error(function(data) {
-          // server message
-          if (data.message && data.message.length !== 0)
-          {
-            alert (hcms_entity_decode(data.message));
-          }
-          else
-          {
-            alert ('Internal Server Error');
-          }
-        }).success(function(data) {
-          // server message
-          if (data.message && data.message.length !== 0)
-          {
-            alert (hcms_entity_decode(data.message));
-          }
-      });
-      
-      // render and save image
-      if (image_checked == true)
-      {
-        var multiobject = document.forms['reloadform'].elements['multiobject'];
-        postdata_image['page'] = postdata_content['page'];
-        postdata_image['location'] = postdata_content['location'];
-        
-        $.ajax({
-            'type': "POST",
-            'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php",
-            'data': postdata_image,
-            'async': false,
-            'dataType': 'json'
-          }).error(function(data) {
-            // server message
-            if (data.message && data.message.length !== 0)
-            {
-              alert (hcms_entity_decode(data.message));
-            }
-            else
-            {
-              alert ('Internal Server Error');
-            }
-          }).success(function(data) {
-            // object name after rendering
-            if (data.object && data.object.length !== 0)
-            {
-              var multiobject_new = multiobject.value.replace(file, data.object);
-
-              // update multiobjects
-              if (multiobject_new != multiobject.value) multiobject.value = multiobject_new;
-            }
-          
-            // server message
-            if (data.success == false && data.message && data.message.length !== 0)
-            {
-              alert (hcms_entity_decode(data.message));
-            }
-        });
-      }
-
-      // render and save video/audio
-      if (video_checked == true)
-      {
-        postdata_video['page'] = postdata_content['page'];
-        postdata_video['location'] = postdata_content['location'];
-
-        $.ajax({
-            'type': "POST",
-            'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/rendervideo.php",
-            'data': postdata_video,
-            'async': false,
-            'dataType': 'json'
-          }).error(function(data) {
-            // server message
-            if (data.message && data.message.length !== 0)
-            {
-              alert (hcms_entity_decode(data.message));
-            }
-            else
-            {
-              alert ('Internal Server Error');
-            }
-          }).success(function(data) {
-            // server message
-            if (data.success == false && data.message && data.message.length !== 0)
-            {
-              alert (hcms_entity_decode(data.message));
-            }
-        });
-      }
+      setTimeout (function() {document.getElementById('reloadform').submit();}, 1500);
     }
-    
-    if (reload == true) $('#reloadform').submit();
-    else $('#savelayer').hide();
 
     return true;
   }
-  else return false;
+  // on error
+  else
+  {
+    hcms_hideFormLayer ('saveLayer');
+    return false;
+  }
+}
+
+function savetext (multiobject, postdata_content)
+{
+  if (text_changed == true && multiobject && postdata_content)
+  {
+    // save each object
+    for (var nr in multiobject)
+    {
+      if (next_text == parseInt(nr))
+      {
+        next_text = parseInt(nr) + 3;
+
+        // for each selected object the location and object name must be provided
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_text1 = postdata_content;
+          postdata_text1['page'] = multiobject[nr].slice(len);
+          postdata_text1['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service savecontent for object ' + postdata_text1['page']);
+        }
+        else var postdata_text1 = {savetype: "none"};
+
+        nr = parseInt(nr) + 1;
+
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_text2 = Object.assign({}, postdata_content);
+          postdata_text2['page'] = multiobject[nr].slice(len);
+          postdata_text2['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service savecontent for object ' + postdata_text2['page']);
+        }
+        else var postdata_text2 = {savetype: "none"};
+
+        nr = parseInt(nr) + 1;
+
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_text3 = Object.assign({}, postdata_content);
+          postdata_text3['page'] = multiobject[nr].slice(len);
+          postdata_text3['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service savecontent for object ' + postdata_text3['page']);
+        }
+        else var postdata_text3 = {savetype: "none"};
+
+        // save text
+        $.when( 
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php",
+              'data': postdata_text1,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_text1['page']) 
+              {
+                console.log('Response ' + nr + ' from service savecontent for object ' + postdata_text1['page']);
+              }
+          }),
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php",
+              'data': postdata_text2,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_text2['page']) 
+              {
+                console.log('Response ' + nr + ' from service savecontent for object ' + postdata_text2['page']);
+              }
+          }),
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/savecontent.php",
+              'data': postdata_text3,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_text3['page']) 
+              {
+                console.log('Response ' + nr + ' from service savecontent for object ' + postdata_text3['page']);
+              }
+          })
+        )
+        .then(function(response1, response2, response3){
+          savetext (multiobject, postdata_content);
+        });
+      }
+    }
+  }
+}
+
+function saveimage (multiobject, postdata_image)
+{
+  if (image_changed == true && multiobject && postdata_image)
+  {
+    var multiobject_old = document.getElementById('multiobject');
+
+    // save each object
+    for (var nr in multiobject) 
+    {
+      if (next_image == parseInt(nr))
+      {
+        next_image = parseInt(nr) + 3;
+
+        // for each selected object the location and object name must be provided
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_image1 = Object.assign({}, postdata_image);
+          postdata_image1['page'] = multiobject[nr].slice(len);
+          postdata_image1['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service renderimage for object ' + postdata_image1['page']);
+        }
+        else var postdata_image1 = {savetype: "none"};
+
+        nr = parseInt(nr) + 1;
+
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_image2 = Object.assign({}, postdata_image);
+          postdata_image2['page'] = multiobject[nr].slice(len);
+          postdata_image2['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service renderimage for object ' + postdata_image2['page']);
+        }
+        else var postdata_image2 = {savetype: "none"};
+
+        nr = parseInt(nr) + 1;
+
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_image3 = Object.assign({}, postdata_image);
+          postdata_image3['page'] = multiobject[nr].slice(len);
+          postdata_image3['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service renderimage for object ' + postdata_image3['page']);
+        }
+        else var postdata_image3 = {savetype: "none"};
+
+        // render and save images
+        $.when(
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php",
+              'data': postdata_image1,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // object name after rendering
+              if (data.object && data.object.length !== 0)
+              {
+                // replace old with new object path
+                var multiobject_new = multiobject_old.value.replace(multiobject[nr], data.object);
+
+                // update multiobject in form
+                if (multiobject_new != multiobject_old.value) multiobject_old.value = multiobject_new;
+              }
+            
+              // server message
+              if (data.success == false && data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_image1['page']) 
+              {
+                console.log('Response ' + nr + ' from service renderimage for object ' + postdata_image1['page']);
+              }
+          }),
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php",
+              'data': postdata_image2,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // object name after rendering
+              if (data.object && data.object.length !== 0)
+              {
+                // replace old with new object path
+                var multiobject_new = multiobject_old.value.replace(multiobject[nr], data.object);
+
+                // update multiobject in form
+                if (multiobject_new != multiobject_old.value) multiobject_old.value = multiobject_new;
+              }
+            
+              // server message
+              if (data.success == false && data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_image2['page']) 
+              {
+                console.log('Response ' + nr + ' from service renderimage for object ' + postdata_image2['page']);
+              }
+          }),
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/renderimage.php",
+              'data': postdata_image3,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // object name after rendering
+              if (data.object && data.object.length !== 0)
+              {
+                // replace old with new object path
+                var multiobject_new = multiobject_old.value.replace(multiobject[nr], data.object);
+
+                // update multiobject in form
+                if (multiobject_new != multiobject_old.value) multiobject_old.value = multiobject_new;
+              }
+            
+              // server message
+              if (data.success == false && data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_image3['page']) 
+              {
+                console.log('Response ' + nr + ' from service renderimage for object ' + postdata_image3['page']);
+              }
+          })
+        )
+        .then(function(response1, response2, response3){
+          saveimage (multiobject, postdata_image);
+        });
+      }
+    }
+  }
+}
+
+function savevideo (multiobject, postdata_video)
+{
+  if (video_changed == true && multiobject && postdata_video)
+  {
+    // save each object
+    for (var nr in multiobject) 
+    {
+      if (next_video == parseInt(nr))
+      {
+        next_video = parseInt(nr) + 3;
+
+        // for each selected object the location and object name must be provided
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_video1 = Object.assign({}, postdata_video);
+          postdata_video1['page'] = multiobject[nr].slice(len);
+          postdata_video1['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service rendervideo for object ' + postdata_video1['page']);
+        }
+        else var postdata_video1 = {savetype: "none"};
+
+        nr = parseInt(nr) + 1;
+
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_video2 = Object.assign({}, postdata_video);
+          postdata_video2['page'] = multiobject[nr].slice(len);
+          postdata_video2['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service rendervideo for object ' + postdata_video2['page']);
+        }
+        else var postdata_video2 = {savetype: "none"};
+
+        nr = parseInt(nr) + 1;
+
+        if (multiobject[nr] && multiobject[nr].trim() != "")
+        {
+          var len = multiobject[nr].lastIndexOf('/') + 1;
+          var postdata_video3 = Object.assign({}, postdata_video);
+          postdata_video3['page'] = multiobject[nr].slice(len);
+          postdata_video3['location'] = multiobject[nr].slice(0, len);
+
+          console.log('Request ' + nr + ' to service rendervideo for object ' + postdata_video3['page']);
+        }
+        else var postdata_video3 = {savetype: "none"};
+
+        // render and save video/audio
+        $.when(
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/rendervideo.php",
+              'data': postdata_video1,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // server message
+              if (data.success == false && data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_video1['page']) 
+              {
+                console.log('Response ' + nr + ' from service rendervideo for object ' + postdata_video1['page']);
+              }
+          }),
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/rendervideo.php",
+              'data': postdata_video2,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // server message
+              if (data.success == false && data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_video2['page']) 
+              {
+                console.log('Response ' + nr + ' from service rendervideo for object ' + postdata_video2['page']);
+              }
+          }),
+          $.ajax({
+              'type': "POST",
+              'url': "<?php echo $mgmt_config['url_path_cms']; ?>service/rendervideo.php",
+              'data': postdata_video3,
+              'async': false,
+              'dataType': 'json'
+            }).error(function(data) {
+              // server message
+              if (data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else
+              {
+                alert ('Internal Server Error');
+              }
+            }).success(function(data) {
+              // server message
+              if (data.success == false && data.message && data.message.length !== 0)
+              {
+                alert (hcms_entity_decode(data.message));
+              }
+              else if (postdata_video3['page']) 
+              {
+                console.log('Response ' + nr + ' from service rendervideo for object ' + postdata_video3['page']);
+              }
+          })
+          )
+        .then(function(response1, response2, response3){
+          savevideo (multiobject, postdata_video);
+        });
+      }
+    }
+  }
 }
 
 function hcms_saveEvent ()
 {
-  savecontent(true);
+  saveconfirm();
 }
 
 // ---- validation ---
 
 function validateForm () 
 {
-  var i,p,q,nm,test,num,min,max,errors='',args=validateForm.arguments;
+  var i, p, q, nm, test, num, min, max;
+  var args = validateForm.arguments;
+  var errors = '';
   
-  for (i=0; i<(args.length-2); i+=3) 
+  for (i=0; i < (args.length-2); i+=3) 
   { 
     test = args[i+2];
     contentname = args[i+1];
@@ -1264,35 +1679,38 @@ function validateForm ()
       else
       {
         nm = val.name;
-        nm = nm.substring(nm.indexOf('_')+1, nm.length);
+        nm = nm.substring(nm.indexOf('_') + 1, nm.length);
       }
       
-      if ((val=val.value) != '' && test != '') 
+      if ((val = val.value) != '' && test != '') 
       {
         if (test == 'audio' || test == 'compressed' || test == 'flash' || test == 'image' || test == 'text' || test == 'video') 
         { 
           errors += checkMediaType(val, contentname, test);
         } 
-        else if (test.indexOf('isEmail')!=-1) 
+        else if (test.indexOf('isEmail') != -1) 
         { 
-          p=val.indexOf('@');
+          p = val.indexOf('@');
           if (p<1 || p==(val.length-1)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>\n';
         } 
         else if (test!='R') 
         { 
           num = parseFloat(val);
           if (isNaN(val)) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>\n';
+
           if (test.indexOf('inRange') != -1) 
           { 
-            p=test.indexOf(':');
+            p = test.indexOf(':');
+
             if(test.substring(0,1) == 'R')
             {
-              min=test.substring(8,p); 
+              min = test.substring(8,p); 
             } else {
-              min=test.substring(7,p); 
+              min = test.substring(7,p); 
             }
-            max=test.substring(p+1);
-            if (num<min || max<num) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
+
+            max = test.substring(p+1);
+            if (num < min || max < num) errors += nm+' - <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
           } 
         } 
       } 
@@ -1343,44 +1761,48 @@ function openerReload ()
 // image validation
 function validateImageForm () 
 {
-  var i,p,q,nm,test,num,min,max,errors='',args=validateImageForm.arguments;
+  var i, p , q, nm, test, num, min, max;
+  var args = validateImageForm.arguments;
+  var errors = '';
   
   for (i=0; i<(args.length-2); i+=3) 
   { 
-    test=args[i+2]; val=hcms_findObj(args[i]);
+    test = args[i+2]; val=hcms_findObj(args[i]);
     
     if (val) 
     { 
-      nm=val.name;
-      nm=nm.substring(nm.indexOf('_')+1, nm.length);
+      nm = val.name;
+      nm = nm.substring(nm.indexOf('_') + 1, nm.length);
       
-      if ((val=val.value)!='') 
+      if ((val = val.value) != '') 
       {
         if (test.indexOf('isEmail')!=-1) 
         { 
-          p=val.indexOf('@');
-          if (p<1 || p==(val.length-1)) errors += nm+'-<?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
+          p = val.indexOf('@');
+          if (p < 1 || p == (val.length-1)) errors += nm+'- <?php echo getescapedtext ($hcms_lang['value-must-contain-an-e-mail-address'][$lang], $charset, $lang); ?>.\n';
         } 
         else if (test!='R') 
         { 
           num = parseFloat(val);
-          if (isNaN(val)) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
+          if (isNaN(val)) errors += '- <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number'][$lang], $charset, $lang); ?>.\n';
+
           if (test.indexOf('inRange') != -1) 
           { 
-            p=test.indexOf(':');
-            min=test.substring(8,p); 
-            max=test.substring(p+1);
-            if (num<min || max<num) errors += '-<?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
+            p = test.indexOf(':');
+            min = test.substring(8,p); 
+            max = test.substring(p+1);
+
+            if (num < min || max < num) errors += '- <?php echo getescapedtext ($hcms_lang['value-must-contain-a-number-between'][$lang], $charset, $lang); ?> '+min+' - '+max+'.\n';
           } 
         } 
       } 
-      else if (test.charAt(0) == 'R') errors += '-<?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
+      else if (test.charAt(0) == 'R') errors += '- <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>.\n'; 
     }
   } 
   
   if (errors) 
   {
-    alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
+    alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-input-is-not-valid'][$lang], $charset, $lang); ?>\n ' + errors));
     return false;
   }  
   else return true;
@@ -1390,96 +1812,95 @@ function checkImageForm ()
 {
   var result = true;
 
-  if ($('#percentage').prop('checked'))
+  // apply image editing options
+  if ($('#renderimage').prop('checked'))
   {
-    image_checked = true;
-    result = validateImageForm ('imagepercentage','','RinRange1:200');
+    if ($('#percentage').prop('checked'))
+    {
+      image_changed = true;
+      result = validateImageForm ('imagepercentage','','RinRange1:200');
+    }
+    
+    if (result && $('#width').prop('checked'))
+    {
+      image_changed = true;
+      result = validateImageForm ('imagewidth','','RisNum');
+    }
+    
+    if (result && $('#height').prop('checked'))
+    {
+      image_changed = true;
+      result = validateImageForm ('imageheight','','RisNum');
+    }
+    
+    if (result && $('#rotate').prop('checked'))
+    {
+      image_changed = true;
+      result = true;
+    }
+    
+    if (result && $('#chbx_brightness').prop('checked'))
+    {
+      image_changed = true;
+      result = validateImageForm('brightness', '', 'RinRange-100:100');
+    } 
+    
+    if (result && $('#chbx_contrast').prop('checked'))
+    {
+      image_changed = true;
+      result = validateImageForm('contrast', '', 'RinRange-100:100');
+    } 
+    
+    if (result && $('#chbx_colorspace').prop('checked'))
+    {
+      image_changed = true;
+      result = true;
+    }
+    
+    if (result && $('#chbx_flip').prop('checked'))
+    {
+      image_changed = true;
+      result = true;
+    }
+    
+    if (result && $('#sepia').prop('checked'))
+    {
+      image_changed = true;
+      result = validateImageForm('sepia_treshold', '', 'RinRange0:99.9');
+    }
+    
+    if (result && $('#blur').prop('checked')) 
+    {
+      image_changed = true;
+      result = validateImageForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
+    }
+    
+    if (result && $('#sharpen').prop('checked')) 
+    {
+      image_changed = true;
+      result = validateImageForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
+    }
+    
+    if (result && $('#sketch').prop('checked')) 
+    {
+      image_changed = true;
+      result = validateImageForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
+    }
+    
+    if (result && $('#paint').prop('checked')) 
+    {
+      image_changed = true;
+      result = validateImageForm('paint_value', '', 'RisNum');
+    }
   }
-  
-  if (result && $('#width').prop('checked'))
-  {
-    image_checked = true;
-    result = validateImageForm ('imagewidth','','RisNum');
-  }
-  
-  if (result && $('#height').prop('checked'))
-  {
-    image_checked = true;
-    result = validateImageForm ('imageheight','','RisNum');
-  }
-  
-  if (result && $('#rotate').prop('checked'))
-  {
-    image_checked = true;
-    result = true;
-  }
-  
-  if (result && $('#chbx_brightness').prop('checked'))
-  {
-    image_checked = true;
-    result = validateImageForm('brightness', '', 'RinRange-100:100');
-  } 
-  
-  if (result && $('#chbx_contrast').prop('checked'))
-  {
-    image_checked = true;
-    result = validateImageForm('contrast', '', 'RinRange-100:100');
-  } 
-  
-  if (result && $('#chbx_colorspace').prop('checked'))
-  {
-    image_checked = true;
-    result = true;
-  }
-  
-  if (result && $('#chbx_flip').prop('checked'))
-  {
-    image_checked = true;
-    result = true;
-  }
-  
-  if (result && $('#sepia').prop('checked'))
-  {
-    image_checked = true;
-    result = validateImageForm('sepia_treshold', '', 'RinRange0:99.9');
-  }
-  
-  if (result && $('#blur').prop('checked')) 
-  {
-    image_checked = true;
-    result = validateImageForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
-  }
-  
-  if (result && $('#sharpen').prop('checked')) 
-  {
-    image_checked = true;
-    result = validateImageForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
-  }
-  
-  if (result && $('#sketch').prop('checked')) 
-  {
-    image_checked = true;
-    result = validateImageForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
-  }
-  
-  if (result && $('#paint').prop('checked')) 
-  {
-    image_checked = true;
-    result = validateImageForm('paint_value', '', 'RisNum');
-  }
-  
-  if (result && image_checked && $('#renderimage').prop('checked'))
-  {
-    image_checked = true;
-  }
-  else image_checked = false;
+  else image_changed = false;
   
   // display overwrite confirmation if any image option is checked
-  if (image_checked)
+  if (result && image_changed)
   {
     if (!confirm (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-overwrite-the-original-file'][$lang], $charset, $lang); ?>"))) return false;
   }
-  
+
   return result;
 }
 
@@ -1856,12 +2277,11 @@ $(window).load( function()
 function checkVideoForm()
 {
   var result = true;
+  var errors = '';
   
   // video rendering
   if (document.getElementById('rendervideo').checked == true)
-  {
-    var errors = '';
-          
+  {   
     if (document.getElementById('cut_yes') && document.getElementById('cut_yes').checked == true)
     {
       if (document.getElementById('cut_begin').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['start'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
@@ -1882,7 +2302,7 @@ function checkVideoForm()
     }
     
     // global
-    video_checked = true;
+    video_changed = true;
   }
 
   // video thumbnail image
@@ -1891,7 +2311,7 @@ function checkVideoForm()
     if (document.getElementById('thumb_frame').value == "") errors += '- <?php echo getescapedtext ($hcms_lang['frame'][$lang], $charset, $lang).": ".getescapedtext ($hcms_lang['a-value-is-required'][$lang], $charset, $lang); ?>\n';
 
     // global
-    video_checked = true;
+    video_changed = true;
   }
   
   return result;
@@ -2107,17 +2527,20 @@ $().ready(function() {
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" style="height:auto;">
+<body class="hcmsWorkplaceGeneric" style="height:auto;" oninput="textchanged();" onclick="textchanged();">
   
   <!-- save overlay -->  
-  <div id="savelayer" class="hcmsLoadScreen"></div>
+  <div id="saveLayer" class="hcmsLoadScreen"></div>
+
+  <!-- message layer -->
+  <?php echo showmessage ($hcms_lang['the-data-was-saved-successfully'][$lang], 580, 80, $lang, "position:fixed; top:60px; left:20px; display:none;", "messageLayer"); ?>
   
   <!-- top bar -->
   <div id="bar" class="hcmsWorkplaceBar">
     <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
       <tr>
         <td class="hcmsHeadline" style="text-align:left; vertical-align:middle; padding:0px 1px 0px 2px">
-          <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="savecontent(true);" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
+          <img name="Button_so" src="<?php echo getthemelocation(); ?>img/button_save.png" class="hcmsButton hcmsButtonSizeSquare" onClick="saveconfirm();" alt="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" title="<?php echo getescapedtext ($hcms_lang['save'][$lang], $charset, $lang); ?>" />
           <?php if (!$mixedmedia && ($is_image || $is_audio || $is_video)) { ?>
           <div class="hcmsButtonMenu" onclick="toggleOptions(this, '#renderOptions');"><?php echo getescapedtext ($hcms_lang['options'][$lang], $charset, $lang); ?></div>
           <?php } ?>
@@ -2131,7 +2554,7 @@ $().ready(function() {
     
     
   <!-- rendering settings -->
-  <div id="renderOptions" style="padding:0px 5px 10px 5px; width:94%; display:none; vertical-align:top; z-index:1; margin:36px 10px 0px 10px;" class="hcmsMediaRendering">
+  <div id="renderOptions" style="padding:0px 5px 10px 5px; width:94%; display:none; vertical-align:top; z-index:1; margin:32px 10px 0px 10px;" class="hcmsMediaRendering">
   
     <?php if (!$mixedmedia && $is_image) { ?>
     <!-- start edit image -->
@@ -2274,7 +2697,7 @@ $().ready(function() {
           <div>
             <label>
               <input type="checkbox" id="renderimage" name="renderimage" value="1" onclick="toggle_saveimage();" />
-              <strong><label for="imageformat"><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></label></strong>
+              <strong><?php echo getescapedtext ($hcms_lang['save-as'][$lang], $charset, $lang); ?></strong>
             </label>
           </div>
           <div>
@@ -2526,7 +2949,7 @@ $().ready(function() {
   <form id="sendform">
     <div id="settings" style="display:block; margin-top:8px;">
 
-      <div class="hcmsPriorityHigh hcmsHeadline" style="padding:5px;">
+      <div class="hcmsInfoBox hcmsHeadline" style="padding:4px 8px; margin-right:10px;">
         <label><input type="checkbox" id="unlockform" value="1" <?php if (getsession ("temp_appendcontent") == false) echo "checked=\"checked\""; ?> onclick="unlockFormBy(this)" style="margin:2px 2px 8px 0px;" /> <?php echo getescapedtext ($hcms_lang['only-fields-marked-with-*-hold-the-same-content-may-be-changed'][$lang], $charset, $lang); ?></label>
       </div>
       
@@ -2578,11 +3001,8 @@ $().ready(function() {
           ?>
           <div id="<?php echo $id; ?>" style="position:relative; width:<?php echo $tagdata->width.(strpos ($tagdata->width, "%") > 0 ? "" : "px"); ?>; height:<?php echo $tagdata->height; ?>px; overflow:auto;">
             <?php
-            $temp_array = explode (",", $tagdata->fieldvalue);
-            $temp_array = array_unique ($temp_array);
-
             if ($tagdata->locked == false) echo showtaxonomytree ($site, $container_id_array, $key, $tagdata->hypertagname, $lang, $tagdata->file, ($tagdata->width - 24), ($tagdata->height - 24), $charset);
-            else echo "<textarea type=\"text\" id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:99%; height:".($tagdata->height - 24)."px;\" ".$disabled.">".implode (",",$temp_array)."</textarea>";
+            else echo "<textarea type=\"text\" id=\"".$id."\" name=\"".$tagdata->hypertagname."[".$key."]\" style=\"width:99%; height:".($tagdata->height - 24)."px;\" ".$disabled.">".preparekeywords ($tagdata->fieldvalue, "string", true)."</textarea>";
             ?>
           </div>
           <?php

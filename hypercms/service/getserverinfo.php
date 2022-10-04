@@ -24,10 +24,11 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 $data = getserverload ();
 
 header ('Content-Type: application/json; charset=utf-8');
 print json_encode ($data);
+exit;
 ?>

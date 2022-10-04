@@ -64,6 +64,7 @@ if ($wm != "")
     {
       // stream file content
       downloadfile ($media_root.$media, "hypercms-mediastream", "wrapper", "");
+      exit;
     }
     else
     {
