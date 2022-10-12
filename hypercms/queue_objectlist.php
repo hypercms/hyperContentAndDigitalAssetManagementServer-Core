@@ -40,13 +40,14 @@ checkusersession ($user);
 $objects_counted = 0;
 $objects_total = 0;
 $items_row = -1;
+$items_id = -1;
 $listview = "";
 
 // create secure token
 $token = createtoken ($user);
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // default value for inital max items in list
 if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
@@ -96,6 +97,9 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
       
           // skip rows for paging
           if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
+          // required for Js table sort
+          $items_id++;
                     
           $file_info = getfileinfo ($temp_site, $temp_location.$temp_object, $temp_cat);
           
@@ -121,9 +125,9 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
           else $class_image = "class=\"hcmsIconList\"";
     
           $listview .= "
-                <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                  <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
-                    <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
+                <tr id=\"g".$items_id."\" style=\"cursor:pointer;\" ".$selectclick.">
+                  <td id=\"h".$items_id."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">
+                    <div id=\"".$items_id."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." >
                       <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
                         <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$temp_object_name."
                       </a>
@@ -131,11 +135,11 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                   </td>";
                   
           if (!$is_mobile) $listview .= "
-                  <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_site."\">".$temp_site."</span></td>
-                  <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_location_name."\">".$temp_location_name."</span></td>
-                  <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                  <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
-                  <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";
+                  <td id=\"h".$items_id."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_site."\">".$temp_site."</span></td>
+                  <td id=\"h".$items_id."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_location_name."\">".$temp_location_name."</span></td>
+                  <td id=\"h".$items_id."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                  <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
+                  <td id=\"h".$items_id."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";
                   
           $listview .= "
                 </tr>";
@@ -149,6 +153,9 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
     
         // skip rows for paging
         if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
+        // required for JS tabel sort
+        $items_id++;
         
         $mailfile = $queue['object_id'].".".$queue_user.".mail";
         $temp_cat = "comp";
@@ -169,9 +176,9 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
         $class_image = "class=\"hcmsIconList\"";
     
         $listview .= "
-              <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px;\">
-                  <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject.">
+              <tr id=\"g".$items_id."\" style=\"cursor:pointer;\" ".$selectclick.">
+                <td id=\"h".$items_id."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:180px;\">
+                  <div id=\"".$items_id."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject.">
                     <a data-objectpath=\"".$queue_id."\" data-href=\"javascript:void(0);\">
                       <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$temp_object_name."</span>
                     </a>
@@ -179,11 +186,11 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                 </td>";
                 
           if (!$is_mobile) $listview .= "
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext."></span></td>
-                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext."></span></td>
-                <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
-                <td id=\"h".$items_row."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";
+                <td id=\"h".$items_id."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext."></span></td>
+                <td id=\"h".$items_id."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext."></span></td>
+                <td id=\"h".$items_id."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+                <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
+                <td id=\"h".$items_id."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";
                 
           $listview .= "
               </tr>";
@@ -227,9 +234,6 @@ else $objects_counted = 0;
 }
 </style>
 <script type="text/javascript">
-
-// define global variable for popup window name used in contextmenu.js
-var session_id = '<?php echo session_id(); ?>';
 
 // overwrite permissions from contextmenu.js
 hcms_permission['rename'] = false;

@@ -6328,7 +6328,7 @@ Release 10/2022
 - Implementation of the new data/process directory in the install directory
 - Implementation of the new function suspendsession, revokesession, and is_suspendedsession in Security API
 - Modifications in function createsession in order to support the session ID as new input parameter
-- Modifications in all system components in order to replace the PHP functions session_write_close and session_start by the new functions suspendsesion and revokesession
+- Modifications in all system components in order to replace the PHP functions session_write_close and session_start by the new functions suspendsession and revokesession
 - Modifications in function rdbms_getdeletedobjects in DB Connect in order optimize SQL query
 - Modifications in createtables.sql in DB Connect in order to create a new index object_deleteuser
 - Implementation of the new function update_database_v10074 in Update API
@@ -6391,7 +6391,7 @@ Release 10/2022
 - Bug fix: Function deletepublication did not remove the CSV file of a taxonomy
 - Bug fix: Function rdbms_searchcontent did not include the textnodes table in the SQL query in case the variables for collecting the table joins has not been set
 - Bug fix: Corrected language code cz to cs for Czech in the language file, stopword list, tesseract languages, search engine, and main configuration
-- Bug fix: Function rdbms_setdeletedobjects in DB Connect di set the level for folders
+- Bug fix: Function rdbms_setdeletedobjects in DB Connect did set the level for folders
 - Bug fix: page_multiedit included a nested label tag for "save image as"
 - Bug fix: The JSON string in PUT requests has not been correctly resolved by the REST API of the Connector module 
 - Bug fix: The daily job used a wrong set of input parameters for the call of function rdbms_getdeletedobjects
@@ -6401,3 +6401,36 @@ Release 10/2022
 - Bug fix: The input style in main.css of the day design theme did not define the outline style
 - Bug fix: Function ocr_extractcontent in Media API did not verify the temporary file name before deleting it
 - Bug fix: Function iptc_writefile in Meta API did not verify that the file exists before call of function iptcembed
+- Bug fix: Function rdbms_searchcontent in DB Connect did not sue the same conditions for the count result
+
+Version 10.0.8
+Release 01/2023
+- Update of the JQuery file upload plugin to version 10.32.0
+- Implementation of support for large file uploads using file chunks (split in 10 MB file chunks on the client/browser)
+- Implementation of the new function fixintegeroverflow in Main API in order to fix for overflowing signed 32 bit integers
+- Implementation of the new function is_uploadfilechunk in Main API in order to verify if a uploaded file is a part of a file (based on HTTP_CONTENT_RANGE)
+- Implementation of the new function getuploadfilechunkinfo in Get API in order to return the byte range and file size of uploaded file chunks (based on HTTP_CONTENT_RANGE)
+- Implementation of the new function uploadhandler in Main API in order to to support the file upload via different methods
+- Modifications in various functions in Main API in order to replace the function move_uploaded_file by function uploadhandler
+- Modifications in function uploadfile in Main API in order to save the file collection for the ZIP file in a unique temporary directory based on the MD5 hash of the location and session ID
+- Modifications in the service uploadfile in order to support the upload and assembly of file chunks
+- Modifications in popup_upload_html in order to support the split and upload of file chunks
+- Modifications in function savefile and savelockfile in Main API in order to correct path and file name if a directory has been provided as input
+- Modifications in various functions in Media API and Meta API in order to rename the prefix of the temporary directory
+- Modifications in popup_action in order to execute the action in the HTML body
+- Modifications in popup_action in order to display the load screen before the action has been executed 
+- Design modifications in the jqiery-fikleupload.css of all design themes
+- Implementation of the new service uploadresume in order to support file information on paused uploads that can be ressumed
+- Modifications in popup_upload_html in order to support resumable file uploads
+- Implementation of the new main configuration setting $mgmt_config['resume_uploads'] in order to enable resumable file uplaods
+- Modifications in function rdbms_getdeletedobjects in DB Connect in order to sort result
+- Design modifications in homebox template in xmlschema
+- Design modifications in all home boxes in order to align the text for mobile devices
+- Modifications in function rdbms_getmediastat, rdbms_searchuser, rdbms_searchrecipient in DB Connect in order to exclude objects in the recycle bin
+- Modifications in home box recent_objects in order to limit the result of rdbms_searchuser to 20 results
+- Modifications in DB Connect in order to correct duplicate error codes
+- Bug fix: explorer_objectlist, queue_objectlist and search_obejctlist used continuing index numbers for each object/row which caused an error with the JS table sort on from the 2nd page (only if paging is used)
+- Bug fix: log_list used continuing index numbers for each log entry which caused an error with the JS table sort on from the 2nd page (only if paging is used)
+- Bug fix: control_queue_menu did not activate the delete button if multiple queue objects have been selected
+- Bug fix: Plugin logviewer used continuing index numbers for each log entry which caused an error with the JS table sort on from the 2nd page (only if paging is used)
+

@@ -70,7 +70,7 @@ function ocr_extractcontent ($site, $location, $file)
     $file_source = $file;
 
     // temporary directory for extracting file
-    $temp_name = uniqid ("index");
+    $temp_name = uniqid ("index_");
     $temp_dir = $mgmt_config['abs_path_temp'];
 
     // convert to TIFF since Tesseract has best results with TIFF images
@@ -384,7 +384,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       elseif (($file_ext == ".odt" || $file_ext == ".ods" || $file_ext == ".odp") && !empty ($mgmt_uncompress['.zip'])) 
       {
         // temporary directory for extracting file
-        $temp_name = uniqid ("index");
+        $temp_name = uniqid ("index_");
         $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
 
         // create temporary directory for extraction
@@ -419,7 +419,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         }
 
         // remove temp directory
-        if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+        if (is_dir ($temp_dir)) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
       }
       // ------------------------ MS WORD -----------------------
       // get file content from MS Word before 2007 (doc) in UTF-8
@@ -447,7 +447,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       elseif (($file_ext == ".docx") && !empty ($mgmt_uncompress['.zip']))
       {
         // temporary directory for extracting file
-        $temp_name = uniqid ("index");
+        $temp_name = uniqid ("index_");
         $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
 
         // create temporary directory for extraction
@@ -492,14 +492,14 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         } 
 
         // remove temp directory
-        if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+        if (is_dir ($temp_dir)) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
       }
       // ------------------------ MS EXCEL -----------------------
       // get file content from MS EXCEL 2007 (xlsx) in UTF-8
       elseif (($file_ext == ".xlsx") && !empty ($mgmt_uncompress['.zip']))
       {
         // temporary directory for extracting file
-        $temp_name = uniqid ("index");
+        $temp_name = uniqid ("index_");
         $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
 
         // create temporary directory for extraction
@@ -541,7 +541,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         } 
 
         // remove temp directory
-        if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+        if (is_dir ($temp_dir)) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
       }
       // ------------------------ MS Powerpoint -----------------------
       // get file content from MS Powerpoint before 2007 (ppt) in UTF-8
@@ -602,7 +602,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         $file_content = "";
         
         // temporary directory for extracting file
-        $temp_name = uniqid ("index");
+        $temp_name = uniqid ("index_");
         $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
 
         // create temporary directory for extraction
@@ -659,7 +659,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         }
 
         // remove temp directory
-        if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+        if (is_dir ($temp_dir)) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
       }
       // -------------------------- TEXT -------------------------
       // get file content from readable formats
@@ -1320,7 +1320,7 @@ function createthumbnail_krita ($site, $location_source, $location_dest, $file)
     $newfile = $file_name.".thumb.jpg"; 
 
     // temporary directory for extracting file
-    $temp_name = uniqid ("index");
+    $temp_name = uniqid ("index_");
     $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
 
     // create temporary directory for extraction
@@ -1362,7 +1362,7 @@ function createthumbnail_krita ($site, $location_source, $location_dest, $file)
     }
 
     // remove temp directory
-    if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+    if (is_dir ($temp_dir)) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
   }
   
   return $result;
@@ -4142,7 +4142,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
       if (!is_file ($location_dest.$newname) || @filemtime ($location_source.$mediafile) > @filemtime ($location_dest.$newname) || !empty ($force_recreate)) 
       {
         // temporary directory for collecting image files
-        $temp_dir = $mgmt_config['abs_path_temp']."vid2jpg_".createuniquetoken()."/";
+        $temp_dir = $mgmt_config['abs_path_temp'].uniqid("vid2jpg_")."/";
 
         // create temporary directory for image extraction
         if (!is_dir ($temp_dir)) $test = @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -4173,7 +4173,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
             @exec ($cmd." 2>&1", $output, $errorCode);
 
             // remove temp files
-            deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
+            if (is_dir ($temp_dir)) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
 
             // errors during compressions of files
             if ($errorCode && is_array ($output))
@@ -5329,7 +5329,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
 
     // temporary directory for extracting files
     $location_temp = $mgmt_config['abs_path_temp'];
-    $unzipname_temp = uniqid ("unzip");
+    $unzipname_temp = uniqid ("unzip_");
     $unzippath_temp = $location_temp.$unzipname_temp."/";
 
     $location_zip = getlocation ($zipfilepath);
@@ -5728,7 +5728,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     }
 
     // create unique temp directory to collect the files for compression
-    $tempFolderName = uniqid ("zip");
+    $tempFolderName = uniqid ("zip_");
     $tempFolder = $tempDir.$tempFolderName;
     @mkdir ($tempFolder, $mgmt_config['fspermission'], true);
 

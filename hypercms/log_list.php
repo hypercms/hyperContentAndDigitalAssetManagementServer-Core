@@ -32,10 +32,11 @@ checkusersession ($user);
 // initialize
 $objects_counted = 0;
 $objects_total = 0;
-$items_row = 0;
+$items_row = -1;
+$items_id = -1;
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // default value for inital max items in list
 if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
@@ -154,8 +155,6 @@ function initialize ()
 <?php
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".log"))
 {
-  $items_row = -1;
-  
   // load log file
   $event_array = loadlog ($logfile);
 
@@ -179,6 +178,9 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
 
         // skip rows for paging
         if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
+        // required for JS table sort
+        $items_id++;
 
         // extract data from log record
         list ($date, $source, $type, $errorcode, $description) = explode ("|", trim ($event));
@@ -218,16 +220,16 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
         }
 
         echo "
-  <tr id=\"g".$items_row."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onClick=\"submitToWindow ('".html_encode($date)."', '".html_encode($source)."', '".html_encode($type)."', '".html_encode($errorcode)."', '".html_encode($description)."');\">
-    <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
+  <tr id=\"g".$items_id."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onClick=\"submitToWindow ('".html_encode($date)."', '".html_encode($source)."', '".html_encode($type)."', '".html_encode($errorcode)."', '".html_encode($description)."');\">
+    <td id=\"h".$items_id."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
 
         if (!$is_mobile) echo "
-    <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
-    <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px;\">".$source."</td>
-    <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px;\">".$errorcode."</td>";
+    <td id=\"h".$items_id."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span>".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</td>
+    <td id=\"h".$items_id."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:180px;\">".$source."</td>
+    <td id=\"h".$items_id."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:55px;\">".$errorcode."</td>";
 
         echo "
-    <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\">".$description_short."</td>
+    <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\">".$description_short."</td>
   </tr>";
       }
       // subtract empty entries

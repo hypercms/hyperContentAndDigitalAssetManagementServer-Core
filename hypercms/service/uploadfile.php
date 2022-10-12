@@ -11,7 +11,8 @@ define ("SESSION", "create");
 require ("../config.inc.php");
 // hyperCMS API
 require ("../function/hypercms_api.inc.php");
-
+// JQUERY file upload
+require ('../function/uploadhandler.class.php');
 
 // input parameters
 $location = getrequest ("location", "locationname");
@@ -78,7 +79,7 @@ $location_esc = convertpath ($site, $location, $cat);
 // upload file
 if ($token != "" && checktoken ($token, $user))
 {
-  // from hyperCMS PROXY service
+  // from hyperCMS PROXY service (no support of file chunks)
   if ($proxy_file)
   {
     $file['Filedata']['tmp_name'] = $mgmt_config['abs_path_temp'].$proxy_file['link'];
@@ -86,7 +87,7 @@ if ($token != "" && checktoken ($token, $user))
     
     $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
-  // from Dropbox
+  // from Dropbox (no support of file chunks)
   elseif ($dropbox_file)
   {
     $file['Filedata']['tmp_name'] = $dropbox_file['link'];
@@ -94,7 +95,7 @@ if ($token != "" && checktoken ($token, $user))
     
     $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
-  // from FTP server
+  // from FTP server (no support of file chunks)
   elseif ($ftp_file)
   {
     $file['Filedata']['tmp_name'] = $ftp_file['link'];
@@ -102,10 +103,71 @@ if ($token != "" && checktoken ($token, $user))
     
     $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
-  // from local file system of user
-  else
+  // from local file system of user (support of file chunks)
+  elseif (!empty ($_FILES['Filedata']['name']))
   {
-    $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
+    // target path for the uploaded file chunks (unique hash based on the location and file name, required for resume file operation)
+    $upload_tempdir = "chunkupload_".md5($location_esc.":".$_FILES['Filedata']['name'].":".$user);
+
+    // upload handler for chunk files
+    $filechunkinfo = getuploadfilechunkinfo();
+
+    // if file chunks are uploaded
+    if (!empty ($filechunkinfo['range']))
+    {
+      // turn on output buffering in order to remove the last output of the upload handler
+      ob_start();
+
+      // create target directory für upload handler if it does not exit
+      if (!is_dir ($mgmt_config['abs_path_temp'].$upload_tempdir))
+      {
+        mkdir ($mgmt_config['abs_path_temp'].$upload_tempdir);
+      }
+
+      if (is_dir ($mgmt_config['abs_path_temp'].$upload_tempdir))
+      {  
+        // set options for JQuery file upload
+        // remove option 'accept_file_types' from uploadhandler.class.php
+        $options = array(
+          'param_name' => "Filedata", 
+          'upload_dir' => $mgmt_config['abs_path_temp'].$upload_tempdir."/", 
+          'upload_url'=> $mgmt_config['url_path_temp'].$upload_tempdir."/", 
+          'image_versions' => array(),
+          'replace_dots_in_filenames' => '',
+          'discard_aborted_uploads' => false,
+        );
+
+        // chunk files upload handler (for files greater than 10 MB)
+        $upload_handler = new UploadHandler($options);
+
+        $_FILES['Filedata']['tmp_name'] = $mgmt_config['abs_path_temp'].$upload_tempdir."/".$_FILES['Filedata']['name'];
+        $_FILES['Filedata']['name'] = $_FILES['Filedata']['name'];
+
+        // get current file size and verify if the file has been fully uploaded
+        if (is_file ($mgmt_config['abs_path_temp'].$upload_tempdir."/".$_FILES['Filedata']['name']) && intval ($filechunkinfo['size']) == filesize ($mgmt_config['abs_path_temp'].$upload_tempdir."/".$_FILES['Filedata']['name']))
+        {
+          $filechunks_finished = true;
+
+          // remove HTTP headers not sent
+          if (!headers_sent())
+          {
+            foreach (headers_list() as $header) @header_remove ($header);
+          }
+
+          // remove/clean previous output
+          ob_end_clean();
+        }
+      }
+    }
+
+    // if the file has been uploaded or all file chunks have been uploaded
+    if (empty ($filechunkinfo) || !empty ($filechunks_finished))
+    {
+      $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
+
+      // remove temp directory used for uploaded file chunks
+      if (is_dir ($mgmt_config['abs_path_temp'].$upload_tempdir)) deletefile ($mgmt_config['abs_path_temp'], $upload_tempdir, 1);
+    }
   }
 
   // additional text content
@@ -151,7 +213,22 @@ else
   $result['message'] = "Invalid token";
 }
 
-// return header and message to uploader
-if ($http_header) header ($result['header']);
-if ($response_message) echo $result['message'];
+// return HTTP header and message to uploader
+if ($http_header && !empty ($result['header'])) 
+{
+  header ($result['header']);
+}
+
+if ($response_message && !empty ($result['message']))
+{
+  // JSON response
+  //header ('Content-Type: application/json; charset=utf-8');
+  //echo json_encode (array("message" => $result['message']));
+  //exit;
+
+  // plain text response
+  header ('Content-Type: text/plain; charset=utf-8');
+  echo $result['message'];
+  exit;
+}
 ?>

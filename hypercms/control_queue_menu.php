@@ -286,7 +286,7 @@ function jumpTo (target)
     ?>
     <?php
     // QUEUE DELETE BUTTON
-    if ($queue_id != "" && (($queueuser != "" && checkrootpermission ('desktop')) || ($queueuser == "" && (checkrootpermission ('site') || checkrootpermission ('user')))))
+    if (($queue_id != "" || $multiobject_count >= 1) && (($queueuser != "" && checkrootpermission ('desktop')) || ($queueuser == "" && (checkrootpermission ('site') || checkrootpermission ('user')))))
     {
       echo 
       "<img ".

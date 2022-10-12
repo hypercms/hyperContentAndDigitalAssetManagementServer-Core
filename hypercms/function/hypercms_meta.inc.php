@@ -2045,8 +2045,7 @@ function krita_getdata ($file)
     }
 
     // temporary directory for extracting file
-    $temp_name = uniqid ("index");
-    $temp_dir = $mgmt_config['abs_path_temp'].$temp_name."/";
+    $temp_dir = $mgmt_config['abs_path_temp'].uniqid ("krita_")."/";
 
     // create temporary directory for extraction
     @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -2103,7 +2102,7 @@ function krita_getdata ($file)
     }
 
     // remove temp directory
-    if (is_dir ($mgmt_config['abs_path_temp'].$temp_name)) deletefile ($mgmt_config['abs_path_temp'], $temp_name, 1);
+    if (is_dir ($temp_dir)) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
 
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);

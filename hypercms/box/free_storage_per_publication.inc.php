@@ -67,7 +67,7 @@ if (is_array ($siteaccess))
       require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     
       echo "
-  <div id=\"free_storage_per_publication\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px;\">
+  <div id=\"free_storage_per_publication\" class=\"hcmsHomeBox\" style=\"text-align:left; margin:10px; width:".$width."; height:400px;\">
     <div class=\"hcmsHeadline\" style=\"margin:6px 2px;\"><img src=\"".getthemelocation("night")."img/instance.png\" class=\"hcmsIconList\" /> Publication Storage Space</div>
     <hr />
     <div style=\"text-align:right; padding:10px;\">";

@@ -10,7 +10,7 @@ if (checkrootpermission ('desktoptaskmgmt'))
   if (!empty ($user)) $task_array = rdbms_gettask ("", "", "", "", $user);
 
   echo "
-  <div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsHomeBox\" style=\"overflow:auto; margin:10px; width:".$width."; height:400px; cursor:pointer;\">";
+  <div id=\"task\" onclick=\"document.location.href='task/task_list.php';\" class=\"hcmsHomeBox\" style=\"text-align:left; overflow:auto; margin:10px; width:".$width."; height:400px; cursor:pointer;\">";
 
   echo "
     <div class=\"hcmsHeadline\" style=\"margin:6px 2px;\"><img src=\"".getthemelocation("night")."img/task.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['my-recent-tasks'][$lang])."</div>

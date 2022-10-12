@@ -34,11 +34,11 @@ input, select, textarea, button, .hcmsTextArea
   text-decoration: none;
   display: inline-block;
   vertical-align: middle;
+  outline: none;
   border: 1px solid #808080;
   background-color: #F3F3F3;
   margin: 1px 1px 1px 0px;
   padding: 6px 4px;
-  outline: none;
   line-height: 16px;
 }
 

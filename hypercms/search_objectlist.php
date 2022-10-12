@@ -58,6 +58,7 @@ $search_filename = "";
 $galleryview = "";
 $listview = "";
 $items_row = -1;
+$items_id = -1;
 $objects_total = 0;
 $thumbnailsize_small = 120;
 $thumbnailsize_medium = 160;
@@ -563,6 +564,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               // skip rows for paging
               if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
 
+              // reuired for JS table sort
+              $items_id++;
+
               // read file
               if (empty ($container_id))
               {
@@ -617,12 +621,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               // link for copy & paste of download links (not if an access link is used)
               if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
               {
-                $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"".cleandomain ($mgmt_config['url_path_cms'])."?dl=".$hash."\">";
+                $dlink_start = "<a id=\"dlink_".$items_id."\" data-linktype=\"download\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"".cleandomain ($mgmt_config['url_path_cms'])."?dl=".$hash."\">";
                 $dlink_end = "</a>";
               }
               else
               {
-                $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"javascript:void(0);\">";
+                $dlink_start = "<a id=\"link_".$items_id."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"javascript:void(0);\">";
                 $dlink_end = "</a>";
               }
 
@@ -680,8 +684,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
 
               $listview .= "
-                          <tr id=\"g".$items_row."\" style=\"cursor:pointer\" ".$selectclick.">
-                            <td id=\"h".$items_row."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
+                          <tr id=\"g".$items_id."\" style=\"cursor:pointer\" ".$selectclick.">
+                            <td id=\"h".$items_id."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                               <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
                                 ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end." ".$workflow_icon."
                               </div>
@@ -690,7 +694,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if (!$is_mobile)
               {
                 $listview .= "
-                              <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
+                              <td id=\"h".$items_id."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
   
                 if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
                 {
@@ -741,7 +745,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                       }
                       
                       $listview .= "
-                              <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
+                              <td id=\"h".$items_id."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
                       
                       $i++;
                     }
@@ -753,10 +757,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                           </tr>";
 
               $galleryview .= "
-                              <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
+                              <div id=\"t".$items_id."\" ".$selectclick." class=\"hcmsObjectUnselected\">
                                 <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
                                   $dlink_start."
-                                    <div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" /></div>
+                                    <div id=\"i".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" /></div>
                                     <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, true)."</div>
                                   ".$dlink_end."
                                 </div>
@@ -801,6 +805,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
             // skip rows for paging
             if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
+
+            // required for JS table sort
+            $items_id++;
 
             // page
             if ($file_info['type'] == "Page") $file_type = getescapedtext ($hcms_lang['object-page'][$lang]);
@@ -882,12 +889,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 // link for copy & paste of download links (not if an access link is used)
                 if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
                 {
-                  $dlink_start = "<a id=\"dlink_".$items_row."\" data-linktype=\"download\" data-objectpath=\"".$location_esc.$object."\" data-href=\"".cleandomain ($mgmt_config['url_path_cms'])."?dl=".$hash."\">";
+                  $dlink_start = "<a id=\"dlink_".$items_id."\" data-linktype=\"download\" data-objectpath=\"".$location_esc.$object."\" data-href=\"".cleandomain ($mgmt_config['url_path_cms'])."?dl=".$hash."\">";
                   $dlink_end = "</a>";
                 }
                 else
                 {
-                  $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$object."\" data-href=\"javascript:void(0);\">";
+                  $dlink_start = "<a id=\"link_".$items_id."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$object."\" data-href=\"javascript:void(0);\">";
                   $dlink_end = "</a>";
                 }
               }    
@@ -905,12 +912,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 // link for copy & paste of download links (not if an access link is used)
                 if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
                 {
-                  $dlink_start = "<a id=\"link_".$items_row."\" target=\"_blank\" data-linktype=\"wrapper\" data-objectpath=\"".$location_esc.$object."\" data-href=\"".cleandomain ($mgmt_config['url_path_cms'])."?wl=".$hash."\">";
+                  $dlink_start = "<a id=\"link_".$items_id."\" target=\"_blank\" data-linktype=\"wrapper\" data-objectpath=\"".$location_esc.$object."\" data-href=\"".cleandomain ($mgmt_config['url_path_cms'])."?wl=".$hash."\">";
                   $dlink_end = "</a>";
                 }
                 else
                 {
-                  $dlink_start = "<a id=\"link_".$items_row."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$object."\" data-href=\"javascript:void(0);\">";
+                  $dlink_start = "<a id=\"link_".$items_id."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$object."\" data-href=\"javascript:void(0);\">";
                   $dlink_end = "</a>";
                 }
               }
@@ -947,8 +954,8 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             else $dragevent = "";
             
             $listview .= "
-                         <tr id=\"g".$items_row."\" style=\"cursor:pointer;\" ".$selectclick.">
-                           <td id=\"h".$items_row."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
+                         <tr id=\"g".$items_id."\" style=\"cursor:pointer;\" ".$selectclick.">
+                           <td id=\"h".$items_id."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
                              <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
                                ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end." ".$workflow_icon."
                              </div>
@@ -957,7 +964,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             if (!$is_mobile)
             {
               $listview .= "
-                           <td id=\"h".$items_row."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block;\">".$item_location."</div></td>";
+                           <td id=\"h".$items_id."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block;\">".$item_location."</div></td>";
   
               if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
               {
@@ -1008,7 +1015,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                     }
 
                     $listview .= "
-                            <td id=\"h".$items_row."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
+                            <td id=\"h".$items_id."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
                   
                     $i++;
                   }
@@ -1040,7 +1047,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
                 else $class_image = "class=\"lazyload hcmsImageItem\"";
 
-                $thumbnail = "<div id=\"m".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name))."\" ".$class_image." /></div>";
+                $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name))."\" ".$class_image." /></div>";
               }
               // display file icon if thumbnail fails 
               else
@@ -1049,7 +1056,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"hcmsIconOff\"";
                 else $class_image = "";
                         
-                $thumbnail = "<div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
+                $thumbnail = "<div id=\"i".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
               }           
             }
             // display file icon for non multimedia objects 
@@ -1059,7 +1066,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"hcmsIconOff\"";
               else $class_image = "";
                       
-              $thumbnail = "<div id=\"i".$items_row."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
+              $thumbnail = "<div id=\"i".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
             }
 
             // if linking is used display download buttons, display edit button for mobile edition
@@ -1096,7 +1103,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             }
   
             $galleryview .= "
-                            <div id=\"t".$items_row."\" ".$selectclick." class=\"hcmsObjectUnselected\">
+                            <div id=\"t".$items_id."\" ".$selectclick." class=\"hcmsObjectUnselected\">
                               <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
                                 $dlink_start."
                                   ".$thumbnail."
@@ -1338,7 +1345,7 @@ function toggleview (viewoption)
   }
   
   // thumbnails and icons
-  for (var i = 0; i <= <?php echo $items_row; ?>; i++)
+  for (var i = 0; i <= <?php echo $items_id; ?>; i++)
   {
     // media thumbnail
     thumbnail = document.getElementById('m' + i);

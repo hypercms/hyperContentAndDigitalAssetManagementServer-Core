@@ -186,7 +186,9 @@ $(document).ready(function ()
   var versioning = "";
   // delete objects on given date
   var deletedate = "";
-  
+  // XMLHttpRequest object used to store the XHR objects in order to abort file chunk uploads
+   var jqXHR = {};
+
   // Function to convert the file size in bytes
   function bytesToSize (bytes)
   {
@@ -196,57 +198,78 @@ $(document).ready(function ()
     var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));    
     return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[[i]];
   };
-    
+
   // Function that generates a jquery span field containing the name of the file
   function getFileNameSpan (name)
   {
     var maxLen = 39;
     var moreThanMaxLen = '...';
-    
+
     var span = $('<div></div>');
     span.text((name.length > maxLen) ? name.substr(0, maxLen-moreThanMaxLen.length)+moreThanMaxLen : name)
         .addClass('inline file_name')
         .prop('title', name);
     return span;
   }
-  
+
   // Builds the buttons needed for each element
   function buildButtons (data)
-  {      
+  {   
+    var jqXHR_file;
+
     // Build the Submit Button
     var submit = $('<div>&nbsp;</div>');
     submit.hide()
           .addClass('file_submit')
-          .click( function() {
+          .click(function() {
             // If we have already started the upload we don't do anything
-            if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
+            if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
               return;
+
+            var filename = data.files[0].name;
+
             // We unset data here, to guarantee that the file uploader does reload the form data before submitting
             data.data = undefined;
-            
-            data.submit();
+
+            console.log("Uploading file " + filename);
+
+            // submit the files and store XHR object
+            jqXHR[filename] = data.submit();
           });
-    
+
     // Button to cancel Download
     var cancel = $('<div>&nbsp;</div>');
     cancel.prop('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .prop('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .addClass('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
-          .click( { }, function( event ) {
+          .click({ }, function(event) {
+
+            console.log("Cancel upload of file " + data.files[0].name);
+
             // If we are sending data we stop it or else we remove the entry completely
-            if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
+            if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
-              buildFileMessage( data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
+              buildFileMessage(data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
+              setTimeout(function() {data.context.remove();}, 3000);
             }
+            // for chunks files use the jqXHR object
+            else if (jqXHR && data.files[0])
+            {
+              var filename = data.files[0].name;
+              jqXHR[filename].abort();
+              buildFileMessage(data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
+              setTimeout(function() {data.context.remove();}, 3000);
+            }
+            // file upload has not been started 
             else
             {
               data.context.remove();
               selectcount--;
             }
           });
-          
-    // Div containing from Buttons
+
+    // Div containing Buttons
     var buttons = $('<div></div>');
     buttons.addClass('inline file_buttons')
            .append(submit)
@@ -270,7 +293,7 @@ $(document).ready(function ()
     
     // Build name field and buttons
     var name = getFileNameSpan(data.files[0].name);
-    var buttons = buildButtons( data );
+    var buttons = buildButtons(data);
     
     // Build message field
     msg = $('<div style="font-size:11px;"></div>');
@@ -321,29 +344,38 @@ $(document).ready(function ()
   }
    
   $('#inputSelectFile').fileupload({
+    // upload service
+    url: 'service/uploadfile.php',
+    // data type to be returned in the servers response (use "html" for plain text or "json" for JSON string)
     dataType: 'html',
     // Limits how much simultaneous request can be made
     limitConcurrentUpload: 3,
-    url: 'service/uploadfile.php',
+    // split large files in chunks of 10 MB
+    maxChunkSize: 10000000,
+    // cache
     cache: false,
-    // Script only works when singleFileUploads is true
+    // script only works when singleFileUploads is true
     singleFileUploads: true,
+
     add: function (e, data) {
-      
+
+      // find existing file in queue      
       var found = false;
-      // Search if the file is already in our queue
-      $('#selectedFiles .file_name').each(function( index, element) {
+
+      // if the file is already in the queue
+      $('#selectedFiles .file_name').each(function (index, element) {
         element = $(element);
-        // We use the title because there is always the full name stored
-        if(element.prop('title') == data.files[0].name) {
+        // use the title because there is always the full name stored
+        if (element.prop('title') == data.files[0].name)
+        {
           found = true;
         }
       });
       
-      // File is already in queue we inform the user
+      // file is already in queue, inform the user
       if (found) 
       {
-        alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]); ?>'));
+        alert(hcms_entity_decode('<?php echo getescapedtext($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]); ?>'));
         return false;
       }
       
@@ -364,6 +396,42 @@ $(document).ready(function ()
       
       $('#selectedFiles').append(data.context);
       queuecount = selectcount++;
+
+      <?php if (!empty ($mgmt_config['resume_uploads'])) { ?>
+      // resuming file uploads
+      // using the uploadedBytes option, it is possible to resume aborted uploads
+      var that = this;
+
+      $.getJSON('service/uploadresume.php', {action: 'resume', location: '<?php echo $location_esc; ?>', file: data.files[0].name, user: '<?php echo $user; ?>'}, function (result) {
+
+        if (result.Filedata[0])
+        {
+          var file = result.Filedata[0];
+          console.log("Requesting upload info on file " + file.name);
+
+          if (parseInt(file.size) > 0) 
+          {
+            data.uploadedBytes = file && file.size;
+            console.log("Resuming upload of file " + file.name + " after " + file.size + " bytes");
+            
+            // auto resume upload
+            // $.blueimp.fileupload.prototype.options.add.call(that, e, data);
+          }
+        }
+      });
+      <?php } ?>
+    },
+
+    // delete aborted chunked uploads
+    fail: function (e, data) {
+      console.log("Deleting aborted chunked upload of file " + data.files[0].name);
+
+      $.ajax({
+        url: 'service/uploadresume.php?action=delete&location=<?php echo urlencode($location_esc); ?>&file=' + encodeURIComponent(data.files[0].name) + '&user=<?php echo urlencode($user); ?>',
+        dataType: 'json',
+        data: {location: '<?php echo $location_esc; ?>', file: data.files[0].name, user: '<?php echo $user; ?>'},
+        type: 'DELETE'
+      });
     }
   })
   
@@ -393,11 +461,20 @@ $(document).ready(function ()
   .bind('fileuploaddone', function(e, data) {
     
     var file = "";
+
+    console.log("The file " + data.files[0].name + " has been uploaded");
     
-    // Put out message if possible
-    if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
+    // put out message if possible
+    if (data.result || (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT))
     {
-      var text = ajax.responseText.trim();
+      if (data.xhr && (ajax = data.xhr())) 
+      {
+        var text = ajax.responseText;
+      }
+      else if (data.result)
+      {
+        var text = data.result;
+      }
 
       if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
       {
@@ -433,7 +510,7 @@ $(document).ready(function ()
     if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
     
     // Remove the div
-    setTimeout( function() {
+    setTimeout(function() {
       data.context.remove();
       selectcount--;
     }, hcms_waitTillRemove);
@@ -443,7 +520,7 @@ $(document).ready(function ()
   .bind('fileuploadfail', function(e, data) {
     
     // Put out message if possible
-    if(data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
+    if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
     {
       buildFileMessage(data, ajax.responseText, false);
     }       
@@ -458,8 +535,9 @@ $(document).ready(function ()
     // message
     if (progress == 100)
     {
-      var text = '<div style="margin-bottom:-2px; padding:0; width:160px; font-size:11px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]); ?></div>';
-    }    else
+      var text = '<div style="margin:0; padding:0; width:160px; font-size:11px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]); ?></div>';
+    }
+    else
     {
       var text = '&nbsp;';
     }
@@ -513,7 +591,7 @@ $(document).ready(function ()
           success: function(response)
           {
             var file = "";
-            text = ajax.responseText;
+            var text = ajax.responseText;
                   
             if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
             {
@@ -799,7 +877,7 @@ $(document).ready(function ()
           success: function(response)
           {
             var file = "";
-            text = ajax.responseText;
+            var text = ajax.responseText;
                   
             if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
             {
@@ -807,7 +885,7 @@ $(document).ready(function ()
               text = text.substr (0, filepos1);
             }
                   
-            buildFTPFileMessage (data, text, true);
+            buildFTPFileMessage(data, text, true);
             
             // Update queue count
             queuecount--; 
@@ -830,7 +908,7 @@ $(document).ready(function ()
             // Put out message if possible
             if (ajax && ajax.readyState != ajax.UNSENT)
             {
-              buildFTPFileMessage( data, ajax.responseText, false);
+              buildFTPFileMessage(data, ajax.responseText, false);
             }
           }
         });
@@ -848,7 +926,7 @@ $(document).ready(function ()
             if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
-              buildFTPFileMessage (data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
+              buildFTPFileMessage(data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
             }
             else
             {
@@ -882,7 +960,7 @@ $(document).ready(function ()
     
     // Build name field and buttons
     var name = getFileNameSpan(data.files[0].name);
-    var buttons = buildFTPButtons( data );
+    var buttons = buildFTPButtons(data);
     
     // Build message field
     msg = $('<div style="font-size:11px;"></div>');
@@ -909,7 +987,7 @@ $(document).ready(function ()
       var context = $('<div></div>');
       var file = { "name": name, "size": size, "link": link }
       var data = {"files": [{"name": name, "size": size, "file": file}], "context": context};
-      
+
       var found = false;
 
       // Search if the file is already in our queue
@@ -922,7 +1000,7 @@ $(document).ready(function ()
           found = true;
         }
       });
-      
+
       // File is already in queue
       if (found) 
       {
@@ -933,7 +1011,7 @@ $(document).ready(function ()
       var maxItems = hcms_maxItemInQueue;
 
       buildFTPFileUpload(data);
-      
+
       $('#selectedFiles').append(data.context);
       selectcount++;
       queuecount = selectcount;
@@ -945,23 +1023,23 @@ $(document).ready(function ()
   {
     // Empty the div before
     data.context.empty();
-    
+
     // apply the correct css for this div
     data.context.removeClass('file_normal')
     if(success)
       data.context.addClass('file_success');
     else
       data.context.addClass('file_error');
-    
+
     // Build name field and buttons
     var name = getFileNameSpan(data.files[0].name);
-    var buttons = buildFTPButtons( data );
-    
+    var buttons = buildFTPButtons(data);
+
     // Build message field
     msg = $('<div style="font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
        .addClass('inline file_message');
-       
+
     // Add everything to the context
     data.context.append(name)
                 .append(msg)
@@ -976,18 +1054,18 @@ $(document).ready(function ()
 
     // Empty the div before
     div.empty();
-               
+       
     // Name field
     var name = getFileNameSpan(file.name);
-        
+
     // Size field
     var size = $('<div></div>');
     size.text(bytesToSize(file.size))
         .addClass('inline file_size');
-    
+
     // Build the buttons
     var buttons = buildFTPButtons(data);    
-    
+
     // Build the progress bar
     var progress = $('<div></div>');
     progress.addClass('inline progress');
@@ -1008,17 +1086,17 @@ $(document).ready(function ()
   {
     // check if unzip is checked
     if ($('#unzip').prop('checked')) unzip = $('#unzip').val();
-    
+
     // check if zip is checked
     if ($('#zip').prop('checked'))
     {
       unzip = $('#zip').val();
       zipname = $('#zipname').val();
     }
-    
+
     // check if resize is checked and validate percentage	
     percent = parseInt($('#imagepercentage').val(), 10);
-    
+
     if ($('#imageresize').prop('checked'))
     {
       if (isNaN(percent) || percent < 0 || percent > 200)
@@ -1026,10 +1104,10 @@ $(document).ready(function ()
         alert (hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-resize-value-must-be-between-1-and-200-'][$lang]); ?>'));
         return false;
       }
-      
+
       resize = $('#imageresize').val();
     }
-    
+
     // check if delete is checked and date is defined
     if ($('#deleteobject').prop('checked') && $('#deletedate').val() == "")
     {
@@ -1068,31 +1146,31 @@ $(document).ready(function ()
     // submit
     $('#selectedFiles').find('.file_submit').click();
   });
-  
+
   // btnDropboxChoose click event to trigger choosing
   $('#btnDropboxChoose').click(function() {
       Dropbox.choose(dropboxOptions);
   });
-  
+
   // Cancel
   $('#btnCancel').click(function()
   {
     $('#selectedFiles').find('.file_cancel').click();
   });
-  
+
   // Image resize
   $('#imageresize').click(function ()
   {
     $('#imagepercentage').prop('disabled', !($(this).prop('checked')));
   });
-  
+
   // Delete object
   $('#deleteobject').click(function ()
   {
     $('#deletedate').prop('disabled', !($(this).prop('checked')));
     $('#text_field').prop('disabled', !($(this).prop('checked')));
   });
-  
+
 });
 
 //-------------------------- GENERAL --------------------------
@@ -1106,7 +1184,7 @@ function frameReload (objectpath, timeout)
   {
     window.top.frames['workplFrame'].frames['mainFrame'].location.reload();
   }
-  
+
   // reload explorer frame (upload by component explorer in new upload window)
   if (opener && opener.parent.frames['navFrame2'])
   {
@@ -1159,10 +1237,10 @@ function openEditWindow (objectpath)
     var index = objectpath.lastIndexOf("/") + 1;
     var location = objectpath.substring(0, index);
     var newpage = objectpath.substr(index);
-    
+
     iframe.src='page_view.php?rlreload=yes&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage);
     window.style.display='inline';
-    
+
     // remove first array element
     editobjects.shift();
   }

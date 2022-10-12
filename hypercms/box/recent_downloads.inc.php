@@ -41,7 +41,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
   $object_array = array_unique ($object_array);
 
   echo "
-  <div id=\"recent_downloads\" class=\"hcmsHomeBox\" style=\"margin:10px; width:".$width."; height:400px;\">
+  <div id=\"recent_downloads\" class=\"hcmsHomeBox\" style=\"text-align:left; margin:10px; width:".$width."; height:400px;\">
     <div class=\"hcmsHeadline\" style=\"margin:6px 2px;\"><img src=\"".getthemelocation("night")."img/button_file_download.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['my-recent-downloads'][$lang])."</div>";
 
   reset ($object_array);

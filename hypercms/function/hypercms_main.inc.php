@@ -41,6 +41,24 @@ function correctnumber ($number)
   else return false;
 }
 
+// ------------------------------------- fixintegeroverflow ------------------------------------------
+
+// function: fixintegeroverflow ()
+// input: file size [integer]
+// output: corrected number
+
+// description:
+// Fix for overflowing signed 32 bit integers, works for sizes up to 2^32-1 bytes (4 GiB - 1).
+function fixintegeroverflow ($size)
+{
+  if ($size < 0)
+  {
+    $size += 2.0 * (PHP_INT_MAX + 1);
+  }
+
+  return $size;
+}
+
 // ========================================== SPECIALCHARACTERS =======================================
 
 // ------------------------------------- cleancontent ------------------------------------------
@@ -50,7 +68,7 @@ function correctnumber ($number)
 // output: cleaned text / false on error
 
 // description:
-// Removes all HTML tags, scripts and other special characters from the content in order to create a plain text
+// Removes all HTML tags, scripts and other special characters from the content in order to create a plain text.
 
 function cleancontent ($text, $charset="UTF-8")
 {
@@ -488,6 +506,25 @@ function offsettime ()
   $mins -= $hrs * 60;
 
   return $offset = sprintf ('%+d:%02d', $hrs*$sgn, $mins);
+}
+
+// ------------------------- is_uploadfilechunk -----------------------------
+// function: is_uploadfilechunk()
+// input: %
+// output: true / false
+
+// description:
+// This function verifies if the uploaded file is a part of a file (based on HTTP_CONTENT_RANGE)
+
+function is_uploadfilechunk ()
+{
+  // parse the Content-Range header, which has the following form:
+  // Content-Range: bytes 0-524287/2000000
+  if (!empty ($_SERVER['HTTP_CONTENT_RANGE']) && strpos ($_SERVER['HTTP_CONTENT_RANGE'], "/") > 0)
+  {
+    return true;
+  }
+  else return false;
 }
 
 // ------------------------- file_iexists -----------------------------
@@ -4126,6 +4163,12 @@ function savefile ($abs_path, $filename, $filedata)
         $filename = getobject ($symlinktarget_path);
       }
     }
+    // directory / folder
+    elseif (is_dir ($abs_path.$filename) && is_file ($abs_path.$filename."/.folder")) 
+    {
+      $abs_path = $abs_path.$filename."/";
+      $filename = ".folder";
+    }
 
     // if file is locked by the same user
     if (is_file ($abs_path.$filename.".@".$lock)) $filename = $filename.".@".$lock;
@@ -4188,6 +4231,12 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
         $abs_path = getlocation ($symlinktarget_path);
         $filename = getobject ($symlinktarget_path);
       }
+    }
+    // directory / folder
+    elseif (is_dir ($abs_path.$filename) && is_file ($abs_path.$filename."/.folder")) 
+    {
+      $abs_path = $abs_path.$filename."/";
+      $filename = ".folder";
     }
 
     // define unlocked file name
@@ -4275,6 +4324,13 @@ function appendfile ($abs_path, $filename, $filedata)
         $abs_path = getlocation ($symlinktarget_path);
         $filename = getobject ($symlinktarget_path);
       }
+    }
+
+    // directory / folder
+    if (is_dir ($abs_path.$filename) && is_file ($abs_path.$filename."/.folder")) 
+    {
+      $abs_path = $abs_path.$filename."/";
+      $filename = ".folder";
     }
 
     // check and correct file
@@ -13448,6 +13504,89 @@ function createobject ($site, $location, $page, $template, $user)
   return $result;
 }
 
+// ---------------------------------------- uploadhandler --------------------------------------------
+// function: uploadhandler()
+// input: path to uploaded file [string], destination file path [string], is the file a remote file and has not been uploaded [boolean] (optional)
+// output: result array
+// requires: config.inc.php
+ 
+// description:
+// This function manages the upload of a single file
+
+function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false)
+{
+  global $mgmt_config, $hcms_lang, $lang;
+
+  // initialize
+  $result = array();
+  $result['result'] = false;
+  $request_method = "";
+
+  if (valid_locationname ($uploaded_file) && valid_locationname ($save_file))
+  {
+    // get request method
+    if (!empty ($_SERVER['REQUEST_METHOD'])) $request_method = $_SERVER['REQUEST_METHOD'];
+
+    // multipart/formdata uploads (POST method uploads)
+    if (strtoupper ($request_method) == "POST" || strtoupper ($request_method) == "GET" || empty ($request_method))
+    {
+      // move uploaded file
+      if (!$is_remote_file && is_uploaded_file ($uploaded_file))
+      {
+        $result['result'] = move_uploaded_file ($uploaded_file, $save_file);
+      }
+
+      // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
+      if ($is_remote_file || empty ($result['result']))
+      {
+        $result['result'] = rename ($uploaded_file, $save_file);
+
+        // if move fails try copy and delete
+        if ($result['result'] == false)
+        {
+          $result['result'] = copy ($uploaded_file, $save_file);
+          unlink ($uploaded_file);
+        }
+      }
+
+      // HTTP header
+      if ($result['result'] == true) $result['header'] = "HTTP/1.1 200 OK";
+      else $result['header'] = "HTTP/1.1 500 Internal Server Error";
+    }
+    // non-multipart uploads (PUT method support)
+    elseif (strtoupper ($request_method) == "PUT")
+    {
+      $result['result'] = file_put_contents ($save_file, fopen('php://input', 'r'), $append_file ? FILE_APPEND : 0);
+
+      // HTTP header
+      if ($result['result'] == true) $result['header'] = "HTTP/1.1 200 OK";
+      else $result['header'] = "HTTP/1.1 500 Internal Server Error";
+    }
+    // delete file (DELETE method support)
+    elseif (strtoupper ($request_method) == "DELETE")
+    {
+      $result['result'] = unlink ($save_file);
+
+      // HTTP header
+      if ($result['result'] == true) $result['header'] = "HTTP/1.1 200 OK";
+      else $result['header'] = "HTTP/1.1 500 Internal Server Error";
+    }
+  }
+
+  // on success
+  if ($result['result'] == true)
+  {
+    $result['message'] = $hcms_lang['uploaded-file-successfully'][$lang];;
+  }
+  // on error
+  else
+  {
+    $result['message'] = $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang];
+  }
+
+  return $result;
+}
+
 // ---------------------------------------- uploadfile --------------------------------------------
 // function: uploadfile()
 // input: publication name [string], destination location [string], category [page,comp], uploaded file (array as defined by PHP autoglobale $_FILES) [array], unzip/zip [unzip,zip,NULL], object name (only for media file update of existing object) [string], 
@@ -13828,7 +13967,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     elseif ($unzip == "zip" && is_array ($mgmt_compress) && sizeof ($mgmt_compress) > 0)
     {
       // temporary directory for collecting files
-      $temp_dir = $mgmt_config['abs_path_temp']."zip_".$session_id."/";
+      $temp_dir = $mgmt_config['abs_path_temp']."zip_".md5($location.":".$session_id)."/";
 
       // create temporary directory for extraction
       if (!is_dir ($temp_dir)) $test = @mkdir ($temp_dir, $mgmt_config['fspermission']);
@@ -13837,24 +13976,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       // copy files to temporary directory
       if ($test == true)
       {
-        if (!$is_remote_file)
-        {
-          $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$global_files['Filedata']['name']);
-        }
-
-        if ($is_remote_file || empty ($result_upload))
-        {
-          $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$global_files['Filedata']['name']);
-
-          if ($result_upload == false)
-          {
-            $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
-          }
-        }
+        $result_upload = uploadhandler ($global_files['Filedata']['tmp_name'], $temp_dir.$global_files['Filedata']['name'], $is_remote_file);
 
         // on error
-        if (empty ($result_upload))
+        if (empty ($result_upload['result']))
         {
+          $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+
           $errcode = "20510";
           $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the new file '".$global_files['Filedata']['name']."' could not be copied to the server";
 
@@ -13927,7 +14055,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           }
 
           // remove temp files
-          deletefile ($mgmt_config['abs_path_temp'], "zip_".$session_id, 1);
+          deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
         }
       }
     }
@@ -13935,19 +14063,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     elseif ($cat == "page")
     {
       // move uploaded file
-      if (!$is_remote_file)
-      {
-        $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $location.$global_files['Filedata']['name']);
-      }
-
-      // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
-      if ($is_remote_file || empty ($result_save))
-      {
-        $result_save = @rename ($global_files['Filedata']['tmp_name'], $location.$global_files['Filedata']['name']);
-      }
+      $result_save = uploadhandler ($global_files['Filedata']['tmp_name'], $location.$global_files['Filedata']['name'], $is_remote_file);
 
       // on error
-      if (empty ($result_save))
+      if (empty ($result_save['result']))
       {
         $errcode = "20508";
         $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the page file '".$global_files['Filedata']['name']."' could not be uploaded to the server";
@@ -14017,35 +14136,21 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           // get the file extension
           $file_ext = strtolower (strrchr ($global_files['Filedata']['name'], "."));
 
-          // temporary directory for extracting files
-          $temp_dir = $mgmt_config['abs_path_temp'].$session_id."/";
+          // temporary directory
+          $temp_dir = $mgmt_config['abs_path_temp'].uniqid ("upload_")."/";
 
           if ($file_ext != "")
           {
-            // create temporary directory for extraction
+            // create temporary directory
             $test = @mkdir ($temp_dir, $mgmt_config['fspermission']);
 
             if ($test == true)
             {
-              // move uploaded file for standard file upload
-              if (!$is_remote_file)
-              {
-                $result_upload = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.$file_ext);
-              }
-
-              // copy to temporary directory
-              if ($is_remote_file || empty ($result_upload))
-              {
-                $result_upload = @rename ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.$file_ext);
-
-                if ($result_upload == false)
-                {
-                  $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
-                }
-              }
+              // file upload
+              $result_upload = uploadhandler ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.$file_ext, $is_remote_file);
 
               // create thumbnail on success
-              if ($result_upload == true)
+              if (!empty ($result_upload['result']))
               {
                 // add createmedia command to queue
                 if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$temp_dir."\", \"".getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/"."\", \"".$file_name.$file_ext."\", \"jpg\", \"thumbnail\", true, true);", $user);
@@ -14064,6 +14169,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               // on error
               else
               {
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+
                 $errcode = "20512";
                 $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
       
@@ -14072,7 +14179,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               }
 
               // delete temporary directory
-              deletefile ($mgmt_config['abs_path_temp'], $session_id, 1);
+              deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
             }
           }
         }
@@ -14137,27 +14244,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             $location_conv = convertpath ($site, $location, $cat);
 
             // save new multimedia file
-            // move uploaded file for standard file upload
-            if (!$is_remote_file)
-            {
-              $result_save = @move_uploaded_file ($global_files['Filedata']['tmp_name'], $symlinktarget_path);
-            }
+            $result_save = uploadhandler ($global_files['Filedata']['tmp_name'], $symlinktarget_path, $is_remote_file);
 
-            // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
-            if ($is_remote_file || empty ($result_save))
-            {
-              // move
-              $result_save = @rename ($global_files['Filedata']['tmp_name'], $symlinktarget_path);
-
-              // if move fails try copy and delete
-              if ($result_save == false)
-              {
-                $result_save = @copy ($global_files['Filedata']['tmp_name'], $symlinktarget_path);
-                @unlink ($global_files['Filedata']['tmp_name']);
-              }
-            }
-
-            if ($result_save == false)
+            // on error
+            if (empty ($result_save['result']))
             {
               $errcode = "20513";
               $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
@@ -14348,7 +14438,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     // restart session (that has been previously closed for non-blocking procedure)
     revokesession ($process_name, $user, $session_id);
 
-    // return message and command to flash object
+    // return message and command
     $result['result'] = true;
     $result['header'] = "HTTP/1.1 200 OK";
     $result['message'] = strip_tags ($show).$show_command;
@@ -14450,12 +14540,9 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           // remove source file
           if (!empty ($deletefile))
           {
-            // move multimedia file to content media repository
-            // case "upload": move uploaded file from temp directory
-            $result_move = move_uploaded_file ($path_source_file, $medialocation.$mediafile);
-
-            // case "import": move import file from source directory 
-            if (!$result_move) $result_move = rename ($path_source_file, $medialocation.$mediafile);
+            // move uploaded multimedia file to content media repository
+            $temp = uploadhandler ($path_source_file, $medialocation.$mediafile, false);
+            $result_move = @$temp['result'];
           }
           // keep source file (copy file)
           else
@@ -14679,7 +14766,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 
             $uploadfile = uploadfile ($site, $location_destination, "comp", $global_files, "", "", 0, "", "", $user, false, true, true);
 
-            if (!empty ($uploadfile['result']))
+            if (!empty ($uploadfile['result']) && !empty ($uploadfile['object']))
             {
               $result[] = $uploadfile['object'];
             }

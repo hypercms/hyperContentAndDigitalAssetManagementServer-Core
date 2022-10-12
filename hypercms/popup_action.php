@@ -56,14 +56,62 @@ if (!valid_publicationname ($site) || !valid_locationname ($location)) killsessi
 // check session of user
 checkusersession ($user, false);
 
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>hyperCMS</title>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="theme-color" content="#000000" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/click.min.js"></script>
+</head>
+
+<body class="hcmsWorkplaceGeneric" style="overflow:hidden;">
+
+<!-- load screen --> 
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
+
+<!-- top bar -->
+<?php
+if ($action == "page_favorites_create") $headline = getescapedtext ($hcms_lang['add-to-favorites'][$lang]);
+elseif ($action == "page_favorites_delete") $headline = getescapedtext ($hcms_lang['delete-favorite'][$lang]);
+elseif ($action == "page_unlock") $headline = getescapedtext ($hcms_lang['check-in'][$lang]);
+elseif ($action == "unzip") $headline = getescapedtext ($hcms_lang['uncompress-files'][$lang]);
+elseif ($action == "cut") $headline = getescapedtext ($hcms_lang['cut'][$lang]);
+elseif ($action == "copy") $headline = getescapedtext ($hcms_lang['copy'][$lang]);
+elseif ($action == "linkcopy") $headline = getescapedtext ($hcms_lang['connected-copy'][$lang]);
+elseif ($action == "paste") $headline = getescapedtext ($hcms_lang['paste'][$lang]);
+elseif ($action == "delete" || $action == "deletemark") $headline = getescapedtext ($hcms_lang['delete'][$lang]);
+elseif ($action == "emptybin") $headline = getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]);
+elseif ($action == "restore" || $action == "deleteunmark") $headline = getescapedtext ($hcms_lang['restore'][$lang]);
+elseif ($action == "publish") $headline = getescapedtext ($hcms_lang['publish-content'][$lang]);
+elseif ($action == "unpublish") $headline = getescapedtext ($hcms_lang['unpublish-content'][$lang]);
+
+echo showtopbar ($headline, $lang);
+?>
+
+<?php
 // --------------------------------- logic section ----------------------------------
 
 // flush in order to display load screen
 // do not use it for action "publish" since the output will interfere with the session_start used in the template engine
 if ($action != "publish")
 {
-  @ob_implicit_flush (true);
+  // flush (send) the output buffer and turn off output buffering
   while (@ob_end_flush());
+
+  // implicitly flush the buffer(s)
+  ini_set ('implicit_flush', true);
+  ob_implicit_flush (true);
+
+  // produce output and flush buffer
+  // Some browser wait for a minimum number of characters to arrive from the server before starting the actual rendering
+  for ($i = 0; $i < 1000; $i++) echo " ";
+  if (ob_get_level() > 0) ob_flush();
+  flush();
 }
 
 // initialize
@@ -339,11 +387,6 @@ if ($action == "unzip" && $authorized == true)
   $mediafile = getfilename ($objectdata, "media");    
   $mediapath = getmedialocation ($site, $mediafile, "abs_path_media");
   $media_info = getfileinfo ($site, $location.$page, $cat);
-    
-  // flush
-  @ob_implicit_flush (true);
-  while (@ob_end_flush());
-  sleep (1);
 
   // unzip file in assets
   if ($cat == "comp" && $mediapath != "" && $mediafile != "" && $location != "")
@@ -381,41 +424,6 @@ if ($show == "")
   $show = "<span class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['no-file-selected'][$lang])."</span><br />\n";
 }
 ?>
-
-<!-- top bar -->
-<?php
-if ($action == "page_favorites_create") $headline = getescapedtext ($hcms_lang['add-to-favorites'][$lang]);
-elseif ($action == "page_favorites_delete") $headline = getescapedtext ($hcms_lang['delete-favorite'][$lang]);
-elseif ($action == "page_unlock") $headline = getescapedtext ($hcms_lang['check-in'][$lang]);
-elseif ($action == "unzip") $headline = getescapedtext ($hcms_lang['uncompress-files'][$lang]);
-elseif ($action == "cut") $headline = getescapedtext ($hcms_lang['cut'][$lang]);
-elseif ($action == "copy") $headline = getescapedtext ($hcms_lang['copy'][$lang]);
-elseif ($action == "linkcopy") $headline = getescapedtext ($hcms_lang['connected-copy'][$lang]);
-elseif ($action == "paste") $headline = getescapedtext ($hcms_lang['paste'][$lang]);
-elseif ($action == "delete" || $action == "deletemark") $headline = getescapedtext ($hcms_lang['delete'][$lang]);
-elseif ($action == "emptybin") $headline = getescapedtext ($hcms_lang['empty-recycle-bin'][$lang]);
-elseif ($action == "restore" || $action == "deleteunmark") $headline = getescapedtext ($hcms_lang['restore'][$lang]);
-elseif ($action == "publish") $headline = getescapedtext ($hcms_lang['publish-content'][$lang]);
-elseif ($action == "unpublish") $headline = getescapedtext ($hcms_lang['unpublish-content'][$lang]);
-
-echo showtopbar ($headline, $lang);
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>" />
-<meta name="theme-color" content="#000000" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
-<script type="text/javascript" src="javascript/click.min.js"></script>
-</head>
-
-<body class="hcmsWorkplaceGeneric" style="overflow:hidden;">
-
-<!-- load screen --> 
-<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
 
 <!-- action -->
 <div class="hcmsWorkplaceFrame">

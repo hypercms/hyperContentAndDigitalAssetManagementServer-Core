@@ -1532,7 +1532,7 @@ function rdbms_deleteobject ($object="", $object_id="")
           // delete object
           $sql = 'DELETE FROM object WHERE id='.$container_id;
 
-          $errcode = "50014";
+          $errcode = "50013";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete1');
 
           // delete textnodes
@@ -1544,37 +1544,37 @@ function rdbms_deleteobject ($object="", $object_id="")
           // delete taxonomy
           $sql = 'DELETE FROM taxonomy WHERE id='.$container_id;
 
-          $errcode = "50024";
+          $errcode = "50016";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete3');
           
           // delete keywords
           $sql = 'DELETE FROM keywords_container WHERE id='.$container_id;
 
-          $errcode = "50025";
+          $errcode = "50017";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete4');
 
           // delete dailytstat
           $sql = 'DELETE FROM dailystat WHERE id='.$container_id;
 
-          $errcode = "50017";
+          $errcode = "50018";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete6');        
 
           // delete queue
           $sql = 'DELETE FROM queue WHERE object_id='.$row_id['object_id'];
 
-          $errcode = "50018";
+          $errcode = "50019";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete7');
           
           // delete accesslink
           $sql = 'DELETE FROM accesslink WHERE object_id='.$row_id['object_id'];
 
-          $errcode = "50019";
+          $errcode = "50020";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete8');
           
           // delete task
           $sql = 'DELETE FROM task WHERE object_id='.$row_id['object_id'];
 
-          $errcode = "50023";
+          $errcode = "50021";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete9');    
         }
         // delete only the object reference and queue entry
@@ -1582,26 +1582,26 @@ function rdbms_deleteobject ($object="", $object_id="")
         {
           $sql = 'DELETE FROM object WHERE objectpath="'.$object.'"';
 
-          $errcode = "50020";
+          $errcode = "50022";
           $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete10');
         }
 
         // delete queue
         $sql = 'DELETE FROM queue WHERE object_id='.$row_id['object_id'];   
 
-        $errcode = "50021";
+        $errcode = "50023";
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete11');
 
         // delete notification
         $sql = 'DELETE FROM notify WHERE object_id='.$row_id['object_id'];   
 
-        $errcode = "50022";
+        $errcode = "50024";
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete12');
 
         // delete/update textnodes (object_id for link)
         $sql = 'UPDATE textnodes SET object_id=NULL WHERE object_id='.$row_id['object_id'];   
 
-        $errcode = "50023";
+        $errcode = "50025";
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'update1');
       }
     }
@@ -1637,13 +1637,13 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
     // delete textnodes
     $sql = 'DELETE FROM textnodes WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
 
-    $errcode = "50021";
+    $errcode = "50481";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // delete taxonomy
     $sql = 'DELETE FROM taxonomy WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
 
-    $errcode = "50028";
+    $errcode = "50482";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
@@ -2901,13 +2901,25 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       }      
     }
 
-    // count searchresults
+    // count the total number of objects of the searchresults
     if (!empty ($count))
     {
-      $sql = 'SELECT COUNT(DISTINCT obj.hash) as cnt FROM object AS obj';
-      if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= ' '.implode (' ', $sql_table).' ';
-      $sql .= ' WHERE obj.deleteuser="" ';
-      if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= ' AND '.implode (' AND ', $sql_where);
+      $sql = 'SELECT COUNT(DISTINCT obj.hash) as cnt FROM object AS obj ';
+      
+      if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
+
+      // if taxonomy pre query is used 
+      if (!empty ($sql_taxonomy))
+      {
+        if (sizeof ($sql_taxonomy_id) > 0) $sql .= 'WHERE obj.id IN ('.implode (',', $sql_taxonomy_id).') ';
+        else $sql .= 'WHERE obj.id=0 ';
+      }
+      else
+      {
+        $sql .= 'WHERE obj.deleteuser="" ';
+      }
+  
+      if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
 
       $errcode = "50081";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -3280,12 +3292,12 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
 
     $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-    $sql .= 'WHERE obj.objectpath!="" AND obj.user="'.$user.'" ';
+    $sql .= 'WHERE obj.objectpath!="" AND obj.deleteuser="" AND obj.user="'.$user.'" ';
     if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%") ';
     $sql .= 'ORDER BY obj.date DESC ';
     if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
-    $errcode = "50025";
+    $errcode = "50299";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
     $objectpath = array();
@@ -3366,7 +3378,7 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
       $sql .= 'WHERE obj.objectpath!="" AND obj.user="'.$user.'" ';
       if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%")';
 
-      $errcode = "50021";
+      $errcode = "50187";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
       if ($done && ($row = $db->rdbms_getresultrow ()))
@@ -3481,7 +3493,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
 
-    $sql .= 'WHERE obj.objectpath!="" ';
+    $sql .= 'WHERE obj.deleteuser="" AND obj.objectpath!="" ';
 
     if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%") ';
     if ($from_user != "") $sql .= 'AND rec.from_user LIKE BINARY "%'.$from_user.'%" ';
@@ -3493,7 +3505,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 
     if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
-    $errcode = "50026";
+    $errcode = "50251";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
     $objectpath = array();
@@ -3573,7 +3585,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
       if ($site != "" && $site != "*Null*") $sql .= ' WHERE obj.user="'.$user.'" AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%")';
 
-      $errcode = "50027";
+      $errcode = "50252";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
       if ($done && ($row = $db->rdbms_getresultrow ()))
@@ -4096,7 +4108,7 @@ function rdbms_getobject ($object_identifier)
       if (is_numeric ($object_identifier)) $sql = 'SELECT objectpath FROM object WHERE deleteuser="" AND object_id='.intval($object_identifier).' LIMIT 1';
       else $sql = 'SELECT objectpath FROM object WHERE deleteuser="" AND hash="'.$object_identifier.'" LIMIT 1';
 
-      $errcode = "50030";
+      $errcode = "50737";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
       if ($done && $row = $db->rdbms_getresultrow ())
@@ -4110,7 +4122,7 @@ function rdbms_getobject ($object_identifier)
     {
       $sql = 'SELECT obj.objectpath, al.deathtime, al.formats FROM accesslink AS al, object AS obj WHERE obj.deleteuser="" AND al.hash="'.$object_identifier.'" AND al.object_id=obj.object_id LIMIT 1';
 
-      $errcode = "50031";
+      $errcode = "50738";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select2");
 
       if ($done)
@@ -4655,8 +4667,9 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
   // all objects including subitems in the recycle bin
   else $sql .= 'WHERE obj.deleteuser!="" ';
 
-  if ($date != "") $sql .= 'AND obj.deletedate<"'.$date.'" ';  
-  if ($maxhits > 0) $sql .= 'GROUP BY obj.hash LIMIT 0,'.intval($maxhits);
+  if ($date != "") $sql .= 'AND obj.deletedate<"'.$date.'" ';
+  $sql .= 'GROUP BY obj.hash ORDER BY obj.objectpath ';
+  if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
 
   $errcode = "50325";
   $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
@@ -5329,7 +5342,7 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
       $sql = 'INSERT INTO queue (object_id, action, date, published_only, cmd, user) ';    
       $sql .= 'VALUES ('.intval ($object_id).', "'.$action.'", "'.$date.'", '.intval ($published_only).', "'.$cmd.'", "'.$user.'")';
 
-      $errcode = "50033";
+      $errcode = "50133";
       $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']); 
  
       // save log
@@ -5478,7 +5491,7 @@ function rdbms_deletequeueentry ($queue_id)
     // query
     $sql = 'SELECT action, object_id, user FROM queue WHERE queue_id='.$queue_id;
 
-    $errcode = "50035";
+    $errcode = "50135";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
     if ($done)
@@ -5496,7 +5509,7 @@ function rdbms_deletequeueentry ($queue_id)
     // query
     $sql = 'DELETE FROM queue WHERE queue_id='.$queue_id;
 
-    $errcode = "50036";
+    $errcode = "50136";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
@@ -6055,8 +6068,8 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       {
         $sqlfilesize = ', SUM(object.filesize) AS filesize';
         $sqltable = "INNER JOIN object ON dailystat.id=object.id";
-        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
-        else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
+        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.deleteuser="" AND object.objectpath LIKE "'.$location.'%"';
+        else $sqlwhere = 'AND object.deleteuser="" AND object.objectpath="'.$objectpath.'"';
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
       }
       // search by container id
@@ -6064,7 +6077,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       {
         $sqlfilesize = ', object.filesize AS filesize';
         $sqltable = "INNER JOIN object ON dailystat.id=object.id";
-        $sqlwhere = 'AND dailystat.id='.$container_id;
+        $sqlwhere = 'AND object.deleteuser="" AND dailystat.id='.$container_id;
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
       }
     }
@@ -6075,8 +6088,8 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       {
         $sqlfilesize = "";
         $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
-        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.objectpath LIKE "'.$location.'%"';
-        else $sqlwhere = 'AND object.objectpath="'.$objectpath.'"';
+        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.deleteuser="" AND object.objectpath LIKE "'.$location.'%"';
+        else $sqlwhere = 'AND object.deleteuser="" AND object.objectpath="'.$objectpath.'"';
         $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
       }
       // search by container id
