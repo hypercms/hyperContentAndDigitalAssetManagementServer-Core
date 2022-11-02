@@ -564,7 +564,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               // skip rows for paging
               if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
 
-              // reuired for JS table sort
+              // required for JS table sort
               $items_id++;
 
               // read file

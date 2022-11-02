@@ -6429,8 +6429,37 @@ Release 01/2023
 - Modifications in function rdbms_getmediastat, rdbms_searchuser, rdbms_searchrecipient in DB Connect in order to exclude objects in the recycle bin
 - Modifications in home box recent_objects in order to limit the result of rdbms_searchuser to 20 results
 - Modifications in DB Connect in order to correct duplicate error codes
-- Bug fix: explorer_objectlist, queue_objectlist and search_obejctlist used continuing index numbers for each object/row which caused an error with the JS table sort on from the 2nd page (only if paging is used)
+- Modifications in function rdbms_searchcontent in DB Connect in order to remove escaped spaces from the fulltext search in boolean mode
+- Modifications in template engine in order to support the template variable %objectname% for the unencoded object name
+- Modifications in template engine in order to support the template variable %locationname% for the unencoded location name
+- Design modifications in transparent design theme
+- Modifications in createtables.sql in DB Connect in order to implement a new attribute "objectpathname" and full-text index "object_objectpathname"
+- Modifications in createtables.sql in DB Connect in order to remove the deprecated full-text index "object_fulltext_objectpath"
+- Implementation of the new function getobjectpathname in Get API in order to convert the object path to the object path to readable names
+- Implementation of the new function update_database_v1008 in Update API in order to update the database and migrate the data for the new "objectpathname" attribute in table "object"
+- Modifications in function update_all in Update API in order to add the new function update_database_v1008
+- Modifications in function rdbms_searchcontent in DB Connect in order to move from attribute "objectpath" to "objectpathname" for the full-text search
+- Modifications in function rdbms_renameobject and rdbms_createobject in DB Connect in order to set the value for the new attribute "objectpathname"
+- Modifications in function rdbms_searchcontent in DB Connect in order to evalute the search for a location before used wildcards
+- Modifications in function specialchr_decode in Main API in order to decode the string only if the special character identifier is part of the string
+- Implementation of the new function rdbms_setobjectpathname in DB Connect in order to update empty "objectpathname" in table "object"
+- Modifications in various functions in Update API in order to remove unused error array initializations and savelog function calls
+- Modifications in various functions in DB Connect in order to remove unused error array initializations and savelog function calls
+- Modifications in function executeREST in the REST API of the Connector module in order to remove mutiple periods in the response message
+- Modifications in popup_upload_html in order to implement a drop-down layer for the upload options
+- Modifications in popup_upload_html in order to always display the uploaad option for the single file upload
+- Modifications in popup_upload_html in order to set new timeouts for uploaded or cancelled items
+- Design modifications in popup_upload_html
+- Design modification in the standard design theme
+- Implementation of the new function getboolean in Main API
+- Modifications in various RESTful API function in order to apply the new function getboolean
+- Modifications function link_db_read in Link API in order to correct error log messages
+- Updates in the Administrator, Connector, Developers, Import/Export, Installation, Personalization, Plugin, Report, Template Designers, Users, and Workflow Guide
+- Bug fix: explorer_objectlist, message_objectlist, queue_objectlist, search_obejctlist, and user_objectlist used continuing index numbers for each object/row which caused an error with the JS table sort on from the 2nd page (only if paging is used)
 - Bug fix: log_list used continuing index numbers for each log entry which caused an error with the JS table sort on from the 2nd page (only if paging is used)
 - Bug fix: control_queue_menu did not activate the delete button if multiple queue objects have been selected
 - Bug fix: Plugin logviewer used continuing index numbers for each log entry which caused an error with the JS table sort on from the 2nd page (only if paging is used)
-
+- Bug fix: user_sendlink did not display the e-mail addresses of recipients that have not user account if the message is in the queue and has not been sent 
+- Bug fix: Function getobjectcontainer in Get API used wrong input parameter name for the verification of the location
+- Bug fix: Function GCanalyzeimage in the Cloud Connector module mismatches the image size for the image option and the input parameter for function createmedia
+- Bug fix: The REST function upload did set the value of parameter checkduplicates always to true

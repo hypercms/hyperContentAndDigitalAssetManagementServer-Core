@@ -38,13 +38,14 @@ checkusersession ($user);
 $objects_counted = 0;
 $objects_total = 0;
 $items_row = -1;
+$items_id = -1;
 $listview = "";
 
 // create secure token
 $token = createtoken ($user);
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // default value for inital max items in list
 if (empty ($mgmt_config['explorer_list_maxitems'])) $mgmt_config['explorer_list_maxitems'] = 100; 
@@ -231,6 +232,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
         // skip rows for paging
         if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
 
+        // required for JS table sort
+        $items_id++;
+
         // user status
         if (is_array ($user_online_array) && in_array ($object_array['login'][$key], $user_online_array)) $user_status = getescapedtext ($hcms_lang['active'][$lang]);
         else $user_status = getescapedtext ($hcms_lang['logged-out'][$lang]);
@@ -243,26 +247,26 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
         else $openUser = "";
 
         // onclick for marking objects
-        $selectclick = "onClick=\"hcms_selectObject('".$items_row."', event);\" ";
+        $selectclick = "onClick=\"hcms_selectObject('".$items_id."', event);\" ";
         $setContext = "style=\"display:block;\" onMouseOver=\"hcms_setUsercontext('".$site."', '".$object_array['login'][$key]."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
         $listview .= "
-              <tr id=\"g".$items_row."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
-                <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:140px;\">
-                  <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
+              <tr id=\"g".$items_id."\" ".$selectclick." align=\"left\" style=\"cursor:pointer;\">
+                <td id=\"h".$items_id."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:140px;\">
+                  <div id=\"".$items_id."\" class=\"hcmsObjectListMarker\" ".$openUser." ".$setContext.">
                     <a data-objectpath=\"".$object_array['login'][$key]."\" data-href=\"javascript:void(0);\">
                       <img src=\"".getthemelocation()."img/user.png\" class=\"hcmsIconList\" /> ".$object_array['login'][$key]."
                     </a>
                   </div>
                 </td>
-                <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:160px;\"><span ".$setContext."> ".$object_array['name'][$key]."</span></td>";
+                <td id=\"h".$items_id."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:160px;\"><span ".$setContext."> ".$object_array['name'][$key]."</span></td>";
 
         if (!$is_mobile) $listview .= "
-                <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:300px;\"><span ".$setContext."> ".$object_array['email'][$key]."</span></td>
-                <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:120px;\"><span ".$setContext."> <span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>";
+                <td id=\"h".$items_id."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:300px;\"><span ".$setContext."> ".$object_array['email'][$key]."</span></td>
+                <td id=\"h".$items_id."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:120px;\"><span ".$setContext."> <span style=\"display:none;\">".date ("Ymd", strtotime ($object_array['date'][$key]))."</span>".showdate ($object_array['date'][$key], "Y-m-d", $hcms_lang_date[$lang])."</span></td>";
 
         $listview .= "
-                <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\"><span ".$setContext."> ".$user_status."</span></td>";
+                <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\"><span ".$setContext."> ".$user_status."</span></td>";
 
         $listview .= "
               </tr>";
@@ -306,9 +310,6 @@ else $objects_counted = 0;
 }
 </style>
 <script type="text/javascript">
-
-// define global variable for popup window name used in contextmenu.js
-var session_id = '<?php session_id(); ?>';
 
 function confirm_delete ()
 {

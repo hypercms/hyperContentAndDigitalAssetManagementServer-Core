@@ -35,6 +35,7 @@ $objects_counted = 0;
 $objects_total = 0;
 $listview = "";
 $items_row = -1;
+$items_id = -1;
 
 // create secure token
 $token = createtoken ($user);
@@ -138,19 +139,22 @@ if (is_array ($message_array) && sizeof ($message_array) > 0)
         // skip rows for paging
         if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
 
+        // required for JS table sort
+        $items_id++;
+
         $listview .= "
-            <tr id=\"g".$items_row."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
-              <td id=\"h".$items_row."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:160px;\">
-                <div id=\"".$items_row."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." > 
+            <tr id=\"g".$items_id."\" align=\"left\" style=\"cursor:pointer;\" ".$selectclick.">
+              <td id=\"h".$items_id."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:160px;\">
+                <div id=\"".$items_id."\" class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." > 
                   <a data-objectpath=\"".$mailfile."\" data-href=\"javascript:void(0);\">
                     <img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> <span title=\"".getescapedtext ($hcms_lang['e-mail'][$lang])."\">".$email_title."</span>
                   </a>
                 </div>
               </td>
-              <td id=\"h".$items_row."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
-              <td id=\"h".$items_row."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-              <td id=\"h".$items_row."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:60px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
-              <td id=\"h".$items_row."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
+              <td id=\"h".$items_id."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext.">".$recipients."</span></td>
+              <td id=\"h".$items_id."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:120px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($date))."</span><span ".$hcms_setObjectcontext.">".showdate ($date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
+              <td id=\"h".$items_id."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:60px;\"><span ".$hcms_setObjectcontext.">sent</span></td>
+              <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$message_user."</span></td>
             </tr>"; 
       }
     }
@@ -201,9 +205,6 @@ else $objects_counted = 0;
 }
 </style>
 <script type="text/javascript">
-
-// define global variable for popup window name used in contextmenu.js
-var session_id = '<?php echo session_id(); ?>';
 
 function confirm_delete ()
 {

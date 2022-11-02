@@ -162,8 +162,8 @@ $(document).ready(function ()
   var queuecount = 0;
   // Time until an item is removed from the queue
   // After it is successfully transmitted
-  // In Miliseconds
-  var hcms_waitTillRemove = 5*1000;
+  // in Miliseconds
+  var hcms_waitTillRemove = 3000;
   // Time after which the window is closed in miliseconds
   // Only applies to single uploads
   var hcms_waitTillClose =  2000;
@@ -246,20 +246,28 @@ $(document).ready(function ()
 
             console.log("Cancel upload of file " + data.files[0].name);
 
-            // If we are sending data we stop it or else we remove the entry completely
+            // if we are sending data we stop it or else we remove the entry completely
             if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
               buildFileMessage(data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
-              setTimeout(function() {data.context.remove();}, 3000);
+
+              setTimeout(function() {
+                data.context.remove(); 
+                selectcount--; 
+              }, 1000);
             }
             // for chunks files use the jqXHR object
             else if (jqXHR && data.files[0])
             {
               var filename = data.files[0].name;
-              jqXHR[filename].abort();
+              if (jqXHR[filename]) jqXHR[filename].abort();
               buildFileMessage(data, '<?php echo getescapedtext ($hcms_lang['upload-cancelled'][$lang]); ?>', false);
-              setTimeout(function() {data.context.remove();}, 3000);
+              
+              setTimeout(function() {
+                data.context.remove(); 
+                selectcount--; 
+              }, 1000);
             }
             // file upload has not been started 
             else
@@ -285,7 +293,8 @@ $(document).ready(function ()
     data.context.empty();
     
     // apply the correct css for this div
-    data.context.removeClass('file_normal')
+    data.context.removeClass('file_normal');
+
     if (success)
       data.context.addClass('file_success');
     else
@@ -296,7 +305,7 @@ $(document).ready(function ()
     var buttons = buildButtons(data);
     
     // Build message field
-    msg = $('<div style="font-size:11px;"></div>');
+    msg = $('<div style="width:227px; font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
        .addClass('inline file_message');
        
@@ -633,7 +642,7 @@ $(document).ready(function ()
           .addClass ('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
           .click (function(event)
           {
-            // If we are sending data we stop it or else we remove the entry completely
+            // if we are sending data we stop it or else we remove the entry completely
             if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
@@ -673,7 +682,7 @@ $(document).ready(function ()
     var buttons = buildDropboxButtons( data );
     
     // Build message field
-    msg = $('<div style="font-size:11px;"></div>');
+    msg = $('<div style="width:227px; font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text)).addClass('inline file_message');
        
     // Add everything to the context
@@ -922,7 +931,7 @@ $(document).ready(function ()
           .addClass ('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
           .click (function(event)
           {
-            // If we are sending data we stop it or else we remove the entry completely
+            // if we are sending data we stop it or else we remove the entry completely
             if (ajax && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
             {
               ajax.abort();
@@ -963,7 +972,7 @@ $(document).ready(function ()
     var buttons = buildFTPButtons(data);
     
     // Build message field
-    msg = $('<div style="font-size:11px;"></div>');
+    msg = $('<div style="width:227px; font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
        .addClass('inline file_message');
        
@@ -1381,6 +1390,18 @@ function switchthumbnail ()
     document.getElementById("overwrite").disabled = false;
   }
 }
+
+function activateOptions ()
+{
+  if (document.getElementById('optionsLayer').style.display == 'none')
+  {
+    hcms_showFormLayer('optionsLayer', 0);
+  }
+  else
+  {
+    hcms_hideFormLayer('optionsLayer');
+  }
+}
 </script>
 </head>
 
@@ -1415,73 +1436,85 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weig
     <input type="hidden" name="user" value="<?php echo $user; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
     <input type="hidden" name="zipcount" id="zipcount" value="" />
-    
-    <!-- selected files -->
-    <div id="selectedFiles" <?php if ($is_mobile) echo "style=\"max-width:100%;\""; ?>></div>
-    
-    <!-- controls -->
-    <div <?php if ($is_mobile) echo "class=\"hcmsTextSmall\""; ?>>
-      <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
-      <div class="row">
-        <label><input type="checkbox" name="unzip" id="unzip" value="unzip" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</label>
-      </div>
-      <?php } ?> 
-      <?php if ($uploadmode == "multi" && is_array ($mgmt_compress) && sizeof ($mgmt_compress) > 0) { ?>
-      <div class="row">
-        <label><input type="checkbox" name="unzip" id="zip" onclick="switchzip();" value="zip" /> <?php echo getescapedtext ($hcms_lang['compress-files'][$lang]); ?></label> <input name="zipname" id="zipname" type="text" placeholder="<?php echo getescapedtext ($hcms_lang['file-name'][$lang]); ?>" size="20" maxlength="120" value="" disabled="disabled" />
-      </div>
-      <?php } ?> 
-      <?php if ($cat == "comp" && $uploadmode == "multi" && !empty ($mgmt_config['overwrite_files'])) { ?>
-      <div class="row">
-        <label><input type="checkbox" name="overwrite" id="overwrite" value="1" /> <?php echo getescapedtext ($hcms_lang['overwrite-existing-files'][$lang]." (".$hcms_lang['keep-existing-file-as-old-version'][$lang].")"); ?></label>
-        <input type="checkbox" name="versioning" id="versioning" value="1" checked="checked" style="visibility:hidden;" />
+
+    <div class="hcmsWorkplaceGeneric" style="display:block; position:fixed; top:38px; left:6px; right:6px; z-index:1;">
+      <!-- info -->
+      <?php if (!$is_mobile) { ?>
+      <div style="margin:8px 0px;">
+        <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsIconList" />
+        <strong><?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?></strong>
       </div>
       <?php } ?>
-      <?php if ($cat == "comp" && $uploadmode == "single") { ?>
-        <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
-      <div class="row">
-        <label><input type="checkbox" name="versioning" id="versioning" value="1" checked="checked" /> <?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?></label>
+      
+      <!-- buttons -->
+      <div style="display:block; margin-top:5px; padding:0; clear:both;">
+        <button type="button" for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?> /></button>
+        <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
+        <button type="button" id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></button>
+        <?php } ?>
+        <?php if (!empty ($mgmt_config['ftp_download'])) { ?>
+        <button type="button" id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', 600, 400);"><?php echo getescapedtext ($hcms_lang['ftp'][$lang]); ?></button>
+        <?php } ?>
+        <button type="button" id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['upload-files'][$lang]); ?></button>
+        <button type="button" id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel-all-uploads'][$lang]); ?></button>
       </div>
+
+      <!-- options -->
+      <hr />
+      <div style="display:block; margin-bottom:3px;">
+        <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['options'][$lang]); ?></span>
+        <img onClick="activateOptions()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+      </div>
+      <div id="optionsLayer" <?php if ($is_mobile) echo "class=\"hcmsTextSmall\""; ?> style="<?php if ($uploadmode != "single") echo "display:none;"; ?> clear:right;">
+        <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
+        <div class="row">
+          <label><input type="checkbox" name="unzip" id="unzip" value="unzip" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</label>
+        </div>
         <?php } ?> 
-      <div class="row">
-        <label><input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" onclick="switchthumbnail() " /> <?php echo getescapedtext ($hcms_lang['thumbnail-image'][$lang]); ?></label>
+        <?php if ($uploadmode == "multi" && is_array ($mgmt_compress) && sizeof ($mgmt_compress) > 0) { ?>
+        <div class="row">
+          <label><input type="checkbox" name="unzip" id="zip" onclick="switchzip();" value="zip" /> <?php echo getescapedtext ($hcms_lang['compress-files'][$lang]); ?></label> <input name="zipname" id="zipname" type="text" placeholder="<?php echo getescapedtext ($hcms_lang['file-name'][$lang]); ?>" size="20" maxlength="120" value="" disabled="disabled" />
+        </div>
+        <?php } ?> 
+        <?php if ($cat == "comp" && $uploadmode == "multi" && !empty ($mgmt_config['overwrite_files'])) { ?>
+        <div class="row">
+          <label><input type="checkbox" name="overwrite" id="overwrite" value="1" /> <?php echo getescapedtext ($hcms_lang['overwrite-existing-files'][$lang]." (".$hcms_lang['keep-existing-file-as-old-version'][$lang].")"); ?></label>
+          <input type="checkbox" name="versioning" id="versioning" value="1" checked="checked" style="visibility:hidden;" />
+        </div>
+        <?php } ?>
+        <?php if ($cat == "comp" && $uploadmode == "single") { ?>
+          <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
+        <div class="row">
+          <label><input type="checkbox" name="versioning" id="versioning" value="1" checked="checked" /> <?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?></label>
+        </div>
+          <?php } ?> 
+        <div class="row">
+          <label><input type="checkbox" name="createthumbnail" id="createthumbnail" value="1" onclick="switchthumbnail() " /> <?php echo getescapedtext ($hcms_lang['thumbnail-image'][$lang]); ?></label>
+        </div>
+        <?php } ?>
+        <?php if ($cat == "comp" && $uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
+        <div class="row">
+          <label><input type="checkbox" name="imageresize" id="imageresize" value="percentage" /> <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?></label> <span style="white-space:nowrap;"><input name="imagepercentage" id="imagepercentage" type="text" size="4" maxlength="3" value="100" disabled="disabled" /> %</span>
+        </div>
+        <?php } ?>
+        <?php if ($cat == "comp") { ?>
+        <div class="row">
+          <label><input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> /> <?php echo getescapedtext ($hcms_lang['check-for-duplicates'][$lang]); ?></label>
+        </div>
+        <?php } ?>
+        <?php if ($cat == "comp" && $uploadmode == "multi") { ?>
+        <div class="row">
+          <label><input type="checkbox" name="deleteobject" id="deleteobject" value="1" /> <?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?></label>
+          <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
+          <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" readonly disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
+        </div>
+        <?php } ?>
       </div>
-      <?php } ?>
-      <?php if ($cat == "comp" && $uploadmode == "multi" && is_array ($mgmt_imagepreview) && sizeof ($mgmt_imagepreview) > 0) { ?>
-      <div class="row">
-        <label><input type="checkbox" name="imageresize" id="imageresize" value="percentage" /> <?php echo getescapedtext ($hcms_lang['resize-images-gif-jpeg-png-by-percentage-of-original-size-100'][$lang]); ?></label> <span style="white-space:nowrap;"><input name="imagepercentage" id="imagepercentage" type="text" size="4" maxlength="3" value="100" disabled="disabled" /> %</span>
-      </div>
-      <?php } ?>
-      <?php if ($cat == "comp") { ?>
-      <div class="row">
-        <label><input type="checkbox" name="checkduplicates" id="checkduplicates" value="1" <?php if ($mgmt_config['check_duplicates']) echo 'checked="checked"'; ?> /> <?php echo getescapedtext ($hcms_lang['check-for-duplicates'][$lang]); ?></label>
-      </div>
-      <?php } ?>
-      <?php if ($cat == "comp" && $uploadmode == "multi") { ?>
-      <div class="row">
-        <label><input type="checkbox" name="deleteobject" id="deleteobject" value="1" /> <?php echo getescapedtext ($hcms_lang['remove-uploaded-files-on'][$lang]); ?></label>
-        <input type="hidden" name="deletedate" id="deletedate" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" disabled="disabled" />
-        <input type="text" id="text_field" value="<?php echo date ("Y-m-d", (time()+60*60*24)); ?> 00:00" readonly disabled="disabled" /><img id="datepicker" name="datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
-      </div>
-      <?php } ?>
+      <hr />
     </div>
-    <?php if (!$is_mobile) { ?>
-    <div style="margin-top:8px;">
-      <img src="<?php echo getthemelocation(); ?>img/info.png" class="hcmsIconList" />
-      <strong><?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?></strong>
-    </div>
-    <?php } ?>
-    <div style="min-height:40px; margin:5px 0px; padding:0;">
-      <div for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?> /></div>
-      <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
-      <div id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></div>
-      <?php } ?>
-      <?php if (!empty ($mgmt_config['ftp_download'])) { ?>
-      <div id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', 600, 400);"><?php echo getescapedtext ($hcms_lang['ftp'][$lang]); ?></div>
-      <?php } ?>
-      <div id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['upload-files'][$lang]); ?></div>
-      <div id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel-all-uploads'][$lang]); ?></div>
-    </div>
+
+    <!-- selected files -->
+    <div id="selectedFiles" style="<?php if ($uploadmode != "single") echo "margin-top:100px;"; else echo "margin-top:160px;"; ?> <?php if ($is_mobile) echo "max-width:100%;"; ?>"></div>
 
   </form>
 </div>

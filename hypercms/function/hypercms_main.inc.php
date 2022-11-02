@@ -434,7 +434,7 @@ function specialchr_encode ($expression, $remove="no")
 // ------------------------- specialchr_decode -----------------------------
 // function: specialchr_decode()
 // input: expression [string]
-// output: expression with special characters (for file names) / false
+// output: expression with special characters (for file names)
 
 // description:
 // This is the decode function for function specialchr_encode
@@ -443,7 +443,7 @@ function specialchr_decode ($expression)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  if (is_string ($expression))
+  if (is_string ($expression) && strpos ("_".$expression, "~") > 0)
   {
     // replace % to avoid urldecoding 
     $expression = str_replace ("~", "%", $expression);
@@ -453,10 +453,9 @@ function specialchr_decode ($expression)
 
     // encode to UTF-8 if name is not utf-8 coded
     if (!is_utf8 ($expression)) $expression = utf8_encode ($expression);
-
-    return $expression;
   }
-  else return false;
+
+  return $expression;
 }
 
 // ------------------------- convertdate -----------------------------

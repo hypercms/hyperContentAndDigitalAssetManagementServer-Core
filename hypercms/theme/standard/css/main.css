@@ -231,6 +231,11 @@ a.hcmsLink
 
 .hcmsWorkplaceTop
 {
+  background-image: url('../img/backgrd_top.png');
+  background-size: auto;
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-position: center center; 
   background-color: #2d6a8d;
 }
 

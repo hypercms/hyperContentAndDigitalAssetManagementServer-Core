@@ -135,6 +135,7 @@ function update_tasks_v584 ()
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // connect to MySQL
@@ -244,6 +245,7 @@ function update_database_v586 ()
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // connect to MySQL
@@ -346,8 +348,9 @@ function update_database_v586 ()
   }
 
   // save log
-  savelog ($db->rdbms_geterror ());
+  savelog ($db->rdbms_geterror());
   savelog (@$error);
+
   $db->rdbms_close();
 
   return true;
@@ -364,8 +367,6 @@ function update_database_v586 ()
 function update_database_v601 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -413,8 +414,8 @@ function update_database_v601 ()
   }
 
   // save log
-  savelog ($db->rdbms_geterror ());
-  savelog (@$error);
+  savelog ($db->rdbms_geterror());
+
   $db->rdbms_close();
 
   return true;
@@ -431,8 +432,6 @@ function update_database_v601 ()
 function update_database_v614 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -459,8 +458,8 @@ function update_database_v614 ()
   }
 
   // save log
-  savelog ($db->rdbms_geterror ());
-  savelog (@$error);
+  savelog ($db->rdbms_geterror());
+
   $db->rdbms_close();
 
   return true;
@@ -477,8 +476,6 @@ function update_database_v614 ()
 function update_database_v6113 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   // connect to MySQL
   $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -620,8 +617,8 @@ function update_database_v6113 ()
   }
 
   // save log
-  savelog ($db->rdbms_geterror ());
-  savelog (@$error);
+  savelog ($db->rdbms_geterror());
+
   $db->rdbms_close();
 
   return true;
@@ -639,6 +636,7 @@ function update_database_v6115 ()
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // connect to MySQL
@@ -672,8 +670,9 @@ function update_database_v6115 ()
   }
 
   // save log
-  savelog ($db->rdbms_geterror ());
+  savelog ($db->rdbms_geterror());
   savelog (@$error);
+
   $db->rdbms_close();
 
   return true;
@@ -691,6 +690,7 @@ function update_container_v6118 ()
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   if (!empty ($mgmt_config['abs_path_data']) && !checksoftwareversion ("6.1.18"))
@@ -784,9 +784,10 @@ function update_container_v6118 ()
     }
 
     // save log
-    savelog ($db->rdbms_geterror ());
+    savelog ($db->rdbms_geterror());
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.18|updated to version 6.1.18"), "update");
     savelog (@$error);
+
     $db->rdbms_close();
 
     return true;
@@ -805,8 +806,6 @@ function update_container_v6118 ()
 function update_database_v6139 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   if (!checksoftwareversion ("6.1.39"))
   { 
@@ -831,7 +830,7 @@ function update_database_v6139 ()
     // save log
     savelog ($db->rdbms_geterror ());
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.39|updated to version 6.1.39"), "update");
-    savelog (@$error);
+
     $db->rdbms_close();
 
     return true;
@@ -851,8 +850,6 @@ function update_database_v625 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("6.2.5"))
   { 
     // connect to MySQL
@@ -870,7 +867,7 @@ function update_database_v625 ()
     // save log
     savelog ($db->rdbms_geterror ());
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.2.5|updated to version 6.2.5"), "update");
-    savelog (@$error);
+
     $db->rdbms_close();
 
     return true;
@@ -890,8 +887,6 @@ function update_database_v705 ($dir, $db_alter)
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("7.0.5"))
   { 
     if (!empty ($db_alter))
@@ -905,8 +900,8 @@ function update_database_v705 ($dir, $db_alter)
       $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
       // save log
-      savelog ($db->rdbms_geterror ());
-      savelog (@$error);
+      savelog ($db->rdbms_geterror());
+
       $db->rdbms_close();
 
       $db_alter = false;
@@ -960,8 +955,6 @@ function update_users_706 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("7.0.6"))
   {
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -1000,8 +993,6 @@ function update_database_v708 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("7.0.8"))
   { 
     // connect to MySQL
@@ -1018,8 +1009,8 @@ function update_database_v708 ()
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
+
     $db->rdbms_close();
 
     // update log
@@ -1041,8 +1032,6 @@ function update_database_v708 ()
 function update_users_709 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   if (!checksoftwareversion ("7.0.9"))
   {
@@ -1130,8 +1119,6 @@ function update_config_7010 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("7.0.10"))
   {
     // update management config
@@ -1193,8 +1180,6 @@ function update_database_v800 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("8.0.0"))
   { 
     // connect to MySQL
@@ -1206,8 +1191,8 @@ function update_database_v800 ()
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
+
     $db->rdbms_close();
 
     // update log
@@ -1230,6 +1215,7 @@ function update_users_804 ()
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   if (!checksoftwareversion ("8.0.4"))
@@ -1273,6 +1259,9 @@ function update_users_804 ()
       }
     }
 
+    // save log
+    savelog (@$error);
+
     // update users
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
 
@@ -1309,8 +1298,6 @@ function update_users_804 ()
 function update_database_v805 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   if (!checksoftwareversion ("8.0.5"))
   {
@@ -1366,8 +1353,7 @@ function update_database_v805 ()
     }
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -1390,8 +1376,6 @@ function update_database_v903 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("9.0.3"))
   {
     // connect to MySQL
@@ -1403,8 +1387,7 @@ function update_database_v903 ()
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -1427,8 +1410,6 @@ function update_database_v910 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("9.1.0"))
   { 
     // connect to MySQL
@@ -1440,8 +1421,7 @@ function update_database_v910 ()
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -1463,8 +1443,6 @@ function update_database_v910 ()
 function update_plugin_v911 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   if (!checksoftwareversion ("9.1.1"))
   { 
@@ -1494,8 +1472,6 @@ function update_database_v914 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("9.1.4"))
   { 
     // connect to MySQL
@@ -1507,8 +1483,7 @@ function update_database_v914 ()
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -1530,8 +1505,6 @@ function update_database_v914 ()
 function update_database_v1000 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   if (!checksoftwareversion ("10.0.0"))
   { 
@@ -1652,8 +1625,7 @@ function update_database_v1000 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -1675,8 +1647,6 @@ function update_database_v1000 ()
 function update_database_v1002 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   if (!checksoftwareversion ("10.0.2"))
   { 
@@ -1763,8 +1733,7 @@ function update_database_v1002 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -1787,8 +1756,6 @@ function update_database_v1003 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("10.0.3"))
   { 
     // connect to MySQL
@@ -1800,8 +1767,7 @@ function update_database_v1003 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -1894,8 +1860,6 @@ function update_database_v1005 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("10.0.5"))
   { 
     // connect to MySQL
@@ -1915,8 +1879,7 @@ function update_database_v1005 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -1938,8 +1901,6 @@ function update_database_v1005 ()
 function update_database_v1006 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   if (!checksoftwareversion ("10.0.6"))
   { 
@@ -1967,7 +1928,7 @@ function update_database_v1006 ()
     $errcode = "50664";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-    // remove old fulltext index
+    // remove old index
     $sql = 'DROP INDEX object_objectpath ON object';
     $errcode = "50665";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -1978,8 +1939,7 @@ function update_database_v1006 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -2002,8 +1962,6 @@ function update_database_v10065 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("10.0.6.5"))
   { 
     // connect to MySQL
@@ -2020,8 +1978,7 @@ function update_database_v10065 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -2044,14 +2001,12 @@ function update_database_v10066 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("10.0.6.6"))
   { 
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
    
-    // remove old fulltext index
+    // remove old index
     $sql = 'DROP INDEX object_multiple ON object';
     $errcode = "50680";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -2082,8 +2037,7 @@ function update_database_v10066 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -2105,8 +2059,6 @@ function update_database_v10066 ()
 function update_database_v10069 ()
 {
   global $mgmt_config;
-
-  $error = array();
 
   if (!checksoftwareversion ("10.0.6.9"))
   { 
@@ -2143,8 +2095,7 @@ function update_database_v10069 ()
     }
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -2167,8 +2118,6 @@ function update_database_v100610 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("10.0.6.10"))
   { 
     // connect to MySQL
@@ -2180,8 +2129,7 @@ function update_database_v100610 ()
     $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -2204,8 +2152,6 @@ function update_database_v1007 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("10.0.7"))
   { 
     // connect to MySQL
@@ -2217,8 +2163,7 @@ function update_database_v1007 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -2241,8 +2186,6 @@ function update_database_v10071 ()
 {
   global $mgmt_config;
 
-  $error = array();
-
   if (!checksoftwareversion ("10.0.7.1"))
   { 
     // connect to MySQL
@@ -2259,8 +2202,7 @@ function update_database_v10071 ()
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
-    savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
     // update log
@@ -2295,7 +2237,7 @@ function update_database_v10073 ()
     $errcode = "50730";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-    // alter table object (case insensitive objectpath)
+    // create new index
     $sql = 'CREATE INDEX taxonomy_multiple ON taxonomy (id, text_id, taxonomy_id)';
     $errcode = "50731";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -2332,7 +2274,7 @@ function update_database_v10074 ()
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
-    // alter table object (case insensitive objectpath)
+    // create new index
     $sql = 'CREATE INDEX object_deleteuser ON object (deleteuser)';
     $errcode = "50740";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -2344,6 +2286,78 @@ function update_database_v10074 ()
 
     // update log
     savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.4|updated to version 10.0.7.4"), "update");
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v1008 ----------------------------------------------
+// function: update_database_v1008()
+// input: %
+// output: true / false
+
+// description: 
+// Update the taxonomy index for support of version 10.0.8
+
+function update_database_v1008 ()
+{
+  global $mgmt_config;
+
+  $error = array();
+
+  if (!checksoftwareversion ("10.0.8"))
+  { 
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+    // alter table
+    $sql = "ALTER TABLE object ADD objectpathname VARCHAR(4096) DEFAULT '' AFTER objectpath;";
+    $errcode = "50801";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // migrate objectpath
+    $sql = 'SELECT object_id, objectpath FROM object';
+    $errcode = "50802";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+    if ($result)
+    {
+      while ($row = $db->rdbms_getresultrow('select'))
+      {
+        if (!empty ($row['objectpath']))
+        {
+          // convert to readable names
+          $objectpathname = getobjectpathname ($row['objectpath']);
+
+          // set objectname
+          if ($objectpathname != "")
+          {
+            $sql = 'UPDATE object SET objectpathname="'.$objectpathname.'" WHERE object_id='.intval($row['object_id']);
+            $errcode = "50803";
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+          }
+        }
+      }
+    }
+
+    // create new index
+    $sql = 'CREATE FULLTEXT INDEX object_objectpathname ON object (objectpathname)';
+    $errcode = "50804";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // remove old index
+    $sql = 'DROP INDEX object_fulltext_objectpath ON object';
+    $errcode = "50804";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror ());
+    savelog (@$error);
+    $db->rdbms_close();
+
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.8|updated to version 10.0.8"), "update");
 
     return true;
   }
@@ -2401,6 +2415,7 @@ function updates_all ()
     update_database_v10071 ();
     update_database_v10073 ();
     update_database_v10074 ();
+    update_database_v1008 ();
   }
 }
 

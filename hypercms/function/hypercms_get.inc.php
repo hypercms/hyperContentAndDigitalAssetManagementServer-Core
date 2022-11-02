@@ -2441,23 +2441,54 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
 // function: getobjectpathlevel()
 // input: converted objectpath [string]
 // output: level number / 0 on error
-// requires: config.inc.php
 
 // description:
 // Get the level number of an objectpath
 
 function getobjectpathlevel ($objectpath)
 {
-  if (is_string ($objectpath) && $objectpath != "")
+  if (is_string ($objectpath) && $objectpath != "" && (substr_count ($objectpath, "*page*") == 1 || substr_count ($objectpath, "*comp*") == 1 || substr_count ($objectpath, "%page%") == 1 || substr_count ($objectpath, "%comp%") == 1))
   {
     $objectpath = trim ($objectpath);
+
     if (substr ($objectpath, -8) == "/.folder") $objectpath = substr ($objectpath, 0, -8);
+
     $level = substr_count ($objectpath, "/");
 
     if ($level > 0) return $level;
-    else return 0;
   }
-  else return 0;
+
+  return 0;
+}
+
+// ---------------------------------------- getobjectpathname ----------------------------------------
+// function: getobjectpathname()
+// input: converted objectpath [string]
+// output: location name / empty string on error
+
+// description:
+// Get the object name of an objectpath
+
+function getobjectpathname ($objectpath)
+{
+  if (is_string ($objectpath) && $objectpath != "" && (substr_count ($objectpath, "*page*") == 1 || substr_count ($objectpath, "*comp*") == 1 || substr_count ($objectpath, "%page%") == 1 || substr_count ($objectpath, "%comp%") == 1))
+  {
+    $objectpath = trim ($objectpath);
+
+    // correct object oath
+    $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $objectpath);
+
+    $site = getpublication ($objectpath);
+    $cat = getcategory ($site, $objectpath);
+    $result = getlocationname ($site, $objectpath, $cat, "path");
+
+    // replace characters by free space in order to have a word delimiter for the full-text search index
+    $result = str_replace (array("_"), array(" "), $result);
+
+    if ($result != "") return $result;
+  }
+
+  return "";
 }
 
  // ========================================= LOAD CONTENT ============================================
@@ -2476,7 +2507,7 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
   global $mgmt_config;
 
   // deconvert location
-  if (@substr_count ($path, "%page%") > 0 || @substr_count ($path, "%comp%") > 0)
+  if (is_string ($location) && (substr_count ($location, "%page%") > 0 || substr_count ($location, "%comp%") > 0))
   {
     $cat = getcategory ($site, $location);
     $location = deconvertpath ($location, $cat);

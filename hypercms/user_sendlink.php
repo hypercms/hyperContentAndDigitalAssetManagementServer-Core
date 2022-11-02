@@ -628,7 +628,7 @@ $token_new = createtoken ($user);
       <input type="hidden" name="action" id="action" value="sendmail" />
       <!-- mailfile need to be empty in order to save new message data -->
       <input type="hidden" name="mailfile" value="" />
-      
+
       <div id="LayerMenu" class="hcmsTabContainer" style="position:absolute; z-index:10; left:0px; top:40px; min-width:380px;">
         <div id="tab1" class="hcmsTabActive">
           <a id="menu-Recipient" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','show','LayerGroup','hide','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?></a>
@@ -640,7 +640,7 @@ $token_new = createtoken ($user);
           <a id="menu-Settings" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabActive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','hide','LayerSettings','show'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?><span id="attention_settings" style="color:red; font-weight:bold; visibility:hidden;">!</span></a>
         </div>
       </div>
-      
+
       <!-- Tabs for recipients, groups and settings --> 
       <div id="Tabs" style="position:absolute; z-index:10; visibility:visible; left:0px; top:70px; max-width:380px; height:200px;">
         
@@ -663,6 +663,19 @@ $token_new = createtoken ($user);
               <td>
                 <div style="overflow:auto; max-height:120px;" id="emails">
                 <?php
+                // email addresses of non-existig users saved in queue message
+                if (!empty ($email_to) && is_array ($email_to))
+                {
+                  foreach ($email_to as $temp_email)
+                  {
+                    $temp_user = str_replace (array("@", "."), "_", $temp_email);
+
+                    echo "
+                    <div id=\"main_".$temp_user."\" style=\"display:block; width:100%; height:16px;\"><input type=\"hidden\" name=\"user_login[]\" id=\"user_login_".$temp_user."\" value=\"".$temp_email."\"/><div id=\"divtext_".$temp_user."\" style=\"float:left\" title=\"".$temp_email."\">".$temp_email."&nbsp;</div><div><img onclick=\"remove_element('main_".$temp_user."');\" onmouseout=\"hcms_swapImgRestore();\" onmouseover=\"hcms_swapImage('delete_".$temp_user."', '', '".getthemelocation()."img/button_close_over.png', 1);\" title=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" src=\"".getthemelocation()."img/button_close.png\" name=\"delete_".$temp_user."\" style=\"width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;\"></div></div>";
+                  } 
+                }
+
+                // existing users 
                 if (!empty ($user_login) && is_array ($user_login))
                 {
                   foreach ($user_login as $temp_user)
@@ -673,10 +686,10 @@ $token_new = createtoken ($user);
 
                     if ($temp_id && !empty ($allrealname_array[$temp_id])) $temp_realname = $allrealname_array[$temp_id];
                     else $temp_realname = $temp_user;
-                    
+
                     if ($temp_id && !empty ($allemail_array[$temp_id])) $temp_email = $allemail_array[$temp_id];
                     else $temp_email = "";
-                    
+
                     echo "
                     <div id=\"main_".$temp_user."\" style=\"display:block; width:100%; height:16px;\"><input type=\"hidden\" name=\"user_login[]\" id=\"user_login_".$temp_user."\" value=\"".$temp_user."\"/><div id=\"divtext_".$temp_user."\" style=\"float:left\" title=\"".$temp_email."\">".$temp_realname."&nbsp;</div><div><img onclick=\"remove_element('main_".$temp_user."');\" onmouseout=\"hcms_swapImgRestore();\" onmouseover=\"hcms_swapImage('delete_".$temp_user."', '', '".getthemelocation()."img/button_close_over.png', 1);\" title=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete-recipient'][$lang])."\" src=\"".getthemelocation()."img/button_close.png\" name=\"delete_".$temp_user."\" style=\"width:16px; height:16px; border:0; float:right; display:inline; cursor:pointer;\"></div></div>";
                   } 
@@ -687,7 +700,7 @@ $token_new = createtoken ($user);
             </tr>
           </table>
         </div>
-        
+
         <div id="LayerGroup" style="padding-left:6px;">
           <table class="hcmsTableNarrow">
             <tr>

@@ -2007,8 +2007,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         $abs_rep = $mgmt_config['abs_path_rep'];
       }
 
-      // replace the object variables in the template with the used object name
+      // replace the object variables in the template with the encoded object name
       if (isset ($filename)) $viewstore = str_replace ("%object%", $filename, $viewstore);
+
+      // replace the object variables in the template with the unecoded object name
+      if (isset ($filename)) $viewstore = str_replace ("%objectname%", specialchr_decode ($filename), $viewstore);
 
       // replace the url_page variables in the template with the URL of the page root
       if (isset ($url_page)) $viewstore = str_replace ("%url_page%", substr ($url_page, 0, strlen ($url_page)-1), $viewstore);
@@ -2044,6 +2047,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
       if (isset ($url_location)) $viewstore = str_replace ("%url_location%", substr ($url_location, 0, strlen ($url_location)-1), $viewstore);
       if (isset ($location)) $viewstore = str_replace ("%abs_location%", substr ($location, 0, strlen ($location)-1), $viewstore);
+      if (isset ($location)) $viewstore = str_replace ("%locationname%", specialchr_decode ($location), $viewstore);
 
       // replace the publication varibales in the template with the used publication
       if (isset ($site)) $viewstore = str_replace ("%publication%", $site, $viewstore);

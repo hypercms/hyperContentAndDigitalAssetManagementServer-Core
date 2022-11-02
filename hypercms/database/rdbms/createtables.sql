@@ -23,6 +23,7 @@ CREATE TABLE `object` (
   `publishdate` datetime DEFAULT NULL,
   `user` char(100) NOT NULL DEFAULT '',
   `objectpath` varchar(4096) NOT NULL DEFAULT '',
+  `objectpathname` varchar(4096) NOT NULL DEFAULT '',
   `container` char(16) NOT NULL DEFAULT '',
   `template` char(100) BINARY NOT NULL DEFAULT '',
   `media` char(255) BINARY DEFAULT NULL,
@@ -53,7 +54,7 @@ CREATE TABLE `object` (
   KEY `object_lat_lng` (`latitude`,`longitude`),
   KEY `object_objectpath` (`objectpath`),
   KEY `object_deleteuser` (`deleteuser`),
-  FULLTEXT KEY `object_fulltext_objectpath` (`objectpath`),
+  FULLTEXT KEY `object_objectpathname` (`objectpathname`),
   FULLTEXT KEY `object_textcontent` (`textcontent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
