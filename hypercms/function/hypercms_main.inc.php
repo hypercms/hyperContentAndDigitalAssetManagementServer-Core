@@ -7017,7 +7017,7 @@ function createpublication ($site_name, $user="sys")
 
       if ($test != false) 
       {
-        // -------------------------------------- create new files for site ------------------------------------------
+        // -------------------------------------- create new files for publication ------------------------------------------
         // usergroup 
         if ($test != false) 
         {
@@ -13536,7 +13536,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false)
       }
 
       // save file from URL or if file has already been saved in the temp directory (WebDAV saves files in temp directory)
-      if ($is_remote_file || empty ($result['result']))
+      if (($is_remote_file || empty ($result['result'])) && is_file ($uploaded_file))
       {
         $result['result'] = rename ($uploaded_file, $save_file);
 
@@ -13547,39 +13547,35 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false)
           unlink ($uploaded_file);
         }
       }
-
-      // HTTP header
-      if ($result['result'] == true) $result['header'] = "HTTP/1.1 200 OK";
-      else $result['header'] = "HTTP/1.1 500 Internal Server Error";
     }
     // non-multipart uploads (PUT method support)
     elseif (strtoupper ($request_method) == "PUT")
     {
       $result['result'] = file_put_contents ($save_file, fopen('php://input', 'r'), $append_file ? FILE_APPEND : 0);
-
-      // HTTP header
-      if ($result['result'] == true) $result['header'] = "HTTP/1.1 200 OK";
-      else $result['header'] = "HTTP/1.1 500 Internal Server Error";
     }
     // delete file (DELETE method support)
-    elseif (strtoupper ($request_method) == "DELETE")
+    elseif (strtoupper ($request_method) == "DELETE" && is_file ($save_file))
     {
       $result['result'] = unlink ($save_file);
-
-      // HTTP header
-      if ($result['result'] == true) $result['header'] = "HTTP/1.1 200 OK";
-      else $result['header'] = "HTTP/1.1 500 Internal Server Error";
     }
   }
 
   // on success
   if ($result['result'] == true)
   {
+    // HTTP header
+    $result['header'] = "HTTP/1.1 200 OK";
+
+    // message
     $result['message'] = $hcms_lang['uploaded-file-successfully'][$lang];;
   }
   // on error
   else
   {
+    // HTTP header
+    $result['header'] = "HTTP/1.1 500 Internal Server Error";
+
+    // message
     $result['message'] = $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang];
   }
 
@@ -13983,7 +13979,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
 
           $errcode = "20510";
-          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the new file '".$global_files['Filedata']['name']."' could not be copied to the server";
+          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The new file '".$global_files['Filedata']['name']."' could not be copied to the server";
 
           // write log
           savelog (@$error);
@@ -14068,7 +14064,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       if (empty ($result_save['result']))
       {
         $errcode = "20508";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the page file '".$global_files['Filedata']['name']."' could not be uploaded to the server";
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The page file '".$global_files['Filedata']['name']."' could not be uploaded to the server";
 
         // write log
         savelog (@$error);
@@ -14249,7 +14245,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             if (empty ($result_save['result']))
             {
               $errcode = "20513";
-              $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
+              $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
     
               // write log
               savelog (@$error);
@@ -14267,7 +14263,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               if (!$symlink)
               {
                 $errcode = "10521";
-                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the symbolic link for '".$media_update."' could not be created";
+                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The symbolic link for '".$media_update."' could not be created";
               }
             }
 
@@ -14632,22 +14628,29 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           // eventsystem
           if (!empty ($eventsystem['onfileupload_post'])) onfileupload_post ($site, $result['cat'], $location, $result['object'], $mediafile, $result['container'], $user);
         }
+        // source file upload failed
         else
         {
+          // delete the new multimedia object since the upload of the source file failed
+          deleteobject ($site, $location, $file, $user);
+
           $errcode = "10501";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject failed to move '".$path_source_file."' to '".getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile."' or create the symbolic link"; 
 
           $result['result'] = false;
         }
       }
+      // object could not be created
       else
       {
+
         $errcode = "10502";
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject failed to successfully execute createobject ($site, $location_esc, $file, $template, $user)"; 
 
         $result['result'] = false;
       }
     }
+    // source file is missing
     else
     {
       $errcode = "10503";

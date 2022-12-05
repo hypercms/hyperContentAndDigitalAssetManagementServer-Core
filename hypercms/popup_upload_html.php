@@ -1393,14 +1393,7 @@ function switchthumbnail ()
 
 function activateOptions ()
 {
-  if (document.getElementById('optionsLayer').style.display == 'none')
-  {
-    hcms_showFormLayer('optionsLayer', 0);
-  }
-  else
-  {
-    hcms_hideFormLayer('optionsLayer');
-  }
+  hcms_slideDownLayer('optionsLayer', '0');
 }
 </script>
 </head>
@@ -1465,7 +1458,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weig
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['options'][$lang]); ?></span>
         <img onClick="activateOptions()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
       </div>
-      <div id="optionsLayer" <?php if ($is_mobile) echo "class=\"hcmsTextSmall\""; ?> style="<?php if ($uploadmode != "single") echo "display:none;"; ?> clear:right;">
+      <div id="optionsLayer" <?php if ($is_mobile) echo "class=\"hcmsTextSmall\""; ?> style="position:relative; z-index:10; display:block; box-sizing:border-box; overflow:hidden; <?php if ($uploadmode != "single") echo "height:0px;"; else "height:80px;"; ?> clear:right;">
         <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
         <div class="row">
           <label><input type="checkbox" name="unzip" id="unzip" value="unzip" /> <?php echo getescapedtext ($hcms_lang['uncompress-files'][$lang]); ?> (<?php echo getescapedtext ($hcms_lang['existing-objects-will-be-replaced'][$lang]); ?>)</label>

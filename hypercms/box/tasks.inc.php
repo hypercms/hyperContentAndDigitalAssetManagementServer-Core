@@ -30,8 +30,10 @@ if (checkrootpermission ('desktoptaskmgmt'))
           else $rowcolor = "hcmsPriorityLow"; 
         }
       
-        // empty finish date if not set
+        // empty start and finish date if not set
+        if ($task_record['startdate'] == "0000-00-00") $task_record['startdate'] = "";
         if ($task_record['finishdate'] == "0000-00-00") $task_record['finishdate'] = "";
+
         // compare today with finish date
         elseif ((time()-(60*60*24)) >= strtotime($task_record['finishdate'])) $rowcolor = "hcmsPriorityAlarm";
 

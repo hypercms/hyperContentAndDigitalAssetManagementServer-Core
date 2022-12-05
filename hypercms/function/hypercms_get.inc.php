@@ -263,6 +263,26 @@ function getrequest_esc ($variable, $force_type=false, $default="", $js_protecti
   else return $default;
 }
 
+// ------------------------- getboolean -----------------------------
+// function: getboolean()
+// input: value [string]
+// output: bollean value
+
+// description:
+// Returns the correct boolean value for a string value.
+
+function getboolean ($value)
+{
+  if (is_string ($value) && $value != "")
+  {
+    if (strtolower ($value) == "false") $value = false;
+    if (strtolower ($value) == "true") $value = true;
+  }
+
+  return $value;
+}
+
+
 // ----------------------------------------- getuserip ------------------------------------------
 // function: getuserip()
 // input: %

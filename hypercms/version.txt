@@ -6454,6 +6454,9 @@ Release 01/2023
 - Implementation of the new function getboolean in Main API
 - Modifications in various RESTful API function in order to apply the new function getboolean
 - Modifications function link_db_read in Link API in order to correct error log messages
+- Modifications in tasks Home box in order to not display empty start dates of tasks
+- Modifications in function uploadhandler in Main API in order to verify that the provided file exists
+- Modifications in function createmediaobject in Main API in order to delete the created object if the upload of the source file failed
 - Updates in the Administrator, Connector, Developers, Import/Export, Installation, Personalization, Plugin, Report, Template Designers, Users, and Workflow Guide
 - Bug fix: explorer_objectlist, message_objectlist, queue_objectlist, search_obejctlist, and user_objectlist used continuing index numbers for each object/row which caused an error with the JS table sort on from the 2nd page (only if paging is used)
 - Bug fix: log_list used continuing index numbers for each log entry which caused an error with the JS table sort on from the 2nd page (only if paging is used)
