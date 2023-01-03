@@ -820,7 +820,7 @@ function sendtochat (text)
 </script>
 </head>
 
-<body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
+<body class="hcmsWorkplaceControl" onload="<?php echo $add_onload; ?>">
 
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
@@ -836,7 +836,7 @@ function sendtochat (text)
 <div style="position:fixed; <?php if ($is_mobile) echo "top:-1px; right:2px;"; else echo "top:4px; right:6px;"; ?>">
   <?php echo "<img src=\"".getthemelocation()."img/admin.png\" class=\"hcmsButtonTiny hcmsIconList\" onclick=\"switchToolbar();\" title=\"".getescapedtext ($hcms_lang['customize-toolbar'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['customize-toolbar'][$lang])."\" />"; ?>
 </div>
-<div id="toolbarSettingsLayer" class="hcmsMessage" style="position:fixed; top:6px; right:20px; min-width:<?php if ($is_mobile) echo "80%"; else echo "560px"; ?>; max-height:80px; margin:0; padding:0px 4px; overflow:auto; visibility:hidden;">
+<div id="toolbarSettingsLayer" class="hcmsMessage" style="position:fixed; top:6px; right:22px; min-width:<?php if ($is_mobile) echo "80%"; else echo "560px"; ?>; max-height:80px; margin:0; padding:0px 4px; overflow:auto; visibility:hidden;">
   <form name="toolbar_set" action="" method="post">
     <input type="hidden" name="action" value="toolbar" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />

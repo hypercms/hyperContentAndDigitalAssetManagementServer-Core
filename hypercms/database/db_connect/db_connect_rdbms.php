@@ -1942,7 +1942,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);          
           // where clause for folderpath
           // search only on the same level of the path
-          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE "'.$path.'%" AND obj.level='.getobjectpathlevel($path).')';
+          if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE "'.$path.'%" AND obj.level='.(getobjectpathlevel($path) + 1).')';
           // all objects that are located in the path
           else $sql_temp[] = 'obj.objectpath LIKE "'.$path.'%"';
         }

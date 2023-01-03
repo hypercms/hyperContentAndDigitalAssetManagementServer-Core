@@ -294,6 +294,10 @@ $mgmt_config['check_duplicates'] = true;
 // Allow existing files to be overwritten (true) or not (false)
 $mgmt_config['overwrite_files'] = true;
 
+// File upload
+// Allow resumable file uploads (true) or not (false)
+$mgmt_config['resume_uploads'] = true;
+
 // Display owner column in content and template version history (true) or hide the owner (false)
 // Requires to read the owner from the XML content for each version and requires some time for longer version histories.
 $mgmt_config['version_owner'] = false;
@@ -396,8 +400,8 @@ $mgmt_lang_name['ar'] = "Arabic";
 $mgmt_lang_shortcut['ar'] = "ar";
 
 // Czech
-$mgmt_lang_name['cz'] = "Czech";
-$mgmt_lang_shortcut['cz'] = "cz";
+$mgmt_lang_name['cs'] = "Czech";
+$mgmt_lang_shortcut['cs'] = "cs";
 
 // Bengali
 $mgmt_lang_name['bn'] = "Bengali";

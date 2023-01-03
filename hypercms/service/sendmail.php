@@ -387,9 +387,11 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
       {
         foreach ($email_to as $temp)
         {
+          $temp = trim ($temp);
+
           // create name from e-mail
           $realname = substr ($temp, 0, strpos ($temp, "@"));
-          $realname = str_replace (".", " ", $realname);
+          $realname = str_replace (array(".", "_"), " ", $realname);
 
           // user name
           if (strlen ($temp) <= 100 && strpos ("_".$temp, " ") < 1 && strpos ("_".$temp, ",") < 1)

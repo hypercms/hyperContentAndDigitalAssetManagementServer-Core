@@ -27,6 +27,14 @@ checkusersession ($user);
 // max records to display from log for paging
 $paging = 30;
 
+// initialize
+$i = $paging;
+$count = 0;
+$date_display = "";
+$date_axis = array();
+$load_axis = array();
+$mem_axis = array();
+
 // chart size in pixels
 if (!empty ($is_mobile))
 {
@@ -43,7 +51,7 @@ else
 suspendsession ();
 
 if (isset ($siteaccess) && is_array ($siteaccess))
-{ 
+{
   // load log file
   $event_array = loadlog ("serverload");
 
@@ -55,13 +63,6 @@ if (isset ($siteaccess) && is_array ($siteaccess))
   {
     // reverse array
     $event_array = array_reverse ($event_array);
-
-    $i = $paging;
-    $count = 0;
-    $date_display = "";
-    $date_axis = array();
-    $load_axis = array();
-    $mem_axis = array();
     
     foreach ($event_array as $event)
     {

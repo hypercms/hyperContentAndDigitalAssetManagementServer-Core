@@ -112,10 +112,10 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           <div ".$openObject." style=\"display:block; cursor:pointer;\" title=\"".$item_locationname.$item_fileinfo['name']."\"><img src=\"".getthemelocation()."img/".$item_fileinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext($item_fileinfo['name'], 60)."&nbsp;</div>";
 
           if (!empty ($filewrapperdownload)) echo "
-          <div style=\"padding-left:22px;\"><b>".getescapedtext ($hcms_lang['download-link'][$lang]).":</b> ".$filewrapperdownload."</div>";
+          <div style=\"padding-left:22px;\"><b>".getescapedtext ($hcms_lang['download-link'][$lang])." <img src=\"".getthemelocation()."img/button_file_copy.png\" class=\"hcmsButtonTiny hcmsIconList\" onclick=\"hcms_copyToClipboard('".$filewrapperdownload."');\" alt=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" /> </b> <span class=\"hcmsHeadlineTiny\" style=\"word-break:break-all;\">".$filewrapperdownload."</span></div>";
 
           if (!empty ($fileaccesslink)) echo "
-          <div style=\"padding-left:22px;\"><b>".getescapedtext ($hcms_lang['access-link'][$lang]).":</b> ".$fileaccesslink."</div>";
+          <div style=\"padding-left:22px;\"><b>".getescapedtext ($hcms_lang['access-link'][$lang])." <img src=\"".getthemelocation()."img/button_file_copy.png\" class=\"hcmsButtonTiny hcmsIconList\" onclick=\"hcms_copyToClipboard('".$fileaccesslink."');\" alt=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" /> </b> <span class=\"hcmsHeadlineTiny\" style=\"word-break:break-all;\">".$fileaccesslink."</span></div>";
 
           $i++;
         }

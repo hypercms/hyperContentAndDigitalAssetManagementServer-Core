@@ -316,13 +316,6 @@ a.hcmsLink
 {
   margin: 0;
   padding: 0;
-  background-color: #7FB3FC;
-}
-
-.hcmsWorkplaceControlWallpaper
-{
-  margin: 0;
-  padding: 0;
   background-color: #74a9ff;
 }
 
@@ -827,7 +820,7 @@ a.hcmsNavigator
 .hcmsTabPassive
 {
   float: left;
-  background-color: #8cb3ff;
+  background-color: #aac6fd;
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;

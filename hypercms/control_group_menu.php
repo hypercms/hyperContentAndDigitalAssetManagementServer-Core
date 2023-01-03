@@ -160,7 +160,7 @@ function checkForm ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceControlWallpaper" onload="<?php echo $add_onload; ?>">
+<body class="hcmsWorkplaceControl" onload="<?php echo $add_onload; ?>">
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:15px;"); ?>
 

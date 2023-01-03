@@ -97,7 +97,7 @@ $show_rank = "";
 $show_sort = "";
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // collect search expressions from log
 if ($action == "regenerate" && checktoken ($token, $user) && is_file ($mgmt_config['abs_path_data']."log/search.log"))

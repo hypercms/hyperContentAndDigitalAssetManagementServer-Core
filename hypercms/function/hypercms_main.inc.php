@@ -9666,6 +9666,9 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
   elseif (valid_publicationname ($site) && !empty ($mgmt_config[$site]['theme'])) $theme = $mgmt_config[$site]['theme'];
   else $theme = "standard";
 
+  // remove free spaces
+  $login = trim ($login);
+
   // check if sent data is available
   if (!valid_objectname ($login) || strlen ($login) < 4 || strlen ($login) > 100 || $password == "" || strlen ($password) > 100 || $confirm_password == "")
   {
@@ -9707,8 +9710,6 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
     // eventsystem
     if (!empty ($eventsystem['oncreateuser_pre']) && empty ($eventsystem['hide'])) 
       oncreateuser_pre ($login, $user);
-
-    $login = trim ($login);
 
     // load user xml file
     $userdata = loadlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php", 5);
@@ -10073,7 +10074,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
         if ($realname != $realname_saved[0])
         {
           // insert values into xml schema
-          $userdata = setcontent ($userdata, "<user>", "<realname>", "<![CDATA[".$realname."]]>", "<login>", $login);
+          $userdata = setcontent ($userdata, "<user>", "<realname>", "<![CDATA[".trim($realname)."]]>", "<login>", $login);
           $update = true;
         }
       }
@@ -10088,7 +10089,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
         if ($language != $language_saved[0])
         {
           // insert values into xml schema
-          $userdata = setcontent ($userdata, "<user>", "<language>", $language, "<login>", $login);
+          $userdata = setcontent ($userdata, "<user>", "<language>", trim($language), "<login>", $login);
           $update = true;
         }
       }
@@ -10131,7 +10132,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
         if ($email != $email_saved[0])
         {
           // insert values into xml schema
-          $userdata = setcontent ($userdata, "<user>", "<email>", "<![CDATA[".$email."]]>", "<login>", $login, true);
+          $userdata = setcontent ($userdata, "<user>", "<email>", "<![CDATA[".trim($email)."]]>", "<login>", $login, true);
           $update = true;
         }
       }
@@ -10145,7 +10146,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
         if ($phone != $phone_saved[0])
         {
           // insert values into xml schema
-          $userdata = setcontent ($userdata, "<user>", "<phone>", "<![CDATA[".$phone."]]>", "<login>", $login, true);
+          $userdata = setcontent ($userdata, "<user>", "<phone>", "<![CDATA[".trim($phone)."]]>", "<login>", $login, true);
           $update = true;
         }
       }

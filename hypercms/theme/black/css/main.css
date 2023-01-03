@@ -322,13 +322,6 @@ a.hcmsLink
   margin: 0;
   padding: 0;
   background-color: #787878;
-}
-
-.hcmsWorkplaceControlWallpaper
-{
-  margin: 0;
-  padding: 0;
-  background-color: #787878;
   background-image: url('../img/backgrd_control.jpg');
   background-repeat: repeat;
 }

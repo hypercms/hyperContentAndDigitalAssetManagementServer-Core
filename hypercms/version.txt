@@ -602,7 +602,7 @@ Release 01/2015
 - Watermarking for images and videos based on image and video options in the main config file
 - Function createmedia supports gamma, sharpness, brightness, contrast and saturation for video editing 
 - Bug fix: Impementation of binary-safe encryption and decryption to en/decrypt binary files
-- Bug fix: Popup_action did not hide loading layer if an error occured after unzip
+- Bug fix: Popup_action did not hide loading layer if an error occurred after unzip
 - 2 new input parameters (object_id, objectpath) for function rdbms_getqeueentries
 - Implementation of information regarding the auto-remove of files/objects in mail form, info tab of objects and sidebar object viewer
 - Function getcontainername supports container ID or container name as input
@@ -1012,7 +1012,7 @@ Release 11/2015
 - Implementation of additional MD5 hash comparison of encrypted file and temporary unencrypted file in function createtempfile
 - Bug fix: Function rdbms_setmedia did not update MD5 hash since wrong variable name has been used for value check
 - Various improvements in function iptc_writefile, xmp_writefile and id3_writefile
-- Bug fix: Function xmp_writefile did also write data to file if an error occured
+- Bug fix: Function xmp_writefile did also write data to file if an error occurred
 - Bug fix: Previous create of temporary unencrypted file has been checked for moving file back into encrpyted version, this caused the file not being encrypted and moved again by function iptc_writefile, xmp_writefile and id3_writefile
 - Bug fix: Function iptc_writefile did a reset of the input array $iptc
 - Bug fix: Undefined variables and undefined hidden field for 'filetype' in popup_message
@@ -1038,7 +1038,7 @@ Release 12/2015
 - Updates in livelink for PHP
 - Improvements in language selector styles of template engine to avoid changes in font-style in WYSIWYG inline editing mode
 - Improvements in function errorhandler to support error notices
-- Improvements in template engine to skip further execution if an error occured
+- Improvements in template engine to skip further execution if an error occurred
 - Improvements in function showinlineeditor to avoid changes in font-style in WYSIWYG inline editing mode
 - Bug fix: Targetlist has not been read from the request in link_edit_page
 - Bug fix: Undefined variable list_array in link_edit_page
@@ -2464,7 +2464,7 @@ Release 02/2018
 - Modifications in function createtempfile in Encryption API in order to avoid database queries for unencrypted files
 - Modifications in search_objectlist and explorer_objectlist in order to verify the objectlist column definitions before executing function getmetadata_container
 - Modifications in function query in DB Connect in order to support milliseconds for the query execution time logging
-- Modifications in function various APIs and in DB Connect in order to support mutiple return values for the search result
+- Modifications in function various APIs and in DB Connect in order to support multiple return values for the search result
 - Modifications in function showcompexplorer in UI API in order to avoid scrolling to top and to support the new search results array
 - Modifications in link_edit_explorer in order to avoid scrolling to top and to support the new search results array
 - Modifications in template engine in order to replace all link tags by onclick events on image icons
@@ -4105,7 +4105,7 @@ Release 04/2020
 - Bug fix: Function showcompexplorer in UI API did not include the full path to lazysizes.min.js
 - Bug fix: media_select in editor did not scale the images according to the provided scaling factor (dpi) if the width and height has been correctly provided by function showmedia
 - Bug fix: Function savetaxonomy in Meta API did not update the existing taxonomy entries if a new language has been added or an existing language has been removed from the taxonomy
-- Bug fix: Function showAPIdocs in UI API was not able to resolve the input of functions if a '//' occured in the default input values
+- Bug fix: Function showAPIdocs in UI API was not able to resolve the input of functions if a '//' occurred in the default input values
 
 Version 9.0.0
 Release 06/2020
@@ -6422,7 +6422,7 @@ Release 01/2023
 - Design modifications in the jqiery-fikleupload.css of all design themes
 - Implementation of the new service uploadresume in order to support file information on paused uploads that can be ressumed
 - Modifications in popup_upload_html in order to support resumable file uploads
-- Implementation of the new main configuration setting $mgmt_config['resume_uploads'] in order to enable resumable file uplaods
+- Implementation of the new main configuration setting $mgmt_config['resume_uploads'] in order to enable resumable file uploads
 - Modifications in function rdbms_getdeletedobjects in DB Connect in order to sort result
 - Design modifications in homebox template in xmlschema
 - Design modifications in all home boxes in order to align the text for mobile devices
@@ -6440,23 +6440,36 @@ Release 01/2023
 - Modifications in function update_all in Update API in order to add the new function update_database_v1008
 - Modifications in function rdbms_searchcontent in DB Connect in order to move from attribute "objectpath" to "objectpathname" for the full-text search
 - Modifications in function rdbms_renameobject and rdbms_createobject in DB Connect in order to set the value for the new attribute "objectpathname"
-- Modifications in function rdbms_searchcontent in DB Connect in order to evalute the search for a location before used wildcards
+- Modifications in function rdbms_searchcontent in DB Connect in order to evaluate the search for a location before used wildcards
 - Modifications in function specialchr_decode in Main API in order to decode the string only if the special character identifier is part of the string
 - Implementation of the new function rdbms_setobjectpathname in DB Connect in order to update empty "objectpathname" in table "object"
 - Modifications in various functions in Update API in order to remove unused error array initializations and savelog function calls
 - Modifications in various functions in DB Connect in order to remove unused error array initializations and savelog function calls
-- Modifications in function executeREST in the REST API of the Connector module in order to remove mutiple periods in the response message
+- Modifications in function executeREST in the REST API of the Connector module in order to remove multiple periods in the response message
 - Modifications in popup_upload_html in order to implement a drop-down layer for the upload options
-- Modifications in popup_upload_html in order to always display the uploaad option for the single file upload
+- Modifications in popup_upload_html in order to always display the upload option for the single file upload
 - Modifications in popup_upload_html in order to set new timeouts for uploaded or cancelled items
 - Design modifications in popup_upload_html
 - Design modification in the standard design theme
 - Implementation of the new function getboolean in Main API
 - Modifications in various RESTful API function in order to apply the new function getboolean
-- Modifications function link_db_read in Link API in order to correct error log messages
-- Modifications in tasks Home box in order to not display empty start dates of tasks
-- Modifications in function uploadhandler in Main API in order to verify that the provided file exists
-- Modifications in function createmediaobject in Main API in order to delete the created object if the upload of the source file failed
+- Modifications in function link_db_read in Link API in order to correct error log messages
+- Implementation of the new JS function hcms_copyToClipboard in main.js in order to copy a text to the clipboard of the OS
+- Modifications in explorer_preview and page_info in order to implement the copy of the link texts to the clipboard of the OS
+- Modifications in home box recent_uploadlinks in order to implement the copy of the link texts to the clipboard of the OS
+- Modifications in control_user_menu in order to reset the group and publication filter if a text based search will be executed
+- Design modifications in control_objectlist_menu
+- Removed CSS class hcmsWorkplaceControlWallpaper in all design themes
+- Renamed CSS class hcmsWorkplaceControlWallpaper to hcmsWorkplaceControl in all controls
+- Modifications in service serverload in order to initialize variables before the 
+- Implementation of a new local JS function in user_sendlink that overrides the default autocomplete filter function to search only from the beginning of the string
+- Modifications in function createuser in Main API in order to trim the user name before any verifications
+- Modifications in service sendmail in order to replace underline for the automated extraction of the real name form the e-mail address of a new user account
+- Modifications in service sendmail in order to trim the e-mail address of the new user account
+- Modifications in frameset_template_edit in order to assign the CSS class hcmsWorkplaceControl to the body tag and fix the background color
+- Design modifications in CSS class hcmsTabPassive of the colorful design theme
+- Modifications in template engine in order to load the control if an error occurred in the rendering of a page or component
+- Modifications in various update function in the Update API in order to create log entries in the update log
 - Updates in the Administrator, Connector, Developers, Import/Export, Installation, Personalization, Plugin, Report, Template Designers, Users, and Workflow Guide
 - Bug fix: explorer_objectlist, message_objectlist, queue_objectlist, search_obejctlist, and user_objectlist used continuing index numbers for each object/row which caused an error with the JS table sort on from the 2nd page (only if paging is used)
 - Bug fix: log_list used continuing index numbers for each log entry which caused an error with the JS table sort on from the 2nd page (only if paging is used)
@@ -6465,4 +6478,9 @@ Release 01/2023
 - Bug fix: user_sendlink did not display the e-mail addresses of recipients that have not user account if the message is in the queue and has not been sent 
 - Bug fix: Function getobjectcontainer in Get API used wrong input parameter name for the verification of the location
 - Bug fix: Function GCanalyzeimage in the Cloud Connector module mismatches the image size for the image option and the input parameter for function createmedia
-- Bug fix: The REST function upload did set the value of parameter checkduplicates always to true
+- Bug fix: The REST function upload did set the value of parameter checkduplicates to true and therefor ignored the input value for parmeter checkduplicates
+- Bug fix: user_sendlink did not accept new e-mail addresses if they have been a substring of an already existing e-mail address
+- Bug fix: Function getobjectlist in Get API did not support the value "folder" for the format search
+- Bug fix: Function getobjectlist in Get API did not verify the provided publication and location with the users folder access permission and always used the users folder access permission
+- Bug fix: Function getobjectpathlevel in Get API did not return the correct level if the folder object in the location has been missing
+- Bug fix: Function rdbms_serachcontent in DB Connect did not use the correct folder path level if objects of the same folder path level have been requested

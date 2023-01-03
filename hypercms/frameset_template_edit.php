@@ -28,7 +28,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE html>
 <html>
@@ -45,14 +45,14 @@ hcms_transitioneffect = false;
 </script>
 </head>
 
-<body class="hcmsTransBackground">
+<body class="hcmsWorkplaceControl hcmsTransBackground">
 <?php
 // iPad and iPhone requires special CSS settings
 if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scrolling:touch !important;";
 else $css_iphone = "";
 ?>
   <!-- tabs -->
-  <div id="tabLayer" class="hcmsTabContainer hcmsWorkplaceControlWallpaper" style="position:fixed; visibility:visible; left:0; right:0; top:0; z-index:10;">
+  <div id="tabLayer" class="hcmsTabContainer hcmsWorkplaceControl" style="position:fixed; visibility:visible; left:0; right:0; top:0; z-index:10;">
     <div id="tab1" class="hcmsTabActive">
       <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_displayLayers('editLayer','','show', 'versionLayer','','hide', 'infoLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['template'][$lang]); ?></a>
     </div>

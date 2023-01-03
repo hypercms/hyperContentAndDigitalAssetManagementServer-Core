@@ -8017,6 +8017,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $button_formview = "<a href=\"".cleandomain ($mgmt_config['url_path_cms'])."page_view.php?view=formedit&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."\"><img src=\"".getthemelocation()."img/edit_form.png\" style=\"display:inline; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" /></a>";
             $viewstore = str_replace ("<!-- hyperCMS:ErrorCodeBegin -->", $button_formview, $viewstore);
 
+            if ($ctrlreload == "yes")
+            {
+              $bodytag_controlreload = "if (parent.frames['controlFrame']) parent.frames['controlFrame'].location.href='".cleandomain ($mgmt_config['url_path_cms'])."control_content_menu.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."'; ";
+            }
+            else $bodytag_controlreload = "";
+
             // add html and body tags if missing
             if (strpos (strtolower ("_".$viewstore), "<html") < 1)
             {
@@ -8025,6 +8031,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <head>
   <title>hyperCMS</title>
   <meta charset=\"UTF-8\" />
+  <script type=\"text/javascript\">
+  ".$bodytag_controlreload."
+  </script>
+  </head>
   <body>
   ".$viewstore."
   </body>
@@ -10631,20 +10641,20 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 </html>";
       }
 
-    // ==================================== remove hyperCMS stylesheet tags in template ==================================
+      // ==================================== remove hyperCMS stylesheet tags in template ==================================
 
-    if ($buildview == "publish" || $buildview == "unpublish" || $buildview == "template" || ($buildview == "preview" && $ctrlreload != "yes"))
-    {
-      $hypertag_array = gethypertag ($viewstore, "compstylesheet", 0);
-
-      if (empty ($recognizefaces_service) && is_array ($hypertag_array) && sizeof ($hypertag_array) > 0)
+      if ($buildview == "publish" || $buildview == "unpublish" || $buildview == "template" || ($buildview == "preview" && $ctrlreload != "yes"))
       {
-        foreach ($hypertag_array as $hypertag)
+        $hypertag_array = gethypertag ($viewstore, "compstylesheet", 0);
+
+        if (empty ($recognizefaces_service) && is_array ($hypertag_array) && sizeof ($hypertag_array) > 0)
         {
-          $viewstore = str_replace ($hypertag, "", $viewstore);
+          foreach ($hypertag_array as $hypertag)
+          {
+            $viewstore = str_replace ($hypertag, "", $viewstore);
+          }
         }
       }
-    }
 
       // ====================================== Adding Headers for Video Player ============================================
 

@@ -418,6 +418,15 @@ $token_new = createtoken ($user);
 
     var noneFound = { id: "<?php echo $idspecial; ?>", label: hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['add-as-recipient'][$lang]); ?>") };
 
+    // override the default autocomplete filter function to search only from the beginning of the string
+    $.ui.autocomplete.filter = function (array, term) {
+      var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+      
+      return $.grep(array, function (value) {
+        return matcher.test(value.username || value.email);
+      });
+    };
+
     $("input#selector").autocomplete(
     { 
         source: function(request, response) {

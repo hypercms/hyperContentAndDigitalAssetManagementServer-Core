@@ -59,7 +59,7 @@ if (!empty ($hcms_themeinvertcolors))
 ?>
 </head>
 
-  <body class="hcmsWorkplaceControlWallpaper">
+  <body class="hcmsWorkplaceControl">
 
     <!-- workplace control title -->
     <div class="hcmsLocationBar">

@@ -2094,7 +2094,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   {
     foreach ($search as $key=>$value)
     {
-      if (($key == "samelocation" && $value == false) || ($key != "samelocation" && $key != "fileextension" && $key != "limit" && $value != ""))
+      if (($key == "samelocation" && $value == false) || ($key != "samelocation" && $key != "format" && $key != "fileextension" && $key != "limit" && $value != ""))
       {
         $search_active = true;
         break;
@@ -2116,8 +2116,8 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   // search for file or folder name
   if (empty ($search['filename'])) $search['filename'] = "*Null*";
 
-  // format values: audio,binary,compressed,document,flash,image,text,video,unknown
-  $filter_names = array ("page", "comp", "image", "document", "text", "video", "audio", "flash", "compressed", "binary");
+  // format values: folder,audio,binary,compressed,document,flash,image,text,video,unknown
+  $filter_names = array ("folder", "page", "comp", "image", "document", "text", "video", "audio", "flash", "compressed", "binary");
 
   if (!empty ($search['format']) && is_array ($search['format']))
   {
@@ -2187,7 +2187,6 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       // check access permission
       if ($return_all_levels == false)
       {
-        
         $ownergroup = accesspermission ($site, $location, $cat);
         $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
@@ -2250,7 +2249,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
         }
       }
     }
-    // if a sepcific location has been requested
+    // if a specific location has been requested or is empty
     else
     {
       // use compaccess (compaccess[publication][group]=[objectpath])
@@ -2262,50 +2261,58 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
         // component access of user
         foreach ($compaccess as $temp_site => $value)
         {
-          if ($checkREST == true && valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
-
-          // verify permission for the RESTful API
-          if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
+          // verify publication
+          if ((valid_publicationname ($site) && $site == $temp_site) || $site == "")
           {
-            foreach ($value as $group_name => $pathes)
+            if ($checkREST == true && valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+
+            // verify permission for the RESTful API
+            if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
             {
-              // split access-string into an array
-              $path_array = link_db_getobject ($pathes);
-              
-              if (is_array ($path_array))
+              foreach ($value as $group_name => $pathes)
               {
-                foreach ($path_array as $path)
+                // split access-string into an array
+                $path_array = link_db_getobject ($pathes);
+                
+                if (is_array ($path_array))
                 {
-                  // add slash if missing
-                  $path = correctpath ($path);
-
-                  $temp_location_esc = convertpath ($temp_site, $path, "comp");
-                  $temp_hash = rdbms_getobject_hash ($temp_location_esc);
-
-                  // check access permission
-                  $ownergroup = accesspermission ($temp_site, $temp_location_esc, "comp");
-                  $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "comp");
-
-                  // check access permission
-                  // set location if no search location has been requested
-                  if ($search_dir_active == false && $return_all_levels == false && !empty ($setlocalpermission['root']))
+                  foreach ($path_array as $path)
                   {
-                    // positive access that can be used for the search
-                    if ($search_active == true) $search_dir_esc[] = $temp_location_esc;
-                    // positive access that can be used as a root folder of the user
-                    elseif ($search_active == false) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
-                  }
+                    // add slash if missing
+                    $path = correctpath ($path);
+                    $temp_location_esc = convertpath ($temp_site, $path, "comp");
 
-                  // negative access
-                  if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
+                    // verify location
+                    if ((valid_locationname ($location) && (strpos ("_".$location, $temp_location_esc) > 0 || strpos ("_".$temp_location_esc, $location) > 0)) || $location == "")
+                    {
+                      $temp_hash = rdbms_getobject_hash ($temp_location_esc);
+
+                      // check access permission
+                      $ownergroup = accesspermission ($temp_site, $temp_location_esc, "comp");
+                      $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "comp");
+
+                      // check access permission
+                      // set location if no search location has been requested
+                      if ($search_dir_active == false && $return_all_levels == false && !empty ($setlocalpermission['root']))
+                      {
+                        // positive access that can be used for the search
+                        if ($search_active == true) $search_dir_esc[] = $temp_location_esc;
+                        // positive access that can be used as a root folder of the user
+                        elseif ($search_active == false) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
+                      }
+
+                      // negative access
+                      if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
+                    }
+                  }
                 }
               }
             }
-          }
-          // exclude publication 
-          else
-          {
-            $exclude_dir_esc[] = "%comp%/".$temp_site."/";
+            // exclude publication 
+            else
+            {
+              $exclude_dir_esc[] = "%comp%/".$temp_site."/";
+            }
           }
         }
       }
@@ -2316,50 +2323,58 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
         // page access of user
         foreach ($pageaccess as $temp_site => $value)
         {
-          if ($checkREST == true &&  valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
-
-          // verify permission for the RESTful API
-          if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
+          // verify publication
+          if ((valid_publicationname ($site) && $site == $temp_site) || $site == "")
           {
-            foreach ($value as $group_name => $pathes)
+            if ($checkREST == true &&  valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+
+            // verify permission for the RESTful API
+            if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
             {
-              // split access-string into an array
-              $path_array = link_db_getobject ($pathes);
-              
-              if (is_array ($path_array))
+              foreach ($value as $group_name => $pathes)
               {
-                foreach ($path_array as $path)
+                // split access-string into an array
+                $path_array = link_db_getobject ($pathes);
+                
+                if (is_array ($path_array))
                 {
-                  // add slash if missing
-                  $path = correctpath ($path);
-
-                  $temp_location_esc = convertpath ($temp_site, $path, "page");
-                  $temp_hash = rdbms_getobject_hash ($temp_location_esc);
-
-                  // check access permission
-                  $ownergroup = accesspermission ($temp_site, $temp_location_esc, "page");
-                  $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "page");
-
-                  // check access permission
-                  // set location if no search location has been requested
-                  if ($search_dir_active == false && $return_all_levels == false && !empty ($setlocalpermission['root']))
+                  foreach ($path_array as $path)
                   {
-                    // positive access that can be used for the search
-                    if ($search_active == true) $search_dir_esc[] = $temp_location_esc;
-                    // positive access that can be used as a root folder of the user
-                    elseif ($search_active == false) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
-                  }
+                    // add slash if missing
+                    $path = correctpath ($path);
+                    $temp_location_esc = convertpath ($temp_site, $path, "page");
 
-                  // negative access
-                  if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
+                    // verify location
+                    if ((valid_locationname ($location) && (strpos ("_".$location, $temp_location_esc) > 0 || strpos ("_".$temp_location_esc, $location) > 0)) || $location == "")
+                    {
+                      $temp_hash = rdbms_getobject_hash ($temp_location_esc);
+
+                      // check access permission
+                      $ownergroup = accesspermission ($temp_site, $temp_location_esc, "page");
+                      $setlocalpermission = setlocalpermission ($temp_site, $ownergroup, "page");
+
+                      // check access permission
+                      // set location if no search location has been requested
+                      if ($search_dir_active == false && $return_all_levels == false && !empty ($setlocalpermission['root']))
+                      {
+                        // positive access that can be used for the search
+                        if ($search_active == true) $search_dir_esc[] = $temp_location_esc;
+                        // positive access that can be used as a root folder of the user
+                        elseif ($search_active == false) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
+                      }
+
+                      // negative access
+                      if (empty ($setlocalpermission['root']) && $return_all_levels == false) $exclude_dir_esc[] = $temp_location_esc;
+                    }
+                  }
                 }
               }
             }
-          }
-          // exclude publication 
-          else
-          {
-            $exclude_dir_esc[] = "%page%/".$temp_site."/";
+            // exclude publication 
+            else
+            {
+              $exclude_dir_esc[] = "%page%/".$temp_site."/";
+            }
           }
         }
       }
@@ -2400,7 +2415,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
         }
       }
       // search
-      else
+      elseif (!empty ($search_dir_esc) && is_array ($search_dir_esc) && sizeof ($search_dir_esc) > 0)
       {
         $result = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols, true);
       }
@@ -2470,6 +2485,7 @@ function getobjectpathlevel ($objectpath)
   if (is_string ($objectpath) && $objectpath != "" && (substr_count ($objectpath, "*page*") == 1 || substr_count ($objectpath, "*comp*") == 1 || substr_count ($objectpath, "%page%") == 1 || substr_count ($objectpath, "%comp%") == 1))
   {
     $objectpath = trim ($objectpath);
+    $objectpath = trim ($objectpath, "/");
 
     if (substr ($objectpath, -8) == "/.folder") $objectpath = substr ($objectpath, 0, -8);
 

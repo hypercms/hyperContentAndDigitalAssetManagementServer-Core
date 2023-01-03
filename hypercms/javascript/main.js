@@ -39,6 +39,27 @@ function hcms_uniqid ()
   return result;
 }
 
+// ------------------------ Clipboard ----------------------------
+
+function hcms_copyToClipboard (str)
+{
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+  {
+    navigator.clipboard.writeText(str).then(function() {
+      console.log('Copied text to clipboard');
+    }, function(error) {
+      console.error('Could not copy text with error: ', error);
+    });
+
+    return true;
+  }
+  else
+  {
+    console.log('The clipboard API is not available');
+    return false;
+  }
+}
+
 // ------------------------ MD5 hash ----------------------------
 
 // JavaScript implementation of the RSA Data Security, Inc. MD5 Message
@@ -1471,6 +1492,19 @@ function hcms_dragLayers (elem, moveelem, connection_id)
 
 // ----------------------------------------  show/hide layer ---------------------------------------
 
+function hcms_isHiddenLayer (id)
+{
+  var info = document.getElementById(id);
+  
+  if (info)
+  {
+    if (info.style.display == 'none') return true;
+    else if (info.style.visibility == 'hidden') return true;
+  }
+
+  return false;
+}
+
 function hcms_slideDownLayer (id, offset) 
 {
   // default value
@@ -1592,12 +1626,16 @@ function hcms_showFormLayer (id, sec)
   // default value
   sec = typeof sec !== 'undefined' ? sec : 0;
 
-  var info = document.getElementById(id);
+  var formlayer = document.getElementById(id);
 
-  if (info)
+  if (formlayer)
   {
+    // do not apply effect on load screen
+    // show based on display style
+    formlayer.style.display = 'inline';
+
     // enable all form elements
-    var nodes = info.getElementsByTagName('*');
+    var nodes = formlayer.getElementsByTagName('*');
 
     for (var i = 0; i < nodes.length; i++)
     {
@@ -1606,10 +1644,6 @@ function hcms_showFormLayer (id, sec)
         nodes[i].disabled = false;
       }
     }
-
-    // do not apply effect on load screen
-    // show based on display style
-    info.style.display = 'inline';
 
     // hide element
     if (sec > 0)
@@ -1625,15 +1659,15 @@ function hcms_showFormLayer (id, sec)
 
 function hcms_hideFormLayer (id)
 {
-  var info = document.getElementById(id);
+  var formlayer = document.getElementById(id);
 
-  if (info)
+  if (formlayer)
   {
     // hide based on display style
-    info.style.display = 'none';
+    formlayer.style.display = 'none';
 
     // disable all form elements
-    var nodes = info.getElementsByTagName('*');
+    var nodes = formlayer.getElementsByTagName('*');
 
     for (var i=0; i<nodes.length; i++)
     {
@@ -1650,14 +1684,17 @@ function hcms_hideFormLayer (id)
 
 function hcms_switchFormLayer (id)
 {
-  var info = document.getElementById(id);
+  var formlayer = document.getElementById(id);
   
-  if (info)
+  if (formlayer)
   {
-    if (info.style.display == 'none')
+    if (formlayer.style.display == 'none')
     {
+      // show
+      formlayer.style.display = 'inline';
+      
       // enable all form elements
-      var nodes = info.getElementsByTagName('*');
+      var nodes = formlayer.getElementsByTagName('*');
 
       for (var i=0; i<nodes.length; i++)
       {
@@ -1666,17 +1703,14 @@ function hcms_switchFormLayer (id)
           nodes[i].disabled = false;
         }
       }
-
-      // show
-      info.style.display = 'inline';
     }
     else
     {
       // hide
-      info.style.display = 'none';
+      formlayer.style.display = 'none';
 
       // disable all form elements
-      var nodes = info.getElementsByTagName('*');
+      var nodes = formlayer.getElementsByTagName('*');
 
       for (var i=0; i<nodes.length; i++)
       {
