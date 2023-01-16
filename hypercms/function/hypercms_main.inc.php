@@ -7709,7 +7709,7 @@ function editpublication ($site_name, $setting, $user="sys")
         {
           // clean
           $temp = trim ($temp, " '\"\t\n\r\0\x0B");
-          $temp = str_replace ("'", "\\'", $temp);
+          $temp = str_replace (array("\\", "'"), array("", "\\'"), $temp);
 
           $temp_result[] = "'".$temp."'";
         }
@@ -7734,9 +7734,9 @@ function editpublication ($site_name, $setting, $user="sys")
 
           // clean
           $key = trim ($key, " '\"\t\n\r\0\x0B");
-          $key = str_replace ("'", "\\'", $key);
+          $key = str_replace (array("\\", "'"), array("", "\\'"), $key);
           $value = trim ($value, " '\"\t\n\r\0\x0B");
-          $value = str_replace ("'", "\\'", $value);
+          $value = str_replace (array("\\", "'"), array("", "\\'"), $value);
 
           $temp_result[] = "'".$key."'=>'".$value."'";
         }

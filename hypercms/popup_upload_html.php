@@ -1406,7 +1406,9 @@ if ($uploadmode == "multi")
 {
   $title = "<span id=\"status\">0</span>&nbsp;".getescapedtext ($hcms_lang['files-uploaded'][$lang]);
   $object_name = getlocationname ($site, $location_esc, $cat, "path");
-  $object_name = "<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".str_replace ("/", " &gt; ", trim ($object_name, "/"));
+  $object_name = str_replace ("/", " &gt; ", trim ($object_name, "/"));
+  if ($is_mobile) $object_name = showshorttext ($object_name, 40, false);
+  $object_name = "<img src=\"".getthemelocation()."img/folder.png\" title=\"".getescapedtext ($hcms_lang['location'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".$object_name;
 }
 else
 {
@@ -1440,7 +1442,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weig
       <?php } ?>
       
       <!-- buttons -->
-      <div style="display:block; margin-top:5px; padding:0; clear:both;">
+      <div style="display:block; margin-top:8px; padding:0; clear:both;">
         <button type="button" for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?> /></button>
         <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
         <button type="button" id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></button>

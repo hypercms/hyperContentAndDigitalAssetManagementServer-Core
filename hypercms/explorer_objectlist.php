@@ -135,10 +135,10 @@ if (valid_locationname ($location))
         {    
           // cut of last '|'
           $access_str = substr ($value, 0, strlen ($value) - 1);
-      
+
           // create folder array
           $folder_array_new = explode ("|", $access_str);
-          
+
           // merge folders of different groups
           $folder_array = array_merge ($folder_array, $folder_array_new);
         }
@@ -146,7 +146,7 @@ if (valid_locationname ($location))
        
       // remove double entries 
       $folder_array = array_unique ($folder_array);
-      
+
       $objects_total = sizeof ($folder_array);
     }
   }    
@@ -154,7 +154,7 @@ if (valid_locationname ($location))
   elseif (valid_locationname ($location) && is_dir ($location))
   {
     $scandir = scandir ($location);
-    
+
     if ($scandir)
     {
       foreach ($scandir as $file) 
@@ -219,14 +219,14 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         $location = getlocation ($folder);
         $folder = getobject ($folder);
       }
-      
+
       // folder information
       $file_info = getfileinfo ($site, $location.$folder."/.folder", $cat);
-      
+
       // eventsystem
       if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide'])) 
         onobjectlist_pre ($site, $cat, $location, $folder, $user);        
-      
+
       // if folder exists
       if (valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder) && !$file_info['deleted'])
       {
@@ -244,7 +244,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
 
         // get folder name
         $folder_name = $file_info['name'];
-        
+
         $metadata = "";
         $file_size = "";
         $file_created = "";
@@ -256,30 +256,30 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         $workflow_status = "";
         $workflow_icon = "";
         $workflow_class = "";
-    
+
         // read file
         $objectdata = loadfile ($location.$folder."/", ".folder");
-        
+
         // folder file exists and can be loaded
         if ($objectdata != false)
         {
           // get name of content file and load content container
           $contentfile = getfilename ($objectdata, "content");
           $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));  
-                
+
           // get user of locked container
           if ($contentfile != false)
           {
             $result = getcontainername ($contentfile);
-            
+
             if (!empty ($result['user'])) $usedby = $result['user'];    
           }
-          
+
           // get metadata of container
           if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat]) && sizeof ($objectlistcols[$site][$cat]) > 0)
           {
             $container_info = getmetadata_container ($container_id, array_keys ($objectlistcols[$site][$cat]));
-            
+
             if (!empty ($container_info) && is_array ($container_info))
             {  
               if (!empty ($container_info['createdate']) && is_date ($container_info['createdate'])) $file_created = date ("Y-m-d H:i", strtotime ($container_info['createdate']));
@@ -336,7 +336,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
           $dlink_start = "<a id=\"link_".$items_id."\" data-linktype=\"none\" data-objectpath=\"".$location_esc.$folder."\" data-href=\"javascript:void(0);\">";
           $dlink_end = "</a>";
         }
-        
+
         // fallback for date modified
         if (empty ($file_modified))
         {
@@ -349,7 +349,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
 
         // open folder
         $openFolder = "ondblclick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/';\" ";
-        
+
         // set context
         $hcms_setObjectcontext = "onmouseover=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '.folder', '".$folder_name."', 'Folder', '', '".$folder."', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
@@ -381,7 +381,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
           $dragevent = "draggable=\"true\" ondragstart=\"hcms_drag(event)\"";
         }
         else $dragevent = "";
-        
+
         // metadata
         $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
 
@@ -398,14 +398,14 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
           if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat]))
           {
             $i = 1;
-            
+
             foreach ($objectlistcols[$site][$cat] as $key => $active)
             {
               if ($i < sizeof ($objectlistcols[$site][$cat])) $style_td = "width:125px;";
               else $style_td = "";
-              
+
               $style_div = "";
-              
+
               if ($active == 1)
               {
                 if ($key == 'createdate')
@@ -442,17 +442,17 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
                   if (!empty ($container_info[$key])) $title = $container_info[$key];
                   else $title = "";
                 }
-                
+
                 $listview .= "
                         <td id=\"h".$items_id."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
-                
+
                 $i++;
               }
             }
           }
         }
-        
-        $listview .= "</tr>";                       
+
+        $listview .= "</tr>";
     
         $galleryview .= "
                        <div id=\"t".$items_id."\" ".$selectclick." class=\"hcmsObjectUnselected\">
@@ -569,6 +569,8 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
               if (!empty ($container_info['publishdate']) && is_date ($container_info['publishdate'])) $file_published = date ("Y-m-d H:i", strtotime ($container_info['publishdate']));
               if (!empty ($container_info['date']) && is_date ($container_info['date'])) $file_modified = date ("Y-m-d H:i", strtotime ($container_info['date']));
               if (!empty ($container_info['user'])) $file_owner = $container_info['user'];
+              if (!empty ($container_info['width'])) $file_width = $container_info['width'];
+              if (!empty ($container_info['height'])) $file_height = $container_info['height'];
             }
           }
 
@@ -788,7 +790,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
             $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($site, $media_info['filename'].".thumb.jpg"))."\" ".$class_image." /></div>";
           }
-          // display file icon if thumbnail fails 
+          // display file icon if thumbnail is not available 
           else
           {
             // galleryview - view option for locked multimedia objects
@@ -832,9 +834,9 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
         // if assetbrowser is used display edit button
         if (!empty ($hcms_assetbrowser) && $mediafile != "" && $setlocalpermission['root'] == 1)
-        {   
+        {
           $linking_buttons .= "
-          <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onclick=\"parent.parent.returnMedia('".$location_esc.$object."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
+          <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onclick=\"parent.parent.returnMedia('".$location_esc.$object."', '".$object_name."', '".$file_width."', '".$file_height."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
         }
 
         if ($linking_buttons != "")

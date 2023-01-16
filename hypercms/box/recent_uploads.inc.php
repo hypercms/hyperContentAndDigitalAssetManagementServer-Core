@@ -9,7 +9,6 @@ if (!empty ($user)) $stats_array = rdbms_getmediastat ("", "", "upload", "", "",
 // prepare array
 if (!empty ($stats_array) && is_array ($stats_array) && sizeof ($stats_array) > 0)
 {
-  $stats_array = array_reverse ($stats_array);
   reset ($stats_array);
   $i = 0;
 

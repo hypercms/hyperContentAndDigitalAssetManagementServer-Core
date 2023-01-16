@@ -6483,4 +6483,32 @@ Release 01/2023
 - Bug fix: Function getobjectlist in Get API did not support the value "folder" for the format search
 - Bug fix: Function getobjectlist in Get API did not verify the provided publication and location with the users folder access permission and always used the users folder access permission
 - Bug fix: Function getobjectpathlevel in Get API did not return the correct level if the folder object in the location has been missing
-- Bug fix: Function rdbms_serachcontent in DB Connect did not use the correct folder path level if objects of the same folder path level have been requested
+- Bug fix: Function rdbms_searchcontent in DB Connect did not use the correct folder path level if objects of the same folder path level have been requested
+
+Version 10.0.9
+Release 03/2023
+- Modifications in function getobjectlist in Get API in order to clean the filter values for the format search
+- Modifications in function getobjectlist in Get API in order to exclude the folders a user has access to if the search format does not request folders
+- Modifications in function getobjectlist in Get API in order to remove duplicates in the users publications and sort the publications
+- Modifications in function userlogin in Security API in order to remove duplicates in the users publications and sort the publications
+- Modifications in function rdbms_searchcontent in DB Connect in order to count the total number of objects of the search results only if a result is available
+- Modifications in home box recent_uploadlinks in order to set the day design theme for the copy icons
+- Modifications in home box recent_uploadlinks in order to remove the CSS class hcmsHeadlineTiny from the links
+- Modifications in task_list of the Task Management module in order to strip HTML tags from the task name and description
+- Modifications in function rdbms_createtask and rdbms_settask in DB Connect in order to strip HTML tags from the string values
+- Modifications in function rdbms_createproject and rdbms_setproject in DB Connect in order to strip HTML tags from the string values
+- Modifications in function rdbms_gettask  in DB Connect in order to strip HTML tags from the string values
+- Modifications in function rdbms_getproject in DB Connect in order to strip HTML tags from the string values
+- Modifications in function getbrowserinfo in Get API in order to verify that the result array element exists
+- Modifications in popup_upload_html in oder to shorten the location text on mobile devices (Mobile Edition)
+- Update of the TCPDF library to version 6.6.2
+- Modifications in function rdbms_searchcontent in DB Connect in order to return an empty array instead of false in case nothing was found (due to the HTTP 500 code that will be returned by the REST API in case nothing was found)
+- Modifications in explorer in order to clean \ from the user options
+- Modifications in function readhistory in Search API in order to clean \ from the search expression history
+- Modifications in template engine in order to clean \ from the list options
+- Modifications in page_multiedit in order to clean \ from the LDAP attributes
+- Modifications in function editpublication in Main API in order to clean \ from the user options
+- Modifications in explorer in order to use the media width and height provided by function getmetadata_container
+- Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
+- Bug fix: Function getsearchhistory in Get API did not clean \ that can cause the escape of characters
+- Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height 

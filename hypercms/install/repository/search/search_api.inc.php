@@ -786,7 +786,7 @@ function readhistory ()
         {
           list ($date, $ip, $keyword_add) = explode ("|", $record);
     
-          $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+          $keywords[] = "'".str_replace (array("\\", "'"), array("", "\\'"), trim ($keyword_add))."'";
         }
       }
       

@@ -2174,7 +2174,7 @@ else
                 elseif (trim ($value['realname']) != "") $text .= " (".trim ($value['realname']).")";
                 elseif (trim ($value['email']) != "") $text .= " (".trim ($value['email']).")";
 
-                $text = "'".str_replace ("'", "\\'", trim ($text))."'";                
+                $text = "'".str_replace (array("\\", "'"), array("", "\\'"), trim ($text))."'";                
                 $user_option[$login] = $text;
               }
             }

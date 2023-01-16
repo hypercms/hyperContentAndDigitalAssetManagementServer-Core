@@ -566,7 +566,8 @@ function getsearchhistory ($user="", $clean=false)
           // collect entries
           if (($searchuser == $user || $user == "") && !is_numeric (trim ($keyword_add)) && strlen ($keyword_add) < 800 && strpos ("_".$keyword_add, "<") < 1 && strpos ("_".$keyword_add, ">") < 1)
           {
-            $keywords[] = "'".str_replace ("'", "\\'", trim ($keyword_add))."'";
+            // replace backslash and single quotes
+            $keywords[] = "'".str_replace (array("\\", "'"), array("", "\\'"), trim ($keyword_add))."'";
           }
         }
       }
@@ -1392,7 +1393,7 @@ function getgoogleanalytics ($google_analytics_key)
 // ---------------------- getlistelements -----------------------------
 // function: getlistelements()
 // input: content attribute value of list or keyword tag, seperator of list elements [string] (optional)
-// output: string with list/keyword elements sperated by commas / false
+// output: string with list/keyword elements seperated by commas / false on error
 
 function getlistelements ($list_sourcefile)
 {
@@ -2042,7 +2043,7 @@ function getmetadata_container ($container_id, $text_id_array=array())
 // ---------------------------------------- getobjectlist ----------------------------------------
 // function: getobjectlist()
 // input: publication name [string] (optional), location [string] (optional), folder hash code [string,array] (optional), search parameters [array] (optional), information and text IDs to be returned e.g. text:Title [array] (optional), 
-//        verify RESTful API for the publication [boolean] (optional), return all levels even if the user has no access permission to parent folder [boolean] (optional)
+//        verify RESTful API for the publication [boolean] (optional), return all levels even if the user has no access permission to the folder [boolean] (optional)
 // output: result array / false on error
 // requires: config.inc.php
 
@@ -2062,6 +2063,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   $search_dir_esc = array();
   $search_active = false;
   $search_dir_active = false;
+  $search_format_folder = true;
   $return_site_access = false;
   $exclude_dir_esc = array();
   $setlocalpermission = array();
@@ -2089,7 +2091,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   // define default values (add all text IDs)
   if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "template", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height", "text:temp");
 
-  // search is used
+  // search is used (excluding cerrtain search filters)
   if (is_array ($search))
   {
     foreach ($search as $key=>$value)
@@ -2123,9 +2125,16 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   {
     foreach ($search['format'] as $key=>$value)
     {
-      if (in_array (strtolower ($value), $filter_names)) $search['format'][$key] = strtolower ($value);
+      if (in_array (strtolower ($value), $filter_names)) $search['format'][$key] = strtolower (trim ($value));
       else unset ($search['format'][$key]);
+
+      // folder format filter is set
+      if ($value == "folder") $temp_folder = true;
     }
+
+    // in order to exclude the users root access folders based on the requested format
+    if (sizeof ($search['format']) > 0 && !empty ($temp_folder)) $search_format_folder = true;
+    else $search_format_folder = false;
   }
   else $search['format'] = "";
 
@@ -2216,7 +2225,10 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     {
       if (!empty ($siteaccess) && is_array ($siteaccess))
       {
-        foreach ($siteaccess as $temp_site)
+        $temp_sites = array_unique ($siteaccess);
+        natcasesort ($temp_sites);
+
+        foreach ($temp_sites as $temp_site)
         {
           // assets
           if (strpos ("_".$location, "%comp%/") > 0)
@@ -2298,7 +2310,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
                         // positive access that can be used for the search
                         if ($search_active == true) $search_dir_esc[] = $temp_location_esc;
                         // positive access that can be used as a root folder of the user
-                        elseif ($search_active == false) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
+                        elseif ($search_active == false && $search_format_folder == true) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
                       }
 
                       // negative access
@@ -2360,7 +2372,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
                         // positive access that can be used for the search
                         if ($search_active == true) $search_dir_esc[] = $temp_location_esc;
                         // positive access that can be used as a root folder of the user
-                        elseif ($search_active == false) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
+                        elseif ($search_active == false && $search_format_folder == true) $root_dir_esc[$temp_hash]['objectpath'] = $temp_location_esc.".folder";
                       }
 
                       // negative access
@@ -5458,7 +5470,7 @@ function getbrowserinfo ()
     {
       // we will have two since we are not using 'other' argument yet
       // see if version is before or after the name
-      if (strripos ($u_agent, "Version") < strripos ($u_agent, $ub))
+      if (strripos ($u_agent, "Version") < strripos ($u_agent, $ub) && !empty ($matches['version'][0]))
       {
         $version = $matches['version'][0];
       }

@@ -1906,6 +1906,9 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
 
     if (is_array ($result['siteaccess']) && sizeof ($result['siteaccess']) > 0)
     {
+      $result['siteaccess'] = array_unique ($result['siteaccess']);
+      natcasesort ($result['siteaccess']);
+
       foreach ($result['siteaccess'] as $temp_site)
       {
         // set default values

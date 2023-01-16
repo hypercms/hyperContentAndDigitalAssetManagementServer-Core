@@ -3448,7 +3448,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             $list = str_replace ("\n", ",", $list);
                             $list = str_replace ("\r", ",", $list);
                             // escape single quotes
-                            $list = str_replace ("'", "\\'", $list);
+                            $list = str_replace (array("\\", "'"), array("", "\\'"), $list);
                             // create array
                             $list_array = explode (",", $list);
                             // create keyword string for Javascript

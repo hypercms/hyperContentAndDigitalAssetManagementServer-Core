@@ -2902,7 +2902,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     }
 
     // count the total number of objects of the searchresults
-    if (!empty ($count))
+    if (!empty ($count) && is_array ($objectpath) && sizeof ($objectpath) > 0)
     {
       $sql = 'SELECT COUNT(DISTINCT obj.hash) as cnt FROM object AS obj ';
       
@@ -2935,7 +2935,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
     $db->rdbms_close();
 
-    if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0)
+    if (!empty ($objectpath) && is_array ($objectpath))
     {
       return $objectpath;
     }
@@ -6302,17 +6302,17 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
     else $object_id = 0;
     if ($project_id != "") $project_id = intval ($project_id);
     else $project_id = 0;
-    if ($from_user != "") $from_user = $db->rdbms_escape_string ($from_user);
-    if ($to_user != "") $to_user = $db->rdbms_escape_string ($to_user);
-    if ($startdate != "") $startdate = date ("Y-m-d", strtotime ($startdate));
+    if ($from_user != "") $from_user = $db->rdbms_escape_string (strip_tags ($from_user));
+    if ($to_user != "") $to_user = $db->rdbms_escape_string (strip_tags ($to_user));
+    if ($startdate != "") $startdate = date ("Y-m-d", strtotime (strip_tags ($startdate)));
     else $startdate = "0000-00-00";
-    if ($finishdate != "") $finishdate = date ("Y-m-d", strtotime ($finishdate));
+    if ($finishdate != "") $finishdate = date ("Y-m-d", strtotime (strip_tags ($finishdate)));
     else $startdate = "0000-00-00";
     if ($category != "") $category = $db->rdbms_escape_string ($category);
     else $category = "user";
-    $taskname = $db->rdbms_escape_string ($taskname);
-    if ($description != "") $description = $db->rdbms_escape_string ($description);
-    if ($priority != "") $priority = $db->rdbms_escape_string (strtolower ($priority));
+    $taskname = $db->rdbms_escape_string (strip_tags ($taskname));
+    if ($description != "") $description = $db->rdbms_escape_string (strip_tags ($description));
+    if ($priority != "") $priority = $db->rdbms_escape_string (strtolower (strip_tags ($priority)));
     if ($planned != "") $planned = $db->rdbms_escape_string (correctnumber ($planned));
 
     // set user if not defined
@@ -6365,12 +6365,12 @@ function rdbms_settask ($task_id, $object_id="*Leave*", $project_id="*Leave*", $
 
     if ($object_id != "*Leave*" && intval ($object_id) >= 0) $sql_update[] = 'object_id="'.intval($object_id).'"';
     if ($project_id != "*Leave*" && intval ($project_id) >= 0) $sql_update[] = 'project_id="'.intval($project_id).'"';
-    if ($to_user != "*Leave*" && $to_user != "") $sql_update[] = 'to_user="'.$db->rdbms_escape_string ($to_user).'"';
-    if ($startdate != "*Leave*") $sql_update[] = 'startdate="'.$db->rdbms_escape_string ($startdate).'"';
-    if ($finishdate != "*Leave*") $sql_update[] = 'finishdate="'.$db->rdbms_escape_string ($finishdate).'"';
-    if ($taskname != "*Leave*" && $taskname != "") $sql_update[] = 'task="'.$db->rdbms_escape_string ($taskname).'"';
-    if ($description != "*Leave*") $sql_update[] = 'description="'.$db->rdbms_escape_string ($description).'"';
-    if ($priority != "*Leave*" && $priority != "") $sql_update[] = 'priority="'.$db->rdbms_escape_string (strtolower ($priority)).'"';
+    if ($to_user != "*Leave*" && $to_user != "") $sql_update[] = 'to_user="'.$db->rdbms_escape_string (strip_tags ($to_user)).'"';
+    if ($startdate != "*Leave*") $sql_update[] = 'startdate="'.$db->rdbms_escape_string (strip_tags ($startdate)).'"';
+    if ($finishdate != "*Leave*") $sql_update[] = 'finishdate="'.$db->rdbms_escape_string (strip_tags ($finishdate)).'"';
+    if ($taskname != "*Leave*" && $taskname != "") $sql_update[] = 'task="'.$db->rdbms_escape_string (strip_tags ($taskname)).'"';
+    if ($description != "*Leave*") $sql_update[] = 'description="'.$db->rdbms_escape_string (strip_tags ($description)).'"';
+    if ($priority != "*Leave*" && $priority != "") $sql_update[] = 'priority="'.$db->rdbms_escape_string (strtolower (strip_tags ($priority))).'"';
     if ($status != "*Leave*" && intval ($status) >= 0) $sql_update[] = 'status="'.intval ($status).'"';
     if ($planned != "*Leave*" && floatval ($planned) >= 0) $sql_update[] = 'planned="'.correctnumber($planned).'"';
     if ($actual != "*Leave*" && floatval ($actual) >= 0) $sql_update[] = 'actual="'.correctnumber($actual).'"';
@@ -6464,14 +6464,14 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
           $result[$i]['object_id'] = $row['object_id'];
           $result[$i]['objectpath'] = rdbms_getobject($row['object_id']);
           $result[$i]['project_id'] = $row['project_id'];
-          $result[$i]['taskname'] = $row['task'];
+          $result[$i]['taskname'] = strip_tags (html_entity_decode ($row['task']));
           $result[$i]['from_user'] = $row['from_user']; 
           $result[$i]['to_user'] = $row['to_user'];
           $result[$i]['startdate'] = $row['startdate'];
           $result[$i]['finishdate'] = $row['finishdate'];
-          $result[$i]['category'] = $row['category'];
-          $result[$i]['description'] = $row['description'];
-          $result[$i]['priority'] = $row['priority'];
+          $result[$i]['category'] = strip_tags (html_entity_decode ($row['category']));
+          $result[$i]['description'] = strip_tags (html_entity_decode ($row['description']));
+          $result[$i]['priority'] = strip_tags (html_entity_decode ($row['priority']));
           $result[$i]['status'] = $row['status'];
           $result[$i]['planned'] = $row['planned'];
           $result[$i]['actual'] = $row['actual'];
@@ -6567,9 +6567,9 @@ function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectna
     else $subproject_id = 0;
     if ($object_id != "") $object_id = intval ($object_id);
     else $object_id = 0;
-    if ($user != "") $user = $db->rdbms_escape_string ($user);
-    $projectname = $db->rdbms_escape_string ($projectname);
-    if ($description != "") $description = $db->rdbms_escape_string ($description);
+    if ($user != "") $user = $db->rdbms_escape_string (strip_tags ($user));
+    $projectname = $db->rdbms_escape_string (strip_tags ($projectname));
+    if ($description != "") $description = $db->rdbms_escape_string (strip_tags ($description));
 
     // set user if not defined
     if ($user == "")
@@ -6624,9 +6624,9 @@ function rdbms_setproject ($project_id, $subproject_id="*Leave*", $object_id="*L
 
     if ($subproject_id != "*Leave*" && intval ($subproject_id) >= 0) $sql_update[] = 'subproject_id="'.intval($subproject_id).'"';
     if ($object_id != "*Leave*" && intval ($object_id) >= 0) $sql_update[] = 'object_id="'.intval ($object_id).'"';
-    if ($user != "*Leave*") $sql_update[] = 'user="'.$db->rdbms_escape_string ($user).'"';
-    if ($projectname != "*Leave*") $sql_update[] = 'project="'.$db->rdbms_escape_string ($projectname).'"';
-    if ($description != "*Leave*") $sql_update[] = 'description="'.$db->rdbms_escape_string ($description).'"';
+    if ($user != "*Leave*") $sql_update[] = 'user="'.$db->rdbms_escape_string (strip_tags ($user)).'"';
+    if ($projectname != "*Leave*") $sql_update[] = 'project="'.$db->rdbms_escape_string (strip_tags ($projectname)).'"';
+    if ($description != "*Leave*") $sql_update[] = 'description="'.$db->rdbms_escape_string (strip_tags ($description)).'"';
 
     // insert
     $sql = 'UPDATE project SET ';
@@ -6704,9 +6704,9 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
           $result[$i]['subproject_id'] = $row['subproject_id'];
           $result[$i]['object_id'] = $row['object_id'];
           $result[$i]['objectpath'] = rdbms_getobject ($row['object_id']);
-          $result[$i]['projectname'] = $row['project'];
+          $result[$i]['projectname'] = strip_tags (html_entity_decode ($row['project']));
           $result[$i]['user'] = $row['user']; 
-          $result[$i]['description'] = $row['description'];
+          $result[$i]['description'] = strip_tags (html_entity_decode ($row['description']));
           if ($row['subproject_id'] > 0) $result[$i]['type'] = "Subproject";
           else $result[$i]['type'] = "Project";
 
@@ -6792,9 +6792,9 @@ function rdbms_setworkflow ($container_id, $workflowdate, $workflowstatus, $work
     // clean input
     $sql_update = array();
 
-    $sql_update[] = 'workflowdate="'.date ("Y-m-d H:i", strtotime ($workflowdate)).'"';
+    $sql_update[] = 'workflowdate="'.date ("Y-m-d H:i", strtotime (strip_tags ($workflowdate))).'"';
     $sql_update[] = 'workflowstatus="'.$db->rdbms_escape_string ($workflowstatus).'"';
-    $sql_update[] = 'workflowuser="'.$db->rdbms_escape_string ($workflowuser).'"';
+    $sql_update[] = 'workflowuser="'.$db->rdbms_escape_string (strip_tags($workflowuser)).'"';
 
     // update
     $sql = 'UPDATE object SET ';
