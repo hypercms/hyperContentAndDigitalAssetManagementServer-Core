@@ -935,7 +935,7 @@ else
     </tr>
   </table>
   <?php } else { ?>
-  <span style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name; ?></span>
+  <span style="width:100%; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo showshorttext (str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name, 44, false); ?></span>
   <?php } ?>
 </div>
 

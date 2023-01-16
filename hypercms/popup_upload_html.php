@@ -1417,7 +1417,7 @@ else
   $object_name = "<img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" title=\"".getescapedtext ($hcms_lang['object'][$lang])."\" class=\"hcmsIconList\" />&nbsp;".$fileinfo['name'];
 }
 
-echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><span style=\"font-weight:normal;\">".$object_name."</span></div>", $lang);
+echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><div style=\"width:90%; font-weight:normal; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\">".$object_name."</div></div>", $lang);
 ?>
 
 <div id="contentLayer" class="hcmsWorkplaceFrame" style="margin-top:12px;">

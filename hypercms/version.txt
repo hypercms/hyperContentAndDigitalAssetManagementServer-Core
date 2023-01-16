@@ -6503,12 +6503,16 @@ Release 03/2023
 - Modifications in popup_upload_html in oder to shorten the location text on mobile devices (Mobile Edition)
 - Update of the TCPDF library to version 6.6.2
 - Modifications in function rdbms_searchcontent in DB Connect in order to return an empty array instead of false in case nothing was found (due to the HTTP 500 code that will be returned by the REST API in case nothing was found)
-- Modifications in explorer in order to clean \ from the user options
-- Modifications in function readhistory in Search API in order to clean \ from the search expression history
-- Modifications in template engine in order to clean \ from the list options
-- Modifications in page_multiedit in order to clean \ from the LDAP attributes
-- Modifications in function editpublication in Main API in order to clean \ from the user options
+- Modifications in explorer in order to remove the backslash from the user options
+- Modifications in function readhistory in Search API in order to remove the backslash from the search expression history
+- Modifications in template engine in order to remove the backslash from the list options
+- Modifications in page_multiedit in order to remove the backslash from the LDAP attributes
+- Modifications in function editpublication in Main API in order to remove the backslash from the user options
 - Modifications in explorer in order to use the media width and height provided by function getmetadata_container
+- Modifications in function link_db_read in Link API in order to suppress an error log entry in case the link index file is still empty (ignore first record in link index)
+- Design modifications in popup_upload_html
+- Design modifications in control_objectlist_menu in the Mobile Edition in order to shorten long location names in the control bar
 - Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
-- Bug fix: Function getsearchhistory in Get API did not clean \ that can cause the escape of characters
-- Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height 
+- Bug fix: Function getsearchhistory in Get API did not clean the backslash in the serach expression which can cause the escape of the character after the backslash
+- Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height
+- Bug fix: control_objectlist_menu caused the the toolbar icons to be hidden outside the viewport if the location name did not fit in the viewport of the Mobile Edition
