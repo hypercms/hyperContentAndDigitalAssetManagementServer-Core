@@ -28,7 +28,7 @@ checkusersession ($user, false);
 toggleview ($view);
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE html> 
 <html lang="<?php if (!empty ($lang)) echo $lang; ?>">
@@ -347,19 +347,19 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <?php } ?>
   
   <!-- content -->
-  <div id="workplLayer" style="position:fixed; top:36px; bottom:0; left:0; right:0; margin:0; padding:0;">
+  <div id="workplLayer" style="position:fixed; top:36px; bottom:0; left:0; right:0; margin:0; padding:0; <?php if ($is_iphone) echo "overflow:auto; -webkit-overflow-scrolling:touch;"; else echo "overflow:hidden;"; ?>">
     <?php if (linking_valid() == true) { ?>
-    <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?action=linking" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+    <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?action=linking" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_iphone) echo "overflow:auto;"; ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
     <?php } elseif (!empty ($hcms_assetbrowser)) { ?>
       <?php
       // location set by assetbrowser
       if (!empty ($hcms_assetbrowser_location)) { ?>
-      <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?location=<?php echo url_encode ($hcms_assetbrowser_location); ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+      <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?location=<?php echo url_encode ($hcms_assetbrowser_location); ?>" frameBorder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_iphone) echo "overflow:auto;"; ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
       <?php } else { ?>
-      <iframe id="workplFrame" name="workplFrame" src="empty.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+      <iframe id="workplFrame" name="workplFrame" src="empty.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_iphone) echo "overflow:auto;"; ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
       <?php } ?>
     <?php } else { ?>
-    <iframe id="workplFrame" name="workplFrame" src="home.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+    <iframe id="workplFrame" name="workplFrame" src="home.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_iphone) echo "overflow:auto;"; ?>" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
     <?php } ?>
   </div>
   

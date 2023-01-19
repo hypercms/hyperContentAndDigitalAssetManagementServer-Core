@@ -6511,8 +6511,23 @@ Release 03/2023
 - Modifications in explorer in order to use the media width and height provided by function getmetadata_container
 - Modifications in function link_db_read in Link API in order to suppress an error log entry in case the link index file is still empty (ignore first record in link index)
 - Design modifications in popup_upload_html
-- Design modifications in control_objectlist_menu in the Mobile Edition in order to shorten long location names in the control bar
+- Design modifications in control_objectlist_menu in the Mobile Edition in order to shorten long location names in the control bar and support scrolling by touch
+- Design modifications in control_objectlist_menu in the Mobile Edition in order to display the location or the selected objects
+- Design modifications in control_objectlist_menu in the Mobile Edition in order to shorten the location and object name if an older Safari browser (version 7 and older) is used due to display issues
+- Modifications in the CSS class hcmsHomeBox in the transparent design theme in order to support the iPhone 7 and older versions (using Safari version 12 or and older) in the Mobile Edition due to issues with transparency used in the transparent design theme
+- Modifications in frameset_mobile in order to support to support the iPhone 7 and older versions (using Safari version 12 or and older)
+- Dropped full support for the iPhone 7 and older versions (using Safari version 12 or and older) due to issues with the detection of the touch event in some part of the user interface of the Mobile Edition
+- Modifications in frameset_site_edit in order to assign the CSS class hcmsWorkplaceControl to the body tag and fix the background color
+- Implementation of a new CSS class hcmsTableFlip and hcmsTableNoFlip in main.css of all design themes in order to transform tables based on the screen width
+- Design modifications in site_edit_form in order to apply the new CSS class hcmsTableFlip for improved support of mobile devices
+- Modifications in instance_create of the Connector module in order to apply the new CSS class hcmsTableFlip for improved support of mobile devices
+- Modifications in explorer_objectlist, log_list, message_objectlist, queue_objectlist, search_objectlist, and user_objectlist in order to initialize and correct the objects counter (used > instead of >=)
+- Modifications in the log viewer Plugin in order to initialize and correct the objects counter (used > instead of >=)
 - Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
 - Bug fix: Function getsearchhistory in Get API did not clean the backslash in the serach expression which can cause the escape of the character after the backslash
 - Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height
 - Bug fix: control_objectlist_menu caused the the toolbar icons to be hidden outside the viewport if the location name did not fit in the viewport of the Mobile Edition
+- Bug fix: explorer_objectlist displayed an object count of 1 for an empty folder
+- Bug fix: explorer_objectlist, log_list, message_objectlist, queue_objectlist, search_objectlist, and user_objectlist displayed the wrong number of objects if the count was 1
+- Bug fix: The log viewer Plugin displayed the wrong number of objects if the count was 1
+- Bug fix: user_objectlist did not subtract hidden user accounts correctly if paging has been used

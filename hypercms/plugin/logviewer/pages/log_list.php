@@ -34,6 +34,7 @@ $objects_counted = 0;
 $objects_total = 0;
 $items_row = -1;
 $items_id = -1;
+$objects_counted = 0;
 
 // write and close session (non-blocking other frames)
 suspendsession ();
@@ -243,14 +244,13 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
 </div>
 
 <?php
-// objects counted
-if ($items_row > 0) $objects_counted = $items_row;
-else $objects_counted = 0;
+// objects counted (counter starts at 0)
+if ($items_row >= 0) $objects_counted = $items_row + 1;
 
 // expanding
 if (empty ($mgmt_config['explorer_paging']) && $objects_total >= $end)
 {
-  $next_start = $objects_counted + 1;
+  $next_start = $objects_counted;
 ?>
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&start=".url_encode($next_start); ?>';" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
@@ -264,7 +264,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 {
   // start positions (inital start is 0 and not 1)
   $previous_start = $start - intval ($mgmt_config['explorer_list_maxitems']);
-  $next_start = $objects_counted + 1;
+  $next_start = $objects_counted;
 ?>
 <!-- status bar incl. previous and next buttons -->
 <div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?site=".url_encode($site)."&start=".url_encode($previous_start); ?>';"<?php } ?> title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
@@ -279,7 +279,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 // status bar without buttons
 else
 {
-  if ($objects_counted > 0) $next_start = $objects_counted + 1;
+  if ($objects_counted >= 0) $next_start = $objects_counted;
   else $next_start = 0;
 ?>
 <!-- status bar -->

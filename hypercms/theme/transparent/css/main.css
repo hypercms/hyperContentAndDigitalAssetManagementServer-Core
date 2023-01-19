@@ -506,7 +506,7 @@ a.hcmsNavigator
   border-radius: 5px;
   color: #FFFFFF;
   font-size: 12px;
-  background-color: rgba(41, 41, 41);
+  background-color: #292929;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -939,6 +939,28 @@ table.hcmsTableNarrow th, table.hcmsTableNarrow td
   text-align: left;
   vertical-align: middle;
 }
+
+/* transform tables based on screen width */
+
+table.hcmsTableFlip td 
+{
+	display: table-cell;
+}
+
+@media only screen and (max-width: 760px)
+{
+	table.hcmsTableFlip td 
+	{
+		display: block;
+	}
+}
+
+table.hcmsTableNoFlip td 
+{
+	display: table-cell;
+}
+
+/* explorer and object list */
 
 .hcmsButtonDownload
 {

@@ -312,6 +312,7 @@ $token_new = createtoken ($user);
 <head>
 <title>hyperCMS</title>
 <meta charset="<?php echo getcodepage ($lang); ?>" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0"></meta>
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
@@ -903,8 +904,8 @@ else
 ?>
 
 <!-- location bar -->
-<div class="hcmsLocationBar">
-  <?php if (!$is_mobile) { ?>
+<div class="hcmsLocationBar" style="width:100%;">
+<?php if (!$is_mobile) { ?>
   <table class="hcmsTableNarrow">
     <tr>
       <?php
@@ -934,9 +935,16 @@ else
       ?>
     </tr>
   </table>
-  <?php } else { ?>
-  <span style="width:100%; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo showshorttext (str_replace ("/", " &gt; ", trim ($location_name, "/"))." &gt; ".$object_name, 44, false); ?></span>
-  <?php } ?>
+<?php } else { 
+  // use location name if no object has been selected
+  if ($object_name == "&nbsp;") $object_name = str_replace ("/", " &gt; ", trim ($location_name, "/"));
+
+  // support for older iPhones 7 and less (shorten text due to display issues)
+  $browser_info = getbrowserinfo();
+  if (!empty ($browser_info['safari']) && $browser_info['safari'] < 13) $object_name = showshorttext ($object_name, 44, false);
+?>
+  <div style="max-width:95%; display:block; white-space:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;"><?php echo $object_name; ?></div>
+<?php } ?>
 </div>
 
 <!-- toolbar -->

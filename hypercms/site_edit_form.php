@@ -285,7 +285,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   <input type="hidden" name="setting[registration_notify]" value="<?php echo $mgmt_config[$site_name]['registration_notify']; ?>" />
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>">
   
-  <table class="hcmsTableStandard" style="width:100%;">
+  <table class="hcmsTableStandard hcmsTableFlip" style="width:100%;">
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;" colspan="2"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['configuration-of-publication'][$lang]); ?> <?php echo $site_name; ?></span><hr /></td>
     </tr>
@@ -295,78 +295,78 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><div style="padding:10px 0px;"><?php echo getescapedtext ($hcms_lang['management-system-configuration'][$lang]); ?></div> </td>
     </tr>
     <tr> 
-      <td style="width:20%; white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" name="setting[site_admin]" value="true" <?php if (@$mgmt_config[$site_name]['site_admin'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="width:20%; white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" name="setting[site_admin]" value="true" <?php if (@$mgmt_config[$site_name]['site_admin'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['url-of-the-website'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="url_path_page" name="setting[url_path_page]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['url_path_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['url-of-the-website'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="url_path_page" name="setting[url_path_page]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['url_path_page']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['directory-path-of-the-website'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="abs_path_page" name="setting[abs_path_page]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['abs_path_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['directory-path-of-the-website'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="abs_path_page" name="setting[abs_path_page]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['abs_path_page']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['folders-to-exclude'][$lang]); ?> <br />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['folders-to-exclude'][$lang]); ?> <br />
         (<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
-      <td style="white-space:nowrap; vertical-align:top;"> <textarea name="setting[exclude_folders]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> rows="3"><?php echo $mgmt_config[$site_name]['exclude_folders']; ?></textarea></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <textarea name="setting[exclude_folders]" style="width:350px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> rows="3"><?php echo $mgmt_config[$site_name]['exclude_folders']; ?></textarea></td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['allow-access-to-assets-only-for-certain-ip-addresses'][$lang]); ?> <br />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['allow-access-to-assets-only-for-certain-ip-addresses'][$lang]); ?> <br />
         (<?php echo getescapedtext ($hcms_lang['use-as-delimiter'][$lang]); ?>)</td>
-      <td style="white-space:nowrap; vertical-align:top;"> <textarea name="setting[allow_ip]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> rows="3"><?php echo $mgmt_config[$site_name]['allow_ip']; ?></textarea></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <textarea name="setting[allow_ip]" style="width:350px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> rows="3"><?php echo $mgmt_config[$site_name]['allow_ip']; ?></textarea></td>
     </tr>
     <?php if (is_dir ($mgmt_config['abs_path_cms']."webdav")) { ?>
     <tr> 
-      <td style="vertical-align:top;"><?php echo getescapedtext ($hcms_lang['allow-access-through-webdav'][$lang]); ?> <br />
-      <td style="white-space:nowrap; vertical-align:top;">
-        <label><input type="checkbox" name="setting[webdav]" value="true" onclick="hcms_switchFormLayer ('webdavLayer');" <?php if (!empty ($mgmt_config[$site_name]['webdav'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['allow-access-through-webdav'][$lang]); ?> <br />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <label><input type="checkbox" name="setting[webdav]" value="true" onclick="hcms_switchFormLayer ('webdavLayer');" <?php if (!empty ($mgmt_config[$site_name]['webdav'])) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
         <div id="webdavLayer" style="<?php if (!empty ($mgmt_config[$site_name]['webdav'])) echo "display:inline;"; else echo "display:none;"; ?>">
-          <br/><label><input type="checkbox" name="setting[webdav_dl]" value="true" <?php if (!empty ($mgmt_config[$site_name]['webdav_dl'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+          <br/><label><input type="checkbox" name="setting[webdav_dl]" value="true" <?php if (!empty ($mgmt_config[$site_name]['webdav_dl'])) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
           <?php echo getescapedtext ($hcms_lang['download-link'][$lang]); ?></label>
-          <br/><label><input type="checkbox" name="setting[webdav_al]" value="true" <?php if (!empty ($mgmt_config[$site_name]['webdav_al'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+          <br/><label><input type="checkbox" name="setting[webdav_al]" value="true" <?php if (!empty ($mgmt_config[$site_name]['webdav_al'])) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
           <?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?></label>
         </div>
       </td>
     </tr>
     <?php } ?>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['link-management'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-        <input type="checkbox" id="linkengine" name="setting[linkengine]" value="true" <?php if (@$mgmt_config[$site_name]['linkengine'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['link-management'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <input type="checkbox" id="linkengine" name="setting[linkengine]" value="true" <?php if (@$mgmt_config[$site_name]['linkengine'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['default-characterset'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[default_codepage]" style="width:350px;" value="<?php if (@$mgmt_config[$site_name]['default_codepage'] != "") echo $mgmt_config[$site_name]['default_codepage']; else echo "UTF-8"; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['default-characterset'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" name="setting[default_codepage]" style="width:350px;" value="<?php if (@$mgmt_config[$site_name]['default_codepage'] != "") echo $mgmt_config[$site_name]['default_codepage']; else echo "UTF-8"; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-        <input type="checkbox" name="setting[sendmail]" value="true" <?php if (@$mgmt_config[$site_name]['sendmail'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <input type="checkbox" name="setting[sendmail]" value="true" <?php if (@$mgmt_config[$site_name]['sendmail'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['mail-server-name-has-effect-on-sendlink'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[mailserver]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['mailserver']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['mail-server-name-has-effect-on-sendlink'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" name="setting[mailserver]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['mailserver']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Portal ".$hcms_lang['access-link'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-        <input type="checkbox" name="setting[portalaccesslink]" value="true" <?php if (@$mgmt_config[$site_name]['portalaccesslink'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ("Portal ".$hcms_lang['access-link'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <input type="checkbox" name="setting[portalaccesslink]" value="true" <?php if (@$mgmt_config[$site_name]['portalaccesslink'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['user-for-access-links'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-        <select name="setting[accesslinkuser]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['user-for-access-links'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <select name="setting[accesslinkuser]" style="width:350px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>>
           <option value=""><?php echo $hcms_lang['please-select-a-user'][$lang]; ?></option>
         <?php
         // user information
@@ -398,38 +398,38 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       </td>
     </tr>  
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['disable-special-characters-in-object-names'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-        <label><input type="checkbox" name="setting[specialchr_disable]" value="true" <?php if (@$mgmt_config[$site_name]['specialchr_disable'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['disable-special-characters-in-object-names'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <label><input type="checkbox" name="setting[specialchr_disable]" value="true" <?php if (@$mgmt_config[$site_name]['specialchr_disable'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['only-dam-functionality'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="dam" name="setting[dam]" onclick="switchDAM();" value="true" <?php if ($mgmt_config[$site_name]['dam'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['only-dam-functionality'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="dam" name="setting[dam]" onclick="switchDAM();" value="true" <?php if ($mgmt_config[$site_name]['dam'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['enable-taxonomy-browsing-and-search'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" name="setting[taxonomy]" value="true" <?php if (@$mgmt_config[$site_name]['taxonomy'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['enable-taxonomy-browsing-and-search'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" name="setting[taxonomy]" value="true" <?php if (@$mgmt_config[$site_name]['taxonomy'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['user-must-provide-metadata-for-file-uploads'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" name="setting[upload_userinput]" value="true" <?php if (@$mgmt_config[$site_name]['upload_userinput'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['user-must-provide-metadata-for-file-uploads'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" name="setting[upload_userinput]" value="true" <?php if (@$mgmt_config[$site_name]['upload_userinput'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
 
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector")) {	?>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['enable-direct-file-uploads-in-pages'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['enable-direct-file-uploads-in-pages'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
       <label><input type="checkbox" id="upload_pages" name="setting[upload_pages]" value="true" <?php if (@$mgmt_config[$site_name]['upload_pages'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
@@ -437,25 +437,25 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php } ?>
 
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-images'][$lang]); ?> <br/><span class="hcmsTextSmall">-wm /images/watermark.png->topleft->10</span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[watermark_image]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_image']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-images'][$lang]); ?> <br/><span class="hcmsTextSmall">-wm /images/watermark.png->topleft->10</span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" name="setting[watermark_image]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_image']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-vidoes'][$lang]); ?> <br/><span class="hcmsTextSmall">-wm /images/watermark.png->topleft->10</span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[watermark_video]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_video']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['watermark-options-for-vidoes'][$lang]); ?> <br/><span class="hcmsTextSmall">-wm /images/watermark.png->topleft->10</span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" name="setting[watermark_video]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['watermark_video']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <?php if (is_file ($mgmt_config['abs_path_cms']."connector/youtube/index.php")) { ?>
       <tr> 
-        <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['social-media-sharing'][$lang]); ?> </td>
-        <td style="white-space:nowrap; vertical-align:top;">
-        <label><input type="checkbox" id="youtube" name="setting[sharesociallink]" value="true" <?php if (@$mgmt_config[$site_name]['sharesociallink'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['social-media-sharing'][$lang]); ?> </td>
+        <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <label><input type="checkbox" id="youtube" name="setting[sharesociallink]" value="true" <?php if (@$mgmt_config[$site_name]['sharesociallink'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
           <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
         </td>
       </tr>
       <tr> 
-        <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['youtube-upload'][$lang]); ?> </td>
-        <td style="white-space:nowrap; vertical-align:top;">
-        <label><input type="checkbox" id="youtube" name="setting[youtube]" value="true" <?php if (@$mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['youtube-upload'][$lang]); ?> </td>
+        <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <label><input type="checkbox" id="youtube" name="setting[youtube]" value="true" <?php if (@$mgmt_config[$site_name]['youtube'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
           <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
         </td>
       </tr>
@@ -463,9 +463,9 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 
     <?php if (empty ($mgmt_config['theme'])) { ?>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-        <select name="setting[theme]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['theme'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <select name="setting[theme]" style="width:350px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>>
           <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
         $theme_array = getthemes ($site_name);
@@ -486,11 +486,11 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/")) { ?>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['enable-languages-for-translation'][$lang]." / ".$hcms_lang['taxonomy'][$lang]); ?></td>
-      <td style="white-space:nowrap; vertical-align:top;">
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['enable-languages-for-translation'][$lang]." / ".$hcms_lang['taxonomy'][$lang]); ?></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
         <input type="hidden" name="setting[translate]" value="">
         
-        <table class="hcmsTableNarrow">
+        <table class="hcmsTableNarrow hcmsTableNoFlip">
           <tr>
             <td>
               <?php echo getescapedtext ($hcms_lang['available-languages'][$lang]); ?><br />
@@ -544,11 +544,11 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <?php if (is_supported ($mgmt_parser, "test.png")) { ?>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['optical-character-recognition'][$lang]); ?> (OCR)</td>
-      <td style="white-space:nowrap;">
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['optical-character-recognition'][$lang]); ?> (OCR)</td>
+      <td style="white-space:nowrap; padding-top:8px;">
         <input type="hidden" name="setting[ocr]" value="">
         
-        <table class="hcmsTableNarrow">
+        <table class="hcmsTableNarrow hcmsTableNoFlip">
           <tr>
             <td>
               <?php echo getescapedtext ($hcms_lang['available-languages'][$lang]); ?><br />
@@ -604,30 +604,30 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <?php } ?>
 
     <tr> 
-      <td style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?> </td>
-      <td style="white-space:nowrap;"> <input type="number" name="setting[storage_limit]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage_limit']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['storage-limit-in-mb'][$lang]); ?> </td>
+      <td style="white-space:nowrap; padding-top:8px;"> <input type="number" name="setting[storage_limit]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['storage_limit']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
 
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/") && is_cloudstorage()) {	?>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type2" name="setting[storage_type]" value="local" <?php if (@$mgmt_config[$site_name]['storage_type'] == "local" || empty ($mgmt_config[$site_name]['storage_type'])) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-media-storage'][$lang]); ?></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="radio" id="storage_type2" name="setting[storage_type]" value="local" <?php if (@$mgmt_config[$site_name]['storage_type'] == "local" || empty ($mgmt_config[$site_name]['storage_type'])) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-media-storage'][$lang]); ?></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type3" name="setting[storage_type]" value="cloud" <?php if (@$mgmt_config[$site_name]['storage_type'] == "cloud") echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-cloud-media-storage'][$lang]); ?></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="radio" id="storage_type3" name="setting[storage_type]" value="cloud" <?php if (@$mgmt_config[$site_name]['storage_type'] == "cloud") echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-cloud-media-storage'][$lang]); ?></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['media-storage-type'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="radio" id="storage_type1" name="setting[storage_type]" value="both" <?php if (@$mgmt_config[$site_name]['storage_type'] == "both") echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-and-cloud-media-storage'][$lang]); ?></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['media-storage-type'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="radio" id="storage_type1" name="setting[storage_type]" value="both" <?php if (@$mgmt_config[$site_name]['storage_type'] == "both") echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> /> <?php echo getescapedtext ($hcms_lang['use-local-and-cloud-media-storage'][$lang]); ?></td>
     </tr>
     <?php } ?>
 
     <?php if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php")) {	?>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['encrypt-content'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="crypt_content" name="setting[crypt_content]" value="true" <?php if (@$mgmt_config[$site_name]['crypt_content'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['encrypt-content'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="crypt_content" name="setting[crypt_content]" value="true" <?php if (@$mgmt_config[$site_name]['crypt_content'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
@@ -635,43 +635,43 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
 
     <?php if (is_dir ($mgmt_config['abs_path_cms']."connector/")) { ?>
       <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("RESTful API"); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="connector_rest" name="setting[connector_rest]" value="true" <?php if (@$mgmt_config[$site_name]['connector_rest'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ("RESTful API"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="connector_rest" name="setting[connector_rest]" value="true" <?php if (@$mgmt_config[$site_name]['connector_rest'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("SOAP API"); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="connector_soap" name="setting[connector_soap]" value="true" <?php if (@$mgmt_config[$site_name]['connector_soap'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ("SOAP API"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="connector_soap" name="setting[connector_soap]" value="true" <?php if (@$mgmt_config[$site_name]['connector_soap'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Cloud API Key (JSON)"); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ("Google Cloud API Key (JSON)"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
         <textarea name="setting[gs_access_json]" style="width:350px; height:80px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>><?php if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json")) echo loadfile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json"); ?></textarea>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Vision (".$hcms_lang['image'][$lang]).")"; ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" name="setting[gs_analyze_image]" value="true" <?php if (@$mgmt_config[$site_name]['gs_analyze_image'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ("Google Vision (".$hcms_lang['image'][$lang]).")"; ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" name="setting[gs_analyze_image]" value="true" <?php if (@$mgmt_config[$site_name]['gs_analyze_image'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Video Intelligence (".$hcms_lang['video'][$lang]).")"; ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" name="setting[gs_analyze_video]" value="true" <?php if (@$mgmt_config[$site_name]['gs_analyze_video'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ("Google Video Intelligence (".$hcms_lang['video'][$lang]).")"; ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" name="setting[gs_analyze_video]" value="true" <?php if (@$mgmt_config[$site_name]['gs_analyze_video'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ("Google Speech-to-Text (".$hcms_lang['audio'][$lang].", ".$hcms_lang['video'][$lang].")"); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" name="setting[gs_speech2text]" value="true" <?php if (@$mgmt_config[$site_name]['gs_speech2text'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ("Google Speech-to-Text (".$hcms_lang['audio'][$lang].", ".$hcms_lang['video'][$lang].")"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" name="setting[gs_speech2text]" value="true" <?php if (@$mgmt_config[$site_name]['gs_speech2text'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
@@ -679,7 +679,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['language'][$lang]." (languageCode)"); ?><br/>
         <a href="https://cloud.google.com/speech-to-text/docs/languages" class="hcmsTextSmall" target="_blank">https://cloud.google.com/speech-to-text/docs/languages</a></td>
       <td style="white-space:nowrap; vertical-align:top;">
-        <input type="text" name="setting[gs_speech2text_langcode]" style="width:80px;" value="<?php echo @$mgmt_config[$site_name]['gs_speech2text_langcode']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+        <input type="text" name="setting[gs_speech2text_langcode]" style="width:80px;" value="<?php echo @$mgmt_config[$site_name]['gs_speech2text_langcode']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
       </td>
     </tr>
     <?php } ?>
@@ -703,44 +703,44 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   }    
   ?>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['url-of-the-website'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="url_publ_page" name="setting[url_publ_page]" style="width:350px;" value="<?php echo $publ_config['url_publ_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['url-of-the-website'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="url_publ_page" name="setting[url_publ_page]" style="width:350px;" value="<?php echo $publ_config['url_publ_page']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['directory-path-of-the-website'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="abs_publ_page" name="setting[abs_publ_page]" style="width:350px;" value="<?php echo $publ_config['abs_publ_page']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['directory-path-of-the-website'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="abs_publ_page" name="setting[abs_publ_page]" style="width:350px;" value="<?php echo $publ_config['abs_publ_page']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>  
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['repository-url'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[url_publ_rep]" style="width:350px;" value="<?php echo $publ_config['url_publ_rep']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['repository-url'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" name="setting[url_publ_rep]" style="width:350px;" value="<?php echo $publ_config['url_publ_rep']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['repository-directory-path'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[abs_publ_rep]" style="width:350px;" value="<?php echo $publ_config['abs_publ_rep']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['repository-directory-path'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" name="setting[abs_publ_rep]" style="width:350px;" value="<?php echo $publ_config['abs_publ_rep']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['directory-path-of-the-application-for-jsp-asp'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="abs_publ_app"  name="setting[abs_publ_app]" style="width:350px;" value="<?php echo $publ_config['abs_publ_app']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['directory-path-of-the-application-for-jsp-asp'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="abs_publ_app"  name="setting[abs_publ_app]" style="width:350px;" value="<?php echo $publ_config['abs_publ_app']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['os-on-publication-server'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> <select name="setting[publ_os]" style="width:350px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['os-on-publication-server'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <select name="setting[publ_os]" style="width:350px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>>
           <option value="UNIX" <?php if ($publ_config['publ_os'] == "UNIX") echo "selected=\"selected\""; ?>>UNIX/Linux</option>
           <option value="WIN" <?php if ($publ_config['publ_os'] == "WIN") echo "selected=\"selected\""; ?>>WINDOWS</option>
         </select></td>
     </tr>      
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['inclusion-of-components-via-http'][$lang]); ?><br />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['inclusion-of-components-via-http'][$lang]); ?><br />
         <span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['for-jsp-or-asp-only-http-method-is-supported'][$lang]); ?></span></td>
-      <td style="white-space:nowrap; vertical-align:top;">
-        <label><input type="checkbox" name="setting[http_incl]" value="true" <?php if ($publ_config['http_incl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+        <label><input type="checkbox" name="setting[http_incl]" value="true" <?php if ($publ_config['http_incl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="vertical-align:top;"><?php echo getescapedtext ($hcms_lang['remote-client'][$lang]); ?><br />
+      <td style="vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['remote-client'][$lang]); ?><br />
       <span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['for-http-transport-use-urlremoteclientphp-configuration-ini-file-must-be-at-the-same-file-location'][$lang]); ?></span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" name="setting[remoteclient]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['remoteclient']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" name="setting[remoteclient]" style="width:350px;" value="<?php echo $mgmt_config[$site_name]['remoteclient']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
 
     <!-- LDAP/AD -->
@@ -752,20 +752,20 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><div style="padding:10px 0px;">LDAP / MS Active Directory</div> </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD <?php echo getescapedtext ($hcms_lang['server'][$lang]); ?> <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_servers" name="setting[ldap_servers]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_servers']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">LDAP/AD <?php echo getescapedtext ($hcms_lang['server'][$lang]); ?> <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="ldap_servers" name="setting[ldap_servers]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_servers']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user domain <br/><span class="hcmsTextSmall">MS AD: <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_userdomain" name="setting[ldap_userdomain]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_userdomain']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">LDAP/AD user domain <br/><span class="hcmsTextSmall">MS AD: <?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="ldap_userdomain" name="setting[ldap_userdomain]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_userdomain']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">Base Distinguished Name (DN) <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_base_dn" name="setting[ldap_base_dn]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_base_dn']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">Base Distinguished Name (DN) <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?></span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="ldap_base_dn" name="setting[ldap_base_dn]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_base_dn']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD <?php echo getescapedtext ($hcms_lang['version'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;"> 
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">LDAP/AD <?php echo getescapedtext ($hcms_lang['version'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> 
         <select name="setting[ldap_version]" style="width:350px;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>>
           <option <?php if (@$mgmt_config[$site_name]['ldap_version'] == "3") echo "selected=\"selected\""; ?>>3</option>
           <option <?php if (@$mgmt_config[$site_name]['ldap_version'] == "2") echo "selected=\"selected\""; ?>>2</option>
@@ -773,61 +773,61 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD Port <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>: 389 (TLS) or 636 (SSL)</span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="number" id="ldap_port" name="setting[ldap_port]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_port']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">LDAP/AD Port <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>: 389 (TLS) or 636 (SSL)</span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="number" id="ldap_port" name="setting[ldap_port]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_port']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">Follow referrals </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="ldap_follow_referrals" name="setting[ldap_follow_referrals]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_follow_referrals'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">Follow referrals </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="ldap_follow_referrals" name="setting[ldap_follow_referrals]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_follow_referrals'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">SSL </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="ldap_use_ssl" name="setting[ldap_use_ssl]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_use_ssl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">SSL </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="ldap_use_ssl" name="setting[ldap_use_ssl]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_use_ssl'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">TLS </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="ldap_use_tls" name="setting[ldap_use_tls]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_use_tls'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">TLS </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="ldap_use_tls" name="setting[ldap_use_tls]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_use_tls'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">User Base Distinguished Name for the LDAP bind <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> = %user%: uid=%user%,cn=users</span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_username_dn" name="setting[ldap_username_dn]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_username_dn']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">User Base Distinguished Name for the LDAP bind <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> = %user%: uid=%user%,cn=users</span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="ldap_username_dn" name="setting[ldap_username_dn]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_username_dn']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user filter <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>: sAMAccountName (MS AD)</span></td>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_user_filter" name="setting[ldap_user_filter]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_user_filter']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">LDAP/AD user filter <br/><span class="hcmsTextSmall"><?php echo getescapedtext ($hcms_lang['a-value-is-required'][$lang]); ?>: sAMAccountName (MS AD)</span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="ldap_user_filter" name="setting[ldap_user_filter]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_user_filter']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD Sync (<?php echo getescapedtext ($hcms_lang['user-information'][$lang].", ".$hcms_lang['member-of-group'][$lang]); ?>) </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="ldap_sync" name="setting[ldap_sync]" onclick="switchLDAPsync();" value="true" <?php if (@$mgmt_config[$site_name]['ldap_sync'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">LDAP/AD Sync (<?php echo getescapedtext ($hcms_lang['user-information'][$lang].", ".$hcms_lang['member-of-group'][$lang]); ?>) </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="ldap_sync" name="setting[ldap_sync]" onclick="switchLDAPsync();" value="true" <?php if (@$mgmt_config[$site_name]['ldap_sync'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;"><?php echo getescapedtext ($hcms_lang['delete-user'][$lang]); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="ldap_delete_user" name="setting[ldap_delete_user]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_delete_user'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['delete-user'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="ldap_delete_user" name="setting[ldap_delete_user]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_delete_user'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD + System <?php echo getescapedtext ($hcms_lang['groups'][$lang]." (Merge)"); ?> </td>
-      <td style="white-space:nowrap; vertical-align:top;">
-      <label><input type="checkbox" id="ldap_keep_groups" name="setting[ldap_keep_groups]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_keep_groups'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo " disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">LDAP/AD + System <?php echo getescapedtext ($hcms_lang['groups'][$lang]." (Merge)"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
+      <label><input type="checkbox" id="ldap_keep_groups" name="setting[ldap_keep_groups]" value="true" <?php if (@$mgmt_config[$site_name]['ldap_keep_groups'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">LDAP/AD user attributes <br/><span class="hcmsTextSmall">'memberof', 'givenname', 'sn', 'telephonenumber', 'mail'</span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">LDAP/AD user attributes <br/><span class="hcmsTextSmall">'memberof', 'givenname', 'sn', 'telephonenumber', 'mail'</span></td>
       <?php
       if (is_array (@$mgmt_config[$site_name]['ldap_user_attributes']) && sizeof (@$mgmt_config[$site_name]['ldap_user_attributes']) > 0)
       {
@@ -835,11 +835,11 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       }
       else $mgmt_config[$site_name]['ldap_user_attributes'] = "";
       ?>
-      <td style="white-space:nowrap; vertical-align:top;"> <input type="text" id="ldap_user_attributes" name="setting[ldap_user_attributes]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_user_attributes']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="ldap_user_attributes" name="setting[ldap_user_attributes]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['ldap_user_attributes']; ?>" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
-      <td style="white-space:nowrap; vertical-align:top;">Mapping 'LDAP <?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>' => '<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>' <br/><span class="hcmsTextSmall">'OU=MANAGER GROUP'=>'ChiefEditor,Editor'<br/>'OU=ALL GROUPS'=>'Editor'</span></td>
-      <td style="white-space:nowrap; vertical-align:top;">
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">Mapping 'LDAP <?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>' => '<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>' <br/><span class="hcmsTextSmall">'OU=MANAGER GROUP'=>'ChiefEditor,Editor'<br/>'OU=ALL GROUPS'=>'Editor'</span></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
         <textarea type="text" id="ldap_sync_groups_mapping" name="setting[ldap_sync_groups_mapping]" style="width:350px; height:100px;" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?>><?php
           if (is_array (@$mgmt_config[$site_name]['ldap_sync_groups_mapping']))
           {

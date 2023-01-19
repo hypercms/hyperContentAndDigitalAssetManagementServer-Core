@@ -1120,9 +1120,6 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
     } 
   }
 }
-
-// objects counted
-if ($items_row > 0) $objects_counted = $items_row;
 ?>
 <!DOCTYPE html>
 <html>
@@ -1661,10 +1658,13 @@ if ($galleryview != "")
 </div>
 
 <?php
+// objects counted (counter starts at 0)
+if ($items_row >= 0) $objects_counted = $items_row + 1;
+
 // expanding
 if (empty ($mgmt_config['explorer_paging']) && $objects_total > $end)
 {
-  $next_start = $objects_counted + 1;
+  $next_start = $objects_counted;
 ?>
 <!-- status bar incl. more button -->
 <div id="ButtonMore" class="hcmsMore" style="position:fixed; bottom:0; width:100%; height:30px; z-index:4; visibility:visible; text-align:left;" onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?".$search_url."&start=".url_encode($next_start); ?>';" onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['more'][$lang]); ?>">
@@ -1678,7 +1678,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 {
   // start positions (inital start is 0 and not 1)
   $previous_start = $start - intval ($mgmt_config['search_max_results']);
-  $next_start = $objects_counted + 1;
+  $next_start = $objects_counted;
 ?>
 <!-- status bar incl. previous and next buttons -->
 <div id="ButtonPrevious" class="hcmsMore" style="position:fixed; bottom:0; left:0; right:50%; height:30px; z-index:4; visibility:visible; text-align:left;" <?php if ($start > 0) { ?>onclick="if (parent.document.getElementById('hcmsLoadScreen')) parent.document.getElementById('hcmsLoadScreen').style.display='inline'; window.location='<?php echo "?".$search_url."&start=".url_encode($previous_start); ?>';"<?php } ?> onMouseOver="hcms_hideContextmenu();" title="<?php echo getescapedtext ($hcms_lang['back'][$lang]); ?>">
@@ -1693,7 +1693,7 @@ elseif (!empty ($mgmt_config['explorer_paging']) && ($start > 0 || $objects_tota
 // status bar without buttons
 else
 {
-  if ($objects_counted >= 0) $next_start = $objects_counted + 1;
+  if ($objects_counted >= 0) $next_start = $objects_counted;
   else $next_start = 0;
 ?>
 <!-- status bar -->

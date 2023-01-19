@@ -932,6 +932,28 @@ table.hcmsTableNarrow th, table.hcmsTableNarrow td
   vertical-align: middle;
 }
 
+/* transform tables based on screen width */
+
+table.hcmsTableFlip td 
+{
+	display: table-cell;
+}
+
+@media only screen and (max-width: 760px)
+{
+	table.hcmsTableFlip td 
+	{
+		display: block;
+	}
+}
+
+table.hcmsTableNoFlip td 
+{
+	display: table-cell;
+}
+
+/* explorer and object list */
+
 .hcmsButtonDownload
 {
   min-width: 70px;
