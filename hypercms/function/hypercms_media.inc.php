@@ -304,7 +304,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
     // get container id
     if (substr_count ($container, ".xml") > 0)
     {
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $container_id = getcontentcontainerid ($container);
     }
     elseif (is_numeric ($container))
     {
@@ -853,7 +853,7 @@ function unindexcontent ($site, $location, $file, $container, $container_content
     // get container id
     if (substr_count ($container, ".xml") > 0)
     {
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $container_id = getcontentcontainerid ($container);
     }
     elseif (is_numeric ($container))
     {

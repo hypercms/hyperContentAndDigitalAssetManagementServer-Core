@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['da'] = "- … Et ledende minustegn indikere
 $hcms_lang['search-wildcard-none']['da'] = "ingen operator … Som standard (når hverken + eller - er angivet) er ordet valgfrit";
 $hcms_lang['search-wildcard-asterisk']['da'] = "* … Stjernen tjener som trunkeringsoperator (eller jokertegn). I modsætning til de andre operatorer skal den tilføjes til det ord, der skal påvirkes.";
 $hcms_lang['search-wildcard-doublequote']['da'] = "\" … En sætning, der er omgivet af dobbelte anførselstegn, skal være til stede som sætningen bogstaveligt, som den blev skrevet";
+$hcms_lang['content-modified-by-user']['da'] = "Indholdet er blevet ændret af brugeren '%user%'. Vil du genindlæse indholdet?";
 ?>

@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['pl'] = "- … Wiodący znak minus wskazuje,
 $hcms_lang['search-wildcard-none']['pl'] = "brak operatora … Domyślnie (gdy nie podano ani + ani -) słowo jest opcjonalne";
 $hcms_lang['search-wildcard-asterisk']['pl'] = "* … Gwiazdka służy jako operator obcięcia (lub symbol wieloznaczny). W przeciwieństwie do innych operatorów, powinna być dołączona do słowa, którego dotyczy.";
 $hcms_lang['search-wildcard-doublequote']['pl'] = "\" … Fraza ujęta w cudzysłów musi występować jako fraza dosłownie, tak jak została wpisana";
+$hcms_lang['content-modified-by-user']['pl'] = "Zawartość została zmodyfikowana przez użytkownika '%user%'. Czy chcesz przeładować zawartość?";
 ?>

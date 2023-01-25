@@ -2725,7 +2725,7 @@ function getcontainername ($container)
     // define container ID and container name
     if (strpos ($container, ".xml") > 0)
     {
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $container_id = getcontentcontainerid ($container);
     }
     else
     {
@@ -3229,7 +3229,7 @@ function getmediacontainername ($file)
 // output: container ID / false on error
 
 // description:
-// Extract the container ID from a multimedia file name by using the hcms-ID
+// Extract the container ID from a multimedia file name using the hcms-ID-
 
 function getmediacontainerid ($file)
 {
@@ -3243,11 +3243,34 @@ function getmediacontainerid ($file)
     $length = $endpos - $startpos;
     $id = substr ($file, $startpos, $length);
 
-    if (is_int (intval ($id))) return $id;
+    if (intval ($id) > 0) return $id;
     else return false;
   }
   
   return false;
+}
+
+// ---------------------- getcontentcontainerid -----------------------------
+// function: getcontentcontainerid()
+// input: container file name [string]
+// output: container ID / false on error
+
+// description:
+// Extract the container ID from a container file name.
+
+function getcontentcontainerid ($file)
+{
+  if (valid_objectname ($file) && strpos ($file, ".xml") > 0)
+  {
+    $id = substr ($file, 0, strpos ($file, ".xml"));
+  }
+  elseif (intval ($file) > 0)
+  {
+    $id = $file;
+  }
+
+  if (intval ($id) > 0) return $id;
+  else return false;
 }
 
 // ---------------------- getmediafileversion -----------------------------
@@ -3278,7 +3301,7 @@ function getmediafileversion ($container)
     // if container name
     elseif (strpos ($container, ".xml") > 0)
     {
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $container_id = getcontentcontainerid ($container);
     }
     // if container ID
     else $container_id = $container;

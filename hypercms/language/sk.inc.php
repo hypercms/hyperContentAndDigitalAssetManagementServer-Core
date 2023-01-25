@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['sk'] = "- … Vedúci znak mínus znamená,
 $hcms_lang['search-wildcard-none']['sk'] = "žiadny operátor … V predvolenom nastavení (keď nie je zadané + ani -) je slovo voliteľné";
 $hcms_lang['search-wildcard-asterisk']['sk'] = "* … Hviezdička slúži ako operátor skrátenia (alebo zástupného znaku). Na rozdiel od ostatných operátorov by mala byť pripojená k slovu, ktoré má byť ovplyvnené.";
 $hcms_lang['search-wildcard-doublequote']['sk'] = "\" … Fráza, ktorá je uzavretá medzi dvojitými úvodzovkami, musí byť prítomná ako fráza doslova, tak ako bola napísaná";
+$hcms_lang['content-modified-by-user']['sk'] = "Obsah bol upravený používateľom '%user%'. Chcete obsah znova načítať?";
 ?>

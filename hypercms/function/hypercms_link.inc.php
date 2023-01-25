@@ -773,7 +773,7 @@ function link_update ($site, $container, $link_old, $link_new)
   if ($container != "" && $link_old != "" && (substr_count ($link_old, "%page%") > 0 || substr_count ($link_old, "%comp%") > 0) && ($link_new == "" || substr_count ($link_new, "%page%") > 0 || substr_count ($link_new, "%comp%") > 0))
   {
     // get container id
-    $container_id = substr ($container, 0, strpos ($container, ".xml"));
+    $container_id = getcontentcontainerid ($container);
 
     // load content container
     $container_data = loadcontainer ($container, "published", $user);
@@ -1000,8 +1000,7 @@ function getconnectedobject ($container, $type="work")
     if (!empty ($mgmt_config['db_connect_rdbms']))
     {
       // get container id
-      if (strpos ($container, ".xml") > 0) $container_id = substr ($container, 0, strpos ($container, ".xml"));
-      else $container_id = $container;
+      $container_id = getcontentcontainerid ($container);
 
       $temp_array = rdbms_getobjects ($container_id);
 

@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['cs'] = "- … Znaménko mínus na začátku
 $hcms_lang['search-wildcard-none']['cs'] = "žádný operátor … Ve výchozím nastavení (když není zadáno + ani -) je slovo nepovinné";
 $hcms_lang['search-wildcard-asterisk']['cs'] = "* … Hvězdička slouží jako operátor zkrácení (nebo zástupný znak). Na rozdíl od ostatních operátorů by měla být připojena ke slovu, které má být ovlivněno.";
 $hcms_lang['search-wildcard-doublequote']['cs'] = "\" … Fráze, která je uzavřena mezi znaky dvojitých uvozovek, musí být přítomna jako fráze doslova, tak jak byla napsána";
+$hcms_lang['content-modified-by-user']['cs'] = "Obsah byl změněn uživatelem '%user%'. Chcete obsah znovu načíst?";
 ?>

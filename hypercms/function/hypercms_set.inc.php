@@ -309,6 +309,42 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy=array())
   else return false;
 }
 
+// ------------------------------------------ setcontentupdate ------------------------------------------
+// function: setcontentupdate()
+// input: container ID [integer], update information [string]
+// output: true / false on error
+
+// description:
+// Appending data to an existing file with the update information of a content container.
+
+function setcontentupdate ($container_id, $update_data)
+{
+  global $mgmt_config;
+
+  if (!empty ($container_id) && valid_objectname ($container_id) && !empty ($update_data))
+  {
+    $update_file = "update.".$container_id.".dat";
+
+    // delete file if older than 6 seconds
+    if (is_file ($mgmt_config['abs_path_temp'].$update_file) && filemtime ($mgmt_config['abs_path_temp'].$update_file) < (time() - 6))
+    {
+      deletefile ($mgmt_config['abs_path_temp'], $update_file, false);
+    }
+    
+    // append or save data in file
+    if (is_file ($mgmt_config['abs_path_temp'].$update_file))
+    {
+      return appendfile ($mgmt_config['abs_path_temp'], $update_file, $update_data);
+    }
+    else
+    {
+      return savefile ($mgmt_config['abs_path_temp'], $update_file, $update_data);
+    }
+  }
+
+  return false;
+}
+
 // ------------------------------------------ article ----------------------------------------------
 // function: setarticle()
 // input: publication name [string], container (XML) [string], container name [string], article title [array], article status [array], article beginn date [array] (optional), article end date [array] (optional), article user name [array or string] (optional), user name [string] (optional)
@@ -399,6 +435,8 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
   {
     // initialize
     $error = array();
+    $updated = false;
+    $update_data = "";
     $link_db_updated = false;
     $continued = false;
 
@@ -419,6 +457,8 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
       $userbuffer = $textuser;
       $textuser = Null;
     }
+
+    $container_id = getcontentcontainerid ($contentfile);
 
     // load publication config
     if (!is_array ($publ_config)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
@@ -554,184 +594,202 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         if (!empty ($mgmt_config[$site]['url_publ_page']) && $mgmt_config[$site]['url_publ_page'] != "/") $textcontent = str_replace ($publ_config['url_publ_page'], "%page%/".$site."/", $textcontent);
         if (!empty ($publ_config['url_publ_comp']) && $publ_config['url_publ_comp'] != "/") $textcontent = str_replace ($publ_config['url_publ_comp'], "%comp%/", $textcontent);
 
-        // if link management is enabled
-        if ($mgmt_config[$site]['linkengine'] == true)
+        // exctract previous (old) links
+        $temp_array = selectcontent ($contentdata, "<text>", "<text_id>", $id);
+
+        if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>", true);
+
+        if (!empty ($temp_array[0])) $textcontent_old = $temp_array[0];
+        else $textcontent_old = "";
+
+        // if text has been changed
+        if (html_decode ($textcontent_old) != html_decode ($textcontent))
         {
-          $link_array = false;
-
-          // extract links (only page links "href" as identifier) from text content
-          if ($textcontent != "" && (strpos ($textcontent, " href") > 0 || strpos ($textcontent, " src") > 0))
+          // if link management is enabled
+          if (!empty ($mgmt_config[$site]['linkengine']))
           {
-            // extract new links
-            $temp_array_href = extractlinks ($textcontent, "href");
-            $temp_array_src = extractlinks ($textcontent, "src");
+            $link_array = false;
 
-            if (is_array ($temp_array_href) && is_array ($temp_array_src)) $temp_array = array_merge ($temp_array_href, $temp_array_src);
-            elseif (is_array ($temp_array_href)) $temp_array = $temp_array_href;
-            elseif (is_array ($temp_array_src)) $temp_array = $temp_array_src;
-
-            // if links were found
-            if (!empty ($temp_array) && is_array ($temp_array))
+            // extract links (only page links "href" as identifier) from text content
+            if ($textcontent != "" && (strpos ($textcontent, " href") > 0 || strpos ($textcontent, " src") > 0))
             {
-              $link_array = array();
+              // extract new links
+              $temp_array_href = extractlinks ($textcontent, "href");
+              $temp_array_src = extractlinks ($textcontent, "src");
 
-              foreach ($temp_array as $link)
+              if (is_array ($temp_array_href) && is_array ($temp_array_src)) $temp_array = array_merge ($temp_array_href, $temp_array_src);
+              elseif (is_array ($temp_array_href)) $temp_array = $temp_array_href;
+              elseif (is_array ($temp_array_src)) $temp_array = $temp_array_src;
+
+              // if links were found
+              if (!empty ($temp_array) && is_array ($temp_array))
               {
-                // page or component links
-                if (strpos ("_".$link, "%page%") == 1 || strpos ("_".$link, "%comp%") == 1)
+                $link_array = array();
+
+                foreach ($temp_array as $link)
                 {
-                  $link_array[] = $link;
+                  // page or component links
+                  if (strpos ("_".$link, "%page%") == 1 || strpos ("_".$link, "%comp%") == 1)
+                  {
+                    $link_array[] = $link;
+                  }
+                  // multimedia links (holding component-ID)
+                  elseif (substr_count ($link, "_hcm") == 1)
+                  {
+                    $temp_container_id = getmediacontainerid ($link);
+                    $temp_container_data = loadcontainer ($temp_container_id, "work", "sys");
+                    $temp_array = getcontent ($temp_container_data, "<contentobjects>");
+                    $link_temp_array = link_db_getobject ($temp_array[0]);
+                    if (is_array ($link_temp_array)) $link_array = array_merge ($link_array, $link_temp_array);
+                  }
                 }
-                // multimedia links (holding component-ID)
-                elseif (substr_count ($link, "_hcm") == 1)
-                {
-                  $container_id = getmediacontainerid ($link);
-                  $container_data = loadcontainer ($container_id, "work", "sys");
-                  $temp_array = getcontent ($container_data, "<contentobjects>");
-                  $link_temp_array = link_db_getobject ($temp_array[0]);
-                  if (is_array ($link_temp_array)) $link_array = array_merge ($link_array, $link_temp_array);
-                }
-              }
 
-              if (is_array ($link_array) && sizeof ($link_array) > 0) $link_array = array_unique ($link_array);
-              else $link_array = false;
-            }
-          } 
-
-          // exctract previous (old) links
-          $temp_array = selectcontent ($contentdata, "<text>", "<text_id>", $id);
-
-          if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>", true);
-
-          if (!empty ($temp_array[0])) $textcontent_old = $temp_array[0];
-          else $textcontent_old = "";
-
-          $link_old_array = false;
-
-          if (!empty ($textcontent_old) && (strpos ($textcontent_old, " href") > 0 || strpos ($textcontent_old, " src") > 0))
-          {
-            $temp_array_href = extractlinks ($textcontent_old, "href");
-            $temp_array_src = extractlinks ($textcontent_old, "src");
-
-            if (is_array ($temp_array_href) && is_array ($temp_array_src)) $temp_array = array_merge ($temp_array_href, $temp_array_src);
-            elseif (is_array ($temp_array_href)) $temp_array = $temp_array_href;
-            elseif (is_array ($temp_array_src)) $temp_array = $temp_array_src;
-
-            if (is_array ($temp_array))
-            {
-              $link_old_array = array();
-
-              foreach ($temp_array as $link)
-              { 
-                // page or component links
-                if (strpos ("_".$link, "%page%") == 1 || strpos ("_".$link, "%comp%") == 1)
-                {
-                  $link_old_array[] = $link;
-                }
-                // multimedia links (holding component-ID)
-                elseif (substr_count ($link, "_hcm") == 1)
-                {
-                  $container_id = getmediacontainerid ($link);
-                  $container_data = loadcontainer ($container_id, "work", "sys");
-                  $temp_array = getcontent ($container_data, "<contentobjects>");
-                  $link_temp_array = link_db_getobject ($temp_array[0]);
-                  if (is_array ($link_temp_array)) $link_old_array = array_merge ($link_old_array, $link_temp_array);
-                }
-              }
-
-              if (is_array ($link_old_array) && sizeof ($link_old_array) > 0) $link_old_array = array_unique ($link_old_array);
-              else $link_old_array = false;
-            } 
-          }
-
-          // update links
-          if (is_array ($link_array) || is_array ($link_old_array))
-          {
-            // load link db
-            if ((!isset ($link_db) || !is_array ($link_db)) && $link_db_updated != true)
-            {
-              $link_db = link_db_load ($site, $user);
-            }
- 
-            // compare to previous (old) links
-            if (is_array ($link_array) && is_array ($link_db))
-            {
-              foreach ($link_array as $link)
-              {
-                // link is a new one
-                if ($link_old_array == false || (is_array ($link_old_array) && !in_array ($link, $link_old_array)))
-                {
-                  $site_link = getpublication ($link);
-                  $cat_link = getcategory ($site_link, $link);
-                  // insert link in link DB
-                  $link_db = link_db_update ($site, $link_db, "link", $contentfile, $cat_link, "", $link, "unique");
-                  $link_db_updated = true;
-                }
+                if (is_array ($link_array) && sizeof ($link_array) > 0) $link_array = array_unique ($link_array);
+                else $link_array = false;
               }
             }
 
-            if (is_array ($link_old_array) && is_array ($link_db))
+            $link_old_array = false;
+
+            if (!empty ($textcontent_old) && (strpos ($textcontent_old, " href") > 0 || strpos ($textcontent_old, " src") > 0))
             {
-              foreach ($link_old_array as $link)
+              $temp_array_href = extractlinks ($textcontent_old, "href");
+              $temp_array_src = extractlinks ($textcontent_old, "src");
+
+              if (is_array ($temp_array_href) && is_array ($temp_array_src)) $temp_array = array_merge ($temp_array_href, $temp_array_src);
+              elseif (is_array ($temp_array_href)) $temp_array = $temp_array_href;
+              elseif (is_array ($temp_array_src)) $temp_array = $temp_array_src;
+
+              if (is_array ($temp_array))
               {
-                // link does not exist any more
-                if ($link_array == false || (is_array ($link_array) && !in_array ($link, $link_array)))
+                $link_old_array = array();
+
+                foreach ($temp_array as $link)
+                { 
+                  // page or component links
+                  if (strpos ("_".$link, "%page%") == 1 || strpos ("_".$link, "%comp%") == 1)
+                  {
+                    $link_old_array[] = $link;
+                  }
+                  // multimedia links (holding component-ID)
+                  elseif (substr_count ($link, "_hcm") == 1)
+                  {
+                    $temp_container_id = getmediacontainerid ($link);
+                    $temp_container_data = loadcontainer ($temp_container_id, "work", "sys");
+                    $temp_array = getcontent ($temp_container_data, "<contentobjects>");
+                    $link_temp_array = link_db_getobject ($temp_array[0]);
+                    if (is_array ($link_temp_array)) $link_old_array = array_merge ($link_old_array, $link_temp_array);
+                  }
+                }
+
+                if (is_array ($link_old_array) && sizeof ($link_old_array) > 0) $link_old_array = array_unique ($link_old_array);
+                else $link_old_array = false;
+              } 
+            }
+
+            // update links
+            if (is_array ($link_array) || is_array ($link_old_array))
+            {
+              // load link db
+              if ((!isset ($link_db) || !is_array ($link_db)) && $link_db_updated != true)
+              {
+                $link_db = link_db_load ($site, $user);
+              }
+
+              // compare to previous (old) links
+              if (is_array ($link_array) && is_array ($link_db))
+              {
+                foreach ($link_array as $link)
                 {
-                  $site_link = getpublication ($link);
-                  $cat_link = getcategory ($site_link, $link);
-                  // remove link in link DB
-                  $link_db = link_db_update ($site, $link_db, "link", $contentfile, $cat_link, $link, "", "unique");
-                  $link_db_updated = true; 
+                  // link is a new one
+                  if ($link_old_array == false || (is_array ($link_old_array) && !in_array ($link, $link_old_array)))
+                  {
+                    $site_link = getpublication ($link);
+                    $cat_link = getcategory ($site_link, $link);
+                    // insert link in link DB
+                    $link_db = link_db_update ($site, $link_db, "link", $contentfile, $cat_link, "", $link, "unique");
+                    $link_db_updated = true;
+                  }
                 }
               }
-            } 
+
+              if (is_array ($link_old_array) && is_array ($link_db))
+              {
+                foreach ($link_old_array as $link)
+                {
+                  // link does not exist any more
+                  if ($link_array == false || (is_array ($link_array) && !in_array ($link, $link_array)))
+                  {
+                    $site_link = getpublication ($link);
+                    $cat_link = getcategory ($site_link, $link);
+                    // remove link in link DB
+                    $link_db = link_db_update ($site, $link_db, "link", $contentfile, $cat_link, $link, "", "unique");
+                    $link_db_updated = true; 
+                  }
+                }
+              } 
+            }
           }
-        }
 
-        // check if text
-        if ($art[$id] == "no")
-        {
-          // set the new content
-          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
-
-          if ($contentdatanew == false)
+          // check if text
+          if ($art[$id] == "no")
           {
-            $contentdatanew = addcontent ($contentdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $elemid);
-            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
-          }
-
-          if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
-        }
-        // check if article
-        elseif ($art[$id] == "yes")
-        {
-          // get article id
-          $artid = getartid ($id);
-
-          // set the new content
-          $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
- 
-          if ($contentdatanew == false)
-          {
-            $contentdatanew = addcontent ($contentdata, $text_schema_xml, "<article>", "<article_id>", $artid, "<articletextcollection>", "<text_id>", $elemid);
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
 
             if ($contentdatanew == false)
             {
-              $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
-              $contentdatanew = addcontent ($contentdatanew, $text_schema_xml, "<article>", "<article_id>", $artid, "<articletextcollection>", "<text_id>", $elemid);
+              $contentdatanew = addcontent ($contentdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $elemid);
+              $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
             }
 
-            $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
             if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
           }
-        } 
+          // check if article
+          elseif ($art[$id] == "yes")
+          {
+            // get article id
+            $artid = getartid ($id);
 
-        $contentdata = $contentdatanew;
-      } 
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
+  
+            if ($contentdatanew == false)
+            {
+              $contentdatanew = addcontent ($contentdata, $text_schema_xml, "<article>", "<article_id>", $artid, "<articletextcollection>", "<text_id>", $elemid);
+
+              if ($contentdatanew == false)
+              {
+                $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
+                $contentdatanew = addcontent ($contentdatanew, $text_schema_xml, "<article>", "<article_id>", $artid, "<articletextcollection>", "<text_id>", $elemid);
+              }
+
+              $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
+              if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
+            }
+          } 
+
+          $contentdata = $contentdatanew;
+
+          // collect data for the update notification
+          if (!empty ($textuser[$id])) $update_user = $textuser[$id];
+          else $update_user = $user;
+
+          $update_data .= time().":text:".$id.":".$update_user."\n";
+
+          $updated = true;
+        }
+      }
+    }
+
+    // save temp file for the update notification
+    if (!empty ($updated))
+    {
+      setcontentupdate ($container_id, $update_data);
     }
 
     // if link management is enabled
-    if ($mgmt_config[$site]['linkengine'] == true)
+    if (!empty ($mgmt_config[$site]['linkengine']))
     {
       // if no link has been changed
       if ($link_db_updated == false) $test = true;
@@ -756,20 +814,24 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
     savelog (@$error);
 
     // return container
-    if (!empty ($contentdatanew) && $contentdatanew != false)
+    if (!empty ($contentdatanew))
     {
       // relational DB connectivity
       if (!empty ($mgmt_config['db_connect_rdbms']))
       {
-        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
- 
         // set content in database
         rdbms_setcontent ($site, $container_id, $text, $type, $user);
       } 
 
       return $contentdatanew;
     }
+    // comment
     elseif ($addmicrotime === true && $continued === true)
+    {
+      return $contentdata;
+    }
+    // nothing has been changed
+    elseif (empty ($updated))
     {
       return $contentdata;
     }
@@ -796,6 +858,8 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
   {
     // initialize
     $error = array();
+    $updated = false;
+    $update_data = "";
     if (!is_array ($mediaobject)) $mediaobject = array();
     if (!is_array ($mediaalttext)) $mediaalttext = array();
     if (!is_array ($mediaalign)) $mediaalign = array();
@@ -807,6 +871,8 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
       $userbuffer = $mediauser;
       $mediauser = Null;
     }
+
+    $container_id = getcontentcontainerid ($contentfile); 
 
     // load xml schema
     $media_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "media.schema.xml.php"));
@@ -881,69 +947,108 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
         $mediaobject[$id] = convertpath ($site, $mediaobject[$id], "comp");
 
         // extract old object reference (for link management)
+        $mediafile_curr[$id] = "";
         $mediaobject_curr[$id] = "";
+        $mediaalttext_curr[$id] = "";
+        $mediaalign_curr[$id] = "";
+        $mediawidth_curr[$id] = "";
+        $mediaheight_curr[$id] = "";
+
         $temp_array = selectcontent ($contentdata, "<media>", "<media_id>", $id);
 
         if (!empty ($temp_array[0]))
         {
-          $temp_array = getcontent ($temp_array[0], "<mediaobject>");
-          if (!empty ($temp_array[0])) $mediaobject_curr[$id] = $temp_array[0];
+          $temp_item = getcontent ($temp_array[0], "<mediafile>");
+          if (!empty ($temp_item[0])) $mediafile_curr[$id] = $temp_item[0];
+
+          $temp_item = getcontent ($temp_array[0], "<mediaobject>");
+          if (!empty ($temp_item[0])) $mediaobject_curr[$id] = $temp_item[0];
+
+          $temp_item = getcontent ($temp_array[0], "<mediaalttext>");
+          if (!empty ($temp_item[0])) $mediaalttext_curr[$id] = $temp_item[0];
+
+          $temp_item = getcontent ($temp_array[0], "<mediaalign>");
+          if (!empty ($temp_item[0])) $mediaalign_curr[$id] = $temp_item[0];
+
+          $temp_item = getcontent ($temp_array[0], "<mediawidth>");
+          if (!empty ($temp_array[0])) $mediawidth_curr[$id] = $temp_item[0];
+
+          $temp_item = getcontent ($temp_array[0], "<mediaheight>");
+          if (!empty ($temp_item[0])) $mediaheight_curr[$id] = $temp_item[0];
         }
 
-        // check if article
-        if ($art[$id] == "no")
+        // media has been modified
+        if ($mediafile[$id] != $mediafile_curr[$id] || $mediaobject[$id] != $mediaobject_curr[$id] || $mediaalttext[$id] != $mediaalttext_curr[$id] || $mediaalign[$id] != $mediaalign_curr[$id] || $mediawidth[$id] != $mediawidth_curr[$id] || $mediaheight[$id] != $mediaheight_curr[$id])
         {
-          // set the new content
-          $contentdatanew = setcontent ($contentdata, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
-
-          if ($contentdatanew == false)
+          // check if article
+          if ($art[$id] == "no")
           {
-            $contentdatanew = addcontent ($contentdata, $media_schema_xml, "", "", "", "<mediacollection>", "<media_id>", $id);
-            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
-          }
-
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaobject>", trim ($mediaobject[$id]), "<media_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalttext>", "<![CDATA[".trim ($mediaalttext[$id])."]]>", "<media_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
-          if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
-        }
-        // check if article media
-        elseif ($art[$id] == "yes")
-        {
-          // get the id of the article
-          $artid = getartid ($id);
-
-          // set the new content
-          $contentdatanew = setcontent ($contentdata, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
-
-          if ($contentdatanew == false)
-          {
-            $contentdatanew = addcontent ($contentdata, $media_schema_xml, "<article>", "<article_id>", $artid, "<articlemediacollection>", "<media_id>", $id);
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
 
             if ($contentdatanew == false)
             {
-              $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
-              $contentdatanew = addcontent ($contentdatanew, $media_schema_xml, "<article>", "<article_id>", $artid, "<articlemediacollection>", "<media_id>", $id);
+              $contentdatanew = addcontent ($contentdata, $media_schema_xml, "", "", "", "<mediacollection>", "<media_id>", $id);
+              $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
             }
-            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
+
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaobject>", trim ($mediaobject[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalttext>", "<![CDATA[".trim ($mediaalttext[$id])."]]>", "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
+            if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
+          }
+          // check if article media
+          elseif ($art[$id] == "yes")
+          {
+            // get the id of the article
+            $artid = getartid ($id);
+
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
+
+            if ($contentdatanew == false)
+            {
+              $contentdatanew = addcontent ($contentdata, $media_schema_xml, "<article>", "<article_id>", $artid, "<articlemediacollection>", "<media_id>", $id);
+
+              if ($contentdatanew == false)
+              {
+                $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
+                $contentdatanew = addcontent ($contentdatanew, $media_schema_xml, "<article>", "<article_id>", $artid, "<articlemediacollection>", "<media_id>", $id);
+              }
+              $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
+            }
+
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaobject>", trim ($mediaobject[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalttext>", "<![CDATA[".trim ($mediaalttext[$id])."]]>", "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
+            if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id, true);
           }
 
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaobject>", trim ($mediaobject[$id]), "<media_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalttext>", "<![CDATA[".trim ($mediaalttext[$id])."]]>", "<media_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
-          $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
-          if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id, true);
+          // ------------------------- add link to link management file ---------------------------
+
+          $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $mediaobject_curr[$id], $mediaobject[$id], "unique");
+
+          $contentdata = $contentdatanew;
+
+          // collect data for the update notification
+          if (!empty ($mediauser[$id])) $update_user = $mediauser[$id];
+          else $update_user = $user;
+
+          $update_data .= time().":media:".$id.":".$update_user."\n";
+
+          $updated = true;
         }
-
-        // ------------------------- add link to link management file ---------------------------
-
-        $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $mediaobject_curr[$id], $mediaobject[$id], "unique");
-
-        $contentdata = $contentdatanew;
       }
+    }
+
+    // save temp file for the update notification
+    if (!empty ($updated))
+    {
+      setcontentupdate ($container_id, $update_data);
     }
 
     // save link db
@@ -961,13 +1066,11 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
     }
 
     // return container
-    if ($contentdatanew != false)
+    if (!empty ($contentdatanew))
     {
       // relational DB connectivity
       if (!empty ($mgmt_config['db_connect_rdbms']))
       {
-        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
-
         $text_array = array();
         $type = array();
 
@@ -985,6 +1088,11 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
       }
 
       return $contentdatanew;
+    }
+    // nothing has been changed
+    elseif (empty ($updated))
+    {
+      return $contentdata;
     }
     else return false;
   }
@@ -1008,6 +1116,8 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
   {
     // initialize
     $error = array();
+    $updated = false;
+    $update_data = "";
     if (!is_array ($linktarget)) $linktarget = array();
     if (!is_array ($linktext)) $linktext = array();
 
@@ -1016,6 +1126,8 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
       $userbuffer = $linkuser;
       $linkuser = Null;
     }
+
+    $container_id = getcontentcontainerid ($contentfile); 
 
     // load xml schema
     $link_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "link.schema.xml.php"));
@@ -1075,63 +1187,90 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
 
         // extract old object reference (for link management)
         $linkhref_curr[$id] = "";
+        $linktarget_curr[$id] = "";
+        $linktext_curr[$id] = "";
+
         $temp_array = selectcontent ($contentdata, "<link>", "<link_id>", $id);
 
         if (!empty ($temp_array[0]))
         {
-          $temp_array = getcontent ($temp_array[0], "<linkhref>");
-          if (!empty ($temp_array[0])) $linkhref_curr[$id] = $temp_array[0];
+          $temp_item = getcontent ($temp_array[0], "<linkhref>");
+          if (!empty ($temp_item[0])) $linkhref_curr[$id] = $temp_item[0];
+
+          $temp_item = getcontent ($temp_array[0], "<linktarget>");
+          if (!empty ($temp_item[0])) $linktarget_curr[$id] = $temp_item[0];
+
+          $temp_item = getcontent ($temp_array[0], "<linktext>");
+          if (!empty ($temp_item[0])) $linktext_curr[$id] = $temp_item[0];
         }
 
-        // check if page link
-        if ($art[$id] == "no")
+        // if page link had been modified
+        if ($linkhref_curr[$id] != $linkhref[$id] || $linktarget_curr[$id] != $linktarget[$id] || $linktext_curr[$id] != $linktext[$id])
         {
-          // set the new content
-          $contentdatanew = setcontent ($contentdata, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
-
-          if ($contentdatanew == false)
+          // check if page link
+          if ($art[$id] == "no")
           {
-            $contentdatanew = addcontent ($contentdata, $link_schema_xml, "", "", "", "<linkcollection>", "<link_id>", $id);
-            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
-          }
-
-          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id, true);
-          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id, true);
-          if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id, true);
-        }
-        // check if article link
-        elseif ($art[$id] == "yes")
-        {
-          // get the id of the article
-          $artid = getartid ($id);
-
-          // set the new content
-          $contentdatanew = setcontent ($contentdata, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
-
-          if ($contentdatanew == false)
-          {
-            $contentdatanew = addcontent ($contentdata, $link_schema_xml, "<article>", "<article_id>", $artid, "<articlelinkcollection>", "<link_id>", $id);
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
 
             if ($contentdatanew == false)
             {
-              $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
-              $contentdatanew = addcontent ($contentdatanew, $link_schema_xml, "<article>", "<article_id>", $artid, "<articlelinkcollection>", "<link_id>", $id);
+              $contentdatanew = addcontent ($contentdata, $link_schema_xml, "", "", "", "<linkcollection>", "<link_id>", $id);
+              $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
             }
 
-            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id, true);
+            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id, true);
+            if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id, true);
+          }
+          // check if article link
+          elseif ($art[$id] == "yes")
+          {
+            // get the id of the article
+            $artid = getartid ($id);
+
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
+
+            if ($contentdatanew == false)
+            {
+              $contentdatanew = addcontent ($contentdata, $link_schema_xml, "<article>", "<article_id>", $artid, "<articlelinkcollection>", "<link_id>", $id);
+
+              if ($contentdatanew == false)
+              {
+                $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
+                $contentdatanew = addcontent ($contentdatanew, $link_schema_xml, "<article>", "<article_id>", $artid, "<articlelinkcollection>", "<link_id>", $id);
+              }
+
+              $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
+            }
+
+            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id, true);
+            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id, true);
+            if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id, true);
           }
 
-          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id, true);
-          $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id, true);
-          if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id, true);
+          // ------------------------- add link to link management file ---------------------------
+
+          $link_db = link_db_update ($site, $link_db, "link", $contentfile, "page", $linkhref_curr[$id], $linkhref[$id], "unique"); 
+
+          $contentdata = $contentdatanew;
+
+          // collect data for the update notification
+          if (!empty ($linkuser[$id])) $update_user = $linkuser[$id];
+          else $update_user = $user;
+
+          $update_data .= time().":link:".$id.":".$update_user."\n";
+
+          $updated = true;
         }
-
-        // ------------------------- add link to link management file ---------------------------
-
-        $link_db = link_db_update ($site, $link_db, "link", $contentfile, "page", $linkhref_curr[$id], $linkhref[$id], "unique"); 
-
-        $contentdata = $contentdatanew;
       }
+    }
+
+    // save temp file for the update notification
+    if (!empty ($updated))
+    {
+      setcontentupdate ($container_id, $update_data);
     }
 
     // save link db
@@ -1152,13 +1291,11 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
     savelog (@$error); 
 
     // return container
-    if ($contentdatanew != false)
+    if (!empty ($contentdatanew))
     {
       // relational DB connectivity
       if (!empty ($mgmt_config['db_connect_rdbms']))
       {
-        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
-
         $text_array = array();
         $type_array = array();
 
@@ -1176,6 +1313,11 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
       }
 
       return $contentdatanew;
+    }
+    // nothing has been changed
+    elseif (empty ($updated))
+    {
+      return $contentdata;
     }
     else return false;
   }
@@ -1199,6 +1341,8 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
   {
     // initialize
     $error = array();
+    $updated = false;
+    $update_data = "";
     if (!is_array ($condition)) $condition = array();
 
     if (!is_array ($art))
@@ -1212,6 +1356,8 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
       $userbuffer = $compuser;
       $compuser = Null;
     }
+
+    $container_id = getcontentcontainerid ($contentfile);
 
     // load xml schema
     $component_schema_xml = chop (loadfile ($mgmt_config['abs_path_cms']."xmlsubschema/", "component.schema.xml.php"));
@@ -1242,73 +1388,97 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
         if ($mgmt_config[$site]['dam']) $component_conv[$id] = $component_object_id[$id];
         else $component_conv[$id] = $component[$id];
 
+        // condition
+        if (empty ($condition[$id])) $condition[$id] = "";
+
         // set array if input parameter is string
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
         if (!empty ($userbuffer)) $compuser[$id] = $userbuffer;
 
         // extract old object reference (for link management)
         $component_curr[$id] = "";
+        $componentcond_curr[$id] = "";
+        
         $temp_array = selectcontent ($contentdata, "<component>", "<component_id>", $id);
 
         if (!empty ($temp_array[0]))
         {
-          $temp_array = getcontent ($temp_array[0], "<componentfiles>");
+          $temp_item = getcontent ($temp_array[0], "<componentfiles>");
 
-          if (!empty ($temp_array[0]))
+          if (!empty ($temp_item[0]))
           {
-            $temp_array[0] = trim ($temp_array[0]);
-            // remove | at the end
-            $temp_array[0] = trim ($temp_array[0], "|");
-            $component_curr[$id] = $temp_array[0];
-          }
-        }
-
-        // check if page component
-        if ($art[$id] == "no")
-        {
-          // set the new content
-          $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
-
-          if ($contentdatanew == false)
-          {
-            $contentdatanew = addcontent ($contentdata, $component_schema_xml, "", "", "", "<componentcollection>", "<component_id>", $id);
-            $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
+            $temp_item[0] = trim ($temp_item[0]);
+            $component_curr[$id] = trim ($temp_item[0], "|");
           }
 
-          if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
-          if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);
+          $temp_item = getcontent ($temp_array[0], "<componentcond>");
+          if (!empty ($temp_item[0])) $componentcond_curr[$id] = $temp_item[0];
         }
-        // check if article component
-        elseif ($art[$id] == "yes")
+
+        // if page link had been modified
+        if ($component_curr[$id] != $component_conv[$id] || $componentcond_curr[$id] != $condition[$id])
         {
-          // get the id of the article
-          $artid = getartid ($id);
-
-          // set the new content
-          $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
-
-          if ($contentdatanew == false)
+          // check if page component
+          if ($art[$id] == "no")
           {
-            $contentdatanew = addcontent ($contentdata, $component_schema_xml, "<article>", "<article_id>", $artid, "<articlecomponentcollection>", "<component_id>", $id);
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
 
             if ($contentdatanew == false)
             {
-              $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
-              $contentdatanew = addcontent ($contentdatanew, $component_schema_xml, "<article>", "<article_id>", $artid, "<articlecomponentcollection>", "<component_id>", $id);
+              $contentdatanew = addcontent ($contentdata, $component_schema_xml, "", "", "", "<componentcollection>", "<component_id>", $id);
+              $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
             }
-            $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
+
+            if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
+            if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);
+          }
+          // check if article component
+          elseif ($art[$id] == "yes")
+          {
+            // get the id of the article
+            $artid = getartid ($id);
+
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
+
+            if ($contentdatanew == false)
+            {
+              $contentdatanew = addcontent ($contentdata, $component_schema_xml, "<article>", "<article_id>", $artid, "<articlecomponentcollection>", "<component_id>", $id);
+
+              if ($contentdatanew == false)
+              {
+                $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
+                $contentdatanew = addcontent ($contentdatanew, $component_schema_xml, "<article>", "<article_id>", $artid, "<articlecomponentcollection>", "<component_id>", $id);
+              }
+              $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
+            }
+
+            if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
+            if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);
           }
 
-          if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
-          if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);
+          // ------------------------- add link to link management file ---------------------------
+
+          $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $component_curr[$id], $component[$id], "unique");
+
+          if (!empty ($contentdatanew)) $contentdata = $contentdatanew;
+
+          // collect data for the update notification
+          if (!empty ($compuser[$id])) $update_user = $compuser[$id];
+          else $update_user = $user;
+
+          $update_data .= time().":comp:".$id.":".$update_user."\n";
+
+          $updated = true;
         }
-
-        // ------------------------- add link to link management file ---------------------------
-
-        $link_db = link_db_update ($site, $link_db, "link", $contentfile, "comp", $component_curr[$id], $component[$id], "unique");
-
-        if (!empty ($contentdatanew)) $contentdata = $contentdatanew;
       }
+    }
+
+    // save temp file for the update notification
+    if (!empty ($updated))
+    {
+      setcontentupdate ($container_id, $update_data);
     }
 
     // save link db
@@ -1334,8 +1504,6 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
       // relational DB connectivity
       if (!empty ($mgmt_config['db_connect_rdbms']))
       {
-        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
-
         $text_array = array();
         $type_array = array();
 
@@ -1376,6 +1544,11 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
 
       return $contentdatanew;
     }
+    // nothing has been changed
+    elseif (empty ($updated))
+    {
+      return $contentdata;
+    }
     else return false;
   }
   else return false;
@@ -1395,6 +1568,8 @@ function sethead ($site, $contentdata, $contentfile, $headcontent=array(), $user
 
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($headcontent) && valid_objectname ($user) && is_array ($mgmt_config))
   {
+    $container_id = getcontentcontainerid ($contentfile);
+
     reset ($headcontent);
 
     foreach ($headcontent as $tagname => $content)
@@ -1458,8 +1633,6 @@ function sethead ($site, $contentdata, $contentfile, $headcontent=array(), $user
           $text_array['head:pagekeywords'] = $headcontent['pagekeywords'];
           $type_array['head:pagetitle'] = "head";
         }
-
-        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
 
         rdbms_setcontent ($site, $container_id, $text_array, $type_array, $user);
       }

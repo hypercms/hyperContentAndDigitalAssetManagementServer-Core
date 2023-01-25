@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['hu'] = "- … A bevezető mínusz jel azt j
 $hcms_lang['search-wildcard-none']['hu'] = "nincs operátor … Alapértelmezés szerint (ha sem +, sem - nincs megadva) a szó nem kötelező";
 $hcms_lang['search-wildcard-asterisk']['hu'] = "* … A csillag csonkító (vagy helyettesítő karakter) operátorként szolgál. A többi operátortól eltérően az érintett szóhoz kell hozzáfűzni.";
 $hcms_lang['search-wildcard-doublequote']['hu'] = "\" … A dupla idézőjelek közé zárt kifejezésnek szó szerint kell szerepelnie, ahogyan begépelték";
+$hcms_lang['content-modified-by-user']['hu'] = "A tartalmat '%user%' felhasználó módosította. Szeretné újra betölteni a tartalmat?";
 ?>

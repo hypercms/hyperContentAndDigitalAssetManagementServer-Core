@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['tr'] = "- … Baştaki bir eksi işareti bu
 $hcms_lang['search-wildcard-none']['tr'] = "işlemci yok … Varsayılan olarak (ne + ne de - belirtilmediğinde) kelime isteğe bağlıdır";
 $hcms_lang['search-wildcard-asterisk']['tr'] = "* … Yıldız işareti, kesme (veya joker karakter) operatörü görevi görür. Diğer operatörlerin aksine, etkilenecek kelimeye eklenmelidir.";
 $hcms_lang['search-wildcard-doublequote']['tr'] = "\" … Çift tırnak içine alınmış bir ifade, yazıldığı gibi, kelimenin tam anlamıyla ifade olarak mevcut olmalıdır";
+$hcms_lang['content-modified-by-user']['tr'] = "İçerik '%user%' kullanıcısı tarafından değiştirildi. İçeriği yeniden yüklemek istiyor musunuz?";
 ?>

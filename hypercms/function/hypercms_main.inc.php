@@ -3181,14 +3181,7 @@ function createversion ($site, $file, $user="sys")
       elseif (intval ($file) > 0 || strpos ($file, ".xml") > 0)
       {
         // get container ID
-        if (strpos ($file, ".xml") > 0)
-        {
-          $container_id = substr ($file, 0, strpos ($file, ".xml"));
-        }
-        else
-        {
-          $container_id = $file;
-        }
+        $container_id = getcontentcontainerid ($file);
 
         // create new version of file name
         $file_v = fileversion ($container_id.".xml");
@@ -3545,7 +3538,7 @@ function deleteversion ($site, $container_version, $user="sys")
   {
     // get container ID
     if (strpos ($container_version, "_hcm") > 0) $container_id = getmediacontainerid ($container_version);
-    elseif (strpos ($container_version, ".xml") > 0) $container_id = substr ($container_version, 0, strpos ($container_version, ".xml"));
+    elseif (strpos ($container_version, ".xml") > 0) $container_id = getcontentcontainerid ($container_version);
 
     if (intval ($container_id) > 0)
     {
@@ -4634,7 +4627,6 @@ function deletefile ($abs_path, $filename, $recursive=false)
   else return false;
 }
 
-
 // ------------------------------------------ restoremediafile --------------------------------------------
 // function: restoremediafile()
 // input: publication name [string], media file name [string]
@@ -5136,8 +5128,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
       }
 
       // get container id
-      if (strpos ($container, ".xml") > 0) $container_id = substr ($container, 0, strpos ($container, ".xml"));
-      elseif (is_numeric ($container)) $container_id = $container;
+      $container_id = getcontentcontainerid ($container);
  
       // write stats
       if ($user == "sys") $user_stats = getuserip();
@@ -5451,7 +5442,7 @@ function loadcontainer ($container, $type="work", $user="")
     // if container holds file name
     if (strpos ($container, ".xml") > 0)
     {
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $container_id = getcontentcontainerid ($container);
     }
     // if container is media file version
     elseif (strpos ($container, "_hcm") > 0)
@@ -15454,7 +15445,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                   $contentcontainer = $link_db_record['container'];
 
                   // get container id
-                  $container_id = substr ($contentcontainer, 0, strpos ($contentcontainer, ".xml")); 
+                  $container_id = getcontentcontainerid ($contentcontainer); 
 
                   // remove link to page or component from content container
                   if ($action == "page_delete" || ($action == "page_unpublish" && $cat == "page")) $test = link_update ($site, $contentcontainer, $obj_location, "");
@@ -15707,7 +15698,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $date = date ("Y-m-d H:i:s", time());
 
           // update database
-          $container_id = substr ($contentfile_self, 0, strpos ($contentfile_self, ".xml")); 
+          $container_id = getcontentcontainerid ($contentfile_self); 
           rdbms_setcontent ($site, $container_id, "", "", $user, true, false);
 
           // insert user into content file
@@ -16094,7 +16085,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
             // log info
             $errcode = "00204";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object has been moved from ".$location_source.$page." to ".$location.$page." by user '".$user."'"; 
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object has been moved from ".$location_source_esc.$page." to ".$location_esc.$page." by user '".$user."'"; 
 
             // thumbnail (for support of versions before 5.0)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
@@ -17431,7 +17422,7 @@ function lockobject ($site, $location, $page, $user)
     {
       // get name of content file
       $container = getfilename ($pagedata, "content");
-      $container_id = substr ($container, 0, strpos ($container, ".xml")); 
+      $container_id = getcontentcontainerid ($container); 
 
       // define variables depending on content category
       $object = $site."|".$cat."|".$container."\n";
@@ -17585,7 +17576,7 @@ function unlockobject ($site, $location, $page, $user)
     {
       // get name of content file
       $container = getfilename ($pagedata, "content");
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $container_id = getcontentcontainerid ($container);
 
       // define variables depending on object category
       $unlock_entry = $site."|".$cat."|".$container."\n";
@@ -17715,7 +17706,7 @@ function publishobject ($site, $location, $page, $user)
       // get all connected objects
       $pagedata = loadfile ($location, $page);
       $container = getfilename ($pagedata, "content");
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $container_id = getcontentcontainerid ($container);
       $template = getfilename ($pagedata, "template");
       $media = getfilename ($pagedata, "media");
       $application = "";
@@ -18391,7 +18382,7 @@ function unpublishobject ($site, $location, $page, $user)
       // get all connected objects
       $pagedata = loadfile ($location, $page);
       $container = getfilename ($pagedata, "content");
-      $container_id = substr ($container, 0, strpos ($container, ".xml"));
+      $container_id = getcontentcontainerid ($container);
       $template = getfilename ($pagedata, "template");
       $media = getfilename ($pagedata, "media");
 
@@ -22047,7 +22038,7 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
       }
 
       // load content container
-      $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml"));
+      $container_id = getcontentcontainerid ($contentfile);
       $contentdata = loadcontainer ($container_id, "work", $user);
 
       // check if content is not empty
@@ -22296,7 +22287,7 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
         }
         
         // save working xml content container file
-        $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
+        $container_id = getcontentcontainerid ($contentfile); 
         $savefile = savecontainer ($container_id, "work", $contentdatanew, $user);
         
         // test if file could be saved

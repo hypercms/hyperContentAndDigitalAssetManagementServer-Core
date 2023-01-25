@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['sv'] = "- … Ett inledande minustecken ind
 $hcms_lang['search-wildcard-none']['sv'] = "ingen operator … Som standard (när varken + eller - anges) är ordet valfritt";
 $hcms_lang['search-wildcard-asterisk']['sv'] = "* … Asterisken fungerar som trunkeringsoperator (eller jokertecken). Till skillnad från de andra operatorerna bör den läggas till i ordet som ska påverkas.";
 $hcms_lang['search-wildcard-doublequote']['sv'] = "\" … En fras som är omgiven av dubbla citattecken måste vara närvarande som frasen bokstavligen, när den skrevs";
+$hcms_lang['content-modified-by-user']['sv'] = "Innehållet har ändrats av användaren '%user%'. Vill du ladda om innehållet?";
 ?>

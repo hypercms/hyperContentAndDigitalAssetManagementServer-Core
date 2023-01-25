@@ -1431,4 +1431,5 @@ $hcms_lang['search-wildcard-minus']['de'] = "- … Ein vorangestelltes Minuszeic
 $hcms_lang['search-wildcard-none']['de'] = "kein Operator … Standardmäßig (wenn weder + noch - angegeben ist) ist das Wort optional";
 $hcms_lang['search-wildcard-asterisk']['de'] = "* … Der Stern dient als Platzhalter für beliebige weitere Zeichen (Wildcard-Operator). Im Gegensatz zu den anderen Operatoren muss es an das Wort angehängt oder als Platzhalter eingefügt werden.";
 $hcms_lang['search-wildcard-doublequote']['de'] = "\" … Eine Phrase, die in doppelte Anführungszeichen eingeschlossen ist, muss als Phrase im Wortsinn vorhanden sein, wie sie eingegeben wurde";
+$hcms_lang['content-modified-by-user']['de'] = "Der Inhalte wurde vom Benutzer '%user%' geändert. Wollen Sie den Inhalt neu laden?";
 ?>

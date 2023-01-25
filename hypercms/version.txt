@@ -6497,10 +6497,10 @@ Release 03/2023
 - Modifications in task_list of the Task Management module in order to strip HTML tags from the task name and description
 - Modifications in function rdbms_createtask and rdbms_settask in DB Connect in order to strip HTML tags from the string values
 - Modifications in function rdbms_createproject and rdbms_setproject in DB Connect in order to strip HTML tags from the string values
-- Modifications in function rdbms_gettask  in DB Connect in order to strip HTML tags from the string values
+- Modifications in function rdbms_gettask in DB Connect in order to strip HTML tags from the string values
 - Modifications in function rdbms_getproject in DB Connect in order to strip HTML tags from the string values
 - Modifications in function getbrowserinfo in Get API in order to verify that the result array element exists
-- Modifications in popup_upload_html in oder to shorten the location text on mobile devices (Mobile Edition)
+- Modifications in popup_upload_html in order to shorten the location text on mobile devices (Mobile Edition)
 - Update of the TCPDF library to version 6.6.2
 - Modifications in function rdbms_searchcontent in DB Connect in order to return an empty array instead of false in case nothing was found (due to the HTTP 500 code that will be returned by the REST API in case nothing was found)
 - Modifications in explorer in order to remove the backslash from the user options
@@ -6523,11 +6523,52 @@ Release 03/2023
 - Modifications in instance_create of the Connector module in order to apply the new CSS class hcmsTableFlip for improved support of mobile devices
 - Modifications in explorer_objectlist, log_list, message_objectlist, queue_objectlist, search_objectlist, and user_objectlist in order to initialize and correct the objects counter (used > instead of >=)
 - Modifications in the log viewer Plugin in order to initialize and correct the objects counter (used > instead of >=)
+- Modifications in function manipulateobject in Main API in order to use the converted locations for the log entry of moved objects
+- Implementation of automated user notifications when the same object/container is edited by different users at the same time
+- Implementation of the new function setcontentupdate in Set API in order to save update information of a content container
+- Modifications in function settext in Set API in order to verify if a text has been changed and save a temporary file for the update notification
+- Modifications in function setmedia in Set API in order to verify if a text has been changed and save a temporary file for the update notification
+- Modifications in function setpagelink in Set API in order to verify if a text has been changed and save a temporary file for the update notification
+- Modifications in function setcomplink in Set API in order to verify if a text has been changed and save a temporary file for the update notification
+- Implementation of the new local JS function checkUpdatedContent in the template engine in order to check for updated content
+- Modifications in the template engine in order to implement the check for modified content (every 3 seconds) for the form and inline editing view
+- Implementation of the new service checkupdatedcontent in order to provide information if the requested content has been modified by another user
+- Modifications in text_edit_checkbox, test_edit_date, text_edit_list, text_edit_keywords, test_edit_unformat, and text_edit_format in order to implement the check for modified content (every 3 seconds)
+- Modifications in link_edit_page, media_edit_page, component_edit_page_single and component_edit_page_multi in order to implement the check for modified content (every 3 seconds)
+- Implementation of a new text for the notification regarding the modified content in all language files
+- Implementation of the new function getcontentcontainerid in Get API in order to extract the container ID from the container name
+- Modifications in function getmediacontainerid in Get API in order to verify that the container ID is an integer value greater than zero
+- Modifications in various function in Main API in order to replace the existing code by the new function getcontentcontainerid
+- Modifications in various function in Media API in order to replace the existing code by the new function getcontentcontainerid
+- Modifications in various function in Get API in order to replace the existing code by the new function getcontentcontainerid
+- Modifications in various function in Link API in order to replace the existing code by the new function getcontentcontainerid
+- Modifications in the template engine in order to replace the existing code by the new function getcontentcontainerid
+- Modifications in text_edit_checkbox and text_edit_date in order to remove the input parameter contentbot and read the content
+- Modifications in link_edit_page in order to remove the input parameters linkhref, lintext, and linktarget and read the content
+- Modifications in link_edit_page in order to remove deprecated and duplicate correction of the linkhref parameter
+- Modifications in frameset_edit_link in order to remove the parameters linkhref, lintext, and linktarget and read the content
+- Modifications in media_edit_page in order to remove the parameters mediafile, mediaobject, mediaalttext, mediaalign, mediawidth, mediaheight and read the content
+- Modifications in frameset_edit_media in order to remove the parameters mediafile, mediaobject, mediaalttext, mediaalign, mediawidth, mediaheight and read the content
+- Modifications in component_edit_page_single and component_edit_page_multi in order to remove the parameters mediafile, mediaobject, mediaalttext, mediaalign, mediawidth, mediaheight and read the content
+- Modifications in frameset_edit_component in order to remove the parameters mediafile, mediaobject, mediaalttext, mediaalign, mediawidth, mediaheight and read the content
+- Modifications in the template engine in order to remove the contentbot parameter from the edit link for the text-based checkbox and date
+- Modifications in the template engine in order to remove the parameters linkhref, linktarget, and linktext parameters from the edit link of link
+- Modifications in the template engine in order to remove the parameters mediafile, mediaobject, mediaalttext, mediaalign, mediawidth, mediaheight from the edit link of media
+- Modifications in the template engine in order to remove the parameters component and condition from the edit link of components
+- Modifications in frameset_edit_component and media_edit_page in order to remove the deprecated parameter mediadir
+- Modifications in media_edit_page in order to load the display of the media file in the main layer of frameset_edit_media
+- Modifications in daily job in order to optimize the code
+- Modifications in function rdbms_searchcontent in DB Connect in order to trim where clause strings
+- Added the mime-type for WebP image file and alternative mime-type for DWG files to format_mime.inc.php
 - Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
-- Bug fix: Function getsearchhistory in Get API did not clean the backslash in the serach expression which can cause the escape of the character after the backslash
+- Bug fix: Function getsearchhistory in Get API did not clean the backslash in the search expression which can cause the escape of the character after the backslash
 - Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height
-- Bug fix: control_objectlist_menu caused the the toolbar icons to be hidden outside the viewport if the location name did not fit in the viewport of the Mobile Edition
+- Bug fix: control_objectlist_menu caused the toolbar icons to be hidden outside the viewport if the location name did not fit in the viewport of the Mobile Edition
 - Bug fix: explorer_objectlist displayed an object count of 1 for an empty folder
 - Bug fix: explorer_objectlist, log_list, message_objectlist, queue_objectlist, search_objectlist, and user_objectlist displayed the wrong number of objects if the count was 1
 - Bug fix: The log viewer Plugin displayed the wrong number of objects if the count was 1
 - Bug fix: user_objectlist did not subtract hidden user accounts correctly if paging has been used
+- Bug fix: component_edit_explorer used deprecated file name for the reference to the jQuery UI CSS file
+- Bug fix: text_media_explorer used deprecated file name for the reference to the jQuery UI CSS file
+- Bug fix: Function rdbms_searchcontent in DB Connect added the search in object names without verifying that the where clause was not empty for the combined search in content and object names
+- Bug fix: The mime-type for WebP images has been missing in format_mime.inc.php and caused WebP images saved by the image editor to lose the file extension

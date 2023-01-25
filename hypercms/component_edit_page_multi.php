@@ -23,7 +23,6 @@ $page = getrequest_esc ("page", "objectname");
 $db_connect = getrequest_esc ("db_connect", "objectname");
 $id = getrequest_esc ("id", "objectname", "", true);
 $tagname = getrequest_esc ("tagname", "objectname");
-$condition = getrequest ("condition", "objectname");
 
 // get publication and category
 $site = getpublication ($location);
@@ -52,13 +51,13 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // initialize
-$contentbot = false;
 $component = "";
-$component_curr = "";
+$condition = "";
 
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
+$container_id = getcontentcontainerid ($contentfile);
 
 // get file info
 $file_info = getfileinfo ($site, $location.$page, $cat);
@@ -76,23 +75,39 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   
   $db_connect_data = db_read_component ($site, $contentfile, "", $id, "", $user);
   
-  if (!empty ($db_connect_data['file'])) $contentbot = $db_connect_data['file'];
+  if ($db_connect_data != false)
+  {
+    $component = $db_connect_data['file'];
+    $condition = $db_connect_data['condition'];
+  }
 }
 
 // read content from content container
-if (empty ($contentbot))
+if (empty ($db_connect_data))
 {
-  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
+  $contentdata = loadcontainer ($container_id, "work", $user);
 
-  $filedata = loadcontainer ($container_id, "work", $user);
+  if (!empty ($contentdata))
+  {
+    // get the component information of the content container
+    if (!empty ($id))
+    {
+      $compnode = selectcontent ($contentdata, "<component>", "<component_id>", $id);
 
-  $temp = selectcontent ($filedata, "<component>", "<component_id>", $id);
-  if (!empty ($temp[0])) $temp = getcontent ($temp[0], "<componentfiles>");
-  if (!empty ($temp[0])) $contentbot = $temp[0];
+      if (!empty ($compnode[0]))
+      {
+        if (!empty ($compnode[0])) $temp_array = getcontent ($compnode[0], "<componentfiles>");
+        if (!empty ($temp_array[0])) $component = trim ($temp_array[0]);
+
+        if (!empty ($compnode[0])) $temp_array = getcontent ($compnode[0], "<componentcond>");
+        if (!empty ($temp_array[0])) $condition = $temp_array[0];
+      }
+    }
+  }
 }
 
 // define current components string
-$component_curr = $contentbot;
+$component_curr = $component;
 
 // convert object ID to object path
 $component_curr = getobjectlink ($component_curr);
@@ -106,6 +121,7 @@ $component_curr = getobjectlink ($component_curr);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript">
 
 function correctnames ()
@@ -250,6 +266,29 @@ function hcms_saveEvent ()
 {
   submitMultiComp();
 }
+
+// check for modified content
+function checkUpdatedContent ()
+{
+  $.ajax({
+    type: 'POST',
+    url: "<?php echo cleandomain ($mgmt_config['url_path_cms'])."service/checkupdatedcontent.php"; ?>",
+    data: {container_id:"<?php echo $container_id; ?>",tagname:"comp",tagid:"<?php echo $id; ?>"},
+    success: function (data)
+    {
+      if (data.message.length !== 0)
+      {
+        console.log('The same content has been modified by another user');
+        var update = confirm (hcms_entity_decode(data.message));
+        if (update == true) location.reload();
+      }
+    },
+    dataType: "json",
+    async: false
+  });
+}
+
+setInterval (checkUpdatedContent, 3000);
 </script>
 </head>
 

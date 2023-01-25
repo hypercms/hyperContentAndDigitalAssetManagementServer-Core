@@ -1938,8 +1938,10 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
           // escape characters depending on dbtype
           $path = $db->rdbms_escape_string ($path);
+
           // replace %
-          $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);          
+          $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);
+
           // where clause for folderpath
           // search only on the same level of the path
           if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE "'.$path.'%" AND obj.level='.(getobjectpathlevel($path) + 1).')';
@@ -2059,7 +2061,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $temp_expression = str_replace ("'", "", $temp_expression);
 
           // operator
-          if ($temp_operator != "none" && $sql_where['filename'] != "") $sql_where['filename'] .= $temp_operator;
+          if ($temp_operator != "none" && trim ($sql_where['filename']) != "") $sql_where['filename'] .= $temp_operator;
 
           // search in location and object name
           if ($expression_filename != "*Null*")
@@ -2109,7 +2111,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if (trim ($temp) != "") $sql_temp[] = 'obj.objectpath LIKE "%.'.$temp.'"';
       }
 
-      $sql_where['fileextension'] = '('.implode (" OR ", $sql_temp).' '.(!empty ($mgmt_config['search_folderpath_level']) ? ' OR obj.objectpath LIKE "%/.folder"' : "").')';
+      $sql_where['fileextension'] = '('.implode (" OR ", $sql_temp).''.(!empty ($mgmt_config['search_folderpath_level']) ? ' OR obj.objectpath LIKE "%/.folder"' : "").')';
     }
 
     // query dates
@@ -2509,13 +2511,17 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       }
 
       // add search in object names and create final SQL where statement for search in content and object names
-      if (!empty ($sql_where['filename']))
+      if (!empty ($sql_where_textnodes))
       {
-        $sql_where['textnodes'] = "(".$sql_where_textnodes." OR (".$sql_where['filename']."))";
-        // clear where condition for file name
-        unset ($sql_where['filename']);
+        if (!empty ($sql_where['filename']))
+        {
+          $sql_where['textnodes'] = "(".$sql_where_textnodes." OR (".$sql_where['filename']."))";
+
+          // clear where condition for file name
+          unset ($sql_where['filename']);
+        }
+        else $sql_where['textnodes'] = $sql_where_textnodes;
       }
-      else $sql_where['textnodes'] = $sql_where_textnodes;
     }
 
     // query object type
@@ -2633,7 +2639,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if ($filesize > 0)
       {
         if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
-      
+
         $sql_where['media'] .= 'obj.filesize'.$filesize_operator.intval($filesize);
       }
     }
@@ -2659,7 +2665,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
             
             $sql_where['media'] .= 'obj.width='.intval($imagewidth);
           }
-     
+
           // search for exact image height
           if (!empty ($imageheight) && $imageheight > 0)
           {
@@ -2685,7 +2691,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if (!empty ($imagetype))
         {
           if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
-          
+
           $sql_where['media'] .= 'obj.imagetype="'.$imagetype.'"';
         }
       }

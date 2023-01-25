@@ -24,8 +24,6 @@ $db_connect = getrequest_esc ("db_connect", "objectname");
 $id = getrequest_esc ("id", "objectname", "", true);
 $label = getrequest_esc ("label");
 $tagname = getrequest_esc ("tagname", "objectname");
-$component = getrequest_esc ("component", "locationname");
-$condition = getrequest ("condition", "objectname");
 
 // get publication and category
 $site = getpublication ($location);
@@ -52,12 +50,56 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$component = "";
+$condition = "";
+
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
+$container_id = getcontentcontainerid ($contentfile);
 
 // get file info
 $file_info = getfileinfo ($site, $location.$page, $cat);
+
+// read content using db_connect
+if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+{
+  include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
+
+  $db_connect_data = db_read_component ($site, $contentfile, "", $id, "", $user);
+
+  if ($db_connect_data != false)
+  {
+    $component = $db_connect_data['file'];
+    $condition = $db_connect_data['condition'];
+  }
+}
+
+// read content from content container if DB Connect is not used
+if (empty ($db_connect_data))
+{
+  // load container
+  $contentdata = loadcontainer ($contentfile, "work", "sys");
+
+  if (!empty ($contentdata))
+  {
+    // get the component information of the content container
+    if (!empty ($id))
+    {
+      $compnode = selectcontent ($contentdata, "<component>", "<component_id>", $id);
+
+      if (!empty ($compnode[0]))
+      {
+        if (!empty ($compnode[0])) $temp_array = getcontent ($compnode[0], "<componentfiles>");
+        if (!empty ($temp_array[0])) $component = trim ($temp_array[0]);
+
+        if (!empty ($compnode[0])) $temp_array = getcontent ($compnode[0], "<componentcond>");
+        if (!empty ($temp_array[0])) $condition = $temp_array[0];
+      }
+    }
+  }
+}
 
 // create secure token
 $token = createtoken ($user);
@@ -90,6 +132,7 @@ else $label = getlabel ($label, $lang);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript">
 
 function correctnames ()
@@ -155,6 +198,29 @@ function hcms_saveEvent ()
 {
   submitSingleComp();
 }
+
+// check for modified content
+function checkUpdatedContent ()
+{
+  $.ajax({
+    type: 'POST',
+    url: "<?php echo cleandomain ($mgmt_config['url_path_cms'])."service/checkupdatedcontent.php"; ?>",
+    data: {container_id:"<?php echo $container_id; ?>",tagname:"comp",tagid:"<?php echo $id; ?>"},
+    success: function (data)
+    {
+      if (data.message.length !== 0)
+      {
+        console.log('The same content has been modified by another user');
+        var update = confirm (hcms_entity_decode(data.message));
+        if (update == true) location.reload();
+      }
+    },
+    dataType: "json",
+    async: false
+  });
+}
+
+setInterval (checkUpdatedContent, 3000);
 </script>
 </head>
 

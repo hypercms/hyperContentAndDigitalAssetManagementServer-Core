@@ -41,7 +41,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -99,7 +99,7 @@ else $css_iphone = "";
     <iframe id="navFrame2" name="navFrame2" src="<?php echo "link_edit_explorer.php?site=".$site."&cat=".$cat; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
   <div id="mainLayer" style="position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0; <?php echo $css_iphone; ?>">
-    <iframe id="mainFrame2" name="mainFrame2" src="<?php echo "link_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&contenttype=".$contenttype."&db_connect=".$db_connect."&tagname=".$tagname."&id=".$id."&label=".$label."&targetlist=".$targetlist."&linkhref=".$linkhref."&linktarget=".$linktarget."&linktext=".$linktext; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
+    <iframe id="mainFrame2" name="mainFrame2" src="<?php echo "link_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&contenttype=".$contenttype."&db_connect=".$db_connect."&tagname=".$tagname."&id=".$id."&label=".$label."&targetlist=".$targetlist; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
 </body>
 </html>

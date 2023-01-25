@@ -1429,4 +1429,5 @@ $hcms_lang['search-vildcard-minus']['sr'] = "- ... Vodeći znak minus ukazuje d
 $hcms_lang['search-vildcard-none']['sr'] = "nema operatora... Podrazumevano (kada nije navedeno ni + ni -) reč je opciona";
 $hcms_lang['search-vildcard-asterisk']['sr'] = "* ... Zvezdica služi kao operator skraćivanja (ili džoker znakova). Za razliku od drugih operatora, treba je dodati reči na koju se utiče.";
 $hcms_lang['search-vildcard-doublekuote']['sr'] = "\" ... Fraza koja je zatvorena u dvostrukim navodnicima mora biti prisutna kao fraza doslovno, onako kako je otkucana";
+$hcms_lang['content-modified-by-user']['sr'] = "Sadržaj je izmenio korisnik '%user%'. Da li želite da ponovo učitate sadržaj?";
 ?>

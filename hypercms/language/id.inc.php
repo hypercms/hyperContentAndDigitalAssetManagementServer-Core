@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-minus']['id'] = "- … Tanda minus di depan menunjuk
 $hcms_lang['search-wildcard-none']['id'] = "tidak ada operator … Secara default (ketika + atau - tidak ditentukan) kata adalah opsional";
 $hcms_lang['search-wildcard-asterisk']['id'] = "* … Tanda bintang berfungsi sebagai operator pemotongan (atau karakter pengganti). Tidak seperti operator lain, tanda bintang harus ditambahkan ke kata yang akan terpengaruh.";
 $hcms_lang['search-wildcard-doublequote']['id'] = "\" … Frasa yang diapit oleh tanda kutip ganda harus ada sebagai frasa secara harfiah, seperti saat diketik";
+$hcms_lang['content-modified-by-user']['id'] = "Konten telah diubah oleh pengguna '%user%'. Apakah Anda ingin memuat ulang konten?";
 ?>

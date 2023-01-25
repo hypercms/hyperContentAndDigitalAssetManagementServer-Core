@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['ms'] = "- … Tanda tolak di hadapan menunj
 $hcms_lang['search-wildcard-none']['ms'] = "tiada pengendali … Secara lalai (apabila + mahupun - tidak dinyatakan) perkataan itu adalah pilihan";
 $hcms_lang['search-wildcard-asterisk']['ms'] = "* … Asterisk berfungsi sebagai operator pemangkasan (atau wildcard). Tidak seperti operator lain, ia harus dilampirkan pada perkataan yang akan terjejas.";
 $hcms_lang['search-wildcard-doublequote']['ms'] = "\" … Frasa yang disertakan dalam aksara petikan berganda mesti hadir sebagai frasa secara literal, seperti yang ditaip";
+$hcms_lang['content-modified-by-user']['ms'] = "Kandungan telah diubah suai oleh pengguna '%user%'. Adakah anda mahu memuatkan semula kandungan?";
 ?>

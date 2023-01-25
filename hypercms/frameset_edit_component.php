@@ -24,8 +24,6 @@ $location = url_encode (getrequest ("location", "url"));
 $page = url_encode (getrequest ("page", "url"));
 $id = url_encode (getrequest ("id", "url"));
 $tagname = url_encode (getrequest ("tagname", "url"));
-$component = url_encode (getrequest ("component", "url"));
-$condition = url_encode (getrequest ("condition", "url"));
 $mediatype = url_encode (getrequest ("mediatype", "url")); 
 
 // ------------------------------ permission section --------------------------------
@@ -36,7 +34,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
@@ -100,14 +98,14 @@ function maxNavFrame ()
   {
     echo "
   <div id=\"mainLayer\" style=\"position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;\">
-    <iframe id=\"mainFrame2\" name=\"mainFrame2\" src=\"component_edit_page_single.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&component=".$component."&condition=".$condition."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
+    <iframe id=\"mainFrame2\" name=\"mainFrame2\" src=\"component_edit_page_single.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
   </div>";
   }
   elseif ($compcat == "multi")
   {
     echo "
   <div id=\"mainLayer\" style=\"position:fixed; top:0; right:0; bottom:0; left:260px; margin:0; padding:0;\">
-    <iframe id=\"mainFrame2\" name=\"mainFrame2\" src=\"component_edit_page_multi.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."&condition=".$condition."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
+    <iframe id=\"mainFrame2\" name=\"mainFrame2\" src=\"component_edit_page_multi.php?view=".$view."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&id=".$id."&tagname=".$tagname."&compcat=".$compcat."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
   </div>";
   }
   ?>

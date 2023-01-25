@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-minus']['zh-s'] = "- ... 前导减号表示这个词
 $hcms_lang['search-wildcard-none']['zh-s'] = "没有操作符 ... 默认情况下（当没有指定 + 和 - 时）这个词是可选的";
 $hcms_lang['search-wildcard-asterisk']['zh-s'] = "* ...星号用作截断（或通配符）运算符。与其他运算符不同，它应该附加到要受影响的单词上。";
 $hcms_lang['search-wildcard-doublequote']['zh-s'] = "\" ... 括在双引号字符中的短语必须按字面意思作为短语出现，因为它是键入的";
+$hcms_lang['content-modified-by-user']['zh-s'] = "内容已被用户 '%user%' 修改。是否要重新加载内容？";
 ?>

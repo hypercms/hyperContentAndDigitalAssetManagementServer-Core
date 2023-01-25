@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-minus']['es'] = "- … Un signo menos inicial indica
 $hcms_lang['search-wildcard-none']['es'] = "sin operador … Por defecto (cuando no se especifica ni + ni -) la palabra es opcional";
 $hcms_lang['search-wildcard-asterisk']['es'] = "* … El asterisco sirve como operador de truncamiento (o comodín). A diferencia de los otros operadores, debe agregarse a la palabra que se verá afectada.";
 $hcms_lang['search-wildcard-doublequote']['es'] = "\" … Una frase que está entre comillas dobles debe estar presente como la frase literalmente, tal como se escribió";
+$hcms_lang['content-modified-by-user']['es'] = "El contenido ha sido modificado por el usuario '%user%'. ¿Desea volver a cargar el contenido?";
 ?>

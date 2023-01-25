@@ -56,6 +56,7 @@ $contentbot = "";
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
+$container_id = getcontentcontainerid ($contentfile); 
 
 // define content-type if not set
 if ($contenttype == "") 
@@ -76,7 +77,7 @@ if ($constraint != "") $add_constraint = "check = validateForm('".$tagname."_".$
 else $add_constraint = "check = true;\n";
 
 // read content using db_connect
-if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
 {
   include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
 
@@ -88,15 +89,17 @@ if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['a
 // read content from content container
 if (empty ($contentbot)) 
 {
-  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-
   $filedata = loadcontainer ($contentfile, "work", $user);
 
   if ($filedata != "")
   {
     $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
-    if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>", true);
-    if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
+    
+    if (!empty ($temp_array[0]))
+    {
+      $temp_array = getcontent ($temp_array[0], "<textcontent>", true);
+      if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
+    }
   }
 }
 

@@ -49,9 +49,13 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$contentbot = "";
+
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
+$container_id = getcontentcontainerid ($contentfile); 
 
 // define content-type if not set
 if ($contenttype == "") 
@@ -68,29 +72,29 @@ else $charset = $mgmt_config[$site]['default_codepage'];
 header ('Content-Type: text/html; charset='.$charset);
 
 // read content using db_connect
-if (!empty ($db_connect) && $db_connect != false && file_exists ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
 {
   include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
 
   $db_connect_data = db_read_text ($site, $contentfile, "", $id, "", $user);
 
   if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
-  else $contentbot = false;
-}  
-else $contentbot = false;
+}
 
 // read content from content container
-if ($contentbot == false) 
+if (empty ($contentbot)) 
 {
-  $container_id = substr ($contentfile, 0, strpos ($contentfile, ".xml")); 
-
   $filedata = loadcontainer ($contentfile, "work", $user);
 
   if ($filedata != "")
   {
     $temp_array = selectcontent ($filedata, "<text>", "<text_id>", $id);
-    if (!empty ($temp_array[0])) $temp_array = getcontent ($temp_array[0], "<textcontent>");
-    if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
+
+    if (!empty ($temp_array[0]))
+    {
+      $temp_array = getcontent ($temp_array[0], "<textcontent>");
+      if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
+    }
   }
 }
 
@@ -132,6 +136,7 @@ else $label = getlabel ($label, $lang);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
+<script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript">
 
 function setsavetype(type)
@@ -144,6 +149,29 @@ function hcms_saveEvent ()
 {
   setsavetype('editorl_so');
 }
+
+// check for modified content
+function checkUpdatedContent ()
+{
+  $.ajax({
+    type: 'POST',
+    url: "<?php echo cleandomain ($mgmt_config['url_path_cms'])."service/checkupdatedcontent.php"; ?>",
+    data: {container_id:"<?php echo $container_id; ?>",tagname:"text",tagid:"<?php echo $id; ?>"},
+    success: function (data)
+    {
+      if (data.message.length !== 0)
+      {
+        console.log('The same content has been modified by another user');
+        var update = confirm (hcms_entity_decode(data.message));
+        if (update == true) location.reload();
+      }
+    },
+    dataType: "json",
+    async: false
+  });
+}
+
+setInterval (checkUpdatedContent, 3000);
 </script>
 </head>
 

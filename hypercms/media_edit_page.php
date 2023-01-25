@@ -28,14 +28,8 @@ $db_connect = getrequest_esc ("db_connect", "objectname");
 $tagname = getrequest_esc ("tagname", "objectname");
 $id = getrequest_esc ("id", "objectname", "", true);
 $label = getrequest_esc ("label");
-$mediadir = getrequest_esc ("mediadir", "locationname");
-$mediafile = getrequest_esc ("mediafile", "objectname");
+$mediacat = getrequest ("mediacat", "objectname");
 $mediatype = getrequest_esc ("mediatype", "objectname", "", true); 
-$mediaobject = getrequest_esc ("mediaobject", "locationname");
-$mediaalttext = getrequest_esc ("mediaalttext");
-$mediaalign = getrequest_esc ("mediaalign");
-$mediawidth = getrequest_esc ("mediawidth");
-$mediaheight = getrequest_esc ("mediaheight");
 $scaling = getrequest ("scaling", "numeric");
 
 // get publication and category
@@ -61,12 +55,39 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$mediafile = "";
+$mediaobject = "";
+$mediaalttext = "*Null*";
+$mediaalign = "*Null*";
+$mediawidth = "*Null*";
+$mediaheight = "*Null*";
+
 // load object file and get container and media file
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
+$container_id = getcontentcontainerid ($contentfile);
+
+// read content using db_connect
+if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+{
+  include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
+
+  $db_connect_data = db_read_media ($site, $contentfile, "", $id, "", $user);
+
+  if ($db_connect_data != false)
+  {
+    $mediafile = $db_connect_data['file'];
+    $mediaobject = $db_connect_data['object'];
+    $mediaalttext = $db_connect_data['alttext'];
+    $mediaalign = $db_connect_data['align'];
+    $mediawidth = $db_connect_data['width'];
+    $mediaheight = $db_connect_data['height'];
+  }
+}
 
 // read content from content container if DB Connect is not used
-if (empty ($db_connect))
+if (empty ($db_connect_data))
 {
   // load container
   $contentdata = loadcontainer ($contentfile, "work", "sys");
@@ -171,10 +192,11 @@ else $onsubmit = "submitMediaType();";
 <html>
 <head>
 <title>hyperCMS</title>
-<meta charset="<?php echo $charset; ?>">
+<meta charset="<?php echo $charset; ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
+<script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript">
 
 function correctnames ()
@@ -346,6 +368,35 @@ function hcms_saveEvent ()
 {
   <?php echo $onsubmit; ?>
 }
+
+// check for modified content
+function checkUpdatedContent ()
+{
+  $.ajax({
+    type: 'POST',
+    url: "<?php echo cleandomain ($mgmt_config['url_path_cms'])."service/checkupdatedcontent.php"; ?>",
+    data: {container_id:"<?php echo $container_id; ?>",tagname:"media",tagid:"<?php echo $id; ?>"},
+    success: function (data)
+    {
+      if (data.message.length !== 0)
+      {
+        console.log('The same content has been modified by another user');
+        var update = confirm (hcms_entity_decode(data.message));
+        if (update == true) location.reload();
+      }
+    },
+    dataType: "json",
+    async: false
+  });
+}
+
+setInterval (checkUpdatedContent, 3000);
+
+// display media in main frame
+if (parent.document.getElementById('mainFrame2'))
+{
+  parent.document.getElementById('mainFrame2').src = "<?php echo "media_view.php?site=".url_encode($site)."&mediacat=".url_encode($mediacat)."&mediafile=".url_encode($mediafile)."&mediaobject=".url_encode($mediaobject)."&mediatype=".url_encode($mediatype)."&scaling=".url_encode($scaling); ?>";
+}
 </script>
 </head>
 
@@ -370,8 +421,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
   <input type="hidden" name="page" value="<?php echo $page; ?>" />
   <input type="hidden" name="db_connect" value="<?php echo $db_connect; ?>" />
   <input type="hidden" name="tagname" value="<?php echo $tagname; ?>" />
-  <input type="hidden" name="id" value="<?php echo $id; ?>" />  
-  <input type="hidden" name="mediadir" value="<?php echo $mediadir; ?>" />
+  <input type="hidden" name="id" value="<?php echo $id; ?>" />
   <input type="hidden" name="mediatype" value="<?php echo $mediatype; ?>" />
   <input type="hidden" name="mediaobject" value="<?php echo $mediaobject; ?>" />
   <input type="hidden" name="token" value="<?php echo $token; ?>">

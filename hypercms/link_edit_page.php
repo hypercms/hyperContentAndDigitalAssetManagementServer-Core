@@ -26,9 +26,6 @@ $db_connect = getrequest_esc ("db_connect", "objectname");
 $tagname = getrequest_esc ("tagname", "objectname");
 $id = getrequest_esc ("id", "objectname", "", true);
 $label = getrequest_esc ("label");   
-$linkhref = getrequest_esc ("linkhref");
-$linktext = getrequest_esc ("linktext");
-$linktarget = getrequest_esc ("linktarget");
 $targetlist = getrequest_esc ("targetlist");
 
 // get publication and category
@@ -53,11 +50,10 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// correct linkhref
-if (strpos ("_".$linkhref, "%page%") < 1)
-{
-  if (file_exists (deconvertpath ("%page%".$linkhref, "file"))) $linkhref = "%page%".$linkhref;
-}
+// initialize
+$linkhref = "";
+$linktarget = "*Null*";
+$linktext = "*Null*";
 
 // convert location
 $location = deconvertpath ($location, "file");
@@ -66,9 +62,25 @@ $location_esc = convertpath ($site, $location, $cat);
 // load object file and get container
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
+$container_id = getcontentcontainerid ($contentfile); 
+
+// read content using db_connect
+if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
+{
+  include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
+
+  $db_connect_data = db_read_link ($site, $contentfile, "", $id, "", $user);
+
+  if ($db_connect_data != false)
+  {
+    $linkhref = $db_connect_data['href'];
+    $linktarget = $db_connect_data['target'];
+    $linktext = $db_connect_data['text'];
+  }
+}
 
 // read content from content container if DB Connect is not used
-if (empty ($db_connect))
+if (empty ($db_connect_data))
 {
   // load container
   $contentdata = loadcontainer ($contentfile, "work", "sys");
@@ -146,10 +158,11 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <html>
 <head>
 <title>hyperCMS</title>
-<meta charset="<?php echo $charset; ?>">
+<meta charset="<?php echo $charset; ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
+<script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript">
 
 function replace (string,text,by)
@@ -318,6 +331,29 @@ function hcms_saveEvent ()
 {
   saveLink();
 }
+
+// check for modified content
+function checkUpdatedContent ()
+{
+  $.ajax({
+    type: 'POST',
+    url: "<?php echo cleandomain ($mgmt_config['url_path_cms'])."service/checkupdatedcontent.php"; ?>",
+    data: {container_id:"<?php echo $container_id; ?>",tagname:"link",tagid:"<?php echo $id; ?>"},
+    success: function (data)
+    {
+      if (data.message.length !== 0)
+      {
+        console.log('The same content has been modified by another user');
+        var update = confirm (hcms_entity_decode(data.message));
+        if (update == true) location.reload();
+      }
+    },
+    dataType: "json",
+    async: false
+  });
+}
+
+setInterval (checkUpdatedContent, 3000);
 </script>
 </head>
 
