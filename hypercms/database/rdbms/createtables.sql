@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `accesslink`;
 
 CREATE TABLE `accesslink` (
-  `hash` char(16) BINARY CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+  `hash` char(16) BINARY NOT NULL DEFAULT '',
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `object_id` int(11) NOT NULL,
   `type` char(2) DEFAULT NULL,
@@ -172,7 +172,7 @@ DROP TABLE IF EXISTS `dailystat`;
 CREATE TABLE `dailystat` (
   `stats_id` int(11) NOT NULL AUTO_INCREMENT,
   `id` int(11) NOT NULL,
-  `date` date NOT NULL,
+  `date` date NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `activity` char(10) DEFAULT NULL,
   `user` char(100) BINARY DEFAULT NULL,
   `count` int(11) NOT NULL,

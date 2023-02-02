@@ -118,6 +118,9 @@ function gettagdata ($tag_array)
     // get value of tag
     $return[$id]->defaultvalue = getattribute ($tagDefinition, "default");
 
+    // remove the object variables of the template since the default value will be different and should be edited
+    $return[$id]->defaultvalue = str_replace (array("%object%", "%objectname%"), array("", ""), $return[$id]->defaultvalue);
+
     // get format (if date)
     $return[$id]->format = getattribute ($tagDefinition, "format");  
 
@@ -181,6 +184,8 @@ $mediafile = "";
 $is_image = false;
 $is_video = false;
 $is_audio = false;
+$is_other = false;
+$mixedmedia = false;
 $mediapreview = "";
 $template = "";
 $templatedata = "";
@@ -191,7 +196,7 @@ $allTexts = array();
 $container_id_array = array();
 $thumbnailsize = 120;
 
-// run through each object
+// for each object
 if (is_array ($multiobject_array))
 {
   foreach ($multiobject_array as $object) 
@@ -267,8 +272,9 @@ if (is_array ($multiobject_array))
 
       // check media
       if (is_image ($media_info['ext'])) $is_image = true;
-      if (is_video ($media_info['ext'])) $is_video = true;
-      if (is_audio ($media_info['ext'])) $is_audio = true;
+      elseif (is_video ($media_info['ext'])) $is_video = true;
+      elseif (is_audio ($media_info['ext'])) $is_audio = true;
+      else $is_other = true;
 
       // prepare media file
       $temp = preparemediafile ($site, $mediadir, $thumbnail, $user);
@@ -400,13 +406,14 @@ if (is_array ($multiobject_array))
       // read content using db_connect
       $db_connect_data = false; 
 
-      if (isset ($db_connect) && $db_connect != "") 
+      if (!empty ($db_connect)) 
       {
         $db_connect_data = db_read_text ($site, $objectinfo_item['container_id'], $content, $id, "", $user);
 
         if ($db_connect_data != false) 
         {
-          $textcontent = $db_connect_data['text'];      
+          $textcontent = $db_connect_data['text'];
+
           // set true
           $db_connect_data = true;                    
         }
@@ -467,10 +474,10 @@ else
   $contenttype = "text/html; charset=".$charset;
 }
 
-// loop through each tagdata array
+// for each tagdata array
 foreach ($tagdata_array as $id => $tagdata) 
 {
-  // we kick the fields out if there should be groups checked and the user isn't allowed to view/edit it
+  // remove fields if there the user isn't allowed to view/edit the content due to his group memebership
   if ($tagdata->groupaccess) 
   {
     // if we don't have access through groups we will remove the field completely
@@ -484,7 +491,7 @@ foreach ($tagdata_array as $id => $tagdata)
     }
   }
 
-  // loop through each text content (value)
+  // for each text content (value)
   foreach ($allTexts as $temp_text) 
   {
     // if the current element isn't ignored we continue
@@ -633,8 +640,13 @@ elseif ($is_video || $is_audio)
 }
 
 // check if mixed media files have been selected
-if ($is_image == true && ($is_audio == true || $is_video == true)) $mixedmedia = true;
-else $mixedmedia = false;
+$count_mixedmedia = 0;
+
+if ($is_image == true) $count_mixedmedia++;
+if ($is_audio == true || $is_video == true) $count_mixedmedia++;
+if ($is_other == true) $count_mixedmedia++;
+
+if ($count_mixedmedia > 1)  $mixedmedia = true;
 
 // set character set in header
 if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
@@ -758,7 +770,7 @@ if (!empty ($charset)) header ('Content-Type: text/html; charset='.$charset);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 
 <script type="text/javascript">
-
+// global
 var text_changed = false;
 var image_changed = false;
 var video_changed = false;
@@ -1341,7 +1353,7 @@ function saveimage (multiobject, postdata_image)
 {
   if (image_changed == true && multiobject && postdata_image)
   {
-    var multiobject_old = document.getElementById('multiobject');
+    var multiobject_field = document.getElementById('multiobject');
 
     // save each object
     for (var nr in multiobject) 
@@ -1410,11 +1422,8 @@ function saveimage (multiobject, postdata_image)
               // object name after rendering
               if (data.object && data.object.length !== 0)
               {
-                // replace old with new object path
-                var multiobject_new = multiobject_old.value.replace(multiobject[nr], data.object);
-
-                // update multiobject in form
-                if (multiobject_new != multiobject_old.value) multiobject_old.value = multiobject_new;
+                // replace old with new object path and update multiobject in form
+                multiobject_field.value = multiobject_field.value.replace((postdata_image1['location'] + postdata_image1['page']), data.object);
               }
             
               // server message
@@ -1447,11 +1456,8 @@ function saveimage (multiobject, postdata_image)
               // object name after rendering
               if (data.object && data.object.length !== 0)
               {
-                // replace old with new object path
-                var multiobject_new = multiobject_old.value.replace(multiobject[nr], data.object);
-
-                // update multiobject in form
-                if (multiobject_new != multiobject_old.value) multiobject_old.value = multiobject_new;
+                // replace old with new object path and update multiobject in form
+                multiobject_field.value = multiobject_field.value.replace((postdata_image2['location'] + postdata_image2['page']), data.object);
               }
             
               // server message
@@ -1484,11 +1490,8 @@ function saveimage (multiobject, postdata_image)
               // object name after rendering
               if (data.object && data.object.length !== 0)
               {
-                // replace old with new object path
-                var multiobject_new = multiobject_old.value.replace(multiobject[nr], data.object);
-
-                // update multiobject in form
-                if (multiobject_new != multiobject_old.value) multiobject_old.value = multiobject_new;
+                // replace old with new object path and update multiobject in form
+                multiobject_field.value = multiobject_field.value.replace((postdata_image3['location'] + postdata_image3['page']), data.object);
               }
             
               // server message
@@ -1643,7 +1646,7 @@ function savevideo (multiobject, postdata_video)
               }
           })
           )
-        .then(function(response1, response2, response3){
+        .then(function(response1, response2, response3) {
           savevideo (multiobject, postdata_video);
         });
       }
@@ -1813,87 +1816,89 @@ function checkImageForm ()
   var result = true;
 
   // apply image editing options
-  if ($('#renderimage').prop('checked'))
+  if ($('#renderimage').prop('checked') && $('#imageformat').val() != "")
   {
-    if ($('#percentage').prop('checked'))
-    {
-      image_changed = true;
-      result = validateImageForm ('imagepercentage','','RinRange1:200');
-    }
-    
-    if (result && $('#width').prop('checked'))
-    {
-      image_changed = true;
-      result = validateImageForm ('imagewidth','','RisNum');
-    }
-    
-    if (result && $('#height').prop('checked'))
-    {
-      image_changed = true;
-      result = validateImageForm ('imageheight','','RisNum');
-    }
-    
-    if (result && $('#rotate').prop('checked'))
-    {
-      image_changed = true;
-      result = true;
-    }
-    
-    if (result && $('#chbx_brightness').prop('checked'))
-    {
-      image_changed = true;
-      result = validateImageForm('brightness', '', 'RinRange-100:100');
-    } 
-    
-    if (result && $('#chbx_contrast').prop('checked'))
-    {
-      image_changed = true;
-      result = validateImageForm('contrast', '', 'RinRange-100:100');
-    } 
-    
-    if (result && $('#chbx_colorspace').prop('checked'))
-    {
-      image_changed = true;
-      result = true;
-    }
-    
-    if (result && $('#chbx_flip').prop('checked'))
-    {
-      image_changed = true;
-      result = true;
-    }
-    
-    if (result && $('#sepia').prop('checked'))
-    {
-      image_changed = true;
-      result = validateImageForm('sepia_treshold', '', 'RinRange0:99.9');
-    }
-    
-    if (result && $('#blur').prop('checked')) 
-    {
-      image_changed = true;
-      result = validateImageForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
-    }
-    
-    if (result && $('#sharpen').prop('checked')) 
-    {
-      image_changed = true;
-      result = validateImageForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
-    }
-    
-    if (result && $('#sketch').prop('checked')) 
-    {
-      image_changed = true;
-      result = validateImageForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
-    }
-    
-    if (result && $('#paint').prop('checked')) 
-    {
-      image_changed = true;
-      result = validateImageForm('paint_value', '', 'RisNum');
-    }
+    image_changed = true;
+    result = true;
   }
-  else image_changed = false;
+
+  if ($('#percentage').prop('checked'))
+  {
+    image_changed = true;
+    result = validateImageForm ('imagepercentage','','RinRange1:200');
+  }
+  
+  if (result && $('#width').prop('checked'))
+  {
+    image_changed = true;
+    result = validateImageForm ('imagewidth','','RisNum');
+  }
+  
+  if (result && $('#height').prop('checked'))
+  {
+    image_changed = true;
+    result = validateImageForm ('imageheight','','RisNum');
+  }
+  
+  if (result && $('#rotate').prop('checked'))
+  {
+    image_changed = true;
+    result = true;
+  }
+  
+  if (result && $('#chbx_brightness').prop('checked'))
+  {
+    image_changed = true;
+    result = validateImageForm('brightness', '', 'RinRange-100:100');
+  } 
+  
+  if (result && $('#chbx_contrast').prop('checked'))
+  {
+    image_changed = true;
+    result = validateImageForm('contrast', '', 'RinRange-100:100');
+  } 
+  
+  if (result && $('#chbx_colorspace').prop('checked'))
+  {
+    image_changed = true;
+    result = true;
+  }
+  
+  if (result && $('#chbx_flip').prop('checked'))
+  {
+    image_changed = true;
+    result = true;
+  }
+  
+  if (result && $('#sepia').prop('checked'))
+  {
+    image_changed = true;
+    result = validateImageForm('sepia_treshold', '', 'RinRange0:99.9');
+  }
+  
+  if (result && $('#blur').prop('checked')) 
+  {
+    image_changed = true;
+    result = validateImageForm('blur_radius', '', 'RisNum', 'blur_sigma', '', 'RinRange0.1:3');
+  }
+  
+  if (result && $('#sharpen').prop('checked')) 
+  {
+    image_changed = true;
+    result = validateImageForm('sharpen_radius', '', 'RisNum', 'sharpen_sigma', '', 'RinRange0.1:3');
+  }
+  
+  if (result && $('#sketch').prop('checked')) 
+  {
+    image_changed = true;
+    result = validateImageForm('sketch_radius', '', 'RisNum', 'sketch_sigma', '', 'RisNum', 'sketch_angle', '', 'RisNum');
+  }
+  
+  if (result && $('#paint').prop('checked')) 
+  {
+    image_changed = true;
+    result = validateImageForm('paint_value', '', 'RisNum');
+  }
   
   // display overwrite confirmation if any image option is checked
   if (result && image_changed)
@@ -2938,11 +2943,16 @@ $().ready(function() {
     <?php
     foreach ($_POST as $pkey => $pvalue)
     {
+      if ($pkey != "multiobject")
+      {
       ?>
       <input type="hidden" name="<?php echo $pkey; ?>" value="<?php echo $pvalue; ?>" />
       <?php
+      }
     }
     ?>
+    <!-- memory -->
+    <input type="hidden" id="multiobject" name="multiobject" value="<?php echo $multiobject; ?>" />
   </form>
   
   <div class="hcmsWorkplaceFrame">
@@ -3156,7 +3166,6 @@ $().ready(function() {
     </div>
 
     <!-- memory -->
-    <input type="hidden" id="multiobject" value="<?php echo $multiobject; ?>" />
     <input type="hidden" id="text_ids" value="<?php echo implode('|', $text_ids); ?>" />
 
   </form>

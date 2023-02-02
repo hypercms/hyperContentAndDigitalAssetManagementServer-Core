@@ -86,8 +86,8 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
 }
 
-// read content from content container
-if (empty ($contentbot)) 
+// read content from content container when db_connect is not used
+if (empty ($db_connect_data))
 {
   $filedata = loadcontainer ($contentfile, "work", $user);
 

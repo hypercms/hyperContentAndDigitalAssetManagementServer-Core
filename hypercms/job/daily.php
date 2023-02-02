@@ -19,7 +19,7 @@ if ($mgmt_config['instances'])
 {
   // collect instances
   $location = $mgmt_config['abs_path_cms']."config/";
-  
+
   if ($location != "" && $scandir = scandir ($location))
   {
     foreach ($scandir as $file)
@@ -38,31 +38,31 @@ else $config_files[0] = "config.inc.php";
 if (sizeof ($config_files) > 0)
 {
   // ------------------------------------------------ FOR EACH INSTANCE ---------------------------------------------
-  
+
   foreach ($config_files as $config_file)
   {
     // load main config
     require ("../".$config_file);
-    
+
     if (!empty ($mgmt_config['abs_path_cms']) && !empty ($mgmt_config['abs_path_data']))
     {      
       // ----------------------------------------------- DISK KEY ---------------------------------------------------
-      
+
       // check disk key
       checkdiskkey ();
-      
+
       // -------------------------------------------------- TASK ----------------------------------------------------
-      
+
       // send task notification to users
       if (function_exists ("tasknotification")) tasknotification (date("Y-m-d"));
-      
+
       // ------------------------------------------------ LICENSE ---------------------------------------------------
-      
+
       // send license notification to users
       if (function_exists ("licensenotification")) licensenotification ();
 
       // ------------------------------------------ DELETE INVALID USERS --------------------------------------------
-      
+
       // delete invalid users
       if (!empty ($mgmt_config['userdelete']))
       {
@@ -105,8 +105,8 @@ if (sizeof ($config_files) > 0)
       // delete temporary files and ZIP files older than the given value in seconds
       $location = $mgmt_config['abs_path_temp'];
       $timespan = 86400; // 24 hours
-      
-      if ($location != "" && $timespan != "" && $scandir = scandir ($location))
+
+      if ($location != "" && $timespan > 0 && $scandir = scandir ($location))
       {
         foreach ($scandir as $file)
         {
@@ -115,17 +115,17 @@ if (sizeof ($config_files) > 0)
             // check media file age and keep_previews setting
             if (filemtime ($location.$file) + $timespan < time() && (empty ($mgmt_config['keep_previews']) || !is_preview ($file)))
             {
-              deletefile ($location, $file, 1);
-            }      
+              deletefile ($location, $file, true);
+            }
           }
         }
       }
-      
+
       // delete hyperdav user session files older than the given value in seconds
       $location = $mgmt_config['abs_path_data']."session/";
       $timespan = 86400; // 24 hours
-      
-      if ($location != "" && $timespan != "" && $scandir = scandir ($location))
+
+      if ($location != "" && $timespan > 0 && $scandir = scandir ($location))
       {
         foreach ($scandir as $file)
         {
@@ -156,7 +156,7 @@ if (sizeof ($config_files) > 0)
       {
         // get date based on the maximum days objects may reside in the recycle bin
         $date = date ("Y-m-d", time() - $mgmt_config['recycledays']*24*60*60);
-        
+
         // remove all objects permanently that have been marked for deletion before the defined date
         $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, array("user"), false, false);
         
@@ -175,7 +175,7 @@ if (sizeof ($config_files) > 0)
         }
 
         // remove objects from file system and database in case they could not be deleted by function processobjects
-        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, , array("user"), false, true);
+        $objectpath_array = rdbms_getdeletedobjects ("", $date, 1000000, array("user"), false, true);
 
         if (is_array ($objectpath_array) && sizeof ($objectpath_array) > 0)
         {
@@ -200,15 +200,15 @@ if (sizeof ($config_files) > 0)
       }
       
       // ----------------------------------------------- CLOUD SYNC -------------------------------------------------
-      
+
       // synchronize media files in repository with cloud storage
       if (function_exists ("synccloudobjects")) synccloudobjects ("sys");
-      
+
       // ------------------------------------------ FOR EACH PUBLICATION --------------------------------------------
-      
+
       // load inheritance DB
       $inherit_db = inherit_db_read ();
-      
+
       if (is_array ($inherit_db))
       {
         foreach ($inherit_db as $site => $array)
@@ -220,7 +220,7 @@ if (sizeof ($config_files) > 0)
           }
 
           // ---------------------------------------------- UPDATE TAXONOMY ----------------------------------------------
-         
+
           // recreate taxonomy relations for all objects
           $recreate_taxonomy = false;
 
@@ -243,24 +243,24 @@ if (sizeof ($config_files) > 0)
           {
             // memory for file size (should be kept for 24 hours)
             $filesize_mem = $mgmt_config['abs_path_temp'].$site.".filesize.dat";
-            
+
             if (!is_file ($filesize_mem) || (filemtime ($filesize_mem) + 3600) < time())
             {  
               $starttime = time();
-              
+
               // this function might require some time for the result in case of large database
               $filesize = rdbms_getfilesize ("", "%comp%/".$site."/", true);
               savefile ($mgmt_config['abs_path_temp'], $site.".filesize.dat", $filesize['filesize']);
-              
+
               $endtime = time();
               $duration = $endtime - $starttime;
-              
+
               // log if calculation needed more than 1 hour
               if ($duration > 3600)
               {
                 $errcode = "00911";
                 $error[] = $mgmt_config['today']."|daily.php|warning|".$errcode."|Used space calculation took ".round(($duration / 3600), 2)." hours for publication ".$site;
-      
+
                 savelog (@$error);
               }
             }

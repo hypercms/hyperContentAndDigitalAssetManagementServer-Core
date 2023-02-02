@@ -291,8 +291,8 @@ function link_db_read ($site)
             $link_db[$container]['object'] = $objects;
             $link_db[$container]['link'] = $links;
           }
-          // ignore first record
-          elseif ($i > 0)
+          // ignore first 2 records
+          elseif ($i > 1)
           {
             $errcode = "10712";
             $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|link_db_record entry ".$i." is empty for publication '".$site."'";

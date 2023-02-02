@@ -30,7 +30,7 @@ if ($queueuser != "") setsession ('hcms_temp_user', $queueuser);
 else setsession ('hcms_temp_user', Null);
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE html>
 <html>
@@ -54,6 +54,7 @@ function openPopup (link)
 
 function closePopup ()
 {
+  console.log('close popup');
   document.getElementById('objectview').src = '';
   hcms_hideFormLayer('objectviewLayer');
 }

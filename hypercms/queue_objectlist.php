@@ -146,7 +146,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                 </tr>";
         }
       }
-      // mail
+      // mail message
       elseif ($queue['object_id'] > 0 && $user == $queue_user)
       {
         // count valid objects 
@@ -165,7 +165,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
         $temp_object_name = $file_info['name'];
         
         // open on double click
-        $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', 600, 900);\"";
+        $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&queue_id=".url_encode($queue_id)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', 600, 900);\"";
         
         // onclick for marking objects
         $selectclick = "onClick=\"hcms_selectObject(this.id, event);\"";

@@ -4513,7 +4513,7 @@ Release 10/2020
 - Modifications in createtables.sql in DB Connect in order to set startdate attribute of table task to allow NULL value (Modifications in the database need to be performed manually)
 - Modifications in function createtask in Task Management API in order to modify the date format
 - Modifications in function rdbms_createtask in DB Connect in order to set the default empty date to 0000-00-00 instead of an empty string
-- Modifications in public function __construct in DB Connect in order to change mode from TRADITIONAL to STRICT_TRANS_TABLES, STRICT_ALL_TABLES, NO_AUTO_CREATE_USER, NO_ENGINE_SUBSTITUTION
+- Modifications in public function __construct in DB Connect in order to change sql_mode from TRADITIONAL to STRICT_TRANS_TABLES, STRICT_ALL_TABLES, NO_AUTO_CREATE_USER, NO_ENGINE_SUBSTITUTION
 - Modifications in function downloadfile in Main API in order to write and close the session before the file download and restart the session after the file download for non-blocking download
 - Modifications in function rdbms_setdeletedobjects in DB Connect in order to support non-blocking operation for folders/collections
 - Modifications in Task Management list in order to migrate from JS function hcms_showHideLayers (visibility style) to function hcms_displayLayers (display style)
@@ -6560,6 +6560,39 @@ Release 03/2023
 - Modifications in daily job in order to optimize the code
 - Modifications in function rdbms_searchcontent in DB Connect in order to trim where clause strings
 - Added the mime-type for WebP image file and alternative mime-type for DWG files to format_mime.inc.php
+- Modifications in template engine in order to escape special characters when content is read using db_connect or from the content container
+- Modifications in page_multiedit in order to remove the $object% and %objectname% default values provided by the template (the object names would be different but the user should be able to edit them)
+- Modifications in page_multiedit in order to enable the image rendering without any additional modifications except the image format
+- Modifications in page_multiedit in order to move the multiobject input form field to the reload form
+- Modifications in page_multiedit in order to verify if an objects exists in the selected collection that is not animage, audio or video file
+- Modifications in service rendervideo in order to return the object path in the response
+- Added WebP as supported target format for image editing in the main configuration file in the install directory
+- Modifications in queue_objectlist in order to add the queue ID to the input parameters for user_sendlink when opening a message from the queue
+- Modifications in control_queue_menu in order to add the queue ID to the input parameters for user_sendlink when opening a message from the queue
+- Modifications in user_sendlink in order to support the queue ID
+- Modifications in service sendmail in order to support the queue ID as input parameter and remove the queue entry if an existing mail message is saved (delete old queue entry and create new one)
+- Modifications in service sendmail in order to reload the queue objectlist if a message has been created or saved
+- Modifications in function createfolder, createobject, uploadfile in Main API in order to replace the tilde symbol by a dash since the tilde is used as marker for converted special characters
+- Modifications in function uploadfile in Main API in order to enhance the log entry messages
+- Modifications in main configuration file in the install directory in order to use "dcraw" as standard value for $mgmt_imagepreview['rawimage']
+- Modifications in the installation routine in order to check the tables of the database and not the number of objects in table object due to issues with MariaDB on Debian 12
+- Modifications in DB Connect constructor in order to set the sql_mode to TRADITIONAL due to issues with MariaDB on Debian 12
+- Modifications in various functions in DB Connect in order to apply IGNORE to some INSERT and UPDATE SQL statements
+- Modifications in service rendervideo in order to initalize the variable createmedia for the local function startConversion
+- Modifications in createtables.sql in order to apply the CURRENT_TIMESTAMP to the date of table dailystat
+- Modifications in control_objectlist_menu in order to use the full length of the MD% hash for the id of the upload window
+- Modifications in popup_upload_html in order to maximize the upload window if metdata niput is required by the publication settings
+- Modifications in install/crontab in order to remove free space from command
+- Modifications in function uploadhandler in Main API in order to set the value for variable append_file for the PUT request file upload
+- Modifications in various function in the event system in order to verify the publication name before executing the event code
+- Update of the update log in the installation directory
+- Modifications in all jobs in order to verify that the main configuration file exists
+- Implementation of the new function update_database_v1009 in Update API
+- Modifications in function update_all in Update API in order to add the new function update_database_v1009
+- Implementation of a loading screen for the edit window in popup_upload_html
+- Modifications in createtables.sql in order to remove the character set and collation definition from column hash in table accesslink
+- Modifications in various function in the Update API in order to create update log entry before the update process starts and avoid multiple update processes started by different users
+- Modifications in the simple statistics Plugin in order to format the hits numbers
 - Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
 - Bug fix: Function getsearchhistory in Get API did not clean the backslash in the search expression which can cause the escape of the character after the backslash
 - Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height
@@ -6572,3 +6605,7 @@ Release 03/2023
 - Bug fix: text_media_explorer used deprecated file name for the reference to the jQuery UI CSS file
 - Bug fix: Function rdbms_searchcontent in DB Connect added the search in object names without verifying that the where clause was not empty for the combined search in content and object names
 - Bug fix: The mime-type for WebP images has been missing in format_mime.inc.php and caused WebP images saved by the image editor to lose the file extension
+- Bug fix: page_multiedit used wrong parameter for the objects and was not able to rename the objects after the media conversion
+- Bug fix: page_multiedit did not provide the updated multiobject input field in the reload form
+- Bug fix: Added users to install/crontab file
+- Bug fix: The simple statistics Plugin did not convert the kB to MB and displayed the wrong file size

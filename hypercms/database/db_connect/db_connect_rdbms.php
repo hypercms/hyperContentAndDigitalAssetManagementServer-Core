@@ -36,7 +36,8 @@ class hcms_db
         $this->_db->query ("SET time_zone='".$offset."'");
 
         // set sql_mode to TRADITIONAL
-        $this->_db->query ("SET SESSION sql_mode = 'STRICT_TRANS_TABLES, STRICT_ALL_TABLES, NO_AUTO_CREATE_USER, NO_ENGINE_SUBSTITUTION'");
+        // deprecated: $this->_db->query ("SET SESSION sql_mode = 'STRICT_TRANS_TABLES, STRICT_ALL_TABLES, NO_AUTO_CREATE_USER, NO_ENGINE_SUBSTITUTION'");
+        $this->_db->query ("SET SESSION sql_mode = 'TRADITIONAL'");
 
         break;
       case 'odbc':
@@ -422,14 +423,14 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
     {
       if ($row = $db->rdbms_getresultrow ('media'))
       {
-        $sql = 'INSERT INTO object (id, level, hash, objectpath, objectpathname, template, media, container, createdate, date, latitude, longitude, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash, user) ';
+        $sql = 'INSERT IGNORE INTO object (id, level, hash, objectpath, objectpathname, template, media, container, createdate, date, latitude, longitude, filesize, filetype, width, height, red, green, blue, colorkey, imagetype, md5_hash, user) ';
         $sql .= 'VALUES ('.$container_id.', '.getobjectpathlevel($object).', "'.$hash.'", "'.$object.'", "'.getobjectpathname($object).'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', '.intval($row['filesize']).', "'.$filetype.'", '.intval($row['width']).', '.intval($row['height']).', '.intval($row['red']).', '.intval($row['green']).', '.intval($row['blue']).', "'.$db->rdbms_escape_string($row['colorkey']).'", "'.$db->rdbms_escape_string($row['imagetype']).'", "'.$db->rdbms_escape_string($row['md5_hash']).'", "'.$user.'")';
       }
     }
     // insert values in table object (new object)
     elseif (!empty ($container_id))
     {
-      $sql = 'INSERT INTO object (id, level, hash, objectpath, objectpathname, template, media, container, createdate, date, latitude, longitude, filetype, user) ';
+      $sql = 'INSERT IGNORE INTO object (id, level, hash, objectpath, objectpathname, template, media, container, createdate, date, latitude, longitude, filetype, user) ';
       $sql .= 'VALUES ('.$container_id.', '.getobjectpathlevel($object).', "'.$hash.'", "'.$object.'", "'.getobjectpathname($object).'", "'.$template.'", "'.$media.'", "'.$container.'", "'.$date.'", "'.$date.'", '.$latitude.', '.$longitude.', "'.$filetype.'", "'.$user.'")';
     }
 
@@ -476,7 +477,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     {
       while ($row = $db->rdbms_getresultrow ('textnodes'))
       {
-        $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id, type, user) ';
+        $sql = 'INSERT IGNORE INTO textnodes (id, text_id, textcontent, object_id, type, user) ';
         $sql .= 'VALUES ('.$container_id_dest.', "'.$db->rdbms_escape_string($row['text_id']).'", "'.$db->rdbms_escape_string($row['textcontent']).'", '.intval($row['object_id']).', "'.$db->rdbms_escape_string($row['type']).'", "'.$user.'")';
         
         $errcode = "50102";
@@ -494,7 +495,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
     {
       if ($row = $db->rdbms_getresultrow ('media'))
       {
-        $sql = 'UPDATE object SET filesize='.intval($row['filesize']).', filetype="'.$db->rdbms_escape_string($row['filetype']).'", width='.intval($row['width']).', height='.intval($row['height']).', red='.intval($row['red']).', green='.intval($row['green']).', blue='.intval($row['blue']).', colorkey="'.$db->rdbms_escape_string($row['colorkey']).'", imagetype="'.$db->rdbms_escape_string($row['imagetype']).'", md5_hash="'.$db->rdbms_escape_string($row['md5_hash']).'" ';
+        $sql = 'UPDATE IGNORE object SET filesize='.intval($row['filesize']).', filetype="'.$db->rdbms_escape_string($row['filetype']).'", width='.intval($row['width']).', height='.intval($row['height']).', red='.intval($row['red']).', green='.intval($row['green']).', blue='.intval($row['blue']).', colorkey="'.$db->rdbms_escape_string($row['colorkey']).'", imagetype="'.$db->rdbms_escape_string($row['imagetype']).'", md5_hash="'.$db->rdbms_escape_string($row['md5_hash']).'" ';
         $sql .= 'WHERE id='.$container_id_dest;
 
         $errcode = "50104";
@@ -581,7 +582,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
     
     if (is_array ($sql_attr) && sizeof ($sql_attr) > 0)
     {
-      $sql = 'UPDATE object SET ';
+      $sql = 'UPDATE IGNORE object SET ';
       $sql .= implode (", ", $sql_attr).' ';    
       $sql .= 'WHERE id='.$container_id;
       
@@ -666,7 +667,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
               if ($num_rows > 0)
               {
                 // query 
-                $sql = 'UPDATE textnodes SET textcontent="'.$text.'", object_id='.$object_id.', user="'.$user.'" ';
+                $sql = 'UPDATE IGNORE textnodes SET textcontent="'.$text.'", object_id='.$object_id.', user="'.$user.'" ';
                 if ($type != "") $sql .= ', type="'.$type.'" ';
                 $sql .= 'WHERE id='.$container_id.' AND text_id="'.$text_id.'"';
   
@@ -677,7 +678,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
               elseif ($num_rows == 0)
               {
                 // query    
-                $sql = 'INSERT INTO textnodes (id, text_id, textcontent, object_id'.($type != "" ? ', type' : '').', user) ';
+                $sql = 'INSERT IGNORE INTO textnodes (id, text_id, textcontent, object_id'.($type != "" ? ', type' : '').', user) ';
                 $sql .= 'VALUES ('.$container_id.', "'.$text_id.'", "'.$text.'", '.$object_id.''.($type != "" ? ', "'.$type.'"' : '').', "'.$user.'")';
   
                 $errcode = "50006";
@@ -707,7 +708,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
                 if (trim ($textcontent) != "") $textcontent = $db->rdbms_escape_string (trim ($textcontent));
 
                 // query
-                $sql = 'UPDATE object SET textcontent="'.$textcontent.'" WHERE id='.$container_id;
+                $sql = 'UPDATE IGNORE object SET textcontent="'.$textcontent.'" WHERE id='.$container_id;
 
                 $errcode = "50008";
                 $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], ++$i);
@@ -1256,7 +1257,7 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
 
     if (sizeof ($sql_update) > 0)
     {
-      $sql = 'UPDATE object SET ';
+      $sql = 'UPDATE IGNORE object SET ';
       $sql .= implode (", ", $sql_update);
       $sql .= ' WHERE id="'.intval($id).'"';
 
@@ -4881,7 +4882,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
+              else $sql = 'UPDATE IGNORE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
             }
             else
             {
@@ -4908,7 +4909,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Restore failed (rename) for folder '".$object."' in recycle bin";
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
+              else $sql = 'UPDATE IGNORE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_folder, 0, -8).'/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
             }
             else
             {
@@ -4928,11 +4929,11 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             {
               if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
               {
-                $sql = 'UPDATE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.$object_folder.'.recycle/") WHERE objectpath!="'.$object_folder.'/" AND objectpath LIKE "'.$object_folder.'/%"';
+                $sql = 'UPDATE IGNORE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.$object_folder.'.recycle/") WHERE objectpath!="'.$object_folder.'/" AND objectpath LIKE "'.$object_folder.'/%"';
               }
               elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
               {
-                $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.substr ($object_folder, 0, -8).'/") WHERE objectpath LIKE "'.$object_folder.'/%"';
+                $sql = 'UPDATE IGNORE object SET deleteuser="", deletedate="", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.substr ($object_folder, 0, -8).'/") WHERE objectpath LIKE "'.$object_folder.'/%"';
               }
 
               if (!empty ($sql))
@@ -4979,7 +4980,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_file.'.recycle" WHERE objectpath="'.$object_file.'"';
+              else $sql = 'UPDATE IGNORE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_file.'.recycle" WHERE objectpath="'.$object_file.'"';
             }
           }
           elseif ($mark == "unset" && substr ($object_abs, -8) == ".recycle")
@@ -5000,7 +5001,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
                 $result = false;
               }
               // update query
-              else $sql = 'UPDATE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_file, 0, -8).'" WHERE objectpath="'.$object_file.'"';
+              else $sql = 'UPDATE IGNORE object SET deleteuser="", deletedate="", objectpath="'.substr ($object_file, 0, -8).'" WHERE objectpath="'.$object_file.'"';
             }
             else
             {
@@ -5100,7 +5101,7 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
     if (sizeof ($object_id_array) > 0)
     {
       // insert access link info
-      $sql = 'INSERT INTO accesslink (hash, date, object_id, type, user, deathtime, formats) ';    
+      $sql = 'INSERT IGNORE INTO accesslink (hash, date, object_id, type, user, deathtime, formats) ';    
       $sql .= 'VALUES ("'.$hash.'", "'.$date.'", "'.implode ("|", $object_id_array).'", "'.$type.'", "'.$user.'", '.intval ($deathtime).', "'.$formats.'")';
   
       $errcode = "50007";
@@ -5223,7 +5224,7 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
 
       while ($object_id = $db->rdbms_getresultrow ('select'))
       {
-        $sql = 'INSERT INTO recipient (object_id, date, from_user, to_user, email) ';    
+        $sql = 'INSERT IGNORE INTO recipient (object_id, date, from_user, to_user, email) ';    
         $sql .= 'VALUES ("'.intval ($object_id['object_id']).'", "'.$date.'", "'.$from_user.'", "'.$to_user.'", "'.$email.'")';
         
         $errcode = "50050";
@@ -5367,7 +5368,7 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
       if (!empty ($cmd)) $cmd = $db->rdbms_escape_string ($cmd);
       $user = $db->rdbms_escape_string ($user);
 
-      $sql = 'INSERT INTO queue (object_id, action, date, published_only, cmd, user) ';    
+      $sql = 'INSERT IGNORE INTO queue (object_id, action, date, published_only, cmd, user) ';    
       $sql .= 'VALUES ('.intval ($object_id).', "'.$action.'", "'.$date.'", '.intval ($published_only).', "'.$cmd.'", "'.$user.'")';
 
       $errcode = "50133";
@@ -5971,15 +5972,15 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
             $result = $db->rdbms_getresultrow ('select', 0);
             $count = $result['count'];
 
-            if ($count == 0)
+            if ($count < 1)
             {
               // insert
-              $sql = 'INSERT INTO dailystat (id, user, activity, date, count) VALUES ('.$container_id.',"'.$user.'","'.$activity.'","'.$date.'",1)';
+              $sql = 'INSERT IGNORE INTO dailystat (id, user, activity, date, count) VALUES ('.$container_id.',"'.$user.'","'.$activity.'","'.$date.'",1)';
             }
             else
             {
               // update
-              $sql = 'UPDATE dailystat SET count=count+1 WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
+              $sql = 'UPDATE IGNORE dailystat SET count=count+1 WHERE date="'.$date.'" AND user="'.$user.'" AND activity="'.$activity.'" AND id='.$container_id;
             }
 
             $errcode = "50038";
@@ -6330,7 +6331,7 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
     }
 
     // insert
-    $sql = 'INSERT INTO task (object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, planned, status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'","'.$planned.'",0)';
+    $sql = 'INSERT IGNORE INTO task (object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, planned, status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'","'.$planned.'",0)';
 
     $errcode = "50048";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');
@@ -6586,7 +6587,7 @@ function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectna
     }
 
     // insert
-    $sql = 'INSERT INTO project (subproject_id, object_id, createdate, project ,user, description) VALUES ('.$subproject_id.', '.$object_id.', "'.date ("Y-m-d H:i:s", time()).'", "'.$projectname.'", "'.$user.'", "'.$description.'")';
+    $sql = 'INSERT IGNORE INTO project (subproject_id, object_id, createdate, project ,user, description) VALUES ('.$subproject_id.', '.$object_id.', "'.date ("Y-m-d H:i:s", time()).'", "'.$projectname.'", "'.$user.'", "'.$description.'")';
 
     $errcode = "50068";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');

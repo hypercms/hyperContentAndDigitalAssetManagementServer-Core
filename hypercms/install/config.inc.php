@@ -857,9 +857,9 @@ $mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 // $mgmt_imagepreview['.gif.jpg.jpeg.png'] = "GD";
 
 // Use "dcraw" or "ufraw" to convert RAW images to JPEG images
-// Package dcraw replaces ufraw that is no longer maintained in newer Linux distributions
+// Package dcraw replaces ufraw that is no longer maintained in newer Linux distributions (e.g. Debian 11)
 // Please make sure that the package dcraw or ufraw is installed
-$mgmt_imagepreview['rawimage'] = "ufraw";
+$mgmt_imagepreview['rawimage'] = "dcraw";
 
 // Define image preview using ImageMagick and GhostScript (thumbnail generation)
 // The path to the executable is usually /usr/bin/convert
@@ -874,6 +874,7 @@ $mgmt_imageoptions['.gif']['original'] = "-f gif";
 $mgmt_imageoptions['.jpg.jpeg']['original'] = "-f jpg";
 $mgmt_imageoptions['.png']['original'] = "-f png";
 $mgmt_imageoptions['.tif.tiff']['original'] = "-f tiff";
+$mgmt_imageoptions['.webp']['original'] = "-f webp";
 
 // Define additional download formats besides the original image
 $mgmt_imageoptions['.jpg.jpeg']['1920x1080px'] = '-s 1920x1080 -q 95 -f jpg';

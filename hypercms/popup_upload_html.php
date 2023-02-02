@@ -1250,6 +1250,9 @@ function openEditWindow (objectpath)
     iframe.src='page_view.php?rlreload=yes&location=' + encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage);
     window.style.display='inline';
 
+    // maximize upload window
+    if (typeof parent.maxPopup == "function") parent.maxPopup('upload<?php echo md5($location_esc); ?>');
+
     // remove first array element
     editobjects.shift();
   }
@@ -1525,7 +1528,7 @@ else $css_iphone = " overflow-x:hidden; overflow-y:hidden;";
     <div style="padding:4px;"><b><?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?></b></div>
   </div>
   <div class="hcmsWorkplaceGeneric" style="position:fixed; top:36px; bottom:0px; left:0px; right:0px; margin:0; padding:0; z-index:1001; <?php echo $css_iphone; ?>">
-    <iframe id="editiframe" src="" frameborder="0" style="width:100%; height:100%; border-bottom:1px solid #000000; margin:0; padding:0; overflow:auto;"></iframe>
+    <iframe id="editiframe" src="loading.php" frameborder="0" style="width:100%; height:100%; border-bottom:1px solid #000000; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
 </div>
 

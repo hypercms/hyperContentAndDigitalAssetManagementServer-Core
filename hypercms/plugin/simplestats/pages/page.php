@@ -169,8 +169,8 @@ while (@ob_end_flush());
             $show .= "
         <tr class=\"hcmsButtonTiny ".$rowcolor."\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
           <td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" /> ".$info['name']."</td>
-          <td style=\"text-align:right;\">".$row['count']."</td>
-          <td style=\"text-align:right;\">".number_format ($row['filesize'], 0, ",", ".")."</td>
+          <td style=\"text-align:right;\">".number_format ($row['count'], 0, ",", ".")."</td>
+          <td style=\"text-align:right;\">".number_format (($row['filesize'] / 1024), 0, ",", ".")."</td>
         </tr>";
           }
         }
@@ -235,8 +235,8 @@ while (@ob_end_flush());
             $show .= "
         <tr class=\"hcmsButtonTiny ".$rowcolor."\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
           <td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" /> ".$info['name']."</td>
-          <td style=\"text-align:right;\">".$row['count']."</td>
-          <td style=\"text-align:right;\">".number_format ($row['filesize'], 0, ",", ".")."</td>
+          <td style=\"text-align:right;\">".number_format ($row['count'], 0, ",", ".")."</td>
+          <td style=\"text-align:right;\">".number_format (($row['filesize'] / 1024), 0, ",", ".")."</td>
         </tr>";
           }
         }
@@ -263,5 +263,6 @@ if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoad
 </script>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

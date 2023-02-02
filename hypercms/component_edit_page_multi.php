@@ -82,7 +82,7 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   }
 }
 
-// read content from content container
+// read content from content container when db_connect is not used
 if (empty ($db_connect_data))
 {
   $contentdata = loadcontainer ($container_id, "work", $user);

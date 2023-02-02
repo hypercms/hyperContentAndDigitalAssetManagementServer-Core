@@ -84,6 +84,9 @@ function update_usergroups_v564 ($site, $data)
   {
     if ($site != "" && $data != "")
     {
+      // update log
+      savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|5.6.4|updated to version 5.6.4"), "update");
+
       $replace = array();
       $pattern_array = array ("%page%/", "%comp%/");
 
@@ -118,9 +121,6 @@ function update_usergroups_v564 ($site, $data)
           $datanew = str_replace ($path."|", $object_id."|", $datanew);
         }
       }
-
-      // update log
-      savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|5.6.4|updated to version 5.6.4"), "update");
 
       if ($datanew != "") return savefile ($mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php", $datanew);
       else return false;
@@ -158,6 +158,9 @@ function update_tasks_v584 ()
 
     if (!$tableexists)
     {
+      // update log
+      savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|5.8.4|updated to version 5.8.4"), "update");
+
       // create task table
       $sql = "CREATE TABLE `task` (
     `task_id` int(11) NOT NULL auto_increment,
@@ -234,9 +237,6 @@ function update_tasks_v584 ()
           }
         }
 
-        // update log
-        savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|5.8.4|updated to version 5.8.4"), "update");
-
         // save log
         savelog (@$error);
 
@@ -271,6 +271,9 @@ function update_database_v586 ()
 
   if (!empty ($mgmt_config['abs_path_data']) && !checksoftwareversion ("5.8.6"))
   {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|5.8.6|updated to version 5.8.6"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -370,9 +373,6 @@ function update_database_v586 ()
       }
     }
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|5.8.6|updated to version 5.8.6"), "update");
-
     // save log
     savelog ($db->rdbms_geterror());
     savelog (@$error);
@@ -398,6 +398,9 @@ function update_database_v601 ()
 
   if (!empty ($mgmt_config['abs_path_data']) && !checksoftwareversion ("6.0.1"))
   {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.0.1|updated to version 6.0.1"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -443,9 +446,6 @@ function update_database_v601 ()
       }
     }
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.0.1|updated to version 6.0.1"), "update");
-
     // save log
     savelog ($db->rdbms_geterror());
 
@@ -470,6 +470,9 @@ function update_database_v614 ()
 
   if (!empty ($mgmt_config['abs_path_data']) && !checksoftwareversion ("6.1.4"))
   {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.4|updated to version 6.1.4"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -493,9 +496,6 @@ function update_database_v614 ()
       $errcode = "50065";
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'create');
     }
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.4|updated to version 6.1.4"), "update");
 
     // save log
     savelog ($db->rdbms_geterror());
@@ -521,6 +521,9 @@ function update_database_v6113 ()
 
   if (!empty ($mgmt_config['abs_path_data']) && !checksoftwareversion ("6.1.13"))
   {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.13|updated to version 6.1.13"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -660,9 +663,6 @@ function update_database_v6113 ()
       }
     }
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.13|updated to version 6.1.13"), "update");
-
     // save log
     savelog ($db->rdbms_geterror());
 
@@ -690,6 +690,9 @@ function update_database_v6115 ()
 
   if (!empty ($mgmt_config['abs_path_data']) && !checksoftwareversion ("6.1.15"))
   {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.15|updated to version 6.1.15"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -720,9 +723,6 @@ function update_database_v6115 ()
       }
     }
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.15|updated to version 6.1.15"), "update");
-
     // save log
     savelog ($db->rdbms_geterror());
     savelog (@$error);
@@ -750,7 +750,10 @@ function update_container_v6118 ()
   $error = array();
 
   if (!empty ($mgmt_config['abs_path_data']) && !checksoftwareversion ("6.1.18"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.18|updated to version 6.1.18"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -841,7 +844,6 @@ function update_container_v6118 ()
 
     // save log
     savelog ($db->rdbms_geterror());
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.18|updated to version 6.1.18"), "update");
     savelog (@$error);
 
     $db->rdbms_close();
@@ -864,7 +866,10 @@ function update_database_v6139 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("6.1.39"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.39|updated to version 6.1.39"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -885,7 +890,6 @@ function update_database_v6139 ()
 
     // save log
     savelog ($db->rdbms_geterror ());
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.1.39|updated to version 6.1.39"), "update");
 
     $db->rdbms_close();
 
@@ -907,7 +911,10 @@ function update_database_v625 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("6.2.5"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.2.5|updated to version 6.2.5"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -922,7 +929,6 @@ function update_database_v625 ()
 
     // save log
     savelog ($db->rdbms_geterror ());
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|6.2.5|updated to version 6.2.5"), "update");
 
     $db->rdbms_close();
 
@@ -1050,7 +1056,10 @@ function update_database_v708 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("7.0.8"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.8|updated to version 7.0.8"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1068,9 +1077,6 @@ function update_database_v708 ()
     savelog ($db->rdbms_geterror());
 
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.8|updated to version 7.0.8"), "update");
 
     return true;
   }
@@ -1177,6 +1183,9 @@ function update_config_7010 ()
 
   if (!checksoftwareversion ("7.0.10"))
   {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.10|updated to version 7.0.10"), "update");
+
     // update management config
     $dir = $mgmt_config['abs_path_data']."config/";
     $files = scandir ($dir);
@@ -1217,9 +1226,6 @@ function update_config_7010 ()
         }
       }
     }
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|7.0.10|updated to version 7.0.10"), "update");
   }
   else return false;
 }
@@ -1237,7 +1243,10 @@ function update_database_v800 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("8.0.0"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.0|updated to version 8.0.0"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1250,9 +1259,6 @@ function update_database_v800 ()
     savelog ($db->rdbms_geterror());
 
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.0|updated to version 8.0.0"), "update");
 
     return true;
   }
@@ -1357,6 +1363,9 @@ function update_database_v805 ()
 
   if (!checksoftwareversion ("8.0.5"))
   {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.5|updated to version 8.0.5"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1412,9 +1421,6 @@ function update_database_v805 ()
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|8.0.5|updated to version 8.0.5"), "update");
-
     return true;
   }
   else return false;
@@ -1434,6 +1440,9 @@ function update_database_v903 ()
 
   if (!checksoftwareversion ("9.0.3"))
   {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.0.3|updated to version 9.0.3"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1445,9 +1454,6 @@ function update_database_v903 ()
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.0.3|updated to version 9.0.3"), "update");
 
     return true;
   }
@@ -1467,7 +1473,10 @@ function update_database_v910 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("9.1.0"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.0|updated to version 9.1.0"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1479,9 +1488,6 @@ function update_database_v910 ()
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.0|updated to version 9.1.0"), "update");
 
     return true;
   }
@@ -1529,7 +1535,10 @@ function update_database_v914 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("9.1.4"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.4|updated to version 9.1.4"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1541,9 +1550,6 @@ function update_database_v914 ()
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|9.1.4|updated to version 9.1.4"), "update");
 
     return true;
   }
@@ -1563,7 +1569,10 @@ function update_database_v1000 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.0"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.0|updated to version 10.0.0"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1684,9 +1693,6 @@ function update_database_v1000 ()
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.0|updated to version 10.0.0"), "update");
-
     return true;
   }
   else return false;
@@ -1705,38 +1711,41 @@ function update_database_v1002 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.2"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.2|updated to version 10.0.2"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // alter table object
-    $sql = "ALTER TABLE `object` ADD COLUMN textcontent MEDIUMTEXT;";
+    $sql = "ALTER TABLE object ADD COLUMN textcontent MEDIUMTEXT;";
     $errcode = "50631";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // alter table dailystat
-    $sql = "ALTER TABLE `dailystat` MODIFY COLUMN activity CHAR(10);";
+    $sql = "ALTER TABLE dailystat MODIFY COLUMN activity CHAR(10);";
     $errcode = "50632";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // drop old index for table dailystat
-    $sql = "DROP INDEX `dailystat` ON `dailystat`;";
+    $sql = "DROP INDEX dailystat ON `dailystat`;";
     $errcode = "50633";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // create new index for table dailystat
-    $sql = "CREATE INDEX `dailystat_multiple` ON dailystat (`id`,`date`,`activity`,`user`);";
+    $sql = "CREATE INDEX dailystat_multiple ON dailystat (`id`,`date`,`activity`,`user`);";
     $errcode = "50634";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // alter table textnodes
-    $sql = "ALTER TABLE `textnodes` MODIFY COLUMN textcontent MEDIUMTEXT;";
+    $sql = "ALTER TABLE textnodes MODIFY COLUMN textcontent MEDIUMTEXT;";
     $errcode = "50635";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // write textcontent from table textnodes into new column of table object
     // collect container IDs
-    $sql = 'SELECT DISTINCT `id` FROM object;';
+    $sql = 'SELECT DISTINCT id FROM object;';
 
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select_id');
 
@@ -1755,7 +1764,7 @@ function update_database_v1002 ()
     {
       foreach ($id_array as $id)
       {
-        $sql = 'SELECT `textcontent` FROM `textnodes` WHERE id='.$id.';';
+        $sql = 'SELECT textcontent FROM textnodes WHERE id='.$id.';';
 
         $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select_textcontent');
 
@@ -1775,7 +1784,7 @@ function update_database_v1002 ()
           {
             $textcontent = $db->rdbms_escape_string (trim ($textcontent));
 
-            $sql = 'UPDATE `object` SET textcontent="'.$textcontent.'" WHERE id='.$id.';';
+            $sql = 'UPDATE object SET textcontent="'.$textcontent.'" WHERE id='.$id.';';
             $errcode = "50636";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
           }
@@ -1784,16 +1793,13 @@ function update_database_v1002 ()
     }
 
     // create new index
-    $sql = "CREATE FULLTEXT INDEX `object_textcontent` ON object(`textcontent`);";
+    $sql = "CREATE FULLTEXT INDEX object_textcontent ON object(textcontent);";
     $errcode = "50637";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.2|updated to version 10.0.2"), "update");
 
     return true;
   }
@@ -1813,21 +1819,21 @@ function update_database_v1003 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.3"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.3|updated to version 10.0.3"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // alter table dailystat
-    $sql = "ALTER TABLE `dailystat` MODIFY COLUMN activity CHAR(8);";
+    $sql = "ALTER TABLE dailystat MODIFY COLUMN activity CHAR(8);";
     $errcode = "50641";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.3|updated to version 10.0.3"), "update");
 
     return true;
   }
@@ -1917,29 +1923,29 @@ function update_database_v1005 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.5"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.5|updated to version 10.0.5"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // alter table object
-    $sql = "ALTER TABLE `object` ADD workflowdate datetime DEFAULT NULL AFTER deletedate;";
+    $sql = "ALTER TABLE object ADD workflowdate datetime DEFAULT NULL AFTER deletedate;";
     $errcode = "50651";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-    $sql = "ALTER TABLE `object` ADD workflowstatus CHAR(5) DEFAULT NULL AFTER workflowdate;";
+    $sql = "ALTER TABLE object ADD workflowstatus CHAR(5) DEFAULT NULL AFTER workflowdate;";
     $errcode = "50652";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
-    $sql = "ALTER TABLE `object` ADD workflowuser CHAR(100) DEFAULT NULL AFTER workflowstatus;";
+    $sql = "ALTER TABLE object ADD workflowuser CHAR(100) DEFAULT NULL AFTER workflowstatus;";
     $errcode = "50653";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.5|updated to version 10.0.5"), "update");
 
     return true;
   }
@@ -1959,7 +1965,10 @@ function update_database_v1006 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.6"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6|updated to version 10.0.6"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1998,9 +2007,6 @@ function update_database_v1006 ()
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6|updated to version 10.0.6"), "update");
-
     return true;
   }
   else return false;
@@ -2019,7 +2025,10 @@ function update_database_v10065 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.6.5"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.5|updated to version 10.0.6.5"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
    
@@ -2036,9 +2045,6 @@ function update_database_v10065 ()
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.5|updated to version 10.0.6.5"), "update");
 
     return true;
   }
@@ -2058,7 +2064,10 @@ function update_database_v10066 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.6.6"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.6|updated to version 10.0.6.6"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
    
@@ -2096,9 +2105,6 @@ function update_database_v10066 ()
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.6|updated to version 10.0.6.6"), "update");
-
     return true;
   }
   else return false;
@@ -2117,12 +2123,15 @@ function update_database_v10069 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.6.9"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.9|updated to version 10.0.6.9"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
     // alter table object
-    $sql = "ALTER TABLE `object` ADD `level` smallint(6) DEFAULT NULL AFTER id;";
+    $sql = "ALTER TABLE object ADD level smallint(6) DEFAULT NULL AFTER id;";
     $errcode = "50690";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
 
@@ -2154,9 +2163,6 @@ function update_database_v10069 ()
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
 
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.9|updated to version 10.0.6.9"), "update");
-
     return true;
   }
   else return false;
@@ -2175,7 +2181,10 @@ function update_database_v100610 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.6.10"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.10|updated to version 10.0.6.10"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -2187,9 +2196,6 @@ function update_database_v100610 ()
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.6.10|updated to version 10.0.6.10"), "update");
 
     return true;
   }
@@ -2209,7 +2215,10 @@ function update_database_v1007 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.7"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7|updated to version 10.0.7"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -2221,9 +2230,6 @@ function update_database_v1007 ()
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7|updated to version 10.0.7"), "update");
 
     return true;
   }
@@ -2243,7 +2249,10 @@ function update_database_v10071 ()
   global $mgmt_config;
 
   if (!checksoftwareversion ("10.0.7.1"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.1|updated to version 10.0.7.1"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -2260,9 +2269,6 @@ function update_database_v10071 ()
     // save log
     savelog ($db->rdbms_geterror());
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.1|updated to version 10.0.7.1"), "update");
 
     return true;
   }
@@ -2284,7 +2290,10 @@ function update_database_v10073 ()
   $error = array();
 
   if (!checksoftwareversion ("10.0.7.3"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.3|updated to version 10.0.7.3"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -2302,9 +2311,6 @@ function update_database_v10073 ()
     savelog ($db->rdbms_geterror ());
     savelog (@$error);
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.3|updated to version 10.0.7.3"), "update");
 
     return true;
   }
@@ -2326,7 +2332,10 @@ function update_database_v10074 ()
   $error = array();
 
   if (!checksoftwareversion ("10.0.7.4"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.4|updated to version 10.0.7.4"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -2339,9 +2348,6 @@ function update_database_v10074 ()
     savelog ($db->rdbms_geterror ());
     savelog (@$error);
     $db->rdbms_close();
-
-    // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.7.4|updated to version 10.0.7.4"), "update");
 
     return true;
   }
@@ -2363,7 +2369,10 @@ function update_database_v1008 ()
   $error = array();
 
   if (!checksoftwareversion ("10.0.8"))
-  { 
+  {
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.8|updated to version 10.0.8"), "update");
+
     // connect to MySQL
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -2412,8 +2421,59 @@ function update_database_v1008 ()
     savelog (@$error);
     $db->rdbms_close();
 
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v1009 ----------------------------------------------
+// function: update_database_v1009()
+// input: %
+// output: true / false
+
+// description: 
+// Update character set and collation of table textnodes, object, keywords, project, and task for support of version 10.0.9 (table defintions are correct in createtables.sql but have not been updated in older versions)
+
+function update_database_v1009 ()
+{
+  global $mgmt_config;
+
+  if (!checksoftwareversion ("10.0.9"))
+  { 
     // update log
-    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.8|updated to version 10.0.8"), "update");
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.0.9|updated to version 10.0.9"), "update");
+
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+   
+    // alter table textnodes
+    $sql = "ALTER IGNORE TABLE textnodes CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+    $errcode = "50810";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table object
+    $sql = "ALTER IGNORE TABLE object CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+    $errcode = "50811";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table keywords
+    $sql = "ALTER IGNORE TABLE keywords CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+    $errcode = "50812";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table project
+    $sql = "ALTER IGNORE TABLE project CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+    $errcode = "50813";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // alter table task
+    $sql = "ALTER IGNORE TABLE task CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+    $errcode = "50814";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
 
     return true;
   }
@@ -2472,6 +2532,7 @@ function updates_all ()
     update_database_v10073 ();
     update_database_v10074 ();
     update_database_v1008 ();
+    update_database_v1009 ();
   }
 }
 

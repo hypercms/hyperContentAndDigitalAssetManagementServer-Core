@@ -637,6 +637,8 @@ $token_new = createtoken ($user);
       <input type="hidden" name="action" id="action" value="sendmail" />
       <!-- mailfile need to be empty in order to save new message data -->
       <input type="hidden" name="mailfile" value="" />
+      <!-- queue ID of existing mail message -->
+      <input type="hidden" name="queue_id" value="<?php if (!empty ($queue_id)) echo $queue_id; ?>" />
 
       <div id="LayerMenu" class="hcmsTabContainer" style="position:absolute; z-index:10; left:0px; top:40px; min-width:380px;">
         <div id="tab1" class="hcmsTabActive">

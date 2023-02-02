@@ -4690,52 +4690,34 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   if ($hypertagname == $searchtag."alttext" && !isset ($mediaalttextbot[$id]))
                   {
                     $bufferarray = getcontent ($mediabot[$id], "<mediaalttext>");
-
-                    if (!empty ($bufferarray[0]))
-                    {
-                      $mediaalttextbot[$id] = $bufferarray[0];
-                      // escape special characters
-                      $mediaalttextbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalttextbot[$id]);
-                    }
+                    if (!empty ($bufferarray[0])) $mediaalttextbot[$id] = $bufferarray[0];
                   }
                   // get the media alignment name from mediabot
                   elseif (($hypertagname == $searchtag."align" || $is_watermark) && !isset ($mediaalignbot[$id]))
                   {
                     $bufferarray = getcontent ($mediabot[$id], "<mediaalign>");
-
-                    if (!empty ($bufferarray[0]))
-                    {
-                      $mediaalignbot[$id] = $bufferarray[0];
-                      // escape special characters
-                      $mediaalignbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalignbot[$id]);
-                    }
+                    if (!empty ($bufferarray[0])) $mediaalignbot[$id] = $bufferarray[0];
                   }
                   // get the media width name from mediabot
                   elseif ($hypertagname == $searchtag."width" && !isset ($mediawidthbot[$id]))
                   {
                     $bufferarray = getcontent ($mediabot[$id], "<mediawidth>");
-
-                    if (!empty ($bufferarray[0]))
-                    {
-                      $mediawidthbot[$id] = $bufferarray[0];
-                      // escape special characters
-                      $mediawidthbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediawidthbot[$id]);
-                    }
+                    if (!empty ($bufferarray[0])) $mediawidthbot[$id] = $bufferarray[0];
                   }
                   // get the media height name from mediabot
                   elseif ($hypertagname == $searchtag."height" && !isset ($mediaheightbot[$id]))
                   {
                     $bufferarray = getcontent ($mediabot[$id], "<mediaheight>");
-
-                    if (!empty ($bufferarray[0]))
-                    {
-                      $mediaheightbot[$id] = $bufferarray[0];
-                      // escape special characters
-                      $mediaheightbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaheightbot[$id]);
-                    }
+                    if (!empty ($bufferarray[0])) $mediaheightbot[$id] = $bufferarray[0];
                   }
                 }
               }
+
+              // escape special characters
+              if (!empty ($mediaalttextbot[$id])) $mediaalttextbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalttextbot[$id]);
+              if (!empty ($mediaalignbot[$id])) $mediaalignbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalignbot[$id]);
+              if (!empty ($mediawidthbot[$id])) $mediawidthbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediawidthbot[$id]);
+              if (!empty ($mediaheightbot[$id])) $mediaheightbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaheightbot[$id]);
 
               // get hyperCMS tags attributes (specific for each tag found in template)
               if ($hypertagname == $searchtag."file" || $is_watermark)
@@ -5573,8 +5555,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // get the whole link information of the content container
                 if (empty ($linkbot[$id]))
                 {
-                  $bufferarray = selectcontent ($contentdata, "<link>", "<link_id>", $id);
-                  if (!empty ($bufferarray[0])) $linkbot[$id] = $bufferarray[0];
+                  $temp_array = selectcontent ($contentdata, "<link>", "<link_id>", $id);
+                  if (!empty ($temp_array[0])) $linkbot[$id] = $temp_array[0];
                 }
 
                 if (!empty ($linkbot[$id]))
@@ -5582,35 +5564,31 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   // get the link file name from linkbot
                   if ($hypertagname == $searchtag."href" && !isset ($linkhrefbot[$id]))
                   {
-                    $bufferarray = getcontent ($linkbot[$id], "<linkhref>");
-                    if (!empty ($bufferarray[0])) $linkhrefbot[$id] = $bufferarray[0];
-
-                    // escape special characters
-                    if (!empty ($linkhrefbot[0])) $linkhrefbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linkhrefbot[$id]); 
+                    $temp_array = getcontent ($linkbot[$id], "<linkhref>");
+                    if (!empty ($temp_array[0])) $linkhrefbot[$id] = $temp_array[0];
                   }
                   // get the link alttext name from linkbot
                   elseif ($hypertagname == $searchtag."target" && !isset ($linktargetbot[$id]))
                   {
-                    $bufferarray = getcontent ($linkbot[$id], "<linktarget>");
-                    if (!empty ($bufferarray[0])) $linktargetbot[$id] = $bufferarray[0];
+                    $temp_array = getcontent ($linkbot[$id], "<linktarget>");
+                    if (!empty ($temp_array[0])) $linktargetbot[$id] = $temp_array[0];
 
                     // get link targets defined in template
                     $targetlist[$id] = getattribute ($hypertag, "list");
-
-                    // escape special characters
-                    if (!empty ($linktargetbot[0])) $linktargetbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linktargetbot[$id]); 
                   }
                   // get the link alignment name from linkbot
                   elseif ($hypertagname == $searchtag."text" && !isset ($linktextbot[$id]))
                   {
-                    $bufferarray = getcontent ($linkbot[$id], "<linktext>");
-                    if (!empty ($bufferarray[0])) $linktextbot[$id] = $bufferarray[0];
-
-                    // escape special characters
-                    if (!empty ($linktextbot[0])) $linktextbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linktextbot[$id]);
+                    $temp_array = getcontent ($linkbot[$id], "<linktext>");
+                    if (!empty ($temp_array[0])) $linktextbot[$id] = $temp_array[0];
                   }
                 }
               }
+
+              // escape special characters
+              if (!empty ($linkhrefbot[$id])) $linkhrefbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linkhrefbot[$id]);
+              if (!empty ($linktargetbot[$id])) $linktargetbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linktargetbot[$id]);
+              if (!empty ($linktextbot[$id])) $linktextbot[$id] = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linktextbot[$id]); 
 
               // get hyperCMS tag attributes (specific for each tag found in template)
               if ($hypertagname == $searchtag."href")

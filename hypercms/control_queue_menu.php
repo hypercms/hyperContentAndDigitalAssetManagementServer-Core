@@ -267,11 +267,11 @@ function jumpTo (target)
     {
       if (!empty ($mgmt_config['object_newwindow']))
       {
-        $openlink = "hcms_openWindow('user_sendlink.php?mailfile=".url_encode($page)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', 600, 800);";
+        $openlink = "hcms_openWindow('user_sendlink.php?mailfile=".url_encode($page)."&queue_id=".url_encode($queue_id)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', 600, 800);";
       }
       else
       {
-        $openlink = "parent.openPopup('user_sendlink.php?mailfile=".url_encode($page)."&token=".$token_new."');";
+        $openlink = "parent.openPopup('user_sendlink.php?mailfile=".url_encode($page)."&queue_id=".url_encode($queue_id)."&token=".$token_new."');";
       }
 
       echo "<img ".

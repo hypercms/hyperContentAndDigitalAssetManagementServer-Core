@@ -70,7 +70,7 @@ if (sizeof ($config_files) > 0)
               rdbms_setqueueentry ($queue_id, $new_date);
               
               // execute
-              eval ($cmd);
+              if (trim ($cmd) != "") eval ($cmd);
 
               $result = true;
             }

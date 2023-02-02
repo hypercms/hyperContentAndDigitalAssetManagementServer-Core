@@ -70,7 +70,7 @@ else $charset = $mgmt_config[$site]['default_codepage'];
 
 header ('Content-Type: text/html; charset='.$charset);
 
-// read content using db_connect
+// read content using db_connect when db_connect is not used
 if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_config['abs_path_data']."db_connect/".$db_connect)) 
 {
   include ($mgmt_config['abs_path_data']."db_connect/".$db_connect);
@@ -80,8 +80,8 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   if ($db_connect_data != false) $contentbot = $db_connect_data['text'];
 }  
 
-// read content from content container
-if (empty ($contentbot)) 
+// read content from content container when db_connect is not used
+if (empty ($db_connect_data))
 {
   $filedata = loadcontainer ($contentfile, "work", $user);
 

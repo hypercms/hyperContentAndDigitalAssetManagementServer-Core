@@ -79,10 +79,9 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   }
 }
 
-// read content from content container if DB Connect is not used
+// read content from content container when db_connect is not used
 if (empty ($db_connect_data))
 {
-  // load container
   $contentdata = loadcontainer ($contentfile, "work", "sys");
 
   if (!empty ($contentdata))
@@ -98,14 +97,18 @@ if (empty ($db_connect_data))
         if (!empty ($temp_array[0])) $linkhref = $temp_array[0];
         
         $temp_array = getcontent ($linknode[0], "<linktarget>");
-        if (!empty ($temp_array[0])) $linktarget = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        if (!empty ($temp_array[0])) $linktarget = $temp_array[0];
         
         $temp_array = getcontent ($linknode[0], "<linktext>");
-        if (!empty ($temp_array[0])) $linktext = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        if (!empty ($temp_array[0])) $linktext = $temp_array[0];
       }  
     }
   }
 }
+
+// escape special characters
+$linktarget = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linktarget);
+$linktext = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $linktext);
 
 // remove &amp; from specific variables
 $variables = array ('linkhref', 'linktext');

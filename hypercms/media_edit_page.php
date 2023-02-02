@@ -86,10 +86,9 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   }
 }
 
-// read content from content container if DB Connect is not used
+// read content from content container when db_connect is not used
 if (empty ($db_connect_data))
 {
-  // load container
   $contentdata = loadcontainer ($contentfile, "work", "sys");
 
   if (!empty ($contentdata))
@@ -108,20 +107,26 @@ if (empty ($db_connect_data))
         if (!empty ($temp_array[0])) $mediaobject = $temp_array[0];
         
         $temp_array = getcontent ($medianode[0], "<mediaalttext>");
-        if (!empty ($temp_array[0])) $mediaalttext = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        if (!empty ($temp_array[0])) $mediaalttext = $temp_array[0];
         
         $temp_array = getcontent ($medianode[0], "<mediaalign>");
-        if (!empty ($temp_array[0])) $mediaalign = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        if (!empty ($temp_array[0])) $mediaalign = $temp_array[0];
         
         $temp_array = getcontent ($medianode[0], "<mediawidth>");
-        if (!empty ($temp_array[0])) $mediawidth = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        if (!empty ($temp_array[0])) $mediawidth = $temp_array[0];
         
         $temp_array = getcontent ($medianode[0], "<mediaheight>");
-        if (!empty ($temp_array[0])) $mediaheight = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $temp_array[0]);
+        if (!empty ($temp_array[0])) $mediaheight = $temp_array[0];
       }  
     }
   }
 }
+
+// escape special characters
+$mediaalttext = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalttext);
+$mediaalign = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaalign);
+$mediawidth = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediawidth);
+$mediaheight = str_replace (array("\"", "'", "<", ">"), array("&quot;", "&#039;", "&lt;", "&gt;"), $mediaheight);
 
 // remove &amp; from specific variables
 $variables = array ('mediaalttext');

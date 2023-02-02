@@ -31,6 +31,7 @@ elseif (is_file ("../config.inc.php"))
 // input parameters
 $service = getrequest ("service");
 $mailfile = getrequest ("mailfile");
+$queue_id = getrequest ("queue_id");
 $token = getrequest ("token");
 // objects
 $site = getrequest_esc ("site", "publicationname");
@@ -301,6 +302,9 @@ if (valid_objectname ($user))
 // ---------------------------------- save to queue ----------------------------------
 if ($action == "savequeue" && valid_objectname ($user) && checktoken ($token, $user))
 {
+  // delete queue entry
+  if (!empty ($queue_id)) rdbms_deletequeueentry ($queue_id);
+
   // create queue entry
   $queue = createqueueentry ("mail", "", $email_date, 0, $message_data, $user);
 
@@ -311,7 +315,10 @@ if ($action == "savequeue" && valid_objectname ($user) && checktoken ($token, $u
   else
   {
     $general_error[] = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang])."
-    <script language=\"JavaScript\" type=\"text/javascript\">if (typeof parent.closeoPopup == 'function') setTimeout(function(){ parent.closePopup() }, 1000); else setTimeout(function(){ window.close() }, 1000);</script>";
+    <script type=\"text/javascript\">if (typeof parent.closePopup == 'function') setTimeout(function(){ parent.closePopup() }, 1000); else setTimeout(function(){ window.close() }, 1000);</script>";
+
+    // reload the queue objectlist
+    $add_onload .= "if (opener && opener.location) opener.location.reload(); else if (parent && parent.document.getElementById('mainFrame').contentWindow.location) parent.document.getElementById('mainFrame').contentWindow.location.reload();";
   }
 }
 // ---------------------------------- send mail ----------------------------------

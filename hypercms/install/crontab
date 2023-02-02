@@ -1,3 +1,4 @@
-* * * * * cd /var/www/html/hypercms/job; /usr/bin/php -f minutely.php 
-0 4 * * * cd /var/www/html/hypercms/job; /usr/bin/php -f daily.php
-0 2 * * * cd /var/www/html/hypercms/job; /usr/bin/php -f update.php
+# cron jobs required for the setup with Docker and logging in /var/log/cron.log
+* * * * * www-data cd /var/www/html/hypercms/job; /usr/bin/php -q minutely.php >> /var/log/cron.log 2>&1
+0 4 * * * www-data cd /var/www/html/hypercms/job; /usr/bin/php -q daily.php >> /var/log/cron.log 2>&1
+0 2 * * * root cd /var/www/html/hypercms/job; /usr/bin/php -q update.php >> /var/log/cron.log 2>&1

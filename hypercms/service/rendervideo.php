@@ -114,6 +114,8 @@ function startConversion ($videotype)
    // Used for Output
   global $hcms_lang, $lang;
   
+  // imitialize
+  $createmedia = false;
   $success = false;
 
   $show = "";
@@ -168,6 +170,7 @@ function startConversion ($videotype)
   
   $result = array();
   $result['success'] = $success;
+  $result['filename'] = $createmedia;
   $result['message'] = $show;
   
   return $result;
@@ -397,6 +400,7 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
         $result = startConversion ("videoplayer");
         
         $success = $result['success'];
+        $object = $object; // the objects file name of the video will not be changed
         $show .= $result['message']."\n";
         
         $run = 1;
@@ -407,7 +411,7 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
   else
   {
     $result = startConversion ($filetype);
-    
+    $object = $page;
     $success = $result['success'];
     $show .= $result['message']."\n";
   }
@@ -418,6 +422,7 @@ if ($savetype == "auto" || $savetype == "")
 { 
   $output = array();
   $output['success'] = $success;
+  $output['object'] = $location_esc.$object;
   $output['message'] = trim ($show);
   
   header ('Content-Type: application/json; charset=utf-8');

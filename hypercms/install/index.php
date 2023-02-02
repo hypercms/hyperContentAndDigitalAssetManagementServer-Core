@@ -253,19 +253,39 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
             elseif (!$mysqli->select_db ($db_name)) $show .= "<li>DB error (".$mysqli->errno."): ".$mysqli->error."</li>\n";
           }
           
-          // create tables
+          // check database and create tables
+          $count_tables = 0;
+          $count_objects = 0;
+
           if ($show == "")
           {
-            // check if objects exist already
-            if ($result = $mysqli->query ('SELECT count(*) AS count FROM object'))
+            // check if database with tables exist already
+            if ($result = $mysqli->query ('SHOW TABLES IN hypercms'))
             {
-              if ($row = $result->fetch_assoc()) $count = $row['count'];
-              $result->free();
-            }
-            else $count = 0;
+              if ($result != false)
+              {
+                if ($result->num_rows > 0)
+                {
+                  while ($row = $result->fetch_assoc())
+                  {
+                    $count_tables++;
+                  }
+                }
+
+                $result->free();
+
+                // check if objects exist already
+                if ($count_tables > 11 && $result = $mysqli->query ('SELECT count(*) AS count FROM object'))
+                {
+                  if ($row = $result->fetch_assoc()) $count_objects = $row['count'];
+                  $result->free();
+                }
+              }
+              else $show .= "<li>DB error: Unable to check the database for existing tables</li>\n";
+            } 
             
             // create tables
-            if ($show == "" && $count < 1)
+            if ($show == "" && $count_objects < 1)
             {
               $sql = loadfile ($mgmt_config['abs_path_cms']."database/rdbms/", "createtables.sql");
               
@@ -277,7 +297,7 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
               
               $mysqli->close();
             }
-            else $show .= "<li>Error creating tables: the database is not empty</li>\n";
+            // else $show .= "<li>Error creating tables: The database is not empty (".$count_tables." tables with ".$count_objects." objects exist already)</li>\n";
           }
         }
       }

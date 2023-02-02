@@ -402,8 +402,8 @@ function specialchr_encode ($expression, $remove="no")
         // encode to UTF-8 if name is not utf-8 coded
         if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));
 
-        // replace ~ since this is the identifier and replace invalid file name characters (symbols)
-        $strip = array ("~", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", 
+        // replace invalid file name characters (symbols)
+        $strip = array ("%", "`", "!", "@", "#", "$", "^", "&", "*", "=", 
                         "\\", "|", ";", ":", "\"", "&quot;", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
                         "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", ",", "<", "&lt;", ">", "&gt;", "?");
  
@@ -1155,7 +1155,7 @@ function is_config ($media)
 
     if ($container_id != "")
     {
-      if (substr_count($media, "_hcm".$container_id.".config.") > 0) return true;
+      if (substr_count ($media, "_hcm".$container_id.".config.") > 0) return true;
       else return false;
     }
     else return false;
@@ -1215,7 +1215,7 @@ function is_document ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ("_".$hcms_ext['cleartxt'].$hcms_ext['bintxt']).".", ".".$ext.".") > 0) return true;
+    if (!empty ($hcms_ext['cleartxt']) && !empty ($hcms_ext['bintxt']) && substr_count (strtolower ("_".$hcms_ext['cleartxt'].$hcms_ext['bintxt']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -1242,7 +1242,7 @@ function is_image ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ("_".$hcms_ext['image']).".", ".".$ext.".") > 0) return true;
+    if (!empty ($hcms_ext['image']) && substr_count (strtolower ("_".$hcms_ext['image']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -1269,7 +1269,7 @@ function is_rawimage ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ("_".$hcms_ext['rawimage']).".", ".".$ext.".") > 0) return true;
+    if (!empty ($hcms_ext['rawimage']) && substr_count (strtolower ("_".$hcms_ext['rawimage']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -1342,7 +1342,7 @@ function is_video ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ($hcms_ext['video']).".", ".".$ext.".") > 0) return true;
+    if (!empty ($hcms_ext['video']) && substr_count (strtolower ($hcms_ext['video']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -1369,7 +1369,7 @@ function is_rawvideo ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ($hcms_ext['rawvideo']).".", ".".$ext.".") > 0) return true;
+    if (!empty ($hcms_ext['rawvideo']) && substr_count (strtolower ($hcms_ext['rawvideo']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -1396,7 +1396,7 @@ function is_audio ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ($hcms_ext['audio']).".", ".".$ext.".") > 0) return true;
+    if (!empty ($hcms_ext['audio']) && substr_count (strtolower ($hcms_ext['audio']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -1423,7 +1423,7 @@ function is_compressed ($file)
     if (substr_count ($file, ".") > 0) $ext = strtolower (trim (strrchr ($file, "."), "."));
     else $ext = $file;
 
-    if (substr_count (strtolower ($hcms_ext['compressed']).".", ".".$ext.".") > 0) return true;
+    if (!empty ($hcms_ext['compressed']) && substr_count (strtolower ($hcms_ext['compressed']).".", ".".$ext.".") > 0) return true;
     else return false;
   }
   else return false;
@@ -12040,6 +12040,9 @@ function createfolder ($site, $location, $folder, $user)
   $folder = trim ($folder);
   if (substr ($folder, -8) == ".recycle") $folder = str_replace (".recycle", "_recycle", $folder);
 
+  // replace tilde since this is the identifier for the converted special characters
+  $folder = str_replace ("~", "-", $folder);
+
   // folder name
   $folder = createfilename ($folder);
 
@@ -13001,7 +13004,10 @@ function createobject ($site, $location, $page, $template, $user)
   if (substr ($page, -8) == ".recycle") $page = str_replace (".recycle", "_recycle", $page);
 
   // replace _hcm identifier since it is used to for media files
-  if (strpos ($page, "_hcm") > 0) $page = str_replace ("_hcm", "hcm", $page);
+  if (strpos ($page, "_hcm") > 0) $page = str_replace ("_hcm", "-hcm", $page);
+
+  // replace tilde since this is the identifier for the converted special characters
+  $page = str_replace ("~", "-", $page);
 
   // create valid object file name
   $page_orig = $page;
@@ -13543,6 +13549,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false)
     // non-multipart uploads (PUT method support)
     elseif (strtoupper ($request_method) == "PUT")
     {
+      $append_file = false;
       $result['result'] = file_put_contents ($save_file, fopen('php://input', 'r'), $append_file ? FILE_APPEND : 0);
     }
     // delete file (DELETE method support)
@@ -13602,6 +13609,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   // set default language
   if (empty ($lang)) $lang = "en";
 
+  // replace tilde since this is the identifier for the converted special characters
+  $file_name_orig = $global_files['Filedata']['name'] = str_replace ("~", "-", $global_files['Filedata']['name']);
+
   if (valid_publicationname ($site) && valid_locationname ($location) && $cat != "" && accessgeneral ($site, $location, $cat) && is_array ($global_files) && !is_tempfile ($global_files['Filedata']['name']) && valid_objectname ($user))
   {
     // publication management config
@@ -13629,7 +13639,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
     // log entry
     $errcode = "00011";
-    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|uploadfile(".$site.", ".$location_esc.", ".$page.", ".$cat."): new multimedia file upload '".$global_files['Filedata']['name']."' by user '".$user."'";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New file upload '".$file_name_orig."' has been started by user '".$user."' to '".$location_esc.$page."'";
  
     // write log
     savelog (@$error);
@@ -13646,7 +13656,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (empty ($setlocalpermission['root']) || $setlocalpermission['root'] != 1 || empty ($setlocalpermission['upload']) || $setlocalpermission['upload'] != 1)
     {
       $errcode = "30501";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: no permissions to upload file to '".$location."' for user '".$user."'";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|Missing permissions for user '".$user."' to upload the file to '".$location_esc."'";
 
       // write log
       savelog (@$error);
@@ -13689,7 +13699,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       else
       {
         $errcode = "20502";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the file could not be obtained from the source";
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
 
         // write log
         savelog (@$error);
@@ -13717,7 +13727,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       else
       {
         $errcode = "20502";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the file could not be obtained from the source";
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
 
         // write log
         savelog (@$error);
@@ -13773,7 +13783,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       else
       {
         $errcode = "10503";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the file could not be obtained from the source";
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
 
         // write log
         savelog (@$error);
@@ -13792,7 +13802,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (!empty ($global_files['Filedata']['error']) && $global_files['Filedata']['error'] != UPLOAD_ERR_OK)
     {
       $errcode = "20504";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the file '".$location_esc.$global_files['Filedata']['name']."' could not be saved or only partialy-saved. Please check upload_max_filesize in your php.ini. Upload input details: temp-name:".$global_files['Filedata']['tmp_name']. ", file-name:".$global_files['Filedata']['name'].", file-size:".$global_files['Filedata']['size'].", file-type:".$global_files['Filedata']['type'];
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file '".$location_esc.$global_files['Filedata']['name']."' could not be saved or only partialy-saved. Please check upload_max_filesize in your php.ini. Upload input details: temp-name:".$global_files['Filedata']['tmp_name']. ", file-name:".$global_files['Filedata']['name'].", file-size:".$global_files['Filedata']['size'].", file-type:".$global_files['Filedata']['type'];
 
       // write log
       savelog (@$error);
@@ -13806,7 +13816,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (empty ($global_files['Filedata']['name']) || empty ($global_files['Filedata']['tmp_name']))
     {
       $errcode = "20505";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: no file selected for upload";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|No file has been selected for the upload";
 
       // write log
       savelog (@$error);
@@ -13823,7 +13833,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (strlen ($global_files['Filedata']['name']) > $mgmt_config['max_digits_filename'])
     {
       $errcode = "20506";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the file name '".$location_esc.$global_files['Filedata']['name']."' has too many digits";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The uploaded file name '".$location_esc.$global_files['Filedata']['name']."' has too many digits";
 
       // write log
       savelog (@$error);
@@ -13865,7 +13875,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       if (filesize ($global_files['Filedata']['tmp_name']) > $maxfilesize)
       {
         $errcode = "20508";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the file '".$location_esc.$global_files['Filedata']['name']."' is too big (max. ".$mgmt_config['maxfilesize'].")";
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The uploaded file '".$location_esc.$global_files['Filedata']['name']."' is too big (max. ".$mgmt_config['maxfilesize'].")";
 
         // write log
         savelog (@$error);
@@ -13876,7 +13886,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       }
     }
 
-    // error if file isn't certain type
+    // error if file isn't of certain type
     if ($mgmt_config['exclude_files'] != "")
     {
       // MIME-Type based: if ($global_files['Filedata']['type'] != $type)
@@ -13971,7 +13981,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
 
           $errcode = "20510";
-          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The new file '".$global_files['Filedata']['name']."' could not be copied to the server";
+          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The uploaded file '".$global_files['Filedata']['name']."' could not be copied to the server";
 
           // write log
           savelog (@$error);
@@ -13987,6 +13997,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // ZIP files
         if ($filescount >= intval ($zipfilecount))
         {
+          // replace tilde since this is the identifier for the converted special characters
+          $zipfilename = str_replace ("~", "-", $zipfilename);
+
           // ZIP file name
           if ($zipfilename != "") $zipfilename = createfilename ($zipfilename).".zip";
           else $zipfilename = getobject ($location).".zip";
@@ -14010,7 +14023,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
 
             $errcode = "10645";
-            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of zip (code:".$errorCode.", command:".$cmd.") failed for '".$filename."' \t".$error_message;
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ZIP (code:".$errorCode.", command:".$cmd.") failed for '".$filename."' \t".$error_message;
 
             // save log
             savelog (@$error);
@@ -14035,7 +14048,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             else
             {
               $errcode = "20509";
-              $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the file '".$zipfilename."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
+              $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The ZIP file '".$zipfilename."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
 
               $show = $result_createobject['message'];
             }
@@ -14092,7 +14105,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         else
         {
           $errcode = "20511";
-          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the new file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
+          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The uploaded file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
 
           // write log
           savelog (@$error);
@@ -14102,7 +14115,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       }
 
       // -------------- update existing multimedia object -----------------
-      if ($media_update != "")
+      elseif ($media_update != "")
       {
         $result['objectpath'] = $location_esc.$page;
         $result['objecthash'] = rdbms_getobject_hash ($result['objectpath']);
@@ -14159,7 +14172,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
 
                 $errcode = "20512";
-                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed: the thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
+                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
       
                 // write log
                 savelog (@$error);
@@ -14546,6 +14559,9 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
             rdbms_insertdailystat ("upload", $container_id, $user, false);
           }
 
+          // index content
+          indexcontent ($site, $medialocation, $mediafile, $container_id, $container_content, $user);
+
           // resize original image if requested
           if (!empty ($mediafile) && $imagepercentage > 0 && $imagepercentage <= 200)
           {
@@ -14603,9 +14619,6 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
           // remote client
           remoteclient ("save", "abs_path_media", $site, $medialocation, "", $mediafile, "");
-
-          // index content
-          indexcontent ($site, $medialocation, $mediafile, $container_id, $container_content, $user);
 
           // encrypt data
           if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
