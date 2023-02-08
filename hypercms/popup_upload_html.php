@@ -485,6 +485,7 @@ $(document).ready(function ()
         var text = data.result;
       }
 
+      // seperate message from command/objects
       if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
       {
         file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
@@ -531,7 +532,23 @@ $(document).ready(function ()
     // Put out message if possible
     if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
     {
-      buildFileMessage(data, ajax.responseText, false);
+      if (data.xhr && (ajax = data.xhr())) 
+      {
+        var text = ajax.responseText;
+      }
+      else if (data.result)
+      {
+        var text = data.result;
+      }
+
+      // seperate message from command/objects
+      if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
+      {
+        file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
+        text = text.substr (0, filepos1);
+      }
+
+      buildFileMessage(data, text, false);
     }       
   })
   
@@ -600,22 +617,31 @@ $(document).ready(function ()
           success: function(response)
           {
             var file = "";
-            var text = ajax.responseText;
-                  
+
+            if (data.xhr && (ajax = data.xhr())) 
+            {
+              var text = ajax.responseText;
+            }
+            else if (data.result)
+            {
+              var text = data.result;
+            }
+
+            // seperate message from command/objects
             if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
             {
               file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
               text = text.substr (0, filepos1);
             }
-                  
+
             buildDropboxFileMessage (data, text, true);
-            
+
             // Update the total count of uploaded files
             filecount++;
             $('#status').text(filecount);
-            
+
             if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
-            
+
             // Remove the div
             setTimeout( function()
             {
@@ -628,7 +654,23 @@ $(document).ready(function ()
             // Put out message if possible
             if (ajax && ajax.readyState != ajax.UNSENT)
             {
-              buildDropboxFileMessage (data, ajax.responseText, false);
+              if (data.xhr && (ajax = data.xhr())) 
+              {
+                var text = ajax.responseText;
+              }
+              else if (data.result)
+              {
+                var text = data.result;
+              }
+
+              // seperate message from command/objects
+              if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
+              {
+                file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
+                text = text.substr (0, filepos1);
+              }
+
+              buildDropboxFileMessage (data, text, false);
             }
           }
         });
@@ -886,25 +928,34 @@ $(document).ready(function ()
           success: function(response)
           {
             var file = "";
-            var text = ajax.responseText;
-                  
+
+            if (data.xhr && (ajax = data.xhr())) 
+            {
+              var text = ajax.responseText;
+            }
+            else if (data.result)
+            {
+              var text = data.result;
+            }
+
+            // seperate message from command/objects
             if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
             {
               file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
               text = text.substr (0, filepos1);
             }
-                  
+ 
             buildFTPFileMessage(data, text, true);
-            
+
             // Update queue count
             queuecount--; 
-            
+
             // Update the total count of uploaded files
             filecount++;
             $('#status').text(filecount);
 
             if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
-            
+
             // Remove the div
             setTimeout( function()
             {
@@ -917,7 +968,23 @@ $(document).ready(function ()
             // Put out message if possible
             if (ajax && ajax.readyState != ajax.UNSENT)
             {
-              buildFTPFileMessage(data, ajax.responseText, false);
+              if (data.xhr && (ajax = data.xhr())) 
+              {
+                var text = ajax.responseText;
+              }
+              else if (data.result)
+              {
+                var text = data.result;
+              }
+
+              // seperate message from command/objects
+              if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
+              {
+                file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
+                text = text.substr (0, filepos1);
+              }
+
+              buildFTPFileMessage(data, text, false);
             }
           }
         });
@@ -925,7 +992,7 @@ $(document).ready(function ()
       
     // Button to cancel Download
     var cancel = $('<div>&nbsp;</div>');
-    
+
     cancel.prop ('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .prop ('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .addClass ('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
@@ -944,33 +1011,33 @@ $(document).ready(function ()
               queuecount--;
             }
           });
-          
+
     // Div containing from Buttons
     var buttons = $('<div></div>');
     buttons.addClass ('inline file_buttons')
            .append (submit)
            .append (cancel);
-           
+
     return buttons;
   }
-  
+
   // Function that makes the div contain a message instead of file informations
   function buildFTPFileMessage (data, text, success)
   {
     // Empty the div before
     data.context.empty();
-    
+
     // apply the correct css for this div
     data.context.removeClass('file_normal')
     if(success)
       data.context.addClass('file_success');
     else
       data.context.addClass('file_error');
-    
+
     // Build name field and buttons
     var name = getFileNameSpan(data.files[0].name);
     var buttons = buildFTPButtons(data);
-    
+
     // Build message field
     msg = $('<div style="width:227px; font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text))
@@ -981,7 +1048,7 @@ $(document).ready(function ()
                 .append(msg)
                 .append(buttons);
   }
-  
+
   // FTP global chooser function (called when a user submits the selected files from the FTP chooser window)
   window.insertFTPFile = function (name, size, link)
   {
@@ -992,11 +1059,10 @@ $(document).ready(function ()
       {
         return;
       }
-    
+
       var context = $('<div></div>');
       var file = { "name": name, "size": size, "link": link }
       var data = {"files": [{"name": name, "size": size, "file": file}], "context": context};
-
       var found = false;
 
       // Search if the file is already in our queue
@@ -1016,7 +1082,7 @@ $(document).ready(function ()
         alert(hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]); ?>'));
         return;
       }
-      
+
       var maxItems = hcms_maxItemInQueue;
 
       buildFTPFileUpload(data);
@@ -1063,7 +1129,7 @@ $(document).ready(function ()
 
     // Empty the div before
     div.empty();
-       
+
     // Name field
     var name = getFileNameSpan(file.name);
 
@@ -1127,13 +1193,13 @@ $(document).ready(function ()
     {
       deletedate = $('#deletedate').val();
     }
-    
+
     // versioning
     if ($('#versioning').prop('checked'))
     {
       versioning = $('#versioning').val();
     }
-    
+
     // thumbnail
     if ($('#createthumbnail').prop('checked'))
     {

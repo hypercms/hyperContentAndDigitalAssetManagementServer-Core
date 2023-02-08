@@ -6593,6 +6593,15 @@ Release 03/2023
 - Modifications in createtables.sql in order to remove the character set and collation definition from column hash in table accesslink
 - Modifications in various function in the Update API in order to create update log entry before the update process starts and avoid multiple update processes started by different users
 - Modifications in the simple statistics Plugin in order to format the hits numbers
+- Added the calendar file extensions (.ical, .ics, .ifb, .icalendar) as cleartxt format to format_ext.inc.php 
+- Added the new calendar icon to all design themes
+- Modifications in function getfilenfo in order to support calendar file formats
+- Modifications in function getobjectlist in Get API in order to support the locked object (checked-out object) information in the result
+- Modifications in function uploadfile in Main API in order to verify if an object is locked by another user for exclusive editing and provide an error in this case in the result
+- Modifications in function uploadfile in Main API in order to strip HTML tags from all result messages
+- Updates in the Connector Guide
+- Removed the alter popup in the temlpate engine if an object has been locked by another user (checked-out object)
+- Modifications in popup_upload_html in order to seperate the message from the command/objects in provided AJAX response
 - Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
 - Bug fix: Function getsearchhistory in Get API did not clean the backslash in the search expression which can cause the escape of the character after the backslash
 - Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height

@@ -13605,6 +13605,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
   $media_update = "";
   $result = array();
   $result['result'] = false;
+  $result['usedby'] = "";
 
   // set default language
   if (empty ($lang)) $lang = "en";
@@ -13662,7 +13663,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       savelog (@$error);
 
       $result['header'] = "HTTP/1.1 403 Forbidden";
-      $result['message'] = $hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang];
+      $result['message'] = strip_tags ($hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang]);
+
       return $result;
     }
 
@@ -13699,13 +13701,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       else
       {
         $errcode = "20502";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
+        $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
 
         // write log
         savelog (@$error);
 
         $result['header'] = "HTTP/1.1 500 Internal Server Error";
-        $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
+        $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
 
         return $result;
       }
@@ -13727,13 +13729,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       else
       {
         $errcode = "20502";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
+        $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
 
         // write log
         savelog (@$error);
 
         $result['header'] = "HTTP/1.1 500 Internal Server Error";
-        $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
+        $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
 
         return $result;
       }
@@ -13789,7 +13791,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         savelog (@$error);
 
         $result['header'] = "HTTP/1.1 500 Internal Server Error";
-        $result['message'] = $hcms_lang['file-could-not-be-downloaded'][$lang];
+        $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
 
         return $result;
       }
@@ -13808,7 +13810,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       savelog (@$error);
 
       $result['header'] = "HTTP/1.1 500 Internal Server Error";
-      $result['message'] = $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang];
+      $result['message'] = strip_tags ($hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang]);
+
       return $result;
     }
 
@@ -13822,7 +13825,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       savelog (@$error);
 
       $result['header'] = "HTTP/1.1 400 Bad Request";
-      $result['message'] = $hcms_lang['no-file-selected-to-upload'][$lang];
+      $result['message'] = strip_tags ($hcms_lang['no-file-selected-to-upload'][$lang]);
+
       return $result;
     }
 
@@ -13839,7 +13843,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       savelog (@$error);
 
       $result['header'] = "HTTP/1.1 400 Bad Request";
-      $result['message'] = str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], $hcms_lang['the-file-name-has-more-than-maxdigits-digits'][$lang]);
+      $result['message'] = str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], strip_tags ($hcms_lang['the-file-name-has-more-than-maxdigits-digits'][$lang]));
+
       return $result;
     }
 
@@ -13861,7 +13866,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       else
       {
         $result['header'] = "HTTP/1.1 400 Bad Request";
-        $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang];
+        $result['message'] = strip_tags ($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]);
+
         return $result;
       }
     }
@@ -13881,7 +13887,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         savelog (@$error);
 
         $result['header'] = "HTTP/1.1 400 Bad Request";
-        $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang];
+        $result['message'] = strip_tags ($hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang]);
+
         return $result;
       }
     }
@@ -13893,7 +13900,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       if (substr_count ($mgmt_config['exclude_files'], substr($global_files['Filedata']['name'], strrpos($global_files['Filedata']['name'], '.'))) > 0)
       {
         $result['header'] = "HTTP/1.1 400 Bad Request";
-        $result['message'] = $hcms_lang['the-file-you-are-trying-to-upload-is-of-wrong-type'][$lang];
+        $result['message'] = strip_tags ($hcms_lang['the-file-you-are-trying-to-upload-is-of-wrong-type'][$lang]);
+
         return $result;
       }
     }
@@ -13921,7 +13929,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         if (sizeof ($links) > 0)
         {
           $result['header'] = "HTTP/1.1 500 Internal Server Error";
-          $result['message'] = str_replace ('%files%', implode(", ", $links), $hcms_lang['there-are-files-with-the-same-content-files'][$lang]);
+          $result['message'] = str_replace ('%files%', implode(", ", $links), strip_tags ($hcms_lang['there-are-files-with-the-same-content-files'][$lang]));
 
           return $result;
         }
@@ -13952,7 +13960,8 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       if ($result_unzip == false)
       {
         $result['header'] = "HTTP/1.1 500 Internal Server Error";
-        $result['message'] = $hcms_lang['file-could-not-be-extracted'][$lang];
+        $result['message'] = strip_tags ($hcms_lang['file-could-not-be-extracted'][$lang]);
+
         return $result;
       }
       elseif (is_array ($result_unzip))
@@ -14126,311 +14135,322 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         // get container id
         $result['container_id'] = $container_id = getmediacontainerid ($media_update);
         $contentfile = $container_id.".xml";
-        
-        // update thumbnail file (uploaded file must be of type JPEG)
-        if ($createthumbnail == 1)
+
+        // checked-out object information
+        if (!empty ($container_id))
         {
-          // get file name without extension
-          $file_name = substr ($media_update, 0, strrpos ($media_update, "."));
+          $temp_locked = getlockedfileinfo (getcontentlocation ($container_id, 'abs_path_content'), $container_id.".xml.wrk");
 
-          // get the file extension
-          $file_ext = strtolower (strrchr ($global_files['Filedata']['name'], "."));
+          if (isset ($temp_locked['user'])) $result['usedby'] = $temp_locked['user'];
+        }
 
-          // temporary directory
-          $temp_dir = $mgmt_config['abs_path_temp'].uniqid ("upload_")."/";
-
-          if ($file_ext != "")
+        // if object is not locked by another user
+        if (empty ($result['usedby']) || $result['usedby'] == $user)
+        {
+          // update thumbnail file (uploaded file must be of type JPEG)
+          if ($createthumbnail == 1)
           {
-            // create temporary directory
-            $test = @mkdir ($temp_dir, $mgmt_config['fspermission']);
+            // get file name without extension
+            $file_name = substr ($media_update, 0, strrpos ($media_update, "."));
 
-            if ($test == true)
+            // get the file extension
+            $file_ext = strtolower (strrchr ($global_files['Filedata']['name'], "."));
+
+            // temporary directory
+            $temp_dir = $mgmt_config['abs_path_temp'].uniqid ("upload_")."/";
+
+            if ($file_ext != "")
             {
-              // file upload
-              $result_upload = uploadhandler ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.$file_ext, $is_remote_file);
+              // create temporary directory
+              $test = @mkdir ($temp_dir, $mgmt_config['fspermission']);
 
-              // create thumbnail on success
-              if (!empty ($result_upload['result']))
+              if ($test == true)
               {
-                // add createmedia command to queue
-                if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$temp_dir."\", \"".getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/"."\", \"".$file_name.$file_ext."\", \"jpg\", \"thumbnail\", true, true);", $user);
-                // create preview
-                else $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail", true, true);
+                // file upload
+                $result_upload = uploadhandler ($global_files['Filedata']['tmp_name'], $temp_dir.$file_name.$file_ext, $is_remote_file);
 
-                // if thumbnail creation failed use uploaded image as thumbnail image
-                if ($result_createthumb == false)
+                // create thumbnail on success
+                if (!empty ($result_upload['result']))
                 {
-                  @copy ($temp_dir.$media_update, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/".$file_name.".thumb.jpg");
+                  // add createmedia command to queue
+                  if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$temp_dir."\", \"".getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/"."\", \"".$file_name.$file_ext."\", \"jpg\", \"thumbnail\", true, true);", $user);
+                  // create preview
+                  else $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail", true, true);
 
-                  // remote client
-                  remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/", "", $file_name.".thumb.jpg", "");
+                  // if thumbnail creation failed use uploaded image as thumbnail image
+                  if ($result_createthumb == false)
+                  {
+                    @copy ($temp_dir.$media_update, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/".$file_name.".thumb.jpg");
+
+                    // remote client
+                    remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/", "", $file_name.".thumb.jpg", "");
+                  }
                 }
-              }
-              // on error
-              else
-              {
-                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
+                // on error
+                else
+                {
+                  $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
 
-                $errcode = "20512";
-                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
+                  $errcode = "20512";
+                  $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
+        
+                  // write log
+                  savelog (@$error);
+                }
+
+                // delete temporary directory
+                deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
+              }
+            }
+          }
+          // update multimedia file
+          else
+          {
+            // get media root directory
+            $media_root = getmedialocation ($site, $media_update, "abs_path_media").$site."/";
+            $thumb_root = getmedialocation ($site, ".hcms.".$media_update, "abs_path_media").$site."/";
+
+            // force a restore if media file has been exported (on any change of the media file it should be restored)
+            $mgmt_config['restore_exported_media'] = true;
+
+            // prepare media file (in case it has been exported)
+            $temp = preparemediafile ($site, $media_root, $media_update, $user);
+
+            // reset location if restored
+            if (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
+            {
+              $media_root = $temp['location'];
+              $media_update = $temp['file'];
+            }
+
+            // create version of previous content and media file
+            // createversion removes all media derivative files as well
+            if (!empty ($versioning)) $createversion = createversion ($site, $media_update);
+            else $createversion = true;
+
+            // check if symbolic link
+            if (is_link ($media_root.$media_update)) 
+            {
+              // get the real file path
+              $symlinktarget_path = readlink ($media_root.$media_update);
+            }
+            else
+            {
+              $symlinktarget_path = $media_root.$media_update;
+            }
+
+            // if versioning was successful
+            $result_save = false;
+
+            if ($createversion && !empty ($media_root))
+            {
+              // delete all existing media files of the current version
+              deletemediafiles ($site, $media_update, true, true);
+
+              // remember original file name
+              $media_orig = $media_update;
+              // get file name without extension of the old file
+              $file_name_old = strrev (substr (strstr (strrev ($media_update), "."), 1));
+              // get the file extension of the old file
+              $file_ext_old = strtolower (strrchr ($media_update, "."));
+              // get the file extension of the new file
+              $file_ext_new = strtolower (strrchr ($global_files['Filedata']['name'], "."));
+              // define new file name
+              $media_update = $file_name_old.$file_ext_new;
+              $symlinktarget_path = substr_replace ($symlinktarget_path, $file_ext_new, strrpos ($symlinktarget_path , "."));
+              // get object name without extension
+              $page_nameonly = specialchr_decode (strrev (substr (strstr (strrev ($page), "."), 1)));
+              // get converted location
+              $location_conv = convertpath ($site, $location, $cat);
+
+              // save new multimedia file
+              $result_save = uploadhandler ($global_files['Filedata']['tmp_name'], $symlinktarget_path, $is_remote_file);
+
+              // on error
+              if (empty ($result_save['result']))
+              {
+                $errcode = "20513";
+                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
       
                 // write log
                 savelog (@$error);
               }
-
-              // delete temporary directory
-              deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
             }
-          }
-        }
-        // update multimedia file
-        else
-        {
-          // get media root directory
-          $media_root = getmedialocation ($site, $media_update, "abs_path_media").$site."/";
-          $thumb_root = getmedialocation ($site, ".hcms.".$media_update, "abs_path_media").$site."/";
 
-          // force a restore if media file has been exported (on any change of the media file it should be restored)
-          $mgmt_config['restore_exported_media'] = true;
-
-          // prepare media file (in case it has been exported)
-          $temp = preparemediafile ($site, $media_root, $media_update, $user);
-
-          // reset location if restored
-          if (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
-          {
-            $media_root = $temp['location'];
-            $media_update = $temp['file'];
-          }
-
-          // create version of previous content and media file
-          // createversion removes all media derivative files as well
-          if (!empty ($versioning)) $createversion = createversion ($site, $media_update);
-          else $createversion = true;
-
-          // check if symbolic link
-          if (is_link ($media_root.$media_update)) 
-          {
-            // get the real file path
-            $symlinktarget_path = readlink ($media_root.$media_update);
-          }
-          else
-          {
-            $symlinktarget_path = $media_root.$media_update;
-          }
-
-          // if versioning was successful
-          $result_save = false;
-
-          if ($createversion && !empty ($media_root))
-          {
-            // delete all existing media files of the current version
-            deletemediafiles ($site, $media_update, true, true);
-
-            // remember original file name
-            $media_orig = $media_update;
-            // get file name without extension of the old file
-            $file_name_old = strrev (substr (strstr (strrev ($media_update), "."), 1));
-            // get the file extension of the old file
-            $file_ext_old = strtolower (strrchr ($media_update, "."));
-            // get the file extension of the new file
-            $file_ext_new = strtolower (strrchr ($global_files['Filedata']['name'], "."));
-            // define new file name
-            $media_update = $file_name_old.$file_ext_new;
-            $symlinktarget_path = substr_replace ($symlinktarget_path, $file_ext_new, strrpos ($symlinktarget_path , "."));
-            // get object name without extension
-            $page_nameonly = specialchr_decode (strrev (substr (strstr (strrev ($page), "."), 1)));
-            // get converted location
-            $location_conv = convertpath ($site, $location, $cat);
-
-            // save new multimedia file
-            $result_save = uploadhandler ($global_files['Filedata']['tmp_name'], $symlinktarget_path, $is_remote_file);
-
-            // on error
-            if (empty ($result_save['result']))
+            if ($result_save == true)
             {
-              $errcode = "20513";
-              $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
-    
-              // write log
-              savelog (@$error);
-            }
-          }
-
-          if ($result_save == true)
-          {
-            // update symbolic link
-            if (is_link ($media_root.$media_orig)) 
-            {
-              unlink ($media_root.$media_orig);
-              $symlink = symlink ($symlinktarget_path, $thumb_root.$media_update);
-
-              if (!$symlink)
+              // update symbolic link
+              if (is_link ($media_root.$media_orig)) 
               {
-                $errcode = "10521";
-                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The symbolic link for '".$media_update."' could not be created";
-              }
-            }
+                unlink ($media_root.$media_orig);
+                $symlink = symlink ($symlinktarget_path, $thumb_root.$media_update);
 
-            // write stats for upload
-            if ($container_id != "" && !is_thumbnail ($media_update, false))
-            {
-              if ($user == "sys") $user_stats = getuserip();
-              else $user_stats = $user;
-
-              rdbms_insertdailystat ("upload", $container_id, $user_stats, false);
-            }
-
-            // get media size
-            $media_size = getmediasize ($symlinktarget_path);
-
-            if (!empty ($media_size['width']) && !empty ($media_size['height']))
-            {
-              $imagewidth = round ($media_size['width'], 0);
-              $imageheight = round ($media_size['height'], 0);
-            }
-            else
-            {
-              $imagewidth = 0;
-              $imageheight = 0;
-            }
-
-            // get new rendering settings and set image options (if provided)
-            if ($imagewidth > 0 && $imageheight > 0 && !empty ($imageformat))
-            {
-              $formats = "";
-
-              foreach ($mgmt_imageoptions as $formatstring => $settingstring)
-              {
-                if (substr_count ($formatstring, ".".$imageformat) > 0)
+                if (!$symlink)
                 {
-                  $formats = $formatstring;
+                  $errcode = "10521";
+                  $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The symbolic link for '".$media_update."' could not be created";
                 }
               }
 
-              if ($formats != "")
+              // write stats for upload
+              if ($container_id != "" && !is_thumbnail ($media_update, false))
               {
-                // convert the image file (remoteclient is used in createmedia)
-                // Options:
-                // -s ... size in pixels (width x height)
-                // -f ... image output format
-                $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".$imageformat;
-                
-                // add createmedia command to queue
-                if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"original\", false, true);", $user);
-                // convert image
-                else createmedia ($site, $media_root, $media_root, $media_update, "", "original", false, true);
+                if ($user == "sys") $user_stats = getuserip();
+                else $user_stats = $user;
+
+                rdbms_insertdailystat ("upload", $container_id, $user_stats, false);
               }
-            }
-            // create preview (thumbnail for images, previews for video/audio files)
-            else
-            {
-              // add createmedia command to queue
-              if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"origthumb\", true, true);", $user);
-              // create preview
-              else createmedia ($site, $media_root, $media_root, $media_update, "", "origthumb", true, true);
-            }
 
-            // remote client for uploaded original image
-            remoteclient ("save", "abs_path_media", $site, $media_root, "", $media_update, "");
+              // get media size
+              $media_size = getmediasize ($symlinktarget_path);
 
-            // remove indexed content
-            if ($file_ext_old != $file_ext_new)
-            {
-              // use file name before renaming to remove textnodes from DB
-              unindexcontent ($site, $media_root, $media_orig, $contentfile, "", $user);
-            }
-            else unindexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
-
-            // index content of readable documents
-            indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
-
-            // remove face detection data
-            $contentdata = loadcontainer ($contentfile, "work", $user);
-            $faces = selectcontent ($contentdata, "<text>", "<text_id>", "Faces-JSON");
-
-            if (!empty ($faces) && is_array ($faces))
-            {
-              $textu['Faces-JSON'] = "";
-              $contentdata = settext ($site, $contentdata, $contentfile, $textu, "u", "no", $user, $user);
-              if (!empty ($contentdata)) savecontainer ($contentfile, "work", $contentdata, $user);
-            }
-          }
-
-          // rename objects file extension, if file extension has changed
-          if ($result_save == true && $file_ext_old != $file_ext_new)
-          {
-            // write new reference in object file
-            $filedata = loadfile ($location, $page);
-
-            if ($filedata != false) $filedata = setfilename ($filedata, "media", $media_update);
-
-            if ($filedata != false)
-            {
-              $result_save = savefile ($location, $page, $filedata);
-              // remote client
-              remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
-
-              // relational DB connectivity
-              if (!empty ($mgmt_config['db_connect_rdbms']))
-              { 
-                if (!function_exists ("rdbms_setmedianame")) include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
-                rdbms_setmedianame ($container_id, $media_update);
-              }
-            }
-            else $result_save = false;
-
-            // on success
-            if ($result_save == true)
-            {
-              // rename media object, if file extension has changed
-              $result_rename = renameobject ($site, $location, $page, $page_nameonly, $user);
-
-              if (!empty ($result_rename['result']))
+              if (!empty ($media_size['width']) && !empty ($media_size['height']))
               {
-                // set new page name
-                $page = $pagename = $page_nameonly.$file_ext_new;
-                // define new page
-                $result['objectpath'] = $location_esc.createfilename ($page);
+                $imagewidth = round ($media_size['width'], 0);
+                $imageheight = round ($media_size['height'], 0);
               }
-              // on error
               else
               {
-                $show = $hcms_lang['the-file-could-not-be-renamed'][$lang]."\n";
+                $imagewidth = 0;
+                $imageheight = 0;
+              }
+
+              // get new rendering settings and set image options (if provided)
+              if ($imagewidth > 0 && $imageheight > 0 && !empty ($imageformat))
+              {
+                $formats = "";
+
+                foreach ($mgmt_imageoptions as $formatstring => $settingstring)
+                {
+                  if (substr_count ($formatstring, ".".$imageformat) > 0)
+                  {
+                    $formats = $formatstring;
+                  }
+                }
+
+                if ($formats != "")
+                {
+                  // convert the image file (remoteclient is used in createmedia)
+                  // Options:
+                  // -s ... size in pixels (width x height)
+                  // -f ... image output format
+                  $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".$imageformat;
+                  
+                  // add createmedia command to queue
+                  if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"original\", false, true);", $user);
+                  // convert image
+                  else createmedia ($site, $media_root, $media_root, $media_update, "", "original", false, true);
+                }
+              }
+              // create preview (thumbnail for images, previews for video/audio files)
+              else
+              {
+                // add createmedia command to queue
+                if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"origthumb\", true, true);", $user);
+                // create preview
+                else createmedia ($site, $media_root, $media_root, $media_update, "", "origthumb", true, true);
+              }
+
+              // remote client for uploaded original image
+              remoteclient ("save", "abs_path_media", $site, $media_root, "", $media_update, "");
+
+              // remove indexed content
+              if ($file_ext_old != $file_ext_new)
+              {
+                // use file name before renaming to remove textnodes from DB
+                unindexcontent ($site, $media_root, $media_orig, $contentfile, "", $user);
+              }
+              else unindexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
+
+              // index content of readable documents
+              indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
+
+              // remove face detection data
+              $contentdata = loadcontainer ($contentfile, "work", $user);
+              $faces = selectcontent ($contentdata, "<text>", "<text_id>", "Faces-JSON");
+
+              if (!empty ($faces) && is_array ($faces))
+              {
+                $textu['Faces-JSON'] = "";
+                $contentdata = settext ($site, $contentdata, $contentfile, $textu, "u", "no", $user, $user);
+                if (!empty ($contentdata)) savecontainer ($contentfile, "work", $contentdata, $user);
               }
             }
+
+            // rename objects file extension, if file extension has changed
+            if ($result_save == true && $file_ext_old != $file_ext_new)
+            {
+              // write new reference in object file
+              $filedata = loadfile ($location, $page);
+
+              if ($filedata != false) $filedata = setfilename ($filedata, "media", $media_update);
+
+              if ($filedata != false)
+              {
+                $result_save = savefile ($location, $page, $filedata);
+                // remote client
+                remoteclient ("save", "abs_path_".$cat, $site, $location, "", $page, "");
+
+                // relational DB connectivity
+                if (!empty ($mgmt_config['db_connect_rdbms']))
+                { 
+                  if (!function_exists ("rdbms_setmedianame")) include_once ($mgmt_config['abs_path_cms']."database/db_connect/".$mgmt_config['db_connect_rdbms']);
+                  rdbms_setmedianame ($container_id, $media_update);
+                }
+              }
+              else $result_save = false;
+
+              // on success
+              if ($result_save == true)
+              {
+                // rename media object, if file extension has changed
+                $result_rename = renameobject ($site, $location, $page, $page_nameonly, $user);
+
+                if (!empty ($result_rename['result']))
+                {
+                  // set new page name
+                  $page = $pagename = $page_nameonly.$file_ext_new;
+                  // define new page
+                  $result['objectpath'] = $location_esc.createfilename ($page);
+                }
+                // on error
+                else
+                {
+                  $show = $hcms_lang['the-file-could-not-be-renamed'][$lang]."\n";
+                }
+              }
+            }
+
+            // encrypt and save data
+            if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
+            {
+              $data = encryptfile ($media_root, $media_update);
+              if (!empty ($data)) savefile ($media_root, $media_update, $data);
+            }
+
+            // save in cloud storage
+            if (is_file ($media_root.$media_update))
+            {
+              if (function_exists ("savecloudobject")) savecloudobject ($site, $media_root, $media_update, $user);
+            }
+
+            // eventsystem
+            if (!empty ($eventsystem['onfileupload_post'])) onfileupload_post ($site, $cat, $location, $page, $media_update, $contentfile, $user);
+
+            // notification
+            notifyusers ($site, $location, $page, "oncreate", $user);
           }
-
-          // encrypt and save data
-          if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
-          {
-            $data = encryptfile ($media_root, $media_update);
-            if (!empty ($data)) savefile ($media_root, $media_update, $data);
-          }
-
-          // save in cloud storage
-          if (is_file ($media_root.$media_update))
-          {
-            if (function_exists ("savecloudobject")) savecloudobject ($site, $media_root, $media_update, $user);
-          }
-
-          // eventsystem
-          if (!empty ($eventsystem['onfileupload_post'])) onfileupload_post ($site, $cat, $location, $page, $media_update, $contentfile, $user);
-
-          // notification
-          notifyusers ($site, $location, $page, "oncreate", $user);
+        }
+        // object is checked-out by another user
+        else
+        {
+          $show = $hcms_lang['object-is-checked-out'][$lang]." ".$hcms_lang['by-user'][$lang]." '".$result['usedby']."'";
         }
       }
     }
 
-    // define message on success
-    if ($show == "") $show = $hcms_lang['uploaded-file-successfully'][$lang];
-
     // remove temp file downloaded from Dropbox or FTP server
     if (is_file ($temp_file)) unlink ($temp_file);
-
-    // include object name or object paths (uncompressed ZIP files) in message
-    if (empty ($show_command) && !empty ($result['objectpath'])) $show_command = "[".$result['objectpath']."]";
  
     // write log
     savelog (@$error);
@@ -14438,17 +14458,33 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     // restart session (that has been previously closed for non-blocking procedure)
     revokesession ($process_name, $user, $session_id);
 
-    // return message and command
-    $result['result'] = true;
-    $result['header'] = "HTTP/1.1 200 OK";
+    // include object name or object paths (uncompressed ZIP files) in message
+    if (empty ($show_command) && !empty ($result['objectpath'])) $show_command = "[".$result['objectpath']."]";
+
+    // define message on success
+    if ($show == "")
+    {
+      $result['result'] = true;
+      $result['header'] = "HTTP/1.1 200 OK";
+      $show = $hcms_lang['uploaded-file-successfully'][$lang];
+    }
+    else
+    {
+      $result['header'] = "HTTP/1.1 400 Bad Request";
+    }
+
+    // message and command
     $result['message'] = strip_tags ($show).$show_command;
+
+    // return result
     return $result;
   }
   // required input is missing
   else
   {
     $result['header'] = "HTTP/1.1 400 Bad Request";
-    $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
+    $result['message'] = strip_tags ($hcms_lang['invalid-input-parameters'][$lang]);
+
     return $result;
   }
 }

@@ -1821,6 +1821,7 @@ function hcms_drag (e)
     // context menu
     var contextmenu = document.forms['contextmenu_object'];
 
+    e.dataTransfer.setData('is_object', '1');
     e.dataTransfer.setData('action', contextmenu.elements['action'].value);
     e.dataTransfer.setData('force', contextmenu.elements['force'].value);
     e.dataTransfer.setData('contexttype', contextmenu.elements['contexttype'].value);
@@ -1899,7 +1900,8 @@ function hcms_allowDrop (e)
     for (var i = 0; i < e.dataTransfer.items.length; i++)
     {
       // if dropped items are files and have a mime-type (important for Chrome and MS Edge due to issue with kind property)
-      if (e.dataTransfer.items[i].kind === 'file' && e.dataTransfer.items[i].type != '')
+      // verify that the item is not a thumbnail image of an existing object
+      if (e.dataTransfer.items[i].kind === 'file' && e.dataTransfer.items[i].type != '' && e.dataTransfer.getData('is_object') != '1')
       {
         // context menu
         var contextmenu = document.forms['contextmenu_object'];

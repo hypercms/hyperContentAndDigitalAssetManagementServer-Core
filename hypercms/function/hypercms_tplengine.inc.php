@@ -1152,6 +1152,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $name_orig = "";
   $filetype = "";
   $add_onload = "";
+  $bodytag_popup = "";
   $add_constraint = "";
   $add_submittext = "";
   $add_submitlanguage = "";
@@ -1755,9 +1756,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }
     }
 
-    // define popup message if container is locked by another user
-    if ($usedby != "" && $usedby != $user) $bodytag_popup = "alert(hcms_entity_decode('".$hcms_lang['object-is-checked-out'][$lang]."\\r".$hcms_lang['by-user'][$lang]." \'".$usedby."\''));";
-    else $bodytag_popup = "";
+    // define popup message if container is locked by another user (deprecated)
+    // if ($usedby != "" && $usedby != $user) $bodytag_popup = "alert(hcms_entity_decode('".$hcms_lang['object-is-checked-out'][$lang]."\\r".$hcms_lang['by-user'][$lang]." \'".$usedby."\''));";
+    // else $bodytag_popup = "";
 
     // ============================================ workflow ================================================
 

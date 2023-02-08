@@ -2459,6 +2459,16 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
           $temp_ownergroup = accesspermission ($temp_site, $temp_location, $temp_cat);
           $setlocalpermission = setlocalpermission ($temp_site, $temp_ownergroup, $temp_cat);
 
+          // checked-out object information
+          if (!empty ($result[$hash]['container_id']))
+          {
+            $container_id = $result[$hash]['container_id'];
+            $temp_locked = getlockedfileinfo (getcontentlocation ($container_id, 'abs_path_content'), $container_id.".xml.wrk");
+
+            if (isset ($temp_locked['user'])) $result[$hash]['usedby'] = $temp_locked['user'];
+            else $result[$hash]['usedby'] = "";
+          }
+
           // remove .folder
           if (substr ($temp_array['objectpath'], -7) == ".folder") $result[$hash]['objectpath'] = substr ($temp_array['objectpath'], 0, -7);
 
@@ -3940,6 +3950,12 @@ function getfileinfo ($site, $file, $cat="comp")
           {
             $file_icon = "file_mail.png";
             $file_type = "E-Mail";
+          }
+          // Standard Calendar formats
+          elseif ($file_ext == ".ical" || $file_ext == ".ics" || $file_ext == ".ifb" || $file_ext == ".icalendar")
+          {
+            $file_icon = "file_calendar.png";
+            $file_type = "Calendar";
           }
           // MS Word
           elseif ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotx")
@@ -5709,7 +5725,7 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
 
 // ---------------------- getlockedfileinfo -----------------------------
 // function: getlockedfileinfo()
-// input: location to file [string], file name [string]
+// input: location path [string], file name [string]
 // output: Array holding file name incl. lock extension and user name / false on error
 
 // description:
