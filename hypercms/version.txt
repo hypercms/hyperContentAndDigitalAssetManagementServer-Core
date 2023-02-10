@@ -6581,8 +6581,8 @@ Release 03/2023
 - Modifications in service rendervideo in order to initalize the variable createmedia for the local function startConversion
 - Modifications in createtables.sql in order to apply the CURRENT_TIMESTAMP to the date of table dailystat
 - Modifications in control_objectlist_menu in order to use the full length of the MD% hash for the id of the upload window
-- Modifications in popup_upload_html in order to maximize the upload window if metdata niput is required by the publication settings
-- Modifications in install/crontab in order to remove free space from command
+- Modifications in popup_upload_html in order to maximize the upload window if metadata input is required by the publication settings
+- Modifications in crontab in the installation directory in order to remove free space from command
 - Modifications in function uploadhandler in Main API in order to set the value for variable append_file for the PUT request file upload
 - Modifications in various function in the event system in order to verify the publication name before executing the event code
 - Update of the update log in the installation directory
@@ -6600,8 +6600,14 @@ Release 03/2023
 - Modifications in function uploadfile in Main API in order to verify if an object is locked by another user for exclusive editing and provide an error in this case in the result
 - Modifications in function uploadfile in Main API in order to strip HTML tags from all result messages
 - Updates in the Connector Guide
-- Removed the alter popup in the temlpate engine if an object has been locked by another user (checked-out object)
-- Modifications in popup_upload_html in order to seperate the message from the command/objects in provided AJAX response
+- Removed the alert popup in the temlpate engine if an object has been locked by another user (checked-out object)
+- Modifications in popup_upload_html in order to separate the message from the command/objects in provided AJAX response
+- Modifications in JS function hcms_drag and hcms_allowDrop in contextmenu.js in order to identify objects dragged inside the browser and dragged from outside the browser into the browser window
+- Modifications in function manipulateallobjects in Main API in order to verify the size of the clipboard_rootpathdelete array
+- Modifications in function manipulateallobjects in Main API in order to implement a unique process ID
+- Modifications in function manipulateallobjects in Main API in order to implement session keys based on the process ID
+- Modifications in function manipulateallobjects in Main API in order to return the process ID in the result instead of the temporary file name
+- Modifications in popup_status in order to change from temporary file name to process ID
 - Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
 - Bug fix: Function getsearchhistory in Get API did not clean the backslash in the search expression which can cause the escape of the character after the backslash
 - Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height
@@ -6616,5 +6622,6 @@ Release 03/2023
 - Bug fix: The mime-type for WebP images has been missing in format_mime.inc.php and caused WebP images saved by the image editor to lose the file extension
 - Bug fix: page_multiedit used wrong parameter for the objects and was not able to rename the objects after the media conversion
 - Bug fix: page_multiedit did not provide the updated multiobject input field in the reload form
-- Bug fix: Added users to install/crontab file
+- Bug fix: Added users to crontab file in the installation directory
 - Bug fix: The simple statistics Plugin did not convert the kB to MB and displayed the wrong file size
+- Bug fix: contextmenu.js did treat dragged thumbnail images as new uploads

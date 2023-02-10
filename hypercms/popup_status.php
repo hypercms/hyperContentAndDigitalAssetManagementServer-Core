@@ -30,7 +30,7 @@ $force = getrequest_esc ("force");
 $method = getrequest_esc ("method");
 $maxcount = getrequest_esc ("maxcount", "numeric");
 $published_only = getrequest_esc ("published_only");
-$tempfile = getrequest_esc ("tempfile", "locationname");
+$process = getrequest_esc ("process", "objectname");
 $from_page = getrequest_esc ("from_page");
 $token= getrequest_esc ("token");
 
@@ -237,7 +237,7 @@ if ($authorized == true || $force == "stop")
     // $source_root and $source_folder are passed as global variables to the functions and are needed if action = paste.
     if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
 
-    $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $tempfile);
+    $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $process);
     
     // if manipulation was successful
     if (!empty ($result['result'])) 
@@ -259,8 +259,8 @@ if ($authorized == true || $force == "stop")
       if (isset ($result['method'])) $method = $result['method'];
       else $method = "";
       
-      if (isset ($result['tempfile'])) $tempfile = $result['tempfile'];   
-      else $tempfile = "";
+      if (isset ($result['process'])) $process = $result['process'];   
+      else $process = "";
 
       if (!empty ($result['report']) && is_array ($result['report']) && sizeof ($result['report']) > 0)
       {
@@ -270,11 +270,11 @@ if ($authorized == true || $force == "stop")
       // define next process
       if ($working == true)
       {
-        $add_javascript = "document.location='".cleandomain ($mgmt_config['url_path_cms'])."popup_status.php?force=continue&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n";
+        $add_javascript = "document.location='".cleandomain ($mgmt_config['url_path_cms'])."popup_status.php?force=continue&action=".url_encode($action)."&process=".url_encode($process)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n";
       }
       elseif ($working == false)
       {
-        $add_javascript = "document.location='".cleandomain ($mgmt_config['url_path_cms'])."popup_status.php?force=finish&action=".url_encode($action)."&tempfile=".url_encode($tempfile)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n"; 
+        $add_javascript = "document.location='".cleandomain ($mgmt_config['url_path_cms'])."popup_status.php?force=finish&action=".url_encode($action)."&process=".url_encode($process)."&method=".url_encode($method)."&maxcount=".url_encode($maxcount)."&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."&folder=".url_encode($folder)."&page=".url_encode($page)."&from_page=".url_encode($from_page)."&token=".url_encode($token)."';\n"; 
       }    
     }
     // if an error occured
@@ -509,7 +509,7 @@ echo showtopbar ($headline." ".$status_progress, $lang);
     <input type="hidden" name="from_page" value="<?php echo $from_page; ?>" />
     <input type="hidden" name="count" value="<?php echo $count; ?>" />
     <input type="hidden" name="maxcount" value="<?php echo $maxcount; ?>" />
-    <input type="hidden" name="tempfile" value="<?php echo $tempfile; ?>" />
+    <input type="hidden" name="process" value="<?php echo $process; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
     <button class="hcmsButtonBlue" type="submit"><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></button>
   </form>

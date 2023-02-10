@@ -18935,16 +18935,16 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 
 // ------------------------------------------ manipulateallobjects --------------------------------------------
 // function: manipulateallobjects()
-// input: action [publish, unpublish, deletemark, deleteunmark/restore, emptypin, delete, paste], objectpath [array],
+// input: action [publish,unpublish,deletemark,deleteunmark/restore,emptypin,delete,paste], objectpath [array],
 //        method (only for paste action) [copy,linkcopy,cut], force [start,stop,continue], 
-//        collect only published objects [boolean], user name [string], temporary collection file name [string] (optional), max. number of items processed per request/step [integer] (optional)
+//        collect only published objects [boolean], user name [string], process ID [string] (optional), max. number of items processed per request/step [integer] (optional)
 // output: true/false
 
 // description:
 // This function is used to perform actions on multiple objects and is mainly used by popup_status.php.
-// This function should only be used in connection with the GUI of the system.
+// This function should only be used in the GUI of the system.
 
-function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $tempfile="", $maxitems=10)
+function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $process_id="", $maxitems=10)
 {
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
 
@@ -18956,12 +18956,18 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
   $result['count'] = 0;
   $result['working'] = false;
   $result['message'] = "";
-  $result['tempfile'] = "";
+  $result['process'] = "";
   $result['method'] = "";
   $result['report'] = array();
 
   // set default language
   if (empty ($lang)) $lang = "en";
+
+  // unique ID used as identifier for the process
+  if ($process_id == "") $process_id = uniqid();
+
+  // define temp file name
+  $tempfile = $process_id.".coll.dat";
 
   // --------------------------empty recycle bin -------------------------------
   if ($action == "emptybin")
@@ -18988,15 +18994,15 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
   }
 
   // get object pathes from the session if it is not set
-  if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject']) && is_array ($_SESSION['clipboard_multiobject']))) $objectpath_array = $_SESSION['clipboard_multiobject'];
+  if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject_'.$process_id]) && is_array ($_SESSION['clipboard_multiobject_'.$process_id]))) $objectpath_array = $_SESSION['clipboard_multiobject_'.$process_id];
 
-  if ((!isset ($rootpathdelete_array) || !is_array ($rootpathdelete_array)) && (isset ($_SESSION['clipboard_rootpathdelete']) && is_array ($_SESSION['clipboard_rootpathdelete']))) $rootpathdelete_array = $_SESSION['clipboard_rootpathdelete'];
+  if ((!isset ($rootpathdelete_array) || !is_array ($rootpathdelete_array)) && (isset ($_SESSION['clipboard_rootpathdelete_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathdelete_'.$process_id]))) $rootpathdelete_array = $_SESSION['clipboard_rootpathdelete_'.$process_id];
   else $rootpathdelete_array = Null;
 
-  if ((!isset ($rootpathold_array) || !is_array ($rootpathold_array)) && (isset ($_SESSION['clipboard_rootpathold']) && is_array ($_SESSION['clipboard_rootpathold']))) $rootpathold_array = $_SESSION['clipboard_rootpathold'];
+  if ((!isset ($rootpathold_array) || !is_array ($rootpathold_array)) && (isset ($_SESSION['clipboard_rootpathold_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathold_'.$process_id]))) $rootpathold_array = $_SESSION['clipboard_rootpathold_'.$process_id];
   else $rootpathold_array = Null;
 
-  if ((!isset ($rootpathnew_array) || !is_array ($rootpathnew_array)) && (isset ($_SESSION['clipboard_rootpathnew']) && is_array ($_SESSION['clipboard_rootpathnew']))) $rootpathnew_array = $_SESSION['clipboard_rootpathnew'];
+  if ((!isset ($rootpathnew_array) || !is_array ($rootpathnew_array)) && (isset ($_SESSION['clipboard_rootpathnew_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathnew_'.$process_id]))) $rootpathnew_array = $_SESSION['clipboard_rootpathnew_'.$process_id];
   else $rootpathnew_array = Null;
 
   if (is_array ($objectpath_array) && valid_objectname ($user) && $action != "")
@@ -19061,7 +19067,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
     }
 
     // set session
-    $_SESSION['clipboard_multiobject'] = $objectpath_array;
+    $_SESSION['clipboard_multiobject_'.$process_id] = $objectpath_array;
 
     // -------------------------- load or create collection -------------------------------
     // check if collection file exists and load collection
@@ -19188,6 +19194,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
                     {
                       $result['result'] = false;
                       $result['message'] = $hcms_lang['it-is-not-possible-to-paste-the-objects-here'][$lang];
+
                       return $result;
                     }
                   }
@@ -19196,6 +19203,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
                   {
                     $result['result'] = false;
                     $result['message'] = $hcms_lang['it-is-not-possible-to-cut-copy-and-paste-objects-across-different-publications'][$lang];
+
                     return $result;
                   }
                 }
@@ -19227,13 +19235,13 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
     // set rootpathes in the session (do not use function setsession here)
     if ($action == "delete")
     {
-      if (is_array ($rootpathdelete_array)) $_SESSION['clipboard_rootpathdelete'] = $rootpathdelete_array;
+      if (is_array ($rootpathdelete_array) && sizeof ($rootpathdelete_array) > 0) $_SESSION['clipboard_rootpathdelete_'.$process_id] = $rootpathdelete_array;
     }
     elseif ($action == "paste")
     {
-      if (is_array ($rootpathdelete_array)) $_SESSION['clipboard_rootpathdelete'] = $rootpathdelete_array;
-      if (is_array ($rootpathold_array)) $_SESSION['clipboard_rootpathold'] = $rootpathold_array;
-      if (is_array ($rootpathnew_array)) $_SESSION['clipboard_rootpathnew'] = $rootpathnew_array;
+      if (is_array ($rootpathdelete_array) && sizeof ($rootpathdelete_array) > 0) $_SESSION['clipboard_rootpathdelete_'.$process_id] = $rootpathdelete_array;
+      if (is_array ($rootpathold_array)) $_SESSION['clipboard_rootpathold_'.$process_id] = $rootpathold_array;
+      if (is_array ($rootpathnew_array)) $_SESSION['clipboard_rootpathnew_'.$process_id] = $rootpathnew_array;
     }
 
     // count collection items and set force paremater
@@ -19394,9 +19402,6 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       {
         $collection = trim (implode ("\n", $collection));
 
-        // define temp file name
-        if ($tempfile == "") $tempfile = uniqid().".coll.dat";
-
         // continue
         if (strlen ($collection) > 0) 
         {
@@ -19449,7 +19454,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               if (isset ($eventsystem['ondeletefolder_pre']) && $eventsystem['ondeletefolder_pre'] == 1 && empty ($eventsystem['hide'])) 
                 ondeletefolder_pre ($site, $cat, $location, $folder, $user);
     
-              // remove all in the root folder
+              // remove all objects in the root folder
               $test['result'] = deletefile ($location, $folder, true);
 
               // remote client
@@ -19513,20 +19518,23 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
     // ----------------------------- clear session variables ----------------------------------
     if (isset ($result['working']) && $result['working'] == false)
     {
-      $_SESSION['clipboard_multiobject'] = null;
-      $_SESSION['clipboard_rootpathdelete'] = null; 
-      $_SESSION['clipboard_rootpathold'] = null;
-      $_SESSION['clipboard_rootpathnew'] = null;
+      $_SESSION['clipboard_multiobject_'.$process_id] = Null;
+      $_SESSION['clipboard_rootpathdelete_'.$process_id] = Null; 
+      $_SESSION['clipboard_rootpathold_'.$process_id] = Null;
+      $_SESSION['clipboard_rootpathnew_'.$process_id] = Null;
     }
 
     // ------------------------------ define result array ------------------------------------
-    if (isset ($test['result']) && !empty ($test['result'])) $result['result'] = true;
+    if (isset ($test['result']) && $test['result'] == true) $result['result'] = true;
     else $result['result'] = false;
+
     $result['maxcount'] = $maxcount;
     $result['count'] = $count; 
+
     if (isset ($result['working']) && $result['working'] != true) $result['working'] = false;
     if (!empty ($test['message'])) $result['message'] = $test['message'];
-    $result['tempfile'] = $tempfile;
+
+    $result['process'] = $process_id;
 
     if ($action == "paste") 
     {
