@@ -3026,7 +3026,7 @@ function createmultidownloadlink ($site, $multiobject, $name="", $user="", $type
 // ---------------------- cleandomain -----------------------------
 // function: cleandomain()
 // input: string to clean from http(s)://domain [string]
-// output: cleanded string / false on error
+// output: string without protocol and domain / false on error
 
 // description:
 // Returns the URL notation without the protocoll://domain.com
@@ -5110,8 +5110,12 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
       copy ($location.$object, $mgmt_config['abs_path_view'].$prefix.$file_ext);
     }
 
+    // define URL of host
+    if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
+    else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+
     // get content via HTTP in order ro render page
-    $content = @file_get_contents ($mgmt_config['url_path_view'].$prefix.$file_ext.$add);
+    $content = @file_get_contents ($url_host.$prefix.$file_ext.$add);
 
     // deprecated since version 9.0.4 for performance improvemenents with presentation components:
     // remove temp file
@@ -14695,11 +14699,12 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
     else
     {
       $errcode = "10503";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject could not find source file '$path_source_file'"; 
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject could not find the source file '$path_source_file'"; 
  
       $result['result'] = false;
     }
   }
+  // input is missing
   else $result['result'] = false;
 
   // error log
@@ -18731,6 +18736,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
   $error = array();
   $result = array();
 
+  // process e-mails
   if ($action == "mail" && is_numeric ($file) && valid_objectname ($user))
   {
     // post data
@@ -18740,11 +18746,51 @@ function processobjects ($action, $site, $location, $file, $published_only=false
     $data['action'] = "sendmail";
     $data['token'] = createtoken ($user);
 
-    // call sendmail service
-    HTTP_Post ($mgmt_config['url_path_cms']."service/sendmail.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+    // define URL of host
+    if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_cms'];
+    else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_cms']);
 
-    return true;
+    // call sendmail service
+    $response = HTTP_Post ($url_host."service/sendmail.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+
+    // decode JSON response
+    $result = json_decode ($response, true);
+
+    // sendmail service respons was a success without any errors
+    if (!empty ($result['success']) && empty ($result['error']) && empty ($result['general']))
+    {
+      $errcode = "00417";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Processing (".$action.") was successful for mail file '".$file."'";
+
+      // save log
+      savelog (@$error); 
+
+      return true;
+    }
+    // sendmail service response includes errors 
+    elseif ((!empty ($result['error']) && is_array ($result['error'])) || (!empty ($result['general']) && is_array ($result['general'])))
+    {
+      $errcode = "20418";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed for mail file '".$file."' with mail error '".implode (", ", $result['error'])."' and general error '".implode (", ", $result['general'])."'";
+
+      // save log
+      savelog (@$error); 
+
+      return false;
+    }
+    // no response from sendmail service
+    else
+    {
+      $errcode = "20419";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed for mail file '".$file."' since the sendmail service was not available (missing response)";
+
+      // save log
+      savelog (@$error); 
+
+      return false;
+    }
   }
+  // process other actions
   elseif ($action != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($user))
   {
     // publication management config
@@ -18937,7 +18983,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 // function: manipulateallobjects()
 // input: action [publish,unpublish,deletemark,deleteunmark/restore,emptypin,delete,paste], objectpath [array],
 //        method (only for paste action) [copy,linkcopy,cut], force [start,stop,continue], 
-//        collect only published objects [boolean], user name [string], process ID [string] (optional), max. number of items processed per request/step [integer] (optional)
+//        collect only published objects [boolean], user name [string], process ID (created automatically but must be provided for the subsequent calls of the same process) [string] (optional), max. number of items processed per request/step [integer] (optional)
 // output: true/false
 
 // description:
@@ -19374,7 +19420,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               else 
               {
                 $errcode = "20110";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|pasteobject failed for ".$location_source_esc.$object_source;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|pasteobject failed for ".$location_source_esc.$object_source." by '".$user."'";
                 
                 // break if method is cut since the source object will be deleted
                 if ($method == "cut") break;
@@ -19488,7 +19534,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               if (!empty ($test['result']))
               {
                 $errcode = "00713";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Root folder ".$location.$folder." has been removed after cut & paste action of user '".$user."'"; 
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Root folder ".$location.$folder." has been removed after cut & paste action by user '".$user."'"; 
               }
 
               $test_renamegroup = renamegroupfolder ($site, $cat, $rootpathdelete_array[$temp_id], $rootpathnew_array[$temp_id], $user);

@@ -1090,12 +1090,13 @@ Otherwise just provide the information below and install the most powerful Conte
       <strong>hypercms/job/update.php</strong> ... executed daily by a user with write permissions in directory 'hypercms'<br/>
       <hr />
       Please make sure that the .htaccess files of the system are supported by adding<br/>
-      these directives to your Apache 2.4 configuration of your virtual host:<br/>
+      these directives to your Apache configuration of your virtual host:<br/>
   		<strong>Require all granted<br/>
   		AllowOverride All<br/>
   		Options -Indexes +FollowSymLinks</strong><br/>
       <br/>
-      If you are using earlier Apache versions you need to remove the Apache 2.4 directives in the .htaccess files of the system.
+      If you are using older Apache versions (not older than 2.2) you need to remove or comment<br/>
+      the Apache 2.4 directives and uncomment the Apache 2.2 directives in all .htaccess files of the system.
       </td>
     </tr>
     <tr>

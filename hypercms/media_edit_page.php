@@ -241,7 +241,7 @@ function checkType()
       else if (mediatype == "audio") allowedext = "<?php echo strtolower ($hcms_ext['audio']); ?>";
       else if (mediatype == "compressed") allowedext = "<?php echo strtolower ($hcms_ext['compressed']); ?>";
       else if (mediatype == "flash") allowedext = "<?php echo strtolower ($hcms_ext['flash']); ?>";
-      else if (mediatype == "image") allowedext = "<?php echo strtolower ($hcms_ext['image']); ?>";
+      else if (mediatype == "image") allowedext = "<?php echo strtolower ($hcms_ext['image'].$hcms_ext['vectorimage']); ?>";
       else if (mediatype == "text") allowedext = "<?php echo strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']); ?>";
       else if (mediatype == "video") allowedext = "<?php echo strtolower ($hcms_ext['video']); ?>";
       

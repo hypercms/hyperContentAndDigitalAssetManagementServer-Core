@@ -4492,9 +4492,9 @@ function getfiletype ($file_ext)
     $file_ext = strtolower ($file_ext);
 
     if (substr_count (strtolower ($hcms_ext['audio']).".", $file_ext.".") > 0) $filetype = "audio";
-    elseif (substr_count (strtolower ($hcms_ext['bintxt'].$hcms_ext['cleartxt']).".", $file_ext.".") > 0) $filetype = "document";
+    elseif (substr_count (strtolower ($hcms_ext['bintxt'].$hcms_ext['cleartxt'].$hcms_ext['font']).".", $file_ext.".") > 0) $filetype = "document";
     elseif (substr_count (strtolower ($hcms_ext['cms'].$hcms_ext['cleartxt']), $file_ext.".") > 0) $filetype = "text";
-    elseif (substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage']).".", $file_ext.".") > 0) $filetype = "image";
+    elseif (substr_count (strtolower ($hcms_ext['image'].$hcms_ext['rawimage'].$hcms_ext['vectorimage'].$hcms_ext['cad']).".", $file_ext.".") > 0) $filetype = "image";
     elseif (substr_count (strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']).".", $file_ext.".") > 0) $filetype = "video";
     elseif (substr_count (strtolower ($hcms_ext['flash']).".", $file_ext.".") > 0) $filetype = "flash";
     elseif (substr_count (strtolower ($hcms_ext['compressed']).".", $file_ext.".") > 0) $filetype = "compressed";

@@ -158,7 +158,7 @@ function checkType()
       if (mediatype == "audio") allowedext = "<?php echo $hcms_ext['audio']; ?>";
       else if (mediatype == "compressed") allowedext = "<?php echo $hcms_ext['compressed']; ?>";
       else if (mediatype == "flash") allowedext = "<?php echo $hcms_ext['flash']; ?>";
-      else if (mediatype == "image") allowedext = "<?php echo $hcms_ext['image']; ?>";
+      else if (mediatype == "image") allowedext = "<?php echo $hcms_ext['image'].$hcms_ext['vectorimage']; ?>";
       else if (mediatype == "text") allowedext = "<?php echo $hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']; ?>";
       else if (mediatype == "video") allowedext = "<?php echo $hcms_ext['video']; ?>";
       

@@ -703,7 +703,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 
       // ------------------------ AUDIO, IMAGES, VIDEOS ----------------------- 
       // SPECIAL CASE: the meta data attributes found in the file will be saved using a mapping.
-      // get file content from image formats with meta data
+      // get file content from audio, image, and video formats with meta data
       if ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
       {
         // function setmetadata provides metadata in the content container without saving the container

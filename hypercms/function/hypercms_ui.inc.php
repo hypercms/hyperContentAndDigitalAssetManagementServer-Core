@@ -188,7 +188,7 @@ function objectfilter ($file)
     foreach ($objectfilter as $filter => $value)
     {
       if ($filter == "comp" && $value == 1) $ext .= strtolower ($hcms_ext['cms']);
-      elseif ($filter == "image" && $value == 1) $ext .= strtolower ($hcms_ext['image'].$hcms_ext['rawimage']);
+      elseif ($filter == "image" && $value == 1) $ext .= strtolower ($hcms_ext['image'].$hcms_ext['rawimage'].$hcms_ext['vectorimage'].$hcms_ext['cad']);
       elseif ($filter == "document" && $value == 1) $ext .= strtolower ($hcms_ext['bintxt'].$hcms_ext['cleartxt']);
       elseif ($filter == "video" && $value == 1) $ext .= strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']);
       elseif ($filter == "audio" && $value == 1) $ext .= strtolower ($hcms_ext['audio']);

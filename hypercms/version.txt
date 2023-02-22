@@ -6599,7 +6599,6 @@ Release 03/2023
 - Modifications in function getobjectlist in Get API in order to support the locked object (checked-out object) information in the result
 - Modifications in function uploadfile in Main API in order to verify if an object is locked by another user for exclusive editing and provide an error in this case in the result
 - Modifications in function uploadfile in Main API in order to strip HTML tags from all result messages
-- Updates in the Connector Guide
 - Removed the alert popup in the temlpate engine if an object has been locked by another user (checked-out object)
 - Modifications in popup_upload_html in order to separate the message from the command/objects in provided AJAX response
 - Modifications in JS function hcms_drag and hcms_allowDrop in contextmenu.js in order to identify objects dragged inside the browser and dragged from outside the browser into the browser window
@@ -6608,6 +6607,25 @@ Release 03/2023
 - Modifications in function manipulateallobjects in Main API in order to implement session keys based on the process ID
 - Modifications in function manipulateallobjects in Main API in order to return the process ID in the result instead of the temporary file name
 - Modifications in popup_status in order to change from temporary file name to process ID
+- Modifications in the description of the installation routine
+- Modifications in function manipulateallobjects in Main API in order to add the user name to some error log entries
+- Modifications in function processobjects in Main API in order to decode the JSON response and verify the result for the return value
+- Modifications in function processobjects in Main API in order to implement an error log in case there have been errors or the mail service did not send a response
+- Modifications in minutely job in order to restart a failed process in 10 minutes
+- Implementation of the new main configuration parameter $mgmt_config['localhost'] in the main configuration file in the installation directory that defines the protocol and host name be used for local requests
+- Modifications in function processobjects in Main API in order to apply the new new main configuration parameter $mgmt_config['localhost'] for the request to the local host
+- Modifications in teh template engine in order to apply the new new main configuration parameter $mgmt_config['localhost'] for the request to the local host
+- Modifications in function downloadobject in Main API in order to apply the new new main configuration parameter $mgmt_config['localhost'] for the request to the local host
+- Added Alphacam (.aed) file extension as CAD format to format_ext.inc.php 
+- Added Adobe After Effects project file extension (.aep, .aepx) as image format to format_ext.inc.php 
+- Modifications in function objectfilter in UI API in order to add rawimage, vectorimage, and CAD file extensions to the images search category
+- Modifications in local JS function checkMediaType in the template engine in order to add vectorimage file extensions to images filter category
+- Modifications in local JS function checkType in the text_media_select in order to add vectorimage file extensions to images filter category
+- Modifications in local JS function checkType in the media_edit_page in order to add vectorimage file extensions to images filter category
+- Modifications in media_edit_explorer in order to add rawimage, vectorimage, and CAD file extensions to the images search category
+- Modifications in function getfiletype in Get API in order to add vectorimage and CAD file extensions to the images category
+- Modifications in function getfiletype in Get API in order to add font file extensions to the document category
+- Updates in the Connector Guide
 - Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
 - Bug fix: Function getsearchhistory in Get API did not clean the backslash in the search expression which can cause the escape of the character after the backslash
 - Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height
@@ -6624,4 +6642,4 @@ Release 03/2023
 - Bug fix: page_multiedit did not provide the updated multiobject input field in the reload form
 - Bug fix: Added users to crontab file in the installation directory
 - Bug fix: The simple statistics Plugin did not convert the kB to MB and displayed the wrong file size
-- Bug fix: contextmenu.js did treat dragged thumbnail images as new uploads
+- Bug fix: contextmenu.js did treat dragged thumbnail images of existing objects and folders as new uploads

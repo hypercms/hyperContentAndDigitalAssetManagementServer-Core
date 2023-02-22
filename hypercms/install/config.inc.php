@@ -25,6 +25,10 @@ $mgmt_maxsizepreview = array();
 // Depending how the user accessed our page we are setting our protocol
 $mgmt_config['url_protocol'] = !empty ($_SERVER['HTTPS']) ? 'https://' : 'http://';
 
+// Define the URL for requests to the local host, usually "http://localhost"
+// If left empty the URLs defined below will be used
+$mgmt_config['localhost'] = "";
+
 // URL and asolute path to hyperCMS on your webserver
 $mgmt_config['url_path_cms'] = $mgmt_config['url_protocol']."%url_path_cms%";
 $mgmt_config['abs_path_cms'] = "%abs_path_cms%";

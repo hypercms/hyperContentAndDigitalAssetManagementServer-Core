@@ -1,4 +1,5 @@
 # cron jobs required for the setup with Docker and logging in /var/log/cron.log
+# deprecated since the cron jobs are part of the Dockerfile
 * * * * * www-data cd /var/www/html/hypercms/job; /usr/bin/php -q minutely.php >> /var/log/cron.log 2>&1
 0 4 * * * www-data cd /var/www/html/hypercms/job; /usr/bin/php -q daily.php >> /var/log/cron.log 2>&1
 0 2 * * * root cd /var/www/html/hypercms/job; /usr/bin/php -q update.php >> /var/log/cron.log 2>&1

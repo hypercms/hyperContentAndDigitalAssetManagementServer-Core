@@ -6939,17 +6939,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
  
                         foreach ($contentbot_array as $complink)
                         {
+                          // define URL of host
+                          if (empty ($mgmt_config['localhost'])) $url_host = $complink;
+                          else $url_host = $mgmt_config['localhost'].cleandomain ($complink);
+                          
                           if (strtolower ($include) == "static")
                           {
                             // deconvert path
                             $complink = deconvertpath ($complink, "file"); 
-                            $component .= @file_get_contents ($complink); 
+                            $component .= @file_get_contents ($url_host); 
                           }
                           else
                           {
                             // deconvert path
                             $complink = deconvertpath ($complink, "url");     
-                            $component .= @file_get_contents ($complink);
+                            $component .= @file_get_contents ($url_host);
                           }
                         }
                       }
@@ -7452,8 +7456,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // close session file
                 suspendsession ();
 
+                // define URL of host
+                if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
+                else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+
                 // execute code
-                $viewstore = file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.php".$pageview_parameter);
+                $viewstore = file_get_contents ($url_host.$unique_id.".pageview.php".$pageview_parameter);
+
+                // empty response
+                if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
 
                 // reopen session file
                 revokesession ("", "", $session_id);
@@ -7489,7 +7500,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // close session file
                 suspendsession ();
 
-                $viewstore = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.".$templateext.$pageview_parameter);
+                // define URL of host
+                if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
+                else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+
+                $viewstore = @file_get_contents ($url_host.$unique_id.".pageview.".$templateext.$pageview_parameter);
+
+                // empty response
+                if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
 
                 // reopen session file
                 revokesession ("", "", $session_id);
@@ -7541,8 +7559,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // close session file
                 suspendsession ();
 
+                // define URL of host
+                if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
+                else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+
                 // execute code of generator (e.g. create a PDF file)
-                $viewstore_save = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".generate.php".$pageview_parameter);
+                $viewstore_save = @file_get_contents ($url_host.$unique_id.".generate.php".$pageview_parameter);
+
+                // empty response
+                if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
 
                 // reopen session file
                 revokesession ("", "", $session_id);
@@ -7609,8 +7634,15 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 // close session file
                 suspendsession ();
 
+                // define URL of host
+                if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
+                else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+
                 // execute code
-                $viewstore = @file_get_contents ($mgmt_config['url_path_view'].$unique_id.".pageview.php".$pageview_parameter);
+                $viewstore = @file_get_contents ($url_host.$unique_id.".pageview.php".$pageview_parameter);
+
+                // empty response
+                if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
 
                 // reopen session file
                 revokesession ("", "", $session_id);
@@ -8330,7 +8362,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         else if (mediatype == 'audio') allowedext = '".strtolower ($hcms_ext['audio'])."';
         else if (mediatype == 'compressed') allowedext = '".strtolower ($hcms_ext['compressed'])."';
         else if (mediatype == 'flash') allowedext = '".strtolower ($hcms_ext['flash'])."';
-        else if (mediatype == 'image') allowedext = '".strtolower ($hcms_ext['image'])."';
+        else if (mediatype == 'image') allowedext = '".strtolower ($hcms_ext['image'].$hcms_ext['vectorimage'])."';
         else if (mediatype == 'text') allowedext = '".strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'])."';
         else if (mediatype == 'video') allowedext = '".strtolower ($hcms_ext['video'])."';
 

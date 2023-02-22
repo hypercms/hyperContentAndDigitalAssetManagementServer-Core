@@ -213,7 +213,7 @@ if ($sender == "search")
     elseif ($mediaformat == "video") $format_ext = strtolower ($hcms_ext['video'].$hcms_ext['rawvideo']);
     elseif ($mediaformat == "text") $format_ext = strtolower ($hcms_ext['cms'].$hcms_ext['bintxt'].$hcms_ext['cleartxt']);
     elseif ($mediaformat == "flash") $format_ext = strtolower ($hcms_ext['flash']);
-    elseif ($mediaformat == "image") $format_ext = strtolower ($hcms_ext['image']);
+    elseif ($mediaformat == "image") $format_ext = strtolower ($hcms_ext['image'].$hcms_ext['rawimage'].$hcms_ext['vectorimage'].$hcms_ext['cad']);
     elseif ($mediaformat == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
   }
 
