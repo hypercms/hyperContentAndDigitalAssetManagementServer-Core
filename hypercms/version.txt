@@ -6485,7 +6485,7 @@ Release 01/2023
 - Bug fix: Function getobjectpathlevel in Get API did not return the correct level if the folder object in the location has been missing
 - Bug fix: Function rdbms_searchcontent in DB Connect did not use the correct folder path level if objects of the same folder path level have been requested
 
-Version 10.0.9
+Version 10.1.0 (former 10.0.9)
 Release 03/2023
 - Modifications in function getobjectlist in Get API in order to clean the filter values for the format search
 - Modifications in function getobjectlist in Get API in order to exclude the folders a user has access to if the search format does not request folders
@@ -6546,7 +6546,7 @@ Release 03/2023
 - Modifications in text_edit_checkbox and text_edit_date in order to remove the input parameter contentbot and read the content
 - Modifications in link_edit_page in order to remove the input parameters linkhref, lintext, and linktarget and read the content
 - Modifications in link_edit_page in order to remove deprecated and duplicate correction of the linkhref parameter
-- Modifications in frameset_edit_link in order to remove the parameters linkhref, lintext, and linktarget and read the content
+- Modifications in frameset_edit_link in order to remove the parameters linkhref, linktext, and linktarget and read the content
 - Modifications in media_edit_page in order to remove the parameters mediafile, mediaobject, mediaalttext, mediaalign, mediawidth, mediaheight and read the content
 - Modifications in frameset_edit_media in order to remove the parameters mediafile, mediaobject, mediaalttext, mediaalign, mediawidth, mediaheight and read the content
 - Modifications in component_edit_page_single and component_edit_page_multi in order to remove the parameters mediafile, mediaobject, mediaalttext, mediaalign, mediawidth, mediaheight and read the content
@@ -6578,7 +6578,7 @@ Release 03/2023
 - Modifications in the installation routine in order to check the tables of the database and not the number of objects in table object due to issues with MariaDB on Debian 12
 - Modifications in DB Connect constructor in order to set the sql_mode to TRADITIONAL due to issues with MariaDB on Debian 12
 - Modifications in various functions in DB Connect in order to apply IGNORE to some INSERT and UPDATE SQL statements
-- Modifications in service rendervideo in order to initalize the variable createmedia for the local function startConversion
+- Modifications in service rendervideo in order to initialize the variable createmedia for the local function startConversion
 - Modifications in createtables.sql in order to apply the CURRENT_TIMESTAMP to the date of table dailystat
 - Modifications in control_objectlist_menu in order to use the full length of the MD% hash for the id of the upload window
 - Modifications in popup_upload_html in order to maximize the upload window if metadata input is required by the publication settings
@@ -6600,7 +6600,7 @@ Release 03/2023
 - Modifications in function uploadfile in Main API in order to verify if an object is locked by another user for exclusive editing and provide an error in this case in the result
 - Modifications in function uploadfile in Main API in order to strip HTML tags from all result messages
 - Removed the alert popup in the temlpate engine if an object has been locked by another user (checked-out object)
-- Modifications in popup_upload_html in order to separate the message from the command/objects in provided AJAX response
+- Modifications in popup_upload_html in order to separate the message from the command/objects in the provided AJAX response
 - Modifications in JS function hcms_drag and hcms_allowDrop in contextmenu.js in order to identify objects dragged inside the browser and dragged from outside the browser into the browser window
 - Modifications in function manipulateallobjects in Main API in order to verify the size of the clipboard_rootpathdelete array
 - Modifications in function manipulateallobjects in Main API in order to implement a unique process ID
@@ -6613,9 +6613,9 @@ Release 03/2023
 - Modifications in function processobjects in Main API in order to implement an error log in case there have been errors or the mail service did not send a response
 - Modifications in minutely job in order to restart a failed process in 10 minutes
 - Implementation of the new main configuration parameter $mgmt_config['localhost'] in the main configuration file in the installation directory that defines the protocol and host name be used for local requests
-- Modifications in function processobjects in Main API in order to apply the new new main configuration parameter $mgmt_config['localhost'] for the request to the local host
-- Modifications in teh template engine in order to apply the new new main configuration parameter $mgmt_config['localhost'] for the request to the local host
-- Modifications in function downloadobject in Main API in order to apply the new new main configuration parameter $mgmt_config['localhost'] for the request to the local host
+- Modifications in function processobjects in Main API in order to apply the new main configuration parameter $mgmt_config['localhost'] for the request to the local host
+- Modifications in the template engine in order to apply the new main configuration parameter $mgmt_config['localhost'] for the request to the local host
+- Modifications in function downloadobject in Main API in order to apply the new main configuration parameter $mgmt_config['localhost'] for the request to the local host
 - Added Alphacam (.aed) file extension as CAD format to format_ext.inc.php 
 - Added Adobe After Effects project file extension (.aep, .aepx) as image format to format_ext.inc.php 
 - Modifications in function objectfilter in UI API in order to add rawimage, vectorimage, and CAD file extensions to the images search category
@@ -6623,9 +6623,44 @@ Release 03/2023
 - Modifications in local JS function checkType in the text_media_select in order to add vectorimage file extensions to images filter category
 - Modifications in local JS function checkType in the media_edit_page in order to add vectorimage file extensions to images filter category
 - Modifications in media_edit_explorer in order to add rawimage, vectorimage, and CAD file extensions to the images search category
-- Modifications in function getfiletype in Get API in order to add vectorimage and CAD file extensions to the images category
+- Modifications in function getfiletype in Get API in order to add vectorimage and CAD file extensions to the image category
 - Modifications in function getfiletype in Get API in order to add font file extensions to the document category
-- Updates in the Connector Guide
+- Modifications in function createobjectaccesslink, createwrapperlink, and createdownloadlink in Main API in order to enhance error log entry information
+- Modifications in Portal XML schema in order to support the new hover color parameter
+- Modifications in function editportal in Main API in order to support the new hover color parameter and set the color in the portal template and main.css
+- Modifications in function editportal in Main API in order to update the existing portal templates to the Portal XML Schema version 10.1.0
+- Modifications in main.css of the day and night design themes in order to support the hover color setting of portal design themes
+- Modifications in function userlogin and registeruser in Security API in order to support the new hover color parameter
+- Modifications in session.inc.php in order to support the hover color setting of portal design themes
+- Modifications in function invertcolorCSS in UI API in order to support the new hover color parameter
+- Modifications in function showhelpbutton in UI API in order to support the new hover color parameter by a new optional input parameter for CSS class names
+- Modifications in all controls in order to implement the new CSS classes to support the new hover color parameter
+- Modifications in frameset_main and frameset_mobile in order to implement the new CSS classes to support the hover color parameter
+- Modifications in function manipulateobject in Main API in order to create an error log entry in case the object does not exist
+- Modifications in chat in order to implement the new CSS classes to support the new hover color parameter
+- Modifications in explorer_objectview in order to implement the new CSS classes and the new hover color parameter
+- Modifications in Task Management module in order to implement the new CSS classes the new hover color parameter
+- Modifications in function createObject and editObject in the Workplace Integration in order to verify the general result and not the HTTP header provided by function uploadfile
+- Modifications in various functions in the Workplace Integration in order to set the publicatio nname as global for function savelog (whenever a publication log is required)
+- Modifications in function createObject in the Workplace Integration in order to replace function uploadfile by createmediaobject for improved performance
+- Modifications in function editObject in the Workplace Integration in order to remove the temporary file and directory
+- Modifications in protected function _removeTempFile in the Workplace Integration in order to verify that the temp directory exists before removing it
+- Modifications in function uploadhandler in Main API in order to support the new input parameter webdav_support that forces to treat PUT request by WebDAV the same as POST and GET requests
+- Modifications in function ocr_extractcontent in Media API in order to support the new input parameter for the user
+- Modifications in function ocr_extractcontent in Media API in order to implement preparemediafile and verify the media file
+- Modifications in function indexcontent in Media API in order to support the new input parameter of function ocr_extractcontent
+- Modifications in function createmediaobject in Main API in order to create a queue entry for indexcontent if the createmedia_in_background parameter is enabled
+- Modifications in function uploadfile in Main API in order to create a queue entry for indexcontent if the createmedia_in_background parameter is enabled
+- Modifications in explorer, page_info_ip, and the template engine in order to implement a callback function in the URI for maps.googleapis.com
+- Modifications in function createmedia in Media API in order to verify the sharpness value for videos provided by $mgmt_mediaoptions
+- Modifications in page_info_ip in order to verify if a key for the Google Maps API has been provided in the main configuration
+- Modifications in the Report Management API in order to verify if a key for the Google Maps API has been provided in the main configuration
+- Modifications in the installation routine and the main configuration file in order to implement and support the Google Maps API key
+- Modifications in function createmedia in Media API in order to enhance error log entries
+- Modifications in service uploadfile in order to clear all headers provided by the UploadHandler after the file has been fully uploaded
+- Modifications in popup_upload_html in order to support the response provided in the XMLHttpRequest object jqXHR
+- Updates in the Connector Guide and Template Designers Guide
+- Updates of the version in all Guides
 - Bug fix: Home box recent_downloads, recent_uploadlinks, and recent_uploads reversed the result array and failed to display the most recent objects
 - Bug fix: Function getsearchhistory in Get API did not clean the backslash in the search expression which can cause the escape of the character after the backslash
 - Bug fix: The callback JS function returnMedia used by the asset browser used wrong variable names for the media width and height
@@ -6643,3 +6678,7 @@ Release 03/2023
 - Bug fix: Added users to crontab file in the installation directory
 - Bug fix: The simple statistics Plugin did not convert the kB to MB and displayed the wrong file size
 - Bug fix: contextmenu.js did treat dragged thumbnail images of existing objects and folders as new uploads
+- Bug fix: The publication log entries have not been created if WebDAV has been used
+- Bug fix: Upload errors of files larger than 10 MB (resumable uploads) have not been displayed in the upload bar in popup_upload_html
+- Bug fix: Service uploadfile did not remove HTTP headers from the UploadHandler
+

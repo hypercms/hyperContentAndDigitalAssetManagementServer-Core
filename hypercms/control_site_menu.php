@@ -223,19 +223,19 @@ function checkForm ()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitecreate'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show');\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />";}
+    {echo "<img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show');\" id=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitedelete'))
-    {echo "<img class=\"hcmsButton hcmsButtonSizeSquare\" onClick=\"deletepublication();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />";}
+    {echo "<img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onClick=\"deletepublication();\" id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />";}
     else
     {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
     ?>
   </div>
   <div class="hcmsToolbarBlock">
-    <?php echo showhelpbutton ("adminguide", checkrootpermission ('site'), $lang, ""); ?>
+    <?php echo showhelpbutton ("adminguide", checkrootpermission ('site'), $lang, "", "hcmsHoverColor"); ?>
   </div>
 </div>
 

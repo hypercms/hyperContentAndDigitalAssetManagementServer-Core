@@ -960,6 +960,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       'portal' => false,
       'themename' => '',
       'themeinvertcolors' => false,
+      'hoverinvertcolors' => false,
       'downloadformats' => array(),
       'objectlistcols' => array(),
       'labels' => array(),
@@ -1403,14 +1404,19 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
           {
             $temp_portaltheme = getcontent ($portal_template['content'], "<designtheme>");
             $temp_portalcolor = getcontent ($portal_template['content'], "<primarycolor>");
+            $temp_hovercolor = getcontent ($portal_template['content'], "<hovercolor>");
 
             if (!empty ($temp_portaltheme[0]) && !empty ($temp_portalcolor[0]))
             {
               list ($portalsite, $portaltheme) = explode ("/", $temp_portaltheme[0]);
-              $brightness = getbrightness ($temp_portalcolor[0]);
+              $brightness_portalcolor = getbrightness ($temp_portalcolor[0]);
+              $brightness_hovercolor = getbrightness ($temp_hovercolor[0]);
 
-              if ($portaltheme == "day" && $brightness < 130) $result['themeinvertcolors'] = "night";
-              elseif ($portaltheme == "night" && $brightness >= 130) $result['themeinvertcolors'] = "day";
+              if ($portaltheme == "day" && $brightness_portalcolor < 130) $result['themeinvertcolors'] = "night";
+              elseif ($portaltheme == "night" && $brightness_portalcolor >= 130) $result['themeinvertcolors'] = "day";
+
+              if ($portaltheme == "day" && $brightness_hovercolor < 130) $result['hoverinvertcolors'] = "night";
+              elseif ($portaltheme == "night" && $brightness_hovercolor >= 130) $result['hoverinvertcolors'] = "day";
             }
           }
         }
@@ -2311,6 +2317,7 @@ function registeruser ($instance="", $login_result=array(), $accesslink=false, $
     setsession ('hcms_themename', $login_result['themename']);
     setsession ('hcms_themelocation', getthemelocation ($login_result['themename']));
     setsession ('hcms_themeinvertcolors', $login_result['themeinvertcolors']);
+    setsession ('hcms_hoverinvertcolors', $login_result['hoverinvertcolors']);
 
     // register permanent view settings
     setsession ('hcms_mobile', $login_result['mobile']);

@@ -236,15 +236,18 @@ function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $percentag
   }";
   }
 
-  // set color for border
-  if ($theme == "day") $color = "#000000";
-  elseif ($theme == "night") $color = "#FFFFFF";
-
-  if (!empty ($color)) $result .= "
-  .hcmsToolbarBlock
+  // set color for border for standard CSS class
+  if ($css_selector == ".hcmsInvertColor")
   {
-    border-color: ".$color."; 
-  }";
+    if ($theme == "day") $color = "#000000";
+    elseif ($theme == "night") $color = "#FFFFFF";
+
+    if (!empty ($color)) $result .= "
+    .hcmsToolbarBlock
+    {
+      border-color: ".$color."; 
+    }";
+  }
 
   return $result;
 }
@@ -609,13 +612,13 @@ function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
 
 // --------------------------------------- showhelpbutton -------------------------------------------
 // function: showhelpbutton ()
-// input: PDF file name without '_langcode' and file extension [$string], enabled [boolean] (optional), language code [string] (optional), ID of div-layer [string] (optional)
+// input: PDF file name without '_langcode' and file extension [$string], enabled [boolean] (optional), language code [string] (optional), ID of div-layer [string] (optional), add CSS class name [string] (optional)
 // output: button as img tag
 
 // description:
 // Returns the help button including the help document functionality.
 
-function showhelpbutton ($pdf_name, $enabled=true, $lang="en", $id="hcms_helpButton")
+function showhelpbutton ($pdf_name, $enabled=true, $lang="en", $id="hcms_helpButton", $css_class="")
 {
   global $mgmt_config, $hcms_themeinvertcolors, $hcms_lang_codepage, $hcms_lang_shortcut, $hcms_lang;
 
@@ -634,7 +637,7 @@ function showhelpbutton ($pdf_name, $enabled=true, $lang="en", $id="hcms_helpBut
   {
     $viewer = $pdfjs_path.urlencode($help);
 
-    return "<img id=\"".$id."\" onClick=\"hcms_openWindow('".$viewer."', 'help', 'location=no,menubar=no,toolbar=no,titlebar=no,location=no,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\" name=\"pic_obj_help\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
+    return "<img id=\"".$id."\" onClick=\"hcms_openWindow('".$viewer."', 'help', 'location=no,menubar=no,toolbar=no,titlebar=no,location=no,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton ".$css_class." hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
   }
   // disabled button
   else

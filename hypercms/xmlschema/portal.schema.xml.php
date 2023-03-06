@@ -4,6 +4,7 @@
 <user></user>
 <designtheme></designtheme>
 <primarycolor></primarycolor>
+<hovercolor></hovercolor>
 <downloadformats></downloadformats>
 <navigation>assets</navigation>
 <portaluser></portaluser>

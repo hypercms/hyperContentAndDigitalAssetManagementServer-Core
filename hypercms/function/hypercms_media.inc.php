@@ -36,14 +36,14 @@ function valid_jpeg ($filepath)
 
 // ---------------------------------------- ocr_extractcontent --------------------------------------------
 // function: ocr_extractcontent()
-// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string]
+// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string], user name [string]
 // output: extracted content as text string / false
 
 // description:
 // This function extracts the text content of multimedia objects using OCR and returns the text.
 // It is a helper function for function indexcontent. Do not use function ocr_extractcontent directly since it will not support encrypted media files or media files in cloud storages.
 
-function ocr_extractcontent ($site, $location, $file)
+function ocr_extractcontent ($site, $location, $file, $user)
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $hcms_lang, $lang;
 
@@ -60,6 +60,25 @@ function ocr_extractcontent ($site, $location, $file)
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
+
+    // prepare media file
+    $temp = preparemediafile ($site, $location, $file, $user);
+
+    // if encrypted
+    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+    {
+      $location = $temp['templocation'];
+      $file = $temp['tempfile'];
+    }
+    // if restored
+    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
+    {
+      $location = $temp['location'];
+      $file = $temp['file'];
+    }
+
+    // verify local media file
+    if (!is_file ($location.$file)) return false;
 
     // get file extension
     $file_info = getfileinfo ($site, $file, "comp");
@@ -375,7 +394,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
         // try OCR if no content has been extracted and create annotation images from PDF
         if (trim ($file_content) == "")
         {
-          $file_content = ocr_extractcontent ($site, $location, $file);
+          $file_content = ocr_extractcontent ($site, $location, $file, $user);
         }
       }
 
@@ -697,7 +716,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       // get file content from image formats using OCR
       elseif ($file_ext != "" && substr_count (strtolower ($hcms_ext['image']).".", $file_ext.".") > 0 && !empty ($mgmt_parser))
       {
-        $file_content = ocr_extractcontent ($site, $location, $file);
+        $file_content = ocr_extractcontent ($site, $location, $file, $user);
       }
       else $file_content = "";
 
@@ -1494,7 +1513,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
       if (!is_file ($location_dest.$newfile) || $errorCode) 
       {
         $errcode = "20241";
-        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' and frame ".$frame." \t".implode ("\t", $output);
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Video thumbnail image and execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' and frame ".$frame." \t".implode ("\t", $output);
 
         // save log
         savelog (@$error);
@@ -1647,7 +1666,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
       if (!is_file ($location_dest.$newfile."-00001.".$format) || $errorCode) 
       {
         $errcode = "20341";
-        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|exec of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Video preview images and execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
 
         // save log
         savelog (@$error);
@@ -3293,14 +3312,17 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // get sharpness defined by media option (represents chorma and luma amount)
                   $sharpness = getoption ($mgmt_mediaoptions[$mediaoptions_ext], "-sh");
 
-                  // default value
-                  if ($sharpness < -1 || $sharpness > 1) $amount = "1";
-                  // blur
-                  elseif ($sharpness < 0) $amount = round ($sharpness * 2, 2);
-                  // sharpen
-                  elseif ($sharpness > 0) $amount = round ($sharpness * 5, 2);
+                  if (!empty ($sharpness))
+                  {
+                    // default value
+                    if ($sharpness < -1 || $sharpness > 1) $amount = 1;
+                    // blur
+                    elseif ($sharpness < 0) $amount = round ($sharpness * 2, 2);
+                    // sharpen
+                    elseif ($sharpness > 0) $amount = round ($sharpness * 5, 2);
 
-                  $vfilter[] = "unsharp=5:5:".floatval($amount).":5:5:".floatval($amount);
+                    $vfilter[] = "unsharp=5:5:".floatval($amount).":5:5:".floatval($amount);
+                  }
 
                   // remove from options string since it will be added later as a video filter
                   $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-sh ".$sharpness, "", $mgmt_mediaoptions[$mediaoptions_ext]);
@@ -3319,9 +3341,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   // 2 = 90CounterClockwise
                   // 3 = 90Clockwise and Vertical Flip
 
-                  if ($rotate == "90") $vfilter[] = "transpose=1";
-                  elseif ($rotate == "180") $vfilter[] = "hflip,vflip";
-                  elseif ($rotate == "-90") $vfilter[] = "transpose=2";
+                  if (!empty ($rotate))
+                  {
+                    if ($rotate == "90") $vfilter[] = "transpose=1";
+                    elseif ($rotate == "180") $vfilter[] = "hflip,vflip";
+                    elseif ($rotate == "-90") $vfilter[] = "transpose=2";
+                  }
 
                   // remove from options string since it will be added later as a video filter
                   $mgmt_mediaoptions[$mediaoptions_ext] = str_replace ("-rotate ".$rotate, "", $mgmt_mediaoptions[$mediaoptions_ext]);
@@ -3551,7 +3576,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $newfile = $file;
 
                   $errcode = "20277";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution ffmpeg (code:".$errorCode.", command:".$cmd.") failed to create original thumbnail file using orginal file '".$file."' \t".implode("\t>", $output);
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Original thumbnail video and execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed using orginal video file '".$file."' \t".implode("\t>", $output);
                 }
                 // correct rotation metadata if necessary 
                 elseif (is_video (".hcms.".$format_set) && is_file ($location_temp.$tmpfile) && !empty ($videoinfo['rotate']) && $videoinfo['rotate'] != "0")
@@ -3734,7 +3759,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   $videothumbnail = createthumbnail_video ($site, $location_dest, $location_dest, $newfile, "00:00:01");
 
                   // get media information from thumbnail
-                  $imagecolor = getimagecolors ($site, $videothumbnail);
+                  if (!empty ($videothumbnail)) $imagecolor = getimagecolors ($site, $videothumbnail);
 
                   // create preview images
                   if ($type == "origthumb" && intval ($container_id) > 0)

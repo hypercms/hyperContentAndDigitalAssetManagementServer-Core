@@ -88,7 +88,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // --------------------------------- logic section ----------------------------------
   
   // write and close session (non-blocking other frames)
-  if (session_id() != "") session_write_close();
+suspendsession ();
 
   $file_info = getfileinfo ($site, $location.$page, $cat);
   $object_info = getobjectinfo ($site, $location, $page, $user);
@@ -135,6 +135,15 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false, true); ?>
 <?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false, true, true); ?>
+<style type="text/css">
+<?php
+// invert hover colors
+if (!empty ($hcms_hoverinvertcolors))
+{
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverTextColor");
+}
+?>
+</style>
 <script type="text/javascript">
 
 function initialize ()
@@ -353,7 +362,7 @@ hr
       foreach ($name_array as $name => $size)
       {
         echo "
-      <div class=\"hcmsSelectorItem\" onclick=\"setscreensize('".$size."');\">".getescapedtext ($name." (".$size.")")."&nbsp;</div>";
+      <div class=\"hcmsSelectorItem\" onclick=\"setscreensize('".$size."');\">  <span class=\"hcmsInvertHoverTextColor\">&nbsp;".getescapedtext ($name." (".$size.")")."&nbsp;</span></div>";
       }
       
       echo "

@@ -45,7 +45,7 @@ if ($ip != "")
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <!-- Google Maps -->
-<script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php if (!empty ($mgmt_config['googlemaps_appkey'])) echo $mgmt_config['googlemaps_appkey']; ?>"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php if (!empty ($mgmt_config['googlemaps_appkey'])) echo $mgmt_config['googlemaps_appkey']; ?>&callback=Function.prototype"></script>
 </head>
 
 <body class="hcmsWorkplaceGeneric">

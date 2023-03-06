@@ -26,6 +26,7 @@ $portaluser = getrequest ("portaluser");
 $navigation = getrequest ("navigation", "array");
 $designtheme = getrequest ("designtheme");
 $primarycolor = getrequest ("primarycolor");
+$hovercolor = getrequest ("hovercolor");
 $token = getrequest ("token");
 
 // formats
@@ -113,7 +114,7 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
   if (!empty ($delete_wallpaper)) $_FILES['wallpaper']['delete'] = 1;
 
   // save template file
-  $result_save = editportal ($site, $template, $portaluser, $designtheme, $primarycolor, $_FILES, $navigation, $formats, $user);
+  $result_save = editportal ($site, $template, $portaluser, $designtheme, $primarycolor, $hovercolor, $_FILES, $navigation, $formats, $user);
   
   if (empty ($result_save['result']))
   {
@@ -130,6 +131,7 @@ else
   // initialize
   $designtheme = "";
   $primarycolor = "";
+  $hovercolor = "";
   $hcms_themeinvertcolors = "";
   $designuser = "";
   $navigation = array();
@@ -143,6 +145,9 @@ else
 
   $temp_array = getcontent ($templatedata, "<primarycolor>");
   if (!empty ($temp_array[0])) $primarycolor = $temp_array[0];
+
+  $temp_array = getcontent ($templatedata, "<hovercolor>");
+  if (!empty ($temp_array[0])) $hovercolor = $temp_array[0];
 
   $temp_array = getcontent ($templatedata, "<user>");
   if (!empty ($temp_array[0])) $designuser = $temp_array[0];
@@ -410,8 +415,10 @@ function settransparent ()
       <label><input type="radio" class="nontransparent" name="designtheme" value="night" <?php if ($designtheme == "night" || $designtheme == "transparent" || empty ($designtheme)) echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['light'][$lang]); ?></label>&nbsp;&nbsp; 
       <label><input type="radio" class="nontransparent" name="designtheme" value="day" <?php if ($designtheme == "day") echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['dark'][$lang]); ?></label><br/><br/>
 
-      <?php echo getescapedtext ($hcms_lang['color'][$lang]); ?><br/>
-      <input class="jscolor nontransparent" name="primarycolor" value="<?php echo $primarycolor; ?>" style="width:280px;" /><br/>
+      <?php echo getescapedtext ("Main-".$hcms_lang['color'][$lang]); ?><br/>
+      <input class="jscolor nontransparent" name="primarycolor" value="<?php echo $primarycolor; ?>" style="width:280px;" /><br/><br/>
+      <?php echo getescapedtext ("Hover-".$hcms_lang['color'][$lang]); ?><br/>
+      <input class="jscolor nontransparent" name="hovercolor" value="<?php echo $hovercolor; ?>" style="width:280px;" /><br/>
       <hr/><br/>
 
       <!-- Uploads -->
@@ -628,7 +635,7 @@ function settransparent ()
 
       <?php if ($preview == "no") { ?>
       <?php echo getescapedtext ($hcms_lang['save-and-preview'][$lang]); ?>
-      <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="savetemplate();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /><br/>
+      <img src="<?php echo getthemelocation(); ?>img/button_ok.png" onclick="savetemplate();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" title="OK" alt="OK" /><br/>
       <?php } ?>
     </form>
   </div>
@@ -643,9 +650,9 @@ function settransparent ()
           <td class="hcmsWorkplaceTop" style="width:36px !important;">
             <!-- navigation items -->
             <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
-            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
-            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
-            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:2px;" />
+            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsHoverColor hcmsButtonSizeSquare" style="padding:2px;" />
+            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsHoverColor hcmsButtonSizeSquare" style="padding:2px;" />
+            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsHoverColor hcmsButtonSizeSquare" style="padding:2px;" />
           </td>
           <td class="hcmsWorkplaceExplorer" style="width:260px !important;">
             <!-- explorer items -->

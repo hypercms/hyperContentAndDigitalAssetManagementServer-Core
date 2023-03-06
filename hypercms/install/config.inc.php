@@ -688,7 +688,7 @@ $mgmt_config['publication_log'] = false;
 $mgmt_config['user_log'] = false;
 
 // User e-mail notification on system errors or warnings
-// Provide a list of comma separated user names for automated notification, or leave empty
+// Provide a list of users by thier user names (use "," or ";" as separator) for automated notification, or leave empty
 $mgmt_config['eventlog_notify'] = "";
 
 // Define users by their user name (use ";" as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API)
@@ -1033,7 +1033,7 @@ $mgmt_config['dropbox_appkey'] = "";
 // Google Maps integration
 // Provide a valid key for Google Maps
 // Visit: https://developers.google.com/maps/documentation/embed/get-api-key
-$mgmt_config['googlemaps_appkey'] = "";
+$mgmt_config['googlemaps_appkey'] = "%googlemaps_appkey%";
 
 // Google Analytics integration
 // Provide a valid key in order to track the users behaviour with Google Analytics

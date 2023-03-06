@@ -8263,7 +8263,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   if (empty ($recognizefaces_service)) $viewstore .= "
   <!-- Google Maps -->
-  <script src=\"https://maps.googleapis.com/maps/api/js?v=3&key=".$mgmt_config['googlemaps_appkey']."&libraries=places\"></script>
+  <script src=\"https://maps.googleapis.com/maps/api/js?v=3&key=".(!empty ($mgmt_config['googlemaps_appkey']) ? $mgmt_config['googlemaps_appkey'] : "")."&libraries=places&callback=Function.prototype\" async defer></script>
   ";
 
   $viewstore .= "

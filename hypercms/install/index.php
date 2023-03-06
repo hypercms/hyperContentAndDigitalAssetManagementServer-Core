@@ -155,6 +155,8 @@ $html2pdf = getrequest_esc ("html2pdf");
 $x11 = getrequest_esc ("x11");
 $mergepdf = getrequest_esc ("mergepdf");
 
+$googlemaps_appkey = getrequest_esc ("googlemaps_appkey");
+
 $setup_publication = getrequest_esc ("setup_publication");
 
 $token = getrequest ("token");
@@ -344,6 +346,17 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
         $config = str_replace ("%abs_path_data%", $mgmt_config['abs_path_data'], $config);
         
         $config = str_replace ("%os_cms%", $os_cms, $config);
+
+        $config = str_replace ("%dbhost%", $db_host, $config);
+        $config = str_replace ("%dbuser%", $db_username, $config);
+        $config = str_replace ("%dbpasswd%", $db_password, $config);
+        $config = str_replace ("%dbname%", $db_name, $config);
+          
+        $config = str_replace ("%smtp_host%", $smtp_host, $config);
+        $config = str_replace ("%smtp_username%", $smtp_username, $config);
+        $config = str_replace ("%smtp_password%", $smtp_password, $config);
+        $config = str_replace ("%smtp_port%", intval ($smtp_port), $config);
+        $config = str_replace ("%smtp_sender%", $smtp_sender, $config);
         
         $config = str_replace ("%pdftotext%", $pdftotext, $config);
         $config = str_replace ("%antiword%", $antiword, $config);
@@ -358,17 +371,8 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
         $config = str_replace ("%html2pdf%", $html2pdf, $config);
         $config = str_replace ("%x11%", $x11, $config);
         $config = str_replace ("%mergepdf%", $mergepdf, $config);
-        
-        $config = str_replace ("%dbhost%", $db_host, $config);
-        $config = str_replace ("%dbuser%", $db_username, $config);
-        $config = str_replace ("%dbpasswd%", $db_password, $config);
-        $config = str_replace ("%dbname%", $db_name, $config);
-          
-        $config = str_replace ("%smtp_host%", $smtp_host, $config);
-        $config = str_replace ("%smtp_username%", $smtp_username, $config);
-        $config = str_replace ("%smtp_password%", $smtp_password, $config);
-        $config = str_replace ("%smtp_port%", intval ($smtp_port), $config);
-        $config = str_replace ("%smtp_sender%", $smtp_sender, $config);
+
+        $config = str_replace ("%googlemaps_appkey%", $googlemaps_appkey, $config);
         
         $config = str_replace ("%instances%", "", $config);
         
@@ -1066,6 +1070,22 @@ Otherwise just provide the information below and install the most powerful Conte
       <td style="white-space:nowrap;">Define path to PDF toolkit (pdftk) </td>
       <td>
         <input type="text" id="mergepdf" name="mergepdf" placeholder="autodetection failed for /usr/bin/pdftk" value="<?php if ($yamdi != "") echo $yamdi; elseif (@is_executable ("/usr/bin/pdftk")) echo "/usr/bin/pdftk" ?>" style="width:300px;" />
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" style="white-space:nowrap;"><hr /></td>
+    </tr>
+    <!-- API Keys -->
+    <tr>
+      <td colspan="2" style="white-space:nowrap;" class="hcmsHeadline hcmsTextOrange">API Keys</td>
+    </tr>
+    <tr>
+      <td colspan="2">In order to use Google Maps for the geo location.</td>
+    </tr>
+    <tr>
+      <td style="white-space:nowrap;">Define key for the Google Maps API</td>
+      <td>
+        <input type="text" id="googlemaps_appkey" name="googlemaps_appkey" placeholder="" value="<?php if ($googlemaps_appkey != "") echo $googlemaps_appkey; ?>" style="width:300px;" />
       </td>
     </tr>
     <tr>

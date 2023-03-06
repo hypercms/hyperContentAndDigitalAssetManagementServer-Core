@@ -520,21 +520,13 @@ a.hcmsNavigator
   vertical-align: middle;
 }
 
-.hcmsButton
+.hcmsButton, .hcmsButtonPrimary
 {
   cursor: pointer;
   padding: 2px;
   margin: 0;
   border: 0;
   float: left;
-}
-
-.hcmsButton:hover, .hcmsButtonActive
-{
-  padding: 1px;
-  margin: 0;
-  background-color: #FF8411;
-  border: 1px solid #FF8411;
 }
 
 .hcmsButtonOff
@@ -556,14 +548,6 @@ a.hcmsNavigator
   border: 0;
 }
 
-.hcmsButtonTiny:hover
-{
-  padding: 0;
-  margin: 0;
-  border: 0;
-  background-color: #FF8411;
-}
-
 .hcmsButtonTinyBlank
 {
   cursor: pointer;
@@ -580,6 +564,16 @@ a.hcmsNavigator
   filter: gray() alpha(opacity=30);
   -moz-opacity: 0.3;
   opacity: 0.3;
+}
+
+.hcmsButton:hover, .hcmsButtonTiny:hover, .hcmsButtonActive
+{
+	background-color: #8a8a8a;
+}
+
+.hcmsHoverColor:hover
+{
+  background-color: #FF8411 !important;
 }
 
 .hcmsButtonClose
@@ -636,7 +630,7 @@ a.hcmsNavigator
 
 .hcmsButtonMenu:hover
 {
-  background-color: #FB8C0C;
+  background-color: #FF8411;
 }
 
 .hcmsButtonMenu:active
@@ -647,7 +641,7 @@ a.hcmsNavigator
 
 .hcmsButtonMenuActive
 {
-  background-color: #FB8C0C;
+  background-color: #FF8411;
   position: relative;
   top: 1px;
 }
@@ -722,7 +716,7 @@ a.hcmsNavigator
 {
   margin: 0;
   padding: 1px;
-  background-color: #D25D03;
+  background-color: #FF8411;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -743,7 +737,8 @@ a.hcmsNavigator
 
 .hcmsSelectorItem:hover
 {
-  background-color: #FB8C14;
+  background-color: #FF8411;
+  filter: brightness(85%);
 }
 
 .hcmsHeadline 
@@ -958,7 +953,7 @@ table.hcmsTableNoFlip td
 
 .hcmsButtonDownload:hover
 {
-  background-color: #ECA03C;
+  background-color: #FF8411;
 }
 
 .hcmsMore
@@ -971,7 +966,7 @@ table.hcmsTableNoFlip td
 
 .hcmsMore:hover
 {
-  background-color: #3E3E3E;
+  background-color: #FFC477;
 }
 
 .hcmsStatusbar
@@ -1046,7 +1041,7 @@ div.hcmsObjectUnselected
 
 .hcmsTableHeader:hover
 {
-  background-color: #EB7B04;
+  background-color: #5e5e5e;
   border-left: 3px solid #FFFFFF;
   border-right: 0;
   border-top: 0;
@@ -1057,8 +1052,8 @@ div.hcmsObjectUnselected
 .hcmsSelectArea
 {
   display: none;
-  border: 1px solid #FB980C;
-  background-color: #FCB045;
+  border: 1px solid #FF8411;
+  background-color: #FF8411;
   position: absolute;
   z-index: 5;
   filter: gray() alpha(opacity=70);

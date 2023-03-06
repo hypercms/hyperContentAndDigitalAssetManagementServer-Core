@@ -1370,7 +1370,7 @@ else
     <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
 
     <!-- Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php if (!empty ($mgmt_config['googlemaps_appkey'])) echo $mgmt_config['googlemaps_appkey']; ?>"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php if (!empty ($mgmt_config['googlemaps_appkey'])) echo $mgmt_config['googlemaps_appkey']; ?>&callback=Function.prototype" async defer></script>
 
     <script type="text/javascript">
 

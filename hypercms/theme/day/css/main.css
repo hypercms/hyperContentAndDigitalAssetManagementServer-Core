@@ -544,17 +544,6 @@ a.hcmsNavigator
   float: left;
 }
 
-.hcmsButton:hover, .hcmsButtonActive
-{
-  padding: 1px;
-  margin: 0;
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-	background-color: #FFC477;
-  border: 1px solid #FF8411;
-}
-
 .hcmsButtonOff
 {
   padding: 2px;
@@ -575,17 +564,6 @@ a.hcmsNavigator
   border: 0;
 }
 
-.hcmsButtonTiny:hover
-{
-  padding: 0;
-  margin: 0;
-  border: 0;
-	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
-	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
-	background-color: #FFC477;
-}
-
 .hcmsButtonTinyBlank
 {
   cursor: pointer;
@@ -602,6 +580,16 @@ a.hcmsNavigator
   filter: gray() alpha(opacity=30);
   -moz-opacity: 0.3;
   opacity: 0.3;
+}
+
+.hcmsButton:hover, .hcmsButtonTiny:hover, .hcmsButtonActive
+{
+	background-color: #999999;
+}
+
+.hcmsHoverColor:hover
+{
+	background-color: #FFC477 !important;
 }
 
 .hcmsButtonClose
@@ -658,7 +646,7 @@ a.hcmsNavigator
 
 .hcmsButtonMenu:hover
 {
-  background-color: #EB6804;
+  background-color: #FFC477;
 }
 
 .hcmsButtonMenu:active
@@ -669,7 +657,7 @@ a.hcmsNavigator
 
 .hcmsButtonMenuActive
 {
-  background-color: #EB6804;
+  background-color: #FFC477;
   position: relative;
   top: 1px;
 }
@@ -741,8 +729,8 @@ a.hcmsNavigator
 {
   margin: 0;
   padding: 1px;
-	background-color: #FCB335;
-  border: 1px solid #FF8411;
+	background-color: #FFC477;
+  border: 1px solid #FFC477;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -763,7 +751,8 @@ a.hcmsNavigator
 
 .hcmsSelectorItem:hover
 {
-  background-color: #FF9000;
+  background-color: #FFC477;
+  filter: brightness(85%);
 }
 
 .hcmsHeadline 
@@ -977,7 +966,7 @@ table.hcmsTableNoFlip td
 
 .hcmsButtonDownload:hover
 {
-  background-color: #ECA03C;
+  background-color: #FFC477;
 }
 
 .hcmsMore
@@ -990,7 +979,7 @@ table.hcmsTableNoFlip td
 
 .hcmsMore:hover
 {
-  background-color: #C7DBED;
+  background-color: #FFC477;
 }
 
 .hcmsStatusbar
@@ -1077,8 +1066,8 @@ div.hcmsObjectUnselected
 .hcmsSelectArea
 {
   display: none;
-  border: 1px solid #FB980C;
-  background-color: #FCB045;
+  border: 1px solid #FFC477;
+  background-color: #FFC477;
   position: absolute;
   z-index: 5;
   filter: gray() alpha(opacity=70);

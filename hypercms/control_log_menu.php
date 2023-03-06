@@ -150,14 +150,14 @@ function warning_delete()
 <!-- toolbar -->
 <div class="hcmsToolbar">
   <div class="hcmsToolbarBlock">
-    <img onClick="location='log_export.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButton hcmsButtonSizeSquare" name="media_export" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_export_page.png" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
-    <img onClick="warning_delete();" class="hcmsButton hcmsButtonSizeSquare" name="media_delete" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" />
+    <img onClick="location='log_export.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButton hcmsHoverColor hcmsButtonSizeSquare" id="media_export" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_export_page.png" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
+    <img onClick="warning_delete();" class="hcmsButton hcmsHoverColor hcmsButtonSizeSquare" id="media_delete" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" />
      <?php
     // Notification (only per publication)
     if ($site != "*Null*" && checkglobalpermission ($site, 'user'))
     {
       echo "<img ".
-             "class=\"hcmsButton hcmsButtonSizeSquare\" ".
+             "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".
              "onClick=\"hcms_showHideLayers('notificationLayer','','show','hcms_messageLayer','','hide');\" ".
              "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_notify.png\" alt=\"".getescapedtext ($hcms_lang['notify-users'][$lang])."\" title=\"".getescapedtext ($hcms_lang['notify-users'][$lang])."\" />\n";
     }    
@@ -168,10 +168,10 @@ function warning_delete()
     ?>
   </div>
   <div class="hcmsToolbarBlock">
-    <img onClick="parent['mainFrame'].location='log_list.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButton hcmsButtonSizeSquare" name="media_view" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_refresh.png" alt="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" />
+    <img onClick="parent['mainFrame'].location='log_list.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButton hcmsHoverColor hcmsButtonSizeSquare" name="media_view" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_refresh.png" alt="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" />
   </div>
   <div class="hcmsToolbarBlock">
-    <?php echo showhelpbutton ("adminguide", true, $lang, ""); ?>
+    <?php echo showhelpbutton ("adminguide", true, $lang, "", "hcmsHoverColor"); ?>
   </div>
 </div>
 

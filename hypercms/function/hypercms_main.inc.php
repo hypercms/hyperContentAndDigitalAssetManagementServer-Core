@@ -2594,7 +2594,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     else
     {
       $errcode = "40912";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createobjectaccesslink failed due to missing object id for: ".$location.$object.", ".$object_id.", ".$container_id;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createobjectaccesslink failed due to missing object id for object: ".$location.$object.", object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
 
@@ -2704,7 +2704,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     else
     {
       $errcode = "40913";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createwrapperlink failed due to missing object id for: ".$location.$object.", ".$object_id.", ".$container_id;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createwrapperlink failed due to missing object id for object: ".$location.$object.", object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
 
@@ -2818,7 +2818,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     else
     {
       $errcode = "40914";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createdownloadlink failed due to missing object id for: ".$objectpath.", ".$object_id.", ".$container_id;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createdownloadlink failed due to missing object id for object: ".$objectpath.", object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
 
@@ -9336,7 +9336,7 @@ function createportal ($site, $template)
 
 // ----------------------------------------- editportal ---------------------------------------------
 // function: editportal()
-// input: publication name [string], template name or file name [string], portal user name [string], design theme name [string] (optional), primary color as hex code [string] (optional),
+// input: publication name [string], template name or file name [string], portal user name [string], design theme name [string] (optional), primary color as hex code [string] (optional), hover color as hex code [string] (optional), 
 //        PHP global FILES variable for file upload/remove [array] (optional), navigation tree names [array] (optional), download formats [JSON-string] (optional), user name [string] (optional)
 // output: result array
 // requires: config.inc.php to be loaded before
@@ -9344,7 +9344,7 @@ function createportal ($site, $template)
 // description:
 // This function edites the settings of a portal.
 
-function editportal ($site, $template, $portaluser, $design="day", $primarycolor="", $global_files=array(), $navigation=array(), $formats="", $user="sys")
+function editportal ($site, $template, $portaluser, $design="day", $primarycolor="", $hovercolor="", $global_files=array(), $navigation=array(), $formats="", $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
@@ -9447,17 +9447,27 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
       }
     }
 
-    // set primary color in CSS
-    if ($primarycolor != "")
+    // set primary and hover color in CSS
+    if ($primarycolor != "" || $hovercolor != "")
     {
-      if ($design == "day") $search = "#aaaaaa";
-      elseif ($design == "night") $search = "#636363";
+      if ($design == "day")
+      {
+        $search_primary = "#aaaaaa";
+        $search_hover = "#FFC477";
+      }
+      elseif ($design == "night")
+      {
+        $search_primary = "#636363";
+        $search_hover = "#FF8411";
+      }
 
       $css_main = loadfile ($mgmt_config['abs_path_rep']."portal/".$site."/".$tpl_name."/css/", "main.css");
 
-      if (!empty ($css_main) && !empty ($search))
+      if (!empty ($css_main))
       {
-        $css_main = str_ireplace ($search, "#".$primarycolor, $css_main);
+        if (!empty ($search_primary)) $css_main = str_ireplace ($search_primary, "#".$primarycolor, $css_main);
+        if (!empty ($search_hover)) $css_main = str_ireplace ($search_hover, "#".$hovercolor, $css_main);
+
         if (!empty ($css_main)) savefile ($mgmt_config['abs_path_rep']."portal/".$site."/".$tpl_name."/css/", "main.css", $css_main);
       }
     }
@@ -9493,6 +9503,12 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
     {
       $templatedata = $result_load['content'];
 
+      // update to version 10.0.9
+      if (strpos ($templatedata, "<hovercolor>") < 1)
+      {
+        $templatedata = str_replace ("</primarycolor>", "</primarycolor>\n<hovercolor></hovercolor>", $templatedata);
+      }
+
       $templatedata = setcontent ($templatedata, "", "<name>", $tpl_name, "", "");
 
       if ($user != "") $templatedata = setcontent ($templatedata, "", "<user>", $user, "", "");
@@ -9502,6 +9518,8 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
       if ($design != "") $templatedata = setcontent ($templatedata, "", "<designtheme>", $site."/".$design, "", "");
 
       if ($primarycolor != "") $templatedata = setcontent ($templatedata, "", "<primarycolor>", $primarycolor, "", "");
+
+      if ($hovercolor != "") $templatedata = setcontent ($templatedata, "", "<hovercolor>", $hovercolor, "", "");
 
       if ($formats != "") $templatedata = setcontent ($templatedata, "", "<downloadformats>", $formats, "", "");
 
@@ -13421,7 +13439,7 @@ function createobject ($site, $location, $page, $template, $user)
 
                 // information log entry
                 $errcode = "00102";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New object created by user '".$user."' (".$site.", ".$location_esc.", ".$page.")"; 
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New object ".$location_esc.$page." has been created by user '".$user."'"; 
 
                 // remote client
                 remoteclient ("save", "abs_path_".$cat, $site, $location, "", $pagefile, ""); 
@@ -13443,7 +13461,7 @@ function createobject ($site, $location, $page, $template, $user)
 
               // log entry
               $errcode = "10102";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.") due to missing write permissions for the container"; 
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to missing write permissions for the container"; 
             }
           }
           // if user has no access to the workflow or link management failed
@@ -13454,7 +13472,7 @@ function createobject ($site, $location, $page, $template, $user)
 
             // log entry
             $errcode = "30102";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.") due to missing workflow access permissions"; 
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to missing workflow access permissions"; 
           } 
         } 
       }
@@ -13465,7 +13483,7 @@ function createobject ($site, $location, $page, $template, $user)
 
         // log entry
         $errcode = "20211";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.")  due to a missing template";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to a missing template";
       }
     }
   }
@@ -13477,7 +13495,7 @@ function createobject ($site, $location, $page, $template, $user)
 
     // log entry
     $errcode = "20212";
-    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object could not be created by user '".$user."' (".$site.", ".$location.", ".$page.") due to wrong or missing input or permissions (accessgeneral=".accessgeneral ($site, $location, "").")";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|The new object (".$site.", ".$location.", ".$page.") could not be created by user '".$user."' due to wrong or missing input or permissions (accessgeneral=".accessgeneral ($site, $location, "").")";
   } 
 
   // save log
@@ -13507,14 +13525,14 @@ function createobject ($site, $location, $page, $template, $user)
 
 // ---------------------------------------- uploadhandler --------------------------------------------
 // function: uploadhandler()
-// input: path to uploaded file [string], destination file path [string], is the file a remote file and has not been uploaded [boolean] (optional)
+// input: path to uploaded file [string], destination file path [string], is the file a remote file and has not been uploaded [boolean] (optional), WebDAV support [boolean] (optional)
 // output: result array
 // requires: config.inc.php
  
 // description:
 // This function manages the upload of a single file
 
-function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false)
+function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false, $webdav_support=true)
 {
   global $mgmt_config, $hcms_lang, $lang;
 
@@ -13528,11 +13546,15 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false)
     // get request method
     if (!empty ($_SERVER['REQUEST_METHOD'])) $request_method = $_SERVER['REQUEST_METHOD'];
 
-    // multipart/formdata uploads (POST method uploads)
-    if (strtoupper ($request_method) == "POST" || strtoupper ($request_method) == "GET" || empty ($request_method))
+    $errcode = "00770";
+    $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|information|".$errcode."|The upload handler received a request (".$request_method.") for the upload of file '".basename ($uploaded_file)."' (result of is_uploaded_file=".is_uploaded_file ($uploaded_file)." and is_file=".is_file ($uploaded_file).")";
+
+    // multipart/formdata uploads (POST, GET, and PUT method uploads)
+    // WebDAV uses PUT to upload files
+    if (strtoupper ($request_method) == "POST" || strtoupper ($request_method) == "GET" || (strtoupper ($request_method) == "PUT" && $webdav_support == true) || empty ($request_method))
     {
       // move uploaded file
-      if (!$is_remote_file && is_uploaded_file ($uploaded_file))
+      if ($is_remote_file == false && is_uploaded_file ($uploaded_file))
       {
         $result['result'] = move_uploaded_file ($uploaded_file, $save_file);
       }
@@ -13551,6 +13573,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false)
       }
     }
     // non-multipart uploads (PUT method support)
+    // WebDAV uses PUT to upload files, this method however causes issues
     elseif (strtoupper ($request_method) == "PUT")
     {
       $append_file = false;
@@ -13581,6 +13604,9 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false)
     // message
     $result['message'] = $hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang];
   }
+
+  // save log
+  savelog (@$error);
 
   return $result;
 }
@@ -13932,7 +13958,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
         if (sizeof ($links) > 0)
         {
-          $result['header'] = "HTTP/1.1 500 Internal Server Error";
+          $result['header'] = "HTTP/1.1 400 Bad Request";
           $result['message'] = str_replace ('%files%', implode(", ", $links), strip_tags ($hcms_lang['there-are-files-with-the-same-content-files'][$lang]));
 
           return $result;
@@ -13963,7 +13989,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
       if ($result_unzip == false)
       {
-        $result['header'] = "HTTP/1.1 500 Internal Server Error";
+        $result['header'] = "HTTP/1.1 400 Bad Request";
         $result['message'] = strip_tags ($hcms_lang['file-could-not-be-extracted'][$lang]);
 
         return $result;
@@ -14041,10 +14067,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             // save log
             savelog (@$error);
           }
-          // create multimedia object
+          // create multimedia object for ZIP file
           else
           {
-            $result_createobject = createmediaobject ($site, $location, $zipfilename, $temp_dir.$zipfilename, $user);
+            $result_createobject = createmediaobject ($site, $location, $zipfilename, $temp_dir.$zipfilename, $user, 0, false, true, false);
 
             // on success, add location
             if (!empty ($result_createobject['result']))
@@ -14126,7 +14152,6 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $show = $result_createobject['message'];
         }
       }
-
       // -------------- update existing multimedia object -----------------
       elseif ($media_update != "")
       {
@@ -14366,8 +14391,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               }
               else unindexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
 
-              // index content of readable documents
-              indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
+              // add indexcontent command to queue
+              if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "indexcontent (\"".$site."\", \"".$media_root."\", \"".$media_update."\", \"".$contentfile."\", \"\", \"". $user."\");", $user);
+              // index content
+              else indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
 
               // remove face detection data
               $contentdata = loadcontainer ($contentfile, "work", $user);
@@ -14500,7 +14527,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 // output: result array
 
 // description:
-// This function creates an asset (multimedia object) by reading a given source file. The file name must not match any temp file pattern.
+// This function creates an asset (multimedia object) by reading the provided source file. The file name must not match any temp file pattern.
 // The metadata template is based on the template of the folder the objects resides in.
 
 function createmediaobject ($site, $location, $file, $path_source_file, $user, $imagepercentage=0, $leavefile=false, $deletefile=true, $createmedia_in_background=false)
@@ -14563,7 +14590,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
         // log entry
         $errcode = "00101";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New multimedia file created by user '$user' ($site, $location_esc, $file, $path_source_file, $user)"; 
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New multimedia file (".$site.", ".$location_esc.", ".$file.", ".$path_source_file.", ".$user.") created by user '".$user."'"; 
 
         // define media location
         $medialocation = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
@@ -14599,8 +14626,10 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
             rdbms_insertdailystat ("upload", $container_id, $user, false);
           }
 
+          // add indexcontent command to queue
+          if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$file, date("Y-m-d H:i:s"), 0, "indexcontent (\"".$site."\", \"".$medialocation."\", \"".$mediafile."\", \"".$container_id."\", \"\", \"". $user."\");", $user);
           // index content
-          indexcontent ($site, $medialocation, $mediafile, $container_id, $container_content, $user);
+          else indexcontent ($site, $medialocation, $mediafile, $container_id, $container_content, $user);
 
           // resize original image if requested
           if (!empty ($mediafile) && $imagepercentage > 0 && $imagepercentage <= 200)
@@ -14790,7 +14819,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             // create objects
             if (!empty ($createfolder['result']))
             {
-              $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user);
+              $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user, 0, false, true, false);
             }
             else
             {
@@ -14859,7 +14888,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 // input: publication name [string], location [string], object name [string], format (file extension w/o dot) [string] (optional), 
 //        type of image/video/audio file [thumbnail,origthumb(thumbnail made from original video/audio),original,any other string present in $mgmt_imageoptions] (optional),
 //        base64 encoded media data as alternative to server-side conversion using createmedia [string] (optional), user name [string]
-// output: result array / false on error (saves original or thumbnail media file of an object, for thumbnail only jpeg format is supported as output), user name
+// output: result array
 
 // description:
 // This function mainly uses function createmedia to render the objects media, but at the same time takes care of versioning and the object name, if the file extension has been changed.
@@ -15098,8 +15127,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat);
 
-    // site buffer variable holds current site
-    $site_buffer = $site;
+    // remember the current publication and object name
+    $temp_site = $site;
+    $temp_page = $page;
 
     // load publication inheritance setting
     $inherit_db = inherit_db_read ();
@@ -15123,30 +15153,40 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         $location_esc = $location_esc.$page."/";
       } 
 
-      // get file info
-      $fileinfo = getfileinfo ($site, $page, $cat);
-      $pagename = $fileinfo['file'];
-      $pagename_orig = $fileinfo['name'];
-      $filetype = $fileinfo['type'];
-      $fileext = $fileinfo['ext'];
-
-      // load page file
-      $pagedata = loadfile ($location, $page);
-
-      if ($pagedata != false) 
+      if (!empty ($page))
       {
-        // get name of content, template and media file
-        $contentfile_self = getfilename ($pagedata, "content");
-        $templatefile_self = getfilename ($pagedata, "template");
-        $mediafile_self = getfilename ($pagedata, "media");
-        $namefile_self = getfilename ($pagedata, "name");
+        // get file info
+        $fileinfo = getfileinfo ($site, $page, $cat);
+        $pagename = $fileinfo['file'];
+        $pagename_orig = $fileinfo['name'];
+        $filetype = $fileinfo['type'];
+        $fileext = $fileinfo['ext'];
+
+        // load page file
+        $pagedata = loadfile ($location, $page);
+
+        if ($pagedata != false) 
+        {
+          // get name of content, template and media file
+          $contentfile_self = getfilename ($pagedata, "content");
+          $templatefile_self = getfilename ($pagedata, "template");
+          $mediafile_self = getfilename ($pagedata, "media");
+          $namefile_self = getfilename ($pagedata, "name");
+        }
+        else 
+        {
+          $test = false;
+
+          $errcode = "10219";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|loadfile failed for ".$location_esc.$page;
+        }
       }
-      else 
+      else
       {
         $test = false;
 
-        $errcode = "10219";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|loadfile failed for ".$location_esc.$page;
+        $errcode = "10220";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder or object ".$temp_page." does not exits in ".$location_esc;
       }
     }
     elseif ($action == "page_paste")
@@ -15210,29 +15250,39 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['you-do-not-have-permissions-to-paste-objects-from-the-other-publication-in-this-publication'][$lang]."</span><br />\n";
             } 
 
-            // get file info
-            $fileinfo = getfileinfo ($site, $page, $cat);
-            $pagename = $fileinfo['file'];
-            $pagename_orig = $fileinfo['name'];
-            $filetype = $fileinfo['type']; 
-            $fileext = $fileinfo['ext']; 
-
-            // load object file
-            $pagedata = loadfile ($location_source, $page);
- 
-            if ($pagedata != false) 
+            if (!empty ($page))
             {
-              // get media and template file name
-              $mediafile_self = getfilename ($pagedata, "media");
-              $contentfile_self = getfilename ($pagedata, "content");
-              $templatefile_self = getfilename ($pagedata, "template");
+              // get file info
+              $fileinfo = getfileinfo ($site, $page, $cat);
+              $pagename = $fileinfo['file'];
+              $pagename_orig = $fileinfo['name'];
+              $filetype = $fileinfo['type']; 
+              $fileext = $fileinfo['ext']; 
+
+              // load object file
+              $pagedata = loadfile ($location_source, $page);
+  
+              if ($pagedata != false) 
+              {
+                // get media and template file name
+                $mediafile_self = getfilename ($pagedata, "media");
+                $contentfile_self = getfilename ($pagedata, "content");
+                $templatefile_self = getfilename ($pagedata, "template");
+              }
+              else 
+              {
+                $test = false;
+
+                $errcode = "10209";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|loadfile failed for ".$location_source_esc.$page;
+              }
             }
-            else 
+            else
             {
               $test = false;
-
-              $errcode = "10209";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|loadfile failed for ".$location_source.$page;
+      
+              $errcode = "10210";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder or object ".$temp_page." does not exits in ".$location_source_esc;
             }
           }
         }
@@ -15666,7 +15716,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     if ($show == "")
     {
       // get original site from buffer
-      $site = $site_buffer;
+      $site = $temp_site;
 
       // publication management config
       if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
@@ -16047,7 +16097,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         $cnt_pointer = getfilename ($pagestore, "content");
 
         // if object is a file and not a page or component
-        if ($cnt_pointer != false && $tpl_pointer != false)
+        if (!empty ($cnt_pointer) && !empty ($tpl_pointer))
         {
           // remove all code except template and content pointer
           $pagestore = "<!-- hyperCMS:template file=\"".$tpl_pointer."\" -->\n<!-- hyperCMS:content file=\"".$cnt_pointer."\" -->\n";
@@ -18759,8 +18809,19 @@ function processobjects ($action, $site, $location, $file, $published_only=false
     // sendmail service respons was a success without any errors
     if (!empty ($result['success']) && empty ($result['error']) && empty ($result['general']))
     {
-      $errcode = "00417";
+      $errcode = "00416";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Processing (".$action.") was successful for mail file '".$file."'";
+
+      // save log
+      savelog (@$error); 
+
+      return true;
+    }
+    // sendmail service response includes general errors 
+    elseif (empty ($result['error']) || (!empty ($result['general']) && is_array ($result['general'])))
+    {
+      $errcode = "00417";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|Processing (".$action.") was successful for mail file '".$file."' with warning '".implode (", ", $result['general'])."'";
 
       // save log
       savelog (@$error); 
