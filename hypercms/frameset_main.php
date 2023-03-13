@@ -423,7 +423,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; bottom:0; width:<?php echo $width_top; ?>px;">
   <img src="<?php if (!empty ($mgmt_config['logo_top'])) echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
   
-  <?php if (empty ($hcms_assetbrowser)) { ?>
+  <?php if (empty ($hcms_assetbrowser) && linking_valid() == false) { ?>
   <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png" class="hcmsButtonTiny hcmsHoverColor hcmsButtonSizeSquare" style="padding:2px;" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
   <?php } ?>
 

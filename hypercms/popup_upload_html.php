@@ -187,7 +187,7 @@ $(document).ready(function ()
   // delete objects on given date
   var deletedate = "";
   // XMLHttpRequest object used to store the XHR objects in order to abort file chunk uploads
-   var jqXHR = {};
+  var jqXHR = {};
 
   // Function to convert the file size in bytes
   function bytesToSize (bytes)
@@ -209,29 +209,27 @@ $(document).ready(function ()
     span.text((name.length > maxLen) ? name.substr(0, maxLen-moreThanMaxLen.length)+moreThanMaxLen : name)
         .addClass('inline file_name')
         .prop('title', name);
+
     return span;
   }
 
   // Builds the buttons needed for each element
   function buildButtons (data)
-  {   
-    var jqXHR_file;
-
+  {
     // Build the Submit Button
     var submit = $('<div>&nbsp;</div>');
     submit.hide()
           .addClass('file_submit')
           .click(function() {
             // If we have already started the upload we don't do anything
-            if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
-              return;
+            if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT) return;
 
             var filename = data.files[0].name;
 
             // We unset data here, to guarantee that the file uploader does reload the form data before submitting
             data.data = undefined;
 
-            console.log("Uploading file " + filename);
+            console.log("Uploading file '" + filename + "'");
 
             // submit the files and store XHR object
             jqXHR[filename] = data.submit();
@@ -244,7 +242,7 @@ $(document).ready(function ()
           .addClass('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
           .click({ }, function(event) {
 
-            console.log("Cancel upload of file " + data.files[0].name);
+            console.log("Cancel upload of file '" + data.files[0].name + "'");
 
             // if we are sending data we stop it or else we remove the entry completely
             if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.DONE && ajax.readyState != ajax.UNSENT)
@@ -314,6 +312,64 @@ $(document).ready(function ()
                 .append(msg)
                 .append(buttons);
   }
+
+  // Function that gets the response text from service uploadfile and executes buildFileMessage
+  function getResponseAndBuildFileMessage (data, success, openeditwindow)
+  {
+    var text = "";
+    var file = "";
+
+    // get response text
+    if (data.jqXHR && data.jqXHR.responseText)
+    {
+      text = data.jqXHR.responseText;
+    }
+    else if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
+    {
+      if (ajax && ajax.responseText) 
+      {
+        text = ajax.responseText;
+      }
+      else if (data.result)
+      {
+        text = data.result;
+      }
+    }
+
+    // put out message if possible
+    if (text != "")
+    {
+      // seperate message from command/objects
+      if ((filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
+      {
+        file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
+        text = text.substr (0, filepos1);
+
+        <?php if ($cat == "comp" && !empty ($mgmt_config[$site]['upload_userinput']) && $uploadmode != "single") { ?>
+        if (openeditwindow == true && file != "")
+        {
+          if (file.indexOf("|") > 0)
+          {
+            var file_array = file.split("|");
+
+            for (var i=0; i < file_array.length; ++i)
+            {
+              // open meta data edit window in iframe
+              if (file_array[i] != "") openEditWindow(file_array[i]);
+            }
+          }
+          else
+          {
+            // open meta data edit window in iframe
+            openEditWindow(file);
+          }
+        }
+        <?php } ?>
+      }
+
+      buildFileMessage(data, text, success);
+    }
+  }
     
   // Function that makes the div contain file information
   function buildFileUpload (data)
@@ -359,8 +415,10 @@ $(document).ready(function ()
     dataType: 'html',
     // Limits how much simultaneous request can be made
     limitConcurrentUpload: 3,
+    <?php if (!empty ($mgmt_config['resume_uploads'])) { ?>
     // split large files in chunks of 10 MB
     maxChunkSize: 10000000,
+    <?php } ?>
     // cache
     cache: false,
     // script only works when singleFileUploads is true
@@ -416,12 +474,12 @@ $(document).ready(function ()
         if (result.Filedata[0])
         {
           var file = result.Filedata[0];
-          console.log("Requesting upload info on file " + file.name);
+          console.log("Requesting upload info on file '" + file.name + "'");
 
           if (parseInt(file.size) > 0) 
           {
             data.uploadedBytes = file && file.size;
-            console.log("Resuming upload of file " + file.name + " after " + file.size + " bytes");
+            console.log("Resuming upload of file '" + file.name + "' after " + file.size + " bytes");
             
             // auto resume upload
             // $.blueimp.fileupload.prototype.options.add.call(that, e, data);
@@ -429,11 +487,14 @@ $(document).ready(function ()
         }
       });
       <?php } ?>
-    },
-
-    // delete aborted chunked uploads
+    }
+    <?php if (!empty ($mgmt_config['resume_uploads'])) { ?>,
     fail: function (e, data) {
-      console.log("Deleting aborted chunked upload of file " + data.files[0].name);
+      // put out message if possible
+      getResponseAndBuildFileMessage(data, false, false);
+
+      // delete aborted chunked uploads
+      console.log("Deleting aborted chunked upload of file '" + data.files[0].name + "'");
 
       $.ajax({
         url: 'service/uploadresume.php?action=delete&location=<?php echo urlencode($location_esc); ?>&file=' + encodeURIComponent(data.files[0].name) + '&user=<?php echo urlencode($user); ?>',
@@ -442,6 +503,7 @@ $(document).ready(function ()
         type: 'DELETE'
       });
     }
+    <?php } ?>
   })
   
   // callback on submit of each file
@@ -471,47 +533,10 @@ $(document).ready(function ()
     
     var file = "";
 
-    console.log("The file " + data.files[0].name + " has been uploaded");
-    
+    console.log("The file '" + data.files[0].name + "' has been uploaded");
+
     // put out message if possible
-    if (data.result || (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT))
-    {
-      if (data.xhr && (ajax = data.xhr())) 
-      {
-        var text = ajax.responseText;
-      }
-      else if (data.result)
-      {
-        var text = data.result;
-      }
-
-      // seperate message from command/objects
-      if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
-      {
-        file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
-        text = text.substr (0, filepos1);
-
-        <?php if ($cat == "comp" && !empty ($mgmt_config[$site]['upload_userinput']) && $mgmt_config[$site]['upload_userinput'] == true && $uploadmode != "single") { ?> 
-        if (file.indexOf("|") > 0)
-        {
-          var file_array = file.split("|");
-
-          for (var i=0; i < file_array.length; ++i)
-          {
-            // open meta data edit window in iframe
-            if (file_array[i] != "") openEditWindow(file_array[i]);
-          }
-        }
-        else
-        {
-          // open meta data edit window in iframe
-          openEditWindow(file);
-        }
-        <?php } ?>
-      }
-      
-      buildFileMessage(data, text, true);
-    }       
+    getResponseAndBuildFileMessage(data, true, true);
     
     // Update the total count of uploaded files
     filecount++;
@@ -529,27 +554,8 @@ $(document).ready(function ()
   // file upload failed
   .bind('fileuploadfail', function(e, data) {
     
-    // Put out message if possible
-    if (data.xhr && (ajax = data.xhr()) && ajax.readyState != ajax.UNSENT)
-    {
-      if (data.xhr && (ajax = data.xhr())) 
-      {
-        var text = ajax.responseText;
-      }
-      else if (data.result)
-      {
-        var text = data.result;
-      }
-
-      // seperate message from command/objects
-      if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
-      {
-        file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
-        text = text.substr (0, filepos1);
-      }
-
-      buildFileMessage(data, text, false);
-    }       
+    // put out message if possible
+    getResponseAndBuildFileMessage(data, false, false);    
   })
   
   // progress bar
@@ -578,8 +584,8 @@ $(document).ready(function ()
   {
     // need ajax var for aborting process
     var ajax;
-    // Build the Submit Button
-    // Is hidden from users view atm
+    // build the Submit Button
+    // is hidden from users view atm
     var submit = $('<div>&nbsp;</div>');
           
     submit.hide()
@@ -591,7 +597,7 @@ $(document).ready(function ()
         // start progress
         buildDropboxFileUpload (data);
  
-        // Update queue count
+        // update queue count
         queuecount--;
         
         ajax = 	$.ajax({
@@ -618,7 +624,7 @@ $(document).ready(function ()
           {
             var file = "";
 
-            if (data.xhr && (ajax = data.xhr())) 
+            if (ajax && ajax.responseText) 
             {
               var text = ajax.responseText;
             }
@@ -654,7 +660,7 @@ $(document).ready(function ()
             // Put out message if possible
             if (ajax && ajax.readyState != ajax.UNSENT)
             {
-              if (data.xhr && (ajax = data.xhr())) 
+              if (ajax.responseText) 
               {
                 var text = ajax.responseText;
               }
@@ -714,7 +720,7 @@ $(document).ready(function ()
     data.context.empty();
     
     // apply the correct css for this div
-    data.context.removeClass('file_normal')
+    data.context.removeClass('file_normal');
 
     if (success) data.context.addClass('file_success');
     else data.context.addClass('file_error');
@@ -829,10 +835,9 @@ $(document).ready(function ()
     
     // apply the correct css for this div
     data.context.removeClass('file_normal')
-    if(success)
-      data.context.addClass('file_success');
-    else
-      data.context.addClass('file_error');
+
+    if (success) data.context.addClass('file_success');
+    else data.context.addClass('file_error');
     
     // Build name field and buttons
     var name = getFileNameSpan(data.files[0].name);
@@ -929,7 +934,7 @@ $(document).ready(function ()
           {
             var file = "";
 
-            if (data.xhr && (ajax = data.xhr())) 
+            if (ajax && ajax.responseText) 
             {
               var text = ajax.responseText;
             }
@@ -968,7 +973,7 @@ $(document).ready(function ()
             // Put out message if possible
             if (ajax && ajax.readyState != ajax.UNSENT)
             {
-              if (data.xhr && (ajax = data.xhr())) 
+              if (ajax.responseText) 
               {
                 var text = ajax.responseText;
               }
@@ -1028,11 +1033,10 @@ $(document).ready(function ()
     data.context.empty();
 
     // apply the correct css for this div
-    data.context.removeClass('file_normal')
-    if(success)
-      data.context.addClass('file_success');
-    else
-      data.context.addClass('file_error');
+    data.context.removeClass('file_normal');
+
+    if (success) data.context.addClass('file_success');
+    else data.context.addClass('file_error');
 
     // Build name field and buttons
     var name = getFileNameSpan(data.files[0].name);
@@ -1100,11 +1104,10 @@ $(document).ready(function ()
     data.context.empty();
 
     // apply the correct css for this div
-    data.context.removeClass('file_normal')
-    if(success)
-      data.context.addClass('file_success');
-    else
-      data.context.addClass('file_error');
+    data.context.removeClass('file_normal');
+
+    if (success) data.context.addClass('file_success');
+    else data.context.addClass('file_error');
 
     // Build name field and buttons
     var name = getFileNameSpan(data.files[0].name);

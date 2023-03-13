@@ -250,7 +250,7 @@ function importCSVtextcontent ($site, $location, $file_csv, $user, $type="", $de
                     $object = $data[$id_filename];
                   }
 
-                  $temp_object = createfilename ($object);
+                  $temp_object = createfilename ($object, true);
 
                   // update content
                   if ($updateobject == true)

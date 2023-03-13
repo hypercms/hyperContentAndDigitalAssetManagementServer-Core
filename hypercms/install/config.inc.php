@@ -197,7 +197,7 @@ $mgmt_config['objectview'] = "inlineview";
 // Define standard view for explorer object list ("detail" = detail view; "small", "medium", "large" = thumbnail gallery view)
 $mgmt_config['explorerview'] = "medium";
 
-// How many items (folders and objects) should be displayed in the explorer object list initally
+// How many items (folders and objects) should be displayed in the explorer object list initally.
 $mgmt_config['explorer_list_maxitems'] = 500;
 
 // Enable paging (true) or expand object list (false)
@@ -246,77 +246,77 @@ $mgmt_config['annotation'] = false;
 // Define if face detection and recognition for images and videos should be enabled (true) or disabled (false)
 $mgmt_config['facerecognition'] = false;
 
-// Define URL of your system using a different subdomain or domain in order to run the service indepenendtly (non-blocking)
-// Otherwise the client service will be operated in the same domain as the users client session (blocking)
+// Define URL of your system using a different subdomain or domain in order to run the service indepenendtly (non-blocking).
+// Otherwise the client service will be operated in the same domain as the users client session (blocking).
 // Use SSL for the service if your installation uses SSL. Do not mix HTTP and HTTPS since the browsers will block mixed content.
 $mgmt_config['facerecognition_service_url'] = "";
 
-// Run the face recognition service on the clients of the defined users (use ";" as separator for the user names) in the background or leave empty for all user clients
+// Run the face recognition service on the clients of the defined users (use ";" as separator for the user names) in the background or leave empty for all user clients.
 $mgmt_config['facerecognition_service_users'] = "";
 
-// Exclude assets of publications from the face recognition service (use ";" as separator for the publication names) or leave empty for all publications
+// Exclude assets of publications from the face recognition service (use ";" as separator for the publication names) or leave empty for all publications.
 $mgmt_config['facerecognition_service_exclude'] = "";
 
 // Define standard mail link type ("access" = access-link; "download" = download-link)
 $mgmt_config['maillink'] = "download";
 
 // Define the name of the theme/design for the UI for all publications
-// The standard themes are located in directory hypercms/theme/ and the Portal themes are in repository/portal/[publication]
+// The standard themes are located in directory hypercms/theme/ and the Portal themes are in repository/portal/[publication].
 $mgmt_config['theme'] = "";
 
 // Define alternative logo (URL notation) for top frame.
 $mgmt_config['logo_top'] = "";
 
-// Define alternative wallpaper image (must be an URL) for the logon and home screen
+// Define alternative wallpaper image (must be an URL) for the logon and home screen.
 $mgmt_config['wallpaper'] = "";
 
-// Show (true) or hide (false) information boxes to provide additional information to the user
+// Show (true) or hide (false) information boxes to provide additional information to the user.
 $mgmt_config['showinfobox'] = true;
 
-// Define home boxes to show for each user if no individual selection has been made (use ";" as separator)
-// Home boxes are located in directory hypercms/box/
+// Define home boxes to show for each user if no individual selection has been made (use ";" as separator).
+// Home boxes are located in directory hypercms/box/.
 $mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
 
-// Define URL to show in welcome/news home box
+// Define URL to show in welcome/news home box.
 $mgmt_config['homebox_welcome'] = "https://cloud.hypercms.net/home/update_info_en.xhtml";
 
-// Define a directory for individual home boxes (components) that are based on a template and can be edited
+// Define a directory for individual home boxes (components) that are based on a template and can be edited.
 $mgmt_config['homeboxes_directory'] = "HomeBoxes";
 
-// Enable (true) or disable (false) the toolbar personalization for all users
+// Enable (true) or disable (false) the toolbar personalization for all users.
 $mgmt_config['toolbar_functions'] = true;
 
 // Brand Guidelines
-// Define a directory for your brand guidelines (components) that are based on a template and can be edited
+// Define a directory for your brand guidelines (components) that are based on a template and can be edited.
 $mgmt_config['brandguide_directory'] = "BrandGuidelines";
 
 // File upload
-// Check for duplicate entries based on MD5 hash of files (true) or not (false) as default value for the checkbox
+// Check for duplicate entries based on MD5 hash of files (true) or not (false) as default value for the checkbox.
 $mgmt_config['check_duplicates'] = true;
 
 // File upload
-// Allow existing files to be overwritten (true) or not (false)
+// Allow existing files to be overwritten (true) or not (false).
 $mgmt_config['overwrite_files'] = true;
 
 // File upload
-// Allow resumable file uploads (true) or not (false)
+// Allow resumable file uploads (true) or not (false).
 $mgmt_config['resume_uploads'] = true;
 
 // Display owner column in content and template version history (true) or hide the owner (false)
 // Requires to read the owner from the XML content for each version and requires some time for longer version histories.
 $mgmt_config['version_owner'] = false;
 
-// Enable AutoSave to autoamtically save the text of the edior each given value in seconds
+// Enable AutoSave to autoamtically save the text of the edior each given value in seconds.
 // Set value to 0 to disable autosave
 $mgmt_config['autosave'] = 0;
 
-// Enable (true) or disable (false) recycle bin
+// Enable (true) or disable (false) recycle bin.
 $mgmt_config['recyclebin'] = false;
 
-// Delete objects from recycle bin permanently after certain amount of days or 0 for never
+// Delete objects from recycle bin permanently after certain amount of days or 0 for never.
 $mgmt_config['recycledays'] = 5;
 
-// Define screen/viewport sizes for screen and mobile browser emulation
+// Define screen/viewport sizes for screen and mobile browser emulation.
 $mgmt_config['screensize'] = array();
 // Notebook/desktop screen sizes
 $mgmt_config['screensize']['desktop']['10&quot; Netbook'] = "1024 x 600";
@@ -381,12 +381,12 @@ $mgmt_config['screensize']['phone']['Samsung Galaxy Note 5'] = "480 x 853";
 $mgmt_config['screensize']['phone']['Samsung Galaxy Note 9'] = "360 x 740";
 $mgmt_config['screensize']['phone']['Samsung Galaxy Note 10'] = "412 x 869";
 
-// Define the tag/content IDs for the source and destination container for the relationsship (source -> destination multimedia object) when using copy and paste
-// Leave empty if you do not want to save the relationship
+// Define the tag/content IDs for the source and destination container for the relationsship (source -> destination multimedia object) when using copy and paste.
+// Leave empty if you do not want to save the relationship.
 $mgmt_config['relation_source_id'] = "Related";
 $mgmt_config['relation_destination_id'] = "Related";
 
-// Enable (true) or disable (false) loops for workflows
+// Enable (true) or disable (false) loops for workflows.
 $mgmt_config['workflow_loop'] = false;
 
 // --------------------------------- Language settings ---------------------------------------
@@ -544,165 +544,165 @@ $mgmt_lang_shortcut_default = "en";
 
 // --------------------------------- Technical parameters ---------------------------------------
 
-// Define operating system (OS) on content management server ("UNIX" for all UNIX and Linux OS or "WIN" for MS Windows)
-// Please note: MS PWS cannot handle multiple HTTP-requests at the same time! since version 3.0 PWS will not be supplied anymore
+// Define operating system (OS) on content management server ("UNIX" for all UNIX and Linux OS or "WIN" for MS Windows).
+// Please note: MS PWS cannot handle multiple HTTP-requests at the same time! since version 3.0 PWS will not be supplied anymore.
 $mgmt_config['os_cms'] = "%os_cms%";
 
-// Define date format for error logging
+// Define date format for error logging.
 $mgmt_config['today'] = date ("Y-m-d H:i:s", time());
 
-// Define the unit for the duration (float value) of tasks, use "d" for days, "h" for hours
+// Define the unit for the duration (float value) of tasks, use "d" for days, "h" for hours.
 $mgmt_config['taskunit'] = "h";
 
-// Define the database tables to be used in reports, use ";" as delimiter
+// Define the database tables to be used in reports, use ";" as delimiter.
 $mgmt_config['report_tables'] = "object;textnodes;dailystat;project;task;recipient;accesslink";
 
 // Supported Applications
 // Set value to true if your content management server supports rendering of objects
-// using program- and script-technologies like PHP, JSP, ASP. Otherwise set false
+// using program- and script-technologies like PHP, JSP, ASP. Otherwise set false.
 $mgmt_config['application']['php'] = true;
 $mgmt_config['application']['jsp'] = false;
 $mgmt_config['application']['asp'] = false;
 
 // File Upload
-// Maximum file size in MB allowed for upload. set value to 0 to enable all sizes
+// Maximum file size in MB allowed for upload. set value to 0 to enable all sizes.
 // Check webserver and php.ini restrictions too!
 $mgmt_config['maxfilesize'] = 0;
 
 // ZIP File
-// Maximum file size to be compressed in ZIP file in MB. Set value to 0 to disable limit
+// Maximum file size to be compressed in ZIP file in MB. Set value to 0 to disable limit.
 $mgmt_config['maxzipsize'] = 0;
 
 // Maximum digits for file names (applies for createobject and uploadfile)
 // Most linux file systems does not support more than 255 bytes
 $mgmt_config['max_digits_filename'] = 236;
 
-// Which types of files (file extensions) are not allowed for upload, example ".asp.jsp.php.pl.sql"
+// Which types of files (file extensions) are not allowed for upload, example ".asp.jsp.php.pl.sql".
 $mgmt_config['exclude_files'] = ".php.phtml.pl.jsp.asp.aspx.exe.sql.sh.bash";
 
-// Save GPS coordinates (latitude, longitude) provided by the original media file in the database (true) or not (false)
-// This will overwrite the geo location provided by the user
+// Save GPS coordinates (latitude, longitude) provided by the original media file in the database (true) or not (false).
+// This will overwrite the geo location provided by the user.
 $mgmt_config['gps_save'] = true;
 
 // Save Metadata to Files
-// Save IPTC tags to image files (true) or not (false)
+// Save IPTC tags to image files (true) or not (false).
 $mgmt_config['iptc_save'] = true;
 
-// Save XMP tags to image files (true) or not (false)
+// Save XMP tags to image files (true) or not (false).
 $mgmt_config['xmp_save'] = true;
 
-// Save ID3 tags to audio files (true) or not (false)
+// Save ID3 tags to audio files (true) or not (false).
 $mgmt_config['id3_save'] = true;
 
 // Versioning of Containers
-// Save versions of published containers and media files (true) or disable versioning (false)
+// Save versions of published containers and media files (true) or disable versioning (false).
 $mgmt_config['contentversions'] = true;
 
-// Save versions of saved containers and media files (true) or do not create a new version (false)
+// Save versions of saved containers and media files (true) or do not create a new version (false).
 $mgmt_config['contentversions_all'] = false;
 
-// Max. number of versions to be saved (0 means no limit)
+// Max. number of versions to be saved (0 means no limit).
 $mgmt_config['contentversions_max'] = 0;
 
 // Public Download
-// Allow access to download and wrapper links without logon session (true) or not (false)
+// Allow access to download and wrapper links without logon session (true) or not (false).
 // This setting must be enabled if users want to provide wrapper or download links to the public.
 // Otherwise the object need to be published in order to provide public access.
 $mgmt_config['publicdownload'] = true;
 
 // FTP Upload
-// Allow FTP file download (true) or not (false)
+// Allow FTP file download (true) or not (false).
 $mgmt_config['ftp_download'] = true;
 
 // Document Viewer
-// Allow the view of documents by the doc viewer (true) or not (false)
+// Allow the view of documents by the doc viewer (true) or not (false).
 $mgmt_config['docviewer'] = true;
 
 // Support for synonyms in search
-// Enable synonyms (true) or not (false)
+// Enable synonyms (true) or not (false).
 $mgmt_config['search_synonym'] = true;
 
 // Operator for text based search queries
-// Only AND or OR are allowed as possible values or leave empty for default setting
+// Only AND or OR are allowed as possible values or leave empty for default setting.
 $mgmt_config['search_operator'] = "";
 
 // Use "like" or "match" for full-text search queries
-// "match" has performance advantages if no wildcard-character is used and permits the use of special operators
+// "match" has performance advantages if no wildcard-character is used and permits the use of special operators.
 // Please keep in mind that "match" uses the stopword list of the database and the "like" operator will be used in combination
-// in order to avoid empty search results due to stopwords restrictions of the database
-// "like" cant use any index and will be slower but will lead to more or results since it uses the text content as is
+// in order to avoid empty search results due to stopwords restrictions of the database.
+// "like" cant use a fulltext search index and will be slower but will lead to more or the same results since it uses the text content as is.
 $mgmt_config['search_query_match'] = "match";
 
-// Maximum number of search results (per page/request)
+// Maximum number of search results (per page/request).
 $mgmt_config['search_max_results'] = 300;
 
 // Strong Passwords
-// Enable (true) or disable (false) strong passwords for users
-// If enabled, passwords will be checked regarding minimum security requirements
+// Enable (true) or disable (false) strong passwords for users.
+// If enabled, passwords will be checked regarding minimum security requirements.
 $mgmt_config['strongpassword'] = true;
 
 // Define the minimum password length
-// The maximum password length is 100 characters and can't be changed
+// The maximum password length is 100 characters and can't be changed.
 $mgmt_config['passwordminlength'] = 10;
 
 // Password dictionary of passwords that must not be used (blacklist), use "," as delimiter. 
 $mgmt_config['passwordblacklist'] = "";
 
-// Number of passwords in the history that can't be reused again
+// Number of passwords in the history that can't be reused again.
 $mgmt_config['passwordhistory'] = 0;
 
-// Password expiration in number of days (0 means it never expires)
+// Password expiration in number of days (0 means it never expires).
 $mgmt_config['passwordexpires'] = 0;
 
-// Enable (true) or disable (false) the password reset on logon screen
+// Enable (true) or disable (false) the password reset on logon screen.
 $mgmt_config['passwordreset'] = true;
 
-// Enable (true) or disable (false) multi-factor authentication
+// Enable (true) or disable (false) multi-factor authentication.
 $mgmt_config['multifactorauth'] = false;
 
 // Registration of new users
-// Enable (true) or disable (false) the registration link for new users in the sign-in mask
+// Enable (true) or disable (false) the registration link for new users in the sign-in mask.
 $mgmt_config['userregistration'] = false;
 
-// User account expiration in number of days (0 means it never expires)
+// User account expiration in number of days (0 means it never expires).
 // If no user activity has been logged for a certain time, the user can't login anymore
 // IMPORTANT: This feature requires $mgmt_config['user_log'] = true
 $mgmt_config['userexpires'] = 0;
 
-// Enable (true) or disable (false) concurrent users using the same account
+// Enable (true) or disable (false) concurrent users using the same account.
 $mgmt_config['userconcurrent'] = true;
 
-// Enable (true) or disable (false) the permanent deletion of users that exceeded the valid date
+// Enable (true) or disable (false) the permanent deletion of users that exceeded the valid date.
 $mgmt_config['userdelete'] = true;
 
 // Log level for system events
-// Define the log level (all, warning, error, none) for the logging of system events
+// Define the log level (all, warning, error, none) for the logging of system events.
 $mgmt_config['loglevel'] = "all";
 
 // Publication specific log files
-// Enable (true) or disable (false) publication specific log files besides the standard event log
+// Enable (true) or disable (false) publication specific log files besides the standard event log.
 $mgmt_config['publication_log'] = false;
 
 // User specific log files
-// Enable (true) or disable (false) user specific log files besides the standard event log
+// Enable (true) or disable (false) user specific log files besides the standard event log.
 $mgmt_config['user_log'] = false;
 
 // User e-mail notification on system errors or warnings
-// Provide a list of users by thier user names (use "," or ";" as separator) for automated notification, or leave empty
+// Provide a list of users by thier user names (use "," or ";" as separator) for automated notification, or leave empty.
 $mgmt_config['eventlog_notify'] = "";
 
-// Define users by their user name (use ";" as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API)
+// Define users by their user name (use ";" as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API).
 $mgmt_config['notify_exclude_users'] = "sys";
 
 // Encryption
-// Encryption strength (weak, standard, strong)
+// Encryption strength (weak, standard, strong).
 $mgmt_config['crypt_level'] = "strong";
 
-// Key used for en/decryption of temporary system data (key length must be 8, 16, or 32)
+// Key used for en/decryption of temporary system data (key length must be 8, 16, or 32).
 $mgmt_config['crypt_key'] = "h1y2p3e4r5c6m7s8";
 
-// Data and file encryption is always based on strong AES 256
-// You need to define a key with 32 digits for en/decryption
+// Data and file encryption is always based on strong AES 256.
+// You need to define a key with 32 digits for en/decryption.
 // If a key server is used please use the commented line to access the key:
 // $mgmt_config['aes256_key'] = file_get_contents ("https://key-server/aes256-key.key");
 $mgmt_config['aes256_key'] = "h1y2p3e4r5c6m7s8s9m0c1r2e3p4y5h6";
@@ -714,8 +714,8 @@ $mgmt_config['aes256_key'] = "h1y2p3e4r5c6m7s8s9m0c1r2e3p4y5h6";
 $mgmt_config['template_clean_level'] = 3;
 
 // Logon Timeout
-// How many minutes will an IP and user combination be locked after 10 failed attempts
-// A value of 0 means there is no timeout
+// How many minutes will an IP and user combination be locked after 10 failed attempts.
+// A value of 0 means there is no timeout.
 $mgmt_config['logon_timeout'] = 10; 
 
 // CSRF Protection
@@ -731,6 +731,9 @@ $mgmt_config['token_lifetime'] = 86400;
 // The min. supported value is 10 seconds and the default/fallback value is 3600 seconds
 $mgmt_config['webdav_lifetime'] = 3600;
 
+// Enable (true) or disable (false) the WebDAV file locking
+$mgmt_config['webdav_lock'] = true;
+
 // Support password
 // Set a support password for the support log file access
 $mgmt_config['support_pass'] = "";
@@ -741,7 +744,7 @@ $mgmt_config['support_pass'] = "";
 // For distributed systems the directory must be located on a central resource that can be accessed by every system node.
 $mgmt_config['instances'] = "%instances%";
 
-// Enable writing of session data for third party load balancers in order to enable session synchronization
+// Enable (true) or disable (false) writing of session data for third party load balancers in order to support session synchronization
 $mgmt_config['writesessiondata'] = false;
 
 // Factor to correct the used storage space due to the fact that the system only tracks the uploaded original file size
@@ -801,7 +804,7 @@ $mgmt_compress['.zip'] = "%zip%";
 // Define document conversion using UNOCONV
 // Convert between any document format supported by OpenOffice (use command 'unoconv --show' for details).
 // ATTENTION: The webserver user (e.g. www-data) needs to have write permission in his home directory (e.g. /var/www)!
-// The path to the executable is usually /usr/bin/unoconv
+// The path to the executable is usually /usr/bin/unoconv.
 $mgmt_docpreview['.bib.doc.docx.dot.ltx.odd.odt.odg.odp.ods.ppt.pptx.pxl.psw.pts.rtf.sda.sdc.sdd.sdw.sxw.txt.htm.html.xhtml.xls.xlsx'] = "%unoconv%";
 
 // Define the supported target formats for documents
@@ -860,16 +863,16 @@ $mgmt_docconvert['.txt'] = array('.png', '.pdf', '.doc', '.odt');
 // The GD Library only supports jpg, png and gif images as output, set value to "GD" to use it.
 // $mgmt_imagepreview['.gif.jpg.jpeg.png'] = "GD";
 
-// Use "dcraw" or "ufraw" to convert RAW images to JPEG images
-// Package dcraw replaces ufraw that is no longer maintained in newer Linux distributions (e.g. Debian 11)
-// Please make sure that the package dcraw or ufraw is installed
+// Use "dcraw" or "ufraw" to convert RAW images to JPEG images.
+// Package dcraw replaces ufraw that is no longer maintained in newer Linux distributions (e.g. Debian 11).
+// Please make sure that the package dcraw or ufraw is installed.
 $mgmt_imagepreview['rawimage'] = "dcraw";
 
 // Define image preview using ImageMagick and GhostScript (thumbnail generation)
-// The path to the executable is usually /usr/bin/convert
+// The path to the executable is usually /usr/bin/convert.
 $mgmt_imagepreview['.ai.aai.act.art.arw.avs.bmp.bmp2.bmp3.cals.cgm.cin.cit.cmyk.cmyka.cpt.cr2.crw.cur.cut.dcm.dcr.dcx.dib.djvu.dng.dpx.emf.epdf.epi.eps.eps2.eps3.epsf.epsi.ept.exr.fax.fig.fits.fpx.gif.gplt.gray.hdr.hpgl.hrz.ico.info.inline.jbig.jfif.jng.jp2.jpc.jpe.jpg.jpeg.jxr.man.mat.miff.mono.mng.mpc.mpr.mrw.msl.mvg.nef.orf.otb.p7.palm.pam.clipboard.pbm.pcd.pcds.pcl.pcx.pdb.pdf.pef.pfa.pfb.pfm.pgm.picon.pict.pix.pjpeg.png.png8.png00.png24.png32.png48.png64.pnm.ppm.ps.ps2.ps3.psb.psd.psp.ptif.pwp.pxr.rad.raf.raw.rgb.rgba.rla.rle.sct.sfw.sgi.shtml.sid.mrsid.sparse-color.sun.svg.tga.tif.tiff.tim.ttf.uil.uyvy.vicar.viff.wbmp.wdp.webp.wmf.wpg.x.xbm.xcf.xpm.xwd.x3f.ycbcr.ycbcra.yuv'] = "%convert%";
 
-// If a file was uploaded, the system will try to create a thumbnail image for the preview
+// If a file was uploaded, the system will try to create a thumbnail image for the preview.
 $mgmt_imageoptions['.jpg.jpeg']['thumbnail'] = "-s 380x220 -q 95 -f jpg";
 
 // Define the supported target formats for image editing
@@ -910,15 +913,15 @@ $mgmt_imageoptions['.jpg.jpeg']['640x480px'] = '-s 640x480 -q 95 -f jpg';
 // -fv ... flip video in vertical direction
 // -fh ... flop video in horizontal direction
       
-// The path to the executable is usually /usr/bin/ffmpeg
+// The path to the executable is usually /usr/bin/ffmpeg.
 $mgmt_mediapreview['.3g2.3gp.4xm.a64.aac.ac3.act.adf.adts.adx.aea.aiff.alaw.alsa.amr.amv.anm.apc.ape.apr.asf.asf_stream.ass.au.audio.avi.avm2.avs.bethsoftvid.bfi.bin.bink.bit.bmv.c93.caf.cavsvideo.cdg.cdxl.crc.daud.dfa.dirac.dnxhd.dsicin.dts.dv.dv1394.dvd.dxa.dwd.ea.ea_cdata.eac3.f32be.f32le.f4v.f64be.f64le.fbdev.ffm.ffmetadata.film_cpk.filmstrip.flac.flic.flv.framecrc.framemd5.g722.g723_1.g729.gsm.gxf.h261.h263.h264.hls.ico.idcin.idf.iff.ilbc.image2.image2pipe.ingenient.ipmovie.ipod.ismv.iss.iv8.ivf.jack.jacosub.jv.la.latm.lavfi.libcdio.libdc1394.lmlm4.loas.lxf.m4a.m4b.m4p.m4r.m4v.matroska.md5.mgsts.microdvd.mid.mj2.mjpeg.mkv.mlp.mm.mmf.mov.mp2.mp3.mp4.mp4v.mpc.mpc8.mpeg.mpg.mpeg1video.mpeg2video.mpegts.mpegtsraw.mpegvideo.mpjpeg.msnwctcp.mts.mtv.mulaw.mvi.mxf.mxf_d10.mxg.nc.nsv.null.nut.nuv.oga.ogg.ogm.ogv.oma.oss.ots.pac.paf.pmp.psp.psxstr.pva.qcp.r3d.ra.rawvideo.rcv.realtext.rka.rl2.rm.roq.rpl.rso.rtp.rtsp.s16be.s16le.s24be.s24le.s32be.s32le.s8.sami.sap.sbg.sdl.sdp.segment.shn.siff.smjpeg.smk.smush.sol.sox.spdif.subviewer.svcd.swa.swf.thp.tiertexseq.tmv.truehd.tta.tty.txd.u16be.u16le.u24be.u24le.u32be.u32le.u8.vc1.vc1test.vcd.vmd.vob.voc.vox.vqf.w64.wav.wc3movie.webm.webvtt.wma.wmv.wsaud.wsvqa.wtv.wv.x11grab.xa.xbin.xmv.xwma.yop.yuv4mpegpipe'] = "%ffmpeg%";
 
-// If a video or audio file was uploaded, the system will try to create a thumbnail video/audio file for the preview
+// If a video or audio file was uploaded, the system will try to create a thumbnail video/audio file for the preview.
 $mgmt_mediaoptions['thumbnail-video'] = "-b:v 768k -s:v 854x480 -f mp4 -c:a aac -b:a 64k -ac 2 -c:v libx264 -mbd 2 -flags +loop+mv4 -cmp 2 -subcmp 2"; 
 $mgmt_mediaoptions['thumbnail-audio'] = "-f mp3 -c:a libmp3lame -b:a 64k";
 
 // Auto rotate video if a rotation has been detected (true) or leave video in it's original state (false)
-// Keep in mind that most recent FFMPEG version autorotate the video
+// Keep in mind that most recent FFMPEG version autorotate the video.
 $mgmt_mediaoptions['autorotate-video'] = true;
 
 // Define the supported target formats for video/audio editing (please use the variables %videobitrate%, %audiobitrate%, %width%, %height%)
@@ -937,15 +940,15 @@ $mgmt_mediaoptions['.oga'] = "-f ogg -c:a libvorbis -b:a %audiobitrate%";
 $mgmt_mediaoptions['.wav'] = "-c:a pcm_u8 -b:a %audiobitrate%";
 
 // Define Metadata Injection
-// YAMDI to inject metadata (play length) into the generated flash video file (FFMPEG discards metadata)
-// The path to the executable is usually /usr/bin/yamdi
+// YAMDI to inject metadata (play length) into the generated flash video file (FFMPEG discards metadata).
+// The path to the executable is usually /usr/bin/yamdi.
 $mgmt_mediametadata['.flv'] = "%yamdi%";
 
 // Use EXIFTOOL to inject metadata into the generated image file (ImageMagick discards metadata)
-// The path to the executable is usually /usr/bin/exiftool
+// The path to the executable is usually /usr/bin/exiftool.
 $mgmt_mediametadata['.3fr.3g2.3gp2.3gp.3gpp.acr.afm.acfm.amfm.ai.ait.aiff.aif.aifc.ape.arw.asf.avi.bmp.dib.btf.tiff.tif.chm.cos.cr2.crw.ciff.cs1.dcm.dc3.dic.dicm.dcp.dcr.dfont.divx.djvu.djv.dng.doc.dot.docx.docm.dotx.dotm.dylib.dv.dvb.eip.eps.epsf.ps.erf.exe.dll.exif.exr.f4a.f4b.f4p.f4v.fff.fff.fla.flac.flv.fpf.fpx.gif.gz.gzip.hdp.wdp.hdr.html.htm.xhtml.icc.icm.idml.iiq.ind.indd.indt.inx.itc.j2c.jpc.jp2.jpf.j2k.jpm.jpx.jpg.jpeg.k25.kdc.key.kth.la.lnk.m2ts.mts.m2t.ts.m4a.m4b.m4p.m4v.mef.mie.miff.mif.mka.mkv.mks.modd.mos.mov.qt.mp3.mp4.mpc.mpeg.mpg.m2v.mpo.mqv.mrw.mxf.nef.nmbtemplate.nrw.numbers.odb.odc.odf.odg,.odi.odp.ods.odt.ofr.ogg.ogv.orf.otf.pac.pages.pcd.pdf.pef.pfa.pfb.pfm.pgf.pict.pct.pjpeg.plist.pmp.png.jng.mng.ppm.pbm.pgm.ppt.pps.pot.potx.potm.ppsx.ppsm.pptx.pptm.psd.psb.psp.pspimage.qtif.qti.qif.ra.raf.ram.rpm.rar.raw.raw.riff.rif.rm.rv.rmvb.rtf.rsrc.rw2.rwl.rwz.so.sr2.srf.srw.svg.swf.thm.thmx.tiff.tif.ttf.ttc.vob.vrd.vsd.wav.webm.webp.wma.wmv.wv.x3f.xcf.xls.xlt.xlsx.xlsm.xlsb.xltx.xltm.xmp.zip'] = "%exiftool%";
 
-// Define max. file size in MB for thumbnail/video generation for certain file extensions
+// Define max. file size in MB for thumbnail/video generation for certain file extensions.
 $mgmt_maxsizepreview['.pdf'] = 500;
 $mgmt_maxsizepreview['.psd'] = 500;
 $mgmt_maxsizepreview['.doc'] = 100;
@@ -955,20 +958,20 @@ $mgmt_maxsizepreview['.pptx'] = 100;
 $mgmt_maxsizepreview['.xls'] = 50;
 $mgmt_maxsizepreview['.xlsx'] = 50;
 
-// Try to regenerate previews of multimedia files in explorer list if the thumbnail file doesn't exist.
-// This seeting can be used to avoid recurring kernel problems with GhostScript if ImageMagick fails to create a thumbnail of a PDF file.
+// Enable (true) or disable (false) the creation of the preview when opening the object list of a location
+// Try to recreate previews of multimedia files in object list if the thumbnail file doesn't exist.
 $mgmt_config['recreate_preview'] = false;
 
 // Use WKHTMLTOPDF to convert HTML to PDF
-// The path to the executable is usually /usr/bin/wkhtmltopdf
+// The path to the executable is usually /usr/bin/wkhtmltopdf.
 $mgmt_config['html2pdf'] = "%html2pdf%";
 
 // Use X11-Server (fot the WKHTMLTOPDF not patched QT version)
-// The path to the executable is usually /usr/bin/xvfb-run
+// The path to the executable is usually /usr/bin/xvfb-run.
 $mgmt_config['x11'] = "%x11%";
 
 // Use PDFTK to merge PDF files
-// The path to the executable is usually /usr/bin/pdftk
+// The path to the executable is usually /usr/bin/pdftk.
 $mgmt_config['mergepdf'] = "%mergepdf%";
 
 // -------------------------------- Relational Database Connectivity ----------------------------------
@@ -978,7 +981,7 @@ $mgmt_config['mergepdf'] = "%mergepdf%";
 // Run the installation or create a database with UTF-8 support and run the SQL script for table definitions manually.
 
 // Define Database Access
-// You can define a persistent database connection by providing "p:dbhost" for 'dbhost'
+// You can define a persistent database connection by providing "p:dbhost" for 'dbhost'.
 $mgmt_config['db_connect_rdbms'] = "db_connect_rdbms.php";
 $mgmt_config['dbconnect'] = "mysql"; // values: mysql, odbc
 $mgmt_config['dbhost'] = "%dbhost%";
@@ -988,12 +991,12 @@ $mgmt_config['dbname'] = "%dbname%";
 $mgmt_config['dbcharset'] = "utf8";
 
 // RDBMS Log
-// Log queries and their executing time in logs/sql.log
+// Log queries and their executing time in logs/sql.log (true) or do not log (false).
 $mgmt_config['rdbms_log'] = false;
 
 // Optimize database
-// Optimize the database automatically once per year (1st of January)
-// It is recommended to create a backup of the database before the execution of the job
+// Optimize the database automatically once per year on 1st of January (true) or not (false).
+// It is recommended to create a backup of the database before the execution of the job.
 $mgmt_config['rdbms_optimize'] = false;
 
 // --------------------------------- SMTP Mail System Configuration -----------------------------------
@@ -1010,33 +1013,33 @@ $mgmt_config['smtp_sender']   = "%smtp_sender%";
 // Define password for Import and Export REST API (requires Connector module)
 $mgmt_config['passcode'] = "";
 
-// Restore exported media files to the media repository if requested (true) or leave the media files at their current export location (false)
-// Note: The media file will always be restored if any modifications will be applied
+// Restore exported media files to the media repository if requested (true) or leave the media files at their current export location (false).
+// Note: The media file will always be restored if any modifications will be applied.
 $mgmt_config['restore_exported_media'] = true;
 
 // --------------------------------------- App Keys --------------------------------------------
 
 // YouTube integration (requires Connector module)
-// Please provide the Google API credentials in order to upload videos to YouTube
+// Please provide the Google API credentials in order to upload videos to YouTube.
 // Visit: https://developers.google.com/youtube/registering_an_application
 $mgmt_config['youtube_oauth2_client_id'] = "";
 $mgmt_config['youtube_oauth2_client_secret'] = "";
 $mgmt_config['youtube_appname'] = "";
 
 // DropBox integration
-// Please provide a valid Dropbox app-name and app-key
-// Keep in mind that the domain needs to be added to your Dropbox developer account in order to use the app-key
+// Please provide a valid Dropbox app-name and app-key.
+// Keep in mind that the domain needs to be added to your Dropbox developer account in order to use the app-key.
 // Visit: https://www.dropbox.com/developers/apps/create
 $mgmt_config['dropbox_appname'] = "";
 $mgmt_config['dropbox_appkey'] = "";
 
 // Google Maps integration
-// Provide a valid key for Google Maps
+// Provide a valid key for Google Maps.
 // Visit: https://developers.google.com/maps/documentation/embed/get-api-key
 $mgmt_config['googlemaps_appkey'] = "%googlemaps_appkey%";
 
 // Google Analytics integration
-// Provide a valid key in order to track the users behaviour with Google Analytics
+// Provide a valid key in order to track the users behaviour with Google Analytics.
 // Visit: https://support.google.com/analytics/answer/7476135
 $mgmt_config['googleanalytics_key'] = "";
 

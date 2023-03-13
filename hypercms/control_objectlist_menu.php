@@ -1700,15 +1700,18 @@ else
     <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_sidebar.png\" class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onclick=\"switchSidebar();\" title=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['preview-window'][$lang])."\" />";
 
       // search
-      if ($location != "" && !empty ($mgmt_config['db_connect_rdbms']) && $from_page != "recyclebin")
+      if (linking_valid() == false)
       {
-        echo "
-    <img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onclick=\"if (locklayer == false) parent.setSearchLocation('".$location_esc."', '".getlocationname ($site, $location, $cat, "path")."');\" id=\"pic_obj_search\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_search.png\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />";
-      }
-      else
-      {
-        echo "
-    <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_search.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+        if ($location != "" && !empty ($mgmt_config['db_connect_rdbms']) && $from_page != "recyclebin")
+        {
+          echo "
+      <img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onclick=\"if (locklayer == false) parent.setSearchLocation('".$location_esc."', '".getlocationname ($site, $location, $cat, "path")."');\" id=\"pic_obj_search\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_search.png\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />";
+        }
+        else
+        {
+          echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_search.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+        }
       }
     }
     ?>

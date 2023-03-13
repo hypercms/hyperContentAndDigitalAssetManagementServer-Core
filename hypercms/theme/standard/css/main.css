@@ -96,29 +96,20 @@ input[type="search"]::-webkit-search-results-decoration
   display: none;
 }
 
-a 
+a, a:link, a:active, a:visited
 {
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
   text-decoration: none;
-  color: #FFFFFF;
+  color: inherit;
   outline: none;
-}
-
-a:link 
-{
-  color: #FFFFFF;
 }
 
 a:hover 
 {
   color: #8EDCFD;
-}
-
-a:active 
-{
-  color: #FFFFFF;
+  text-shadow: -1px 0 #333, 0 1px #333, 1px 0 #333, 0 -1px #333;
 }
 
 ins

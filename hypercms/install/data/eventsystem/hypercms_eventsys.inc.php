@@ -70,35 +70,38 @@ $eventsystem['ondeletegroup_post'] = 0;
 
 // ======================= for search engine ======================
 
-// define character set for publications not using UTF-8
+// Define publications to create search index for
+$eventsystem['searchsites'] = ";MyHomepage;";
+
+// Define character set for publications not using UTF-8
 // $eventsystem ['searchcharset']['publicationname'] = "ISO-8859-1";
 
-// define language suffix in text ID's
+// Define language suffix in text ID's
 // $eventsystem['searchlanguage']['publicationname'][0] = "_EN";
 // $eventsystem['searchlanguage']['publicationname'][1] = "_DE";
 
-// description:
-// with the help of the hyperCMS Event System you can automize operations on the basis
+// Description:
+// With the help of the hyperCMS Event System you can automize operations on the basis
 // of user interaction. e.g. if an object is published successfully by a user you start another action 
 // using the function "onpublishobject_post". there you can define other actions on any items.
 // for each action you have a pre and a post event. a pre event will be executed before the action takes
 // place on an item. the post event will be exuted only if the action on an item was successfully.
 // please note that the input parameter "$cat" describes the category of an object in terms of, is 
 // it a component [comp] or a page [page].
-// please note that the manually user interaction on folders, e.g. publish a folder and all
+// Please note that the manually user interaction on folders, e.g. publish a folder and all
 // its items will cause all objects to be published. after each successfully published object the action
 // "onpublishobject_post" will be started if it is set to 1.
-// if you are using the hyperCMS API you wont need to include the hyperCMS Event System because
+// If you are using the hyperCMS API you wont need to include the hyperCMS Event System because
 // the API includes it automatically.
-// please note that it is required to have all necessary variables to be declared as
+// Please note that it is required to have all necessary variables to be declared as
 // global inside the function, so the action will have access to these variables.
-// please note that you can easily produce endless loops if you trigger the same action that
+// Please note that you can easily produce endless loops if you trigger the same action that
 // was started in your action. to avoid this you have to set the variable "$eventsystem['hide']" to 1.
-// please note that post events will only be executed if the action did not fail.
-// if you want to use pre events for data verification you may want to stop the action before it will
+// Please note that post events will only be executed if the action did not fail.
+// If you want to use pre events for data verification you may want to stop the action before it will
 // be executed in case the data failed your verification. for instance before the content of an
 // object will be saved you want to verify it and stop the process if a stop-word occurs.
-// if you want to do that, you will have can use html-code printed by "echo" to give the user a
+// If you want to do that, you will have can use html-code printed by "echo" to give the user a
 // message on his screen and you have to stop the process "exit". If you want to send him back 
 // where he came from use an hyperreference and the JavaScript function "history.back()".
 

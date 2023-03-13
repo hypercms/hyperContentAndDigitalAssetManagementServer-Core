@@ -570,7 +570,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               // read file
               if (empty ($container_id))
               {
-                $objectdata = loadfile ($location.$folder."/", ".folder");
+                $objectdata = loadfile_fast ($location.$folder."/", ".folder");
 
                 if (!empty ($objectdata))
                 {
@@ -819,7 +819,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             // read file
             if (empty ($container_id) || (empty ($mediafile)  && (is_supported ($mgmt_imagepreview, $object) || is_supported ($mgmt_mediapreview, $object) || is_supported ($mgmt_docpreview, $object))))
             {
-              $objectdata = loadfile ($location, $object);
+              $objectdata = loadfile_fast ($location, $object);
   
               if (!empty ($objectdata))
               {

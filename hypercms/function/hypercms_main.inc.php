@@ -1715,15 +1715,15 @@ function includefooter ()
 
 // ---------------------- createfilename -----------------------------
 // function: createfilename()
-// input: file or directory name [string]
+// input: file or directory name [string], shorten file name automatically (required for new object or folder names) [optional]
 // output: new filename/false
 
 // description:
 // Creates a valid file name without special characters that does not exceed the maximum file name length
 
-function createfilename ($filename)
+function createfilename ($filename, $shorten=false)
 {
-  global $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $error = array();
@@ -1750,12 +1750,13 @@ function createfilename ($filename)
 
     // escaped or input file name is too long (plus 11 digits for the hcms media object identifier or the file extension identifiers like .off and .recycle)
     // exclude objects in recycle bin
-    if ((strlen ($filename_new) + 11) > $mgmt_config['max_digits_filename'] && substr ($filename_new, -8) != ".recycle")
+    if ($shorten && (strlen ($filename_new) + 11) > $mgmt_config['max_digits_filename'] && substr ($filename_new, -8) != ".recycle")
     {
       if (substr_count ($filename_new, ".") > 0)
       {
         // get the file extension of the file
         $file_ext = strrchr ($filename_new, ".");
+
         // get file name without extensions
         $filename_new = strrev (substr (strstr (strrev ($filename_new), "."), 1));
       }
@@ -1782,7 +1783,7 @@ function createfilename ($filename)
       $filename_new = $filename_new.$file_ext;
 
       $errcode = "00911";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object name '".specialchr_decode ($filename)."' has been truncated to '".specialchr_decode ($filename_new)."'";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Object name '".specialchr_decode ($filename)."' has been truncated to '".specialchr_decode ($filename_new)."'";
 
       savelog (@$error);
 
@@ -1827,8 +1828,8 @@ function correctfile ($abs_path, $filename, $user="")
   $lock = createlockname ($user);
 
   // create valid file name if container file is not locked by a user (this would mean the correct container file name has been provided)
-  if (strpos ($filename, ".@") < 1) $filename = createfilename ($filename);
-  
+  if (strpos ($filename, ".@") < 1) $filename = createfilename ($filename, false);
+
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
     // add slash if not present at the end of the location string
@@ -2433,7 +2434,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
   $location = deconvertpath ($location, "file"); 
 
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
+  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
 
   // check permissions (only if a publication and location has been provided)
   if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
@@ -2512,7 +2513,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
 function createobjectaccesslink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $recreate_hash=false)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
+  global $user, $mgmt_config, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $error = array();
@@ -2537,7 +2538,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     // if object includes special characters
     $object = trim ($object);
     $object = trim ($object, "/");
-    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
+    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2594,7 +2595,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     else
     {
       $errcode = "40912";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createobjectaccesslink failed due to missing object id for object: ".$location.$object.", object ID: ".$object_id.", container ID: ".$container_id;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createobjectaccesslink failed due to missing object id for object: ".$location.$object.", object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
 
@@ -2637,7 +2638,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     // if object includes special characters
     $object = trim ($object);
     $object = trim ($object, "/");
-    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
+    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2725,7 +2726,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 
 function createdownloadlink ($site="", $location="", $object="", $cat="", $object_id="", $container_id="", $type="", $mediaconfig="", $recreate_hash=false)
 {
-  global $user, $mgmt_config, $hcms_lang, $lang;
+  global $user, $mgmt_config, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $error = array();
@@ -2749,7 +2750,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     // if object includes special characters
     $object = trim ($object);
     $object = trim ($object, "/");
-    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
+    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2818,7 +2819,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     else
     {
       $errcode = "40914";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createdownloadlink failed due to missing object id for object: ".$objectpath.", object ID: ".$object_id.", container ID: ".$container_id;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createdownloadlink failed due to missing object id for object: ".$objectpath.", object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
 
@@ -3268,7 +3269,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   $location = deconvertpath ($location, "file");
 
   // create valid file name
-  if (strpos ($page, ".@") > 1) $page = createfilename ($page);
+  if (strpos ($page, ".@") > 1) $page = createfilename ($page, true);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
   {
@@ -5088,7 +5089,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
   $location = deconvertpath ($location, "file");
 
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
+  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
 
   if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
   {
@@ -5162,7 +5163,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 
 function downloadfile ($filepath, $name, $force="wrapper", $user="")
 {
-  global $mgmt_config, $eventsystem, $hcms_lang, $lang, $is_iphone;
+  global $mgmt_config, $eventsystem, $hcms_lang, $lang, $is_iphone, $is_webdav;
 
   // initialize
   $error = array();
@@ -5207,7 +5208,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     if (!is_file ($filepath))
     {
       $errcode = "20601";
-      $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not find '.$filepath.')';
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."downloadfile could not find ".$filepath."";
 
       // write log
       savelog (@$error);
@@ -5243,7 +5244,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         header ("HTTP/1.1 404 Not Found", true, 404);
 
         $errcode = "20602";
-        $error[] = date('Y-m-d H:i').'|hypercms_main.inc.php|error|'.$errcode.'|downloadfile -> Could not open '.$filepath.')';
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."downloadfile could not open ".$filepath."";
 
         // write log
         savelog (@$error);
@@ -11309,6 +11310,9 @@ function renamegroupfolder ($site, $cat, $folder_curr, $folder_new, $user)
   // if a database is used the object IDs will be used instead of pathes (since version 5.6.4)
   if (!empty ($mgmt_config['db_connect_rdbms'])) return true;
 
+  // initialize
+  $error = array();
+
   if (valid_publicationname ($site) && ($cat == "page" || $cat == "comp") && valid_locationname ($folder_curr) && valid_locationname ($folder_new) && valid_objectname ($user))
   {
     // rename folder in usergroup folderaccess
@@ -11324,17 +11328,47 @@ function renamegroupfolder ($site, $cat, $folder_curr, $folder_new, $user)
 
       $usergroupdata = str_replace ($folder_curr, $folder_new, $usergroupdata);
 
-      if ($usergroupdata != false) return savelockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php", $usergroupdata);
-      else return unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
+      if ($usergroupdata != false)
+      {
+        $result = savelockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php", $usergroupdata);
+
+        if ($result == false)
+        {
+          $errcode = "10761";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renamegroupfolder failed to save '".$site.".usergroup.xml.php' after renaming ".$folder_curr." to ".$folder_new;
+        }
+      }
+      else
+      {
+        $errcode = "10762";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renamegroupfolder failed to rename ".$folder_curr." to ".$folder_new." in '".$site.".usergroup.xml.php'";
+
+        $result = unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
+
+        if ($result == false)
+        {
+          $errcode = "10763";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renamegroupfolder failed to unlock '".$site.".usergroup.xml.php'";
+        }
+      }
     }
     // file is locked or does not exist
     else
     {
+      $errcode = "10764";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renamegroupfolder failed to load '".$site.".usergroup.xml.php' and could not rename ".$folder_curr." to ".$folder_new;
+
       // unlock file
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
-      return true;
+  
+      $result = true;
     }
   }
+
+  // save log
+  savelog (@$error);
+  
+  if (!empty ($result)) return $result;
   else return false;
 }
 
@@ -11352,6 +11386,9 @@ function deletegroupfolder ($site, $cat, $folderpath, $user)
 
   // if a database is used the object IDs will be used instead of pathes (since version 5.6.4)
   if (!empty ($mgmt_config['db_connect_rdbms'])) return true;
+
+  // initialize
+  $error = array();
 
   if (valid_publicationname ($site) && ($cat == "page" || $cat == "comp") && valid_locationname ($folderpath) && valid_objectname ($user))
   {
@@ -11373,16 +11410,46 @@ function deletegroupfolder ($site, $cat, $folderpath, $user)
         $folderpos_offset = $folderpos2;
       }
 
-      if ($usergroupdata != false) return savelockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php", $usergroupdata);
-      else return unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
+      if ($usergroupdata != false)
+      {
+        $result = savelockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php", $usergroupdata);
+
+        if ($result == false)
+        {
+          $errcode = "10771";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletegroupfolder failed to save '".$site.".usergroup.xml.php' after removing ".$folderpath;
+        }
+      }
+      else
+      {
+        $errcode = "10772";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletegroupfolder failed to remove ".$folderpath." in '".$site.".usergroup.xml.php'";
+
+        $result = unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
+
+        if ($result == false)
+        {
+          $errcode = "10773";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletegroupfolder failed to unlock '".$site.".usergroup.xml.php'";
+        }
+      }
     }
     else
     {
+      $errcode = "10774";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletegroupfolder failed to load '".$site.".usergroup.xml.php' and could not remove ".$folderpath;
+
       // unlock file
       unlockfile ($user, $mgmt_config['abs_path_data']."user/", $site.".usergroup.xml.php");
-      return true;
+
+      $result = true;
     }
   }
+
+  // save log
+  savelog (@$error);
+  
+  if (!empty ($result)) return $result;
   else return false;
 }
 
@@ -11401,6 +11468,9 @@ function renameworkflowfolder ($site, $cat, $folder_curr, $folder_new, $user)
   // if a database is used the object IDs will be used instead of pathes (since version 5.6.4)
   if (!empty ($mgmt_config['db_connect_rdbms'])) return true;
 
+  // initialize
+  $error = array();
+
   if (valid_publicationname ($site) && ($cat == "page" || $cat == "comp") && valid_locationname ($folder_curr) && valid_locationname ($folder_new) && valid_objectname ($user))
   {
     // rename folder in user folderaccess
@@ -11413,17 +11483,47 @@ function renameworkflowfolder ($site, $cat, $folder_curr, $folder_new, $user)
 
       $workflowdata = str_replace ($folder_curr, $folder_new, $workflowdata);
 
-      if ($workflowdata != false) return savelockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat", $workflowdata);
-      else return unlockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
+      if ($workflowdata != false)
+      {
+        $result = savelockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat", $workflowdata);
+
+        if ($result == false)
+        {
+          $errcode = "10781";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renameworkflowfolder failed to save '".$site.".".$cat.".folder.dat' after renaming ".$folder_curr." to ".$folder_new;
+        }
+      }
+      else
+      {
+        $errcode = "10782";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renameworkflowfolder failed to rename ".$folder_curr." to ".$folder_new." in '".$site.".".$cat.".folder.dat'";
+
+        $result = unlockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
+
+        if ($result == false)
+        {
+          $errcode = "10783";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renameworkflowfolder failed to unlock '".$site.".".$cat.".folder.dat'";
+        }
+      }
     }
     // file is locked or does not exist
     else
     {
+      $errcode = "10784";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renameworkflowfolder failed to load '".$site.".".$cat.".folder.dat' and could not rename ".$folder_curr." to ".$folder_new;
+
       // unlock file
       unlockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
-      return true;
+
+      $result = true;
     }
   }
+
+  // save log
+  savelog (@$error);
+
+  if (!empty ($result)) return $result;
   else return false;
 }
 
@@ -11441,6 +11541,9 @@ function deleteworkflowfolder ($site, $cat, $folderpath, $user)
 
   // if a database is used the object IDs will be used instead of pathes (since version 5.6.4)
   if (!empty ($mgmt_config['db_connect_rdbms'])) return true;
+
+  // initialize
+  $error = array();
 
   if (valid_publicationname ($site) && ($cat == "page" || $cat == "comp") && valid_locationname ($folderpath) && valid_objectname ($user))
   {
@@ -11462,18 +11565,57 @@ function deleteworkflowfolder ($site, $cat, $folderpath, $user)
 
         $workflowdata = implode ("\n", $wf_array); 
 
-        if ($workflowdata != false) return savelockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat", $workflowdata);
-        else return unlockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
+        if ($workflowdata != false)
+        {
+          $result = savelockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat", $workflowdata);
+
+          if ($result == false)
+          {
+            $errcode = "10791";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteworkflowfolder failed to save '".$site.".".$cat.".folder.dat' after removing ".$folderpath;
+          }
+        }
+        else
+        {
+          $errcode = "10792";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteworkflowfolder failed to remove ".$folderpath." in '".$site.".".$cat.".folder.dat'";
+
+          $result = unlockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
+
+          if ($result == false)
+          {
+            $errcode = "10793";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteworkflowfolder failed to unlock '".$site.".".$cat.".folder.dat'";
+          }
+        }
       }
-      else return unlockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
+      else
+      {
+        $result = unlockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
+
+        if ($result == false)
+        {
+          $errcode = "10794";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteworkflowfolder failed to unlock '".$site.".".$cat.".folder.dat'";
+        }
+      }
     }
     else
     {
+      $errcode = "10795";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteworkflowfolder failed to load '".$site.".".$cat.".folder.dat' and could not remove ".$folderpath;
+
       // unlock file
       unlockfile ($user, $mgmt_config['abs_path_data']."workflow_master/", $site.".".$cat.".folder.dat");
+
       return true;
     }
   }
+
+  // save log
+  savelog (@$error);
+
+  if (!empty ($result)) return $result;
   else return false;
 }
 
@@ -12037,7 +12179,7 @@ function deletefrommediacat ($site, $mediafile)
 
 function createfolder ($site, $location, $folder, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
@@ -12048,6 +12190,7 @@ function createfolder ($site, $location, $folder, $user)
   $add_onload = "";
   $show = "";
   $folder_orig = "";
+  $folder_orig_webdav = "";
   $contentfile = "";
   $container_id = "";
   $page_box_xml = "";
@@ -12055,8 +12198,8 @@ function createfolder ($site, $location, $folder, $user)
   // set default language
   if (empty ($lang)) $lang = "en";
 
-  // buffer new folder name
-  $folder_orig = $folder; 
+  // remember new original folder name for WebDAV
+  $folder_orig_webdav = $folder;
 
   // replace .recycle extension since it is used to mark objects in the recycle bin
   $folder = trim ($folder);
@@ -12066,7 +12209,8 @@ function createfolder ($site, $location, $folder, $user)
   $folder = str_replace ("~", "-", $folder);
 
   // folder name
-  $folder = createfilename ($folder);
+  $folder_orig = $folder;
+  $folder = createfilename ($folder, true);
 
   // the max chacracters for an objectpath is 16,000 (due to the database attribute objectpath)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, "") && strlen ($folder) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user) && !is_tempfile ($folder))
@@ -12136,22 +12280,22 @@ function createfolder ($site, $location, $folder, $user)
         if (!empty ($folderfile['result']))
         {
           $errcode = "10263";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New folder '".$folder_orig."' was created in '".$location_esc."' by user '".$user."'";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."New folder '".$folder_orig."' was created in '".$location_esc."' by user '".$user."'";
 
           $add_onload = "parent.frames['mainFrame'].location.reload(); ";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-was-created'][$lang]."</span><br />\n";
 
-          // add origin folder name as file parameter
+          // add origin folder name as file parameter for WebDAV
           $filedata = loadfile ($location.$folder, ".folder");
 
-          if ($filedata != "") $filedata = setfilename ($filedata, "name", $folder_orig);
+          if ($filedata != "") $filedata = setfilename ($filedata, "name", $folder_orig_webdav);
           if ($filedata != "") $savefile = savefile ($location.$folder, ".folder", $filedata);
           else $savefile = false;
 
           if ($savefile == false)
           {
             $errcode = "10262";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder object for '".$folder_orig."' could not be saved in '".$location_esc."' by user '".$user."'";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder object for '".$folder_orig."' could not be saved in '".$location_esc."' by user '".$user."'";
           }
 
           $container = $folderfile['container'];
@@ -12169,7 +12313,7 @@ function createfolder ($site, $location, $folder, $user)
       else
       {
         $errcode = "10263";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder '".$folder_orig."' could not be created in '".$location_esc."' by user '".$user."'";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder '".$folder_orig."' could not be created in '".$location_esc."' by user '".$user."'";
 
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
@@ -12179,7 +12323,7 @@ function createfolder ($site, $location, $folder, $user)
     else
     {
       $errcode = "10264";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder '".$folder_orig."' could not be created in '".$location_esc."' by user '".$user."'";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder '".$folder_orig."' could not be created in '".$location_esc."' by user '".$user."'";
 
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-created'][$lang]."</span><br />\n".$hcms_lang['you-do-not-have-write-permissions'][$lang]."\n";
@@ -12446,7 +12590,7 @@ function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplic
 
 function deletefolder ($site, $location, $folder, $user)
 {
-  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
  
   // initialize
   $error = array();
@@ -12470,7 +12614,7 @@ function deletefolder ($site, $location, $folder, $user)
 
   // folder name
   $folder = trim ($folder);
-  if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder);
+  if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder, true);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {
@@ -12536,19 +12680,27 @@ function deletefolder ($site, $location, $folder, $user)
 
           $success = true;
 
-          // log delete
-          $errcode = "00110";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Folder ".$location_esc.$folder." has been deleted by user '".$user."' (".getuserip().")";
+          // log
+          $errcode = "00180";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder ".$location_esc.$folder." has been deleted by user '".$user."' (".getuserip().")";
         }
         // folder doesn't exist and/or write permission is missing
         else
         {
+          // log
+          $errcode = "10181";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder ".$location_esc.$folder." does not exist or write permission is missing";
+
           $add_onload = "";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-removed'][$lang]."</span><br />".$hcms_lang['the-folder-doesnt-exist'][$lang]." ".$hcms_lang['or-you-have-no-write-permission'][$lang]."\n";
         }
       }
       else
       {
+        // log
+        $errcode = "10182";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder ".$location_esc.$folder." still holds items that need to be removed";
+
         $add_onload = "";
         $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-could-not-be-removed'][$lang]."</span><br />".$hcms_lang['the-folder-still-holds-items-please-delete-these-items'][$lang]."\n";
       }
@@ -12556,6 +12708,10 @@ function deletefolder ($site, $location, $folder, $user)
     // folder doesn't exist
     else
     {
+      // log
+      $errcode = "10183";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder ".$location_esc.$folder." does not exist";
+      
       $add_onload = "";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-folder-doesnt-exist'][$lang]."</span>\n";
     }
@@ -12588,7 +12744,7 @@ function deletefolder ($site, $location, $folder, $user)
 
 function renamefolder ($site, $location, $folder, $foldernew, $user)
 {
-  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
@@ -12600,20 +12756,24 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   $add_onload = "";
   $show = "";
   $foldernew_orig = "";
+  $foldernew_orig_webdav = "";
 
   // set default language
   if (empty ($lang)) $lang = "en";
 
-  // replace .recycle extension since it is used to mark objects in the recycle bin
   $foldernew = trim ($foldernew);
+
+  // remember new original provided folder name for WebDAV
+  $foldernew_orig_webdav = $foldernew;
+
+  // replace .recycle extension since it is used to mark objects in the recycle bin 
   if (substr ($foldernew, -8) == ".recycle") $foldernew = str_replace (".recycle", "_recycle", $foldernew);
 
-  // keep new folder name
   $foldernew_orig = $foldernew;
 
   // test if folder name includes special characters
-  if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder);
-  $foldernew = createfilename ($foldernew);
+  if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder, true);
+  $foldernew = createfilename ($foldernew, true);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -12731,7 +12891,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 
                 // log error
                 $errcode = "20815";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder ".$folder_curr." could not be renamed to ".$folder_new;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder '".$folder_curr."' could not be renamed to '".$folder_new."'";
                 break;
               }
               else
@@ -12812,14 +12972,14 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
           // save new folder name incl. special characters as file parameter
           $filedata = loadfile ($location.$foldernew, ".folder");
 
-          if ($filedata != "") $filedata = setfilename ($filedata, "name", $foldernew_orig);
+          if ($filedata != "") $filedata = setfilename ($filedata, "name", $foldernew_orig_webdav);
           if ($filedata != "") $savefile = savefile ($location.$foldernew, ".folder", $filedata);
           else $savefile = false;
 
           if ($savefile == false)
           {
             $errcode = "10265";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder name '".$foldernew_orig."' could not be saved for ".$location_esc.$foldernew;
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder name '".$foldernew_orig_webdav."' could not be saved for ".$location_esc.$foldernew;
           }
 
           // remote client
@@ -12843,7 +13003,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 
           // information log entry
           $errcode = "00103";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Folder '".$location_esc.$folderold."' has been renamed to '".$location_esc.$foldernew."' by user '".$user."'";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder '".$location_esc.$folderold."' has been renamed to '".$location_esc.$foldernew."' by user '".$user."'";
 
           $success = true;
         }
@@ -12993,7 +13153,7 @@ function contentcount ($user)
 
 function createobject ($site, $location, $page, $template, $user)
 {
-  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
@@ -13022,6 +13182,9 @@ function createobject ($site, $location, $page, $template, $user)
   // trim
   $page = trim ($page);
 
+  // remeber original provided name for WebDAV
+  $page_orig = $page;
+
   // replace .recycle extension since it is used to mark objects in the recycle bin
   if (substr ($page, -8) == ".recycle") $page = str_replace (".recycle", "_recycle", $page);
 
@@ -13032,8 +13195,7 @@ function createobject ($site, $location, $page, $template, $user)
   $page = str_replace ("~", "-", $page);
 
   // create valid object file name
-  $page_orig = $page;
-  $page = createfilename ($page);
+  $page = createfilename ($page, true);
 
   // the max chacracters for an objectpath is 16,000 (due to the database attribute objectpath)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && accessgeneral ($site, $location, "") && strlen ($page) <= $mgmt_config['max_digits_filename'] && valid_objectname ($template) && valid_objectname ($user))
@@ -13064,11 +13226,7 @@ function createobject ($site, $location, $page, $template, $user)
       if ($page == ".folder")
       {
         // extract folder name
-        $page_orig = getobject ($location);
-      }
-      else
-      {
-        $page_orig = $page;
+        $page_orig = specialchr_decode (getobject ($location));
       }
 
       // extract template file name from sent template information
@@ -13113,6 +13271,7 @@ function createobject ($site, $location, $page, $template, $user)
         {
           $result['result'] = false;
           $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+          
           return $result;
         }
       }
@@ -13338,7 +13497,7 @@ function createobject ($site, $location, $page, $template, $user)
             if (!is_dir ($container_location))
             {
               $errcode = "10881";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Directory for container ".$contentfile." is missing";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Directory for container ".$contentfile." is missing";
             }
 
             // save container initally since savecontainer only saves data to existing containers
@@ -13347,7 +13506,7 @@ function createobject ($site, $location, $page, $template, $user)
             if ($test == false)
             {
               $errcode = "10882";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Working container ".$contentfile.".wrk could not be saved";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Working container ".$contentfile.".wrk could not be saved";
             }
 
             // save container initally since savecontainer only saves data to existing containers
@@ -13356,7 +13515,7 @@ function createobject ($site, $location, $page, $template, $user)
             if ($test == false)
             {
               $errcode = "10883";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Published container ".$contentfile." could not be saved";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Published container ".$contentfile." could not be saved";
             } 
 
             if ($test != false)
@@ -13418,7 +13577,7 @@ function createobject ($site, $location, $page, $template, $user)
 
                 // log entry
                 $errcode = "10101";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|New object '".$pagefile."' with container ID '".$container_id."' could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.") due to missing write permissions for the object file";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."New object '".$pagefile."' with container ID '".$container_id."' could not be created by user '".$user."' (".$site.", ".$location_esc.", ".$page.") due to missing write permissions for the object file";
               }
               // on success
               else
@@ -13439,7 +13598,7 @@ function createobject ($site, $location, $page, $template, $user)
 
                 // information log entry
                 $errcode = "00102";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New object ".$location_esc.$page." has been created by user '".$user."'"; 
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."New object ".$location_esc.$page." has been created by user '".$user."'"; 
 
                 // remote client
                 remoteclient ("save", "abs_path_".$cat, $site, $location, "", $pagefile, ""); 
@@ -13461,7 +13620,7 @@ function createobject ($site, $location, $page, $template, $user)
 
               // log entry
               $errcode = "10102";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to missing write permissions for the container"; 
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to missing write permissions for the container"; 
             }
           }
           // if user has no access to the workflow or link management failed
@@ -13472,7 +13631,7 @@ function createobject ($site, $location, $page, $template, $user)
 
             // log entry
             $errcode = "30102";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to missing workflow access permissions"; 
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to missing workflow access permissions"; 
           } 
         } 
       }
@@ -13483,7 +13642,7 @@ function createobject ($site, $location, $page, $template, $user)
 
         // log entry
         $errcode = "20211";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to a missing template";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The new object (".$site.", ".$location_esc.", ".$page.") could not be created by user '".$user."' due to a missing template";
       }
     }
   }
@@ -13495,7 +13654,7 @@ function createobject ($site, $location, $page, $template, $user)
 
     // log entry
     $errcode = "20212";
-    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|The new object (".$site.", ".$location.", ".$page.") could not be created by user '".$user."' due to wrong or missing input or permissions (accessgeneral=".accessgeneral ($site, $location, "").")";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The new object (".$site.", ".$location.", ".$page.") could not be created by user '".$user."' due to wrong or missing input or permissions (accessgeneral=".accessgeneral ($site, $location, "").")";
   } 
 
   // save log
@@ -13534,7 +13693,7 @@ function createobject ($site, $location, $page, $template, $user)
 
 function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false, $webdav_support=true)
 {
-  global $mgmt_config, $hcms_lang, $lang;
+  global $mgmt_config, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $result = array();
@@ -13547,7 +13706,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false, $webd
     if (!empty ($_SERVER['REQUEST_METHOD'])) $request_method = $_SERVER['REQUEST_METHOD'];
 
     $errcode = "00770";
-    $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|information|".$errcode."|The upload handler received a request (".$request_method.") for the upload of file '".basename ($uploaded_file)."' (result of is_uploaded_file=".is_uploaded_file ($uploaded_file)." and is_file=".is_file ($uploaded_file).")";
+    $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The upload handler received a request (".$request_method.") for the upload of file '".basename ($uploaded_file)."' (result of is_uploaded_file=".is_uploaded_file ($uploaded_file)." and is_file=".is_file ($uploaded_file).")";
 
     // multipart/formdata uploads (POST, GET, and PUT method uploads)
     // WebDAV uses PUT to upload files
@@ -13626,7 +13785,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false, $webd
 function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $overwrite=false, $versioning=false, $zipfilename="", $zipfilecount=0, $createmedia_in_background=false)
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_compress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
-         $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang;
+         $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $error = array();
@@ -13670,7 +13829,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
     // log entry
     $errcode = "00011";
-    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New file upload '".$file_name_orig."' has been started by user '".$user."' to '".$location_esc.$page."'";
+    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."New file upload '".$file_name_orig."' has been started by user '".$user."' to '".$location_esc.$page."'";
  
     // write log
     savelog (@$error);
@@ -13687,7 +13846,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (empty ($setlocalpermission['root']) || $setlocalpermission['root'] != 1 || empty ($setlocalpermission['upload']) || $setlocalpermission['upload'] != 1)
     {
       $errcode = "30501";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|Missing permissions for user '".$user."' to upload the file to '".$location_esc."'";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Missing permissions for user '".$user."' to upload the file to '".$location_esc."'";
 
       // write log
       savelog (@$error);
@@ -13715,115 +13874,119 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     // define path of temp file
     $temp_file = $mgmt_config['abs_path_temp'].uniqid();
 
-    // temporary PROXY file
-    if (substr ($global_files['Filedata']['tmp_name'], 0, 6) == "proxy_")
+    // if file to upload has been provided
+    if (!empty ($global_files['Filedata']['tmp_name']))
     {
-      $temp_file = $mgmt_config['abs_path_temp'].$global_files['Filedata']['tmp_name'];
-
-      if (is_file ($temp_file))
+      // temporary PROXY file
+      if (substr ($global_files['Filedata']['tmp_name'], 0, 6) == "proxy_")
       {
-        $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
-        $global_files['Filedata']['tmp_name'] = $temp_file;
-        $global_files['Filedata']['type'] = mime_content_type ($temp_file);
-        $global_files['Filedata']['size'] = filesize ($temp_file);
-        $is_remote_file = true;
-      }
-      else
-      {
-        $errcode = "20502";
-        $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
+        $temp_file = $mgmt_config['abs_path_temp'].$global_files['Filedata']['tmp_name'];
 
-        // write log
-        savelog (@$error);
-
-        $result['header'] = "HTTP/1.1 500 Internal Server Error";
-        $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
-
-        return $result;
-      }
-    }
-    // remote HTTP file
-    elseif (substr ($global_files['Filedata']['tmp_name'], 0, 4) == "http")
-    {
-      // get remote file
-      $filedata = @file_get_contents ($global_files['Filedata']['tmp_name']);
-
-      if ($filedata && file_put_contents ($temp_file, $filedata) && is_file ($temp_file))
-      {
-        $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
-        $global_files['Filedata']['tmp_name'] = $temp_file;
-        $global_files['Filedata']['type'] = mime_content_type ($temp_file);
-        $global_files['Filedata']['size'] = filesize ($temp_file);
-        $is_remote_file = true;
-      }
-      else
-      {
-        $errcode = "20502";
-        $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
-
-        // write log
-        savelog (@$error);
-
-        $result['header'] = "HTTP/1.1 500 Internal Server Error";
-        $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
-
-        return $result;
-      }
-    }
-    // remote FTP file
-    elseif (substr ($global_files['Filedata']['tmp_name'], 0, 3) == "ftp")
-    {
-      $filedata = false;
-
-      // get FTP server name
-      $ftp_info = parse_url ($global_files['Filedata']['tmp_name']);
-      $ftp_server = $ftp_info['host'];
-
-      // check for existing FTP connection data
-      if ($ftp_server != "")
-      {
-        $ftp_array = getsession ($ftp_server);
-
-        // set FTP logon data
-        $sentserver = $ftp_server;
-        if (!empty ($ftp_array['ftp_user'])) $sentuser = $ftp_array['ftp_user'];
-        if (!empty ($ftp_array['ftp_password'])) $sentpasswd = $ftp_array['ftp_password'];
-        if (!empty ($ftp_array['ftp_ssl'])) $ssl = $ftp_array['ftp_ssl'];
-
-        if (!empty ($sentserver) && !empty ($sentuser) && !empty ($sentpasswd))
+        if (is_file ($temp_file))
         {
-          if (!empty ($ssl)) $ssl = true;
-          else $ssl = false;
+          $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
+          $global_files['Filedata']['tmp_name'] = $temp_file;
+          $global_files['Filedata']['type'] = mime_content_type ($temp_file);
+          $global_files['Filedata']['size'] = filesize ($temp_file);
+          $is_remote_file = true;
+        }
+        else
+        {
+          $errcode = "20502";
+          $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The file to upload could not be obtained from the source '".$temp_file."'";
 
-          $conn_id = ftp_userlogon ($sentserver, $sentuser, $sentpasswd, $ssl);
+          // write log
+          savelog (@$error);
 
-          $remote_file = cleandomain ($global_files['Filedata']['tmp_name']);
+          $result['header'] = "HTTP/1.1 500 Internal Server Error";
+          $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
 
-          // get remote file
-          $ftp_getfile = ftp_getfile ($conn_id, $remote_file, $temp_file);
+          return $result;
         }
       }
-
-      if ($ftp_getfile && is_file ($temp_file))
+      // remote HTTP file
+      elseif (substr ($global_files['Filedata']['tmp_name'], 0, 4) == "http")
       {
-        $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
-        $global_files['Filedata']['tmp_name'] = $temp_file;
-        $global_files['Filedata']['type'] = mime_content_type ($temp_file);
-        $global_files['Filedata']['size'] = filesize ($temp_file);
-        $is_remote_file = true;
+        // get remote file
+        $filedata = @file_get_contents ($global_files['Filedata']['tmp_name']);
+
+        if ($filedata && file_put_contents ($temp_file, $filedata) && is_file ($temp_file))
+        {
+          $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
+          $global_files['Filedata']['tmp_name'] = $temp_file;
+          $global_files['Filedata']['type'] = mime_content_type ($temp_file);
+          $global_files['Filedata']['size'] = filesize ($temp_file);
+          $is_remote_file = true;
+        }
+        else
+        {
+          $errcode = "20502";
+          $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The file to upload could not be obtained from the source '".$temp_file."'";
+
+          // write log
+          savelog (@$error);
+
+          $result['header'] = "HTTP/1.1 500 Internal Server Error";
+          $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
+
+          return $result;
+        }
       }
-      else
+      // remote FTP file
+      elseif (substr ($global_files['Filedata']['tmp_name'], 0, 3) == "ftp")
       {
-        $errcode = "10503";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file to upload could not be obtained from the source '".$temp_file."'";
+        $filedata = false;
 
-        // write log
-        savelog (@$error);
+        // get FTP server name
+        $ftp_info = parse_url ($global_files['Filedata']['tmp_name']);
+        $ftp_server = $ftp_info['host'];
 
-        $result['header'] = "HTTP/1.1 500 Internal Server Error";
-        $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
+        // check for existing FTP connection data
+        if ($ftp_server != "")
+        {
+          $ftp_array = getsession ($ftp_server);
 
-        return $result;
+          // set FTP logon data
+          $sentserver = $ftp_server;
+          if (!empty ($ftp_array['ftp_user'])) $sentuser = $ftp_array['ftp_user'];
+          if (!empty ($ftp_array['ftp_password'])) $sentpasswd = $ftp_array['ftp_password'];
+          if (!empty ($ftp_array['ftp_ssl'])) $ssl = $ftp_array['ftp_ssl'];
+
+          if (!empty ($sentserver) && !empty ($sentuser) && !empty ($sentpasswd))
+          {
+            if (!empty ($ssl)) $ssl = true;
+            else $ssl = false;
+
+            $conn_id = ftp_userlogon ($sentserver, $sentuser, $sentpasswd, $ssl);
+
+            $remote_file = cleandomain ($global_files['Filedata']['tmp_name']);
+
+            // get remote file
+            $ftp_getfile = ftp_getfile ($conn_id, $remote_file, $temp_file);
+          }
+        }
+
+        if ($ftp_getfile && is_file ($temp_file))
+        {
+          $global_files['Filedata']['error'] = UPLOAD_ERR_OK;
+          $global_files['Filedata']['tmp_name'] = $temp_file;
+          $global_files['Filedata']['type'] = mime_content_type ($temp_file);
+          $global_files['Filedata']['size'] = filesize ($temp_file);
+          $is_remote_file = true;
+        }
+        else
+        {
+          $errcode = "10503";
+          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The file to upload could not be obtained from the source '".$temp_file."'";
+
+          // write log
+          savelog (@$error);
+
+          $result['header'] = "HTTP/1.1 500 Internal Server Error";
+          $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
+
+          return $result;
+        }
       }
     }
 
@@ -13834,7 +13997,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (!empty ($global_files['Filedata']['error']) && $global_files['Filedata']['error'] != UPLOAD_ERR_OK)
     {
       $errcode = "20504";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The file '".$location_esc.$global_files['Filedata']['name']."' could not be saved or only partialy-saved. Please check upload_max_filesize in your php.ini. Upload input details: temp-name:".$global_files['Filedata']['tmp_name']. ", file-name:".$global_files['Filedata']['name'].", file-size:".$global_files['Filedata']['size'].", file-type:".$global_files['Filedata']['type'];
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The file '".$location_esc.$global_files['Filedata']['name']."' could not be saved or only partialy-saved. Please check upload_max_filesize in your php.ini. Upload input details: temp-name:".$global_files['Filedata']['tmp_name']. ", file-name:".$global_files['Filedata']['name'].", file-size:".$global_files['Filedata']['size'].", file-type:".$global_files['Filedata']['type'];
 
       // write log
       savelog (@$error);
@@ -13849,7 +14012,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (empty ($global_files['Filedata']['name']) || empty ($global_files['Filedata']['tmp_name']))
     {
       $errcode = "20505";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|No file has been selected for the upload";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."No file has been selected for the upload";
 
       // write log
       savelog (@$error);
@@ -13867,7 +14030,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (strlen ($global_files['Filedata']['name']) > $mgmt_config['max_digits_filename'])
     {
       $errcode = "20506";
-      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The uploaded file name '".$location_esc.$global_files['Filedata']['name']."' has too many digits";
+      $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The uploaded file name '".$location_esc.$global_files['Filedata']['name']."' has too many digits";
 
       // write log
       savelog (@$error);
@@ -13879,7 +14042,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     }
 
     // create valid file name
-    $filename_new = createfilename ($global_files['Filedata']['name']);
+    $filename_new = createfilename ($global_files['Filedata']['name'], true);
 
     // if file exists and is not an update
     if (!empty ($filename_new) && is_file ($location.$filename_new) && $media_update == "")
@@ -13911,7 +14074,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       if (filesize ($global_files['Filedata']['tmp_name']) > $maxfilesize)
       {
         $errcode = "20508";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The uploaded file '".$location_esc.$global_files['Filedata']['name']."' is too big (max. ".$mgmt_config['maxfilesize'].")";
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The uploaded file '".$location_esc.$global_files['Filedata']['name']."' is too big (max. ".$mgmt_config['maxfilesize'].")";
 
         // write log
         savelog (@$error);
@@ -14020,7 +14183,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
 
           $errcode = "20510";
-          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The uploaded file '".$global_files['Filedata']['name']."' could not be copied to the server";
+          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The uploaded file '".$global_files['Filedata']['name']."' could not be copied to the server";
 
           // write log
           savelog (@$error);
@@ -14040,7 +14203,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $zipfilename = str_replace ("~", "-", $zipfilename);
 
           // ZIP file name
-          if ($zipfilename != "") $zipfilename = createfilename ($zipfilename).".zip";
+          if ($zipfilename != "") $zipfilename = createfilename ($zipfilename, true).".zip";
           else $zipfilename = getobject ($location).".zip";
 
           // Windows
@@ -14062,7 +14225,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             $error_message = str_replace ($mgmt_config['abs_path_temp'], "/", $error_message);
 
             $errcode = "10645";
-            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of ZIP (code:".$errorCode.", command:".$cmd.") failed for '".$filename."' \t".$error_message;
+            $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Execution of ZIP (code:".$errorCode.", command:".$cmd.") failed for '".$filename."' \t".$error_message;
 
             // save log
             savelog (@$error);
@@ -14087,7 +14250,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             else
             {
               $errcode = "20509";
-              $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The ZIP file '".$zipfilename."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
+              $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The ZIP file '".$zipfilename."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
 
               $show = $result_createobject['message'];
             }
@@ -14108,7 +14271,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       if (empty ($result_save['result']))
       {
         $errcode = "20508";
-        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The page file '".$global_files['Filedata']['name']."' could not be uploaded to the server";
+        $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The page file '".$global_files['Filedata']['name']."' could not be uploaded to the server";
 
         // write log
         savelog (@$error);
@@ -14144,7 +14307,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         else
         {
           $errcode = "20511";
-          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The uploaded file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
+          $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The uploaded file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
 
           // write log
           savelog (@$error);
@@ -14221,7 +14384,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                   $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-file-you-are-trying-to-upload-couldnt-be-copied-to-the-server'][$lang]."</span>\n";
 
                   $errcode = "20512";
-                  $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
+                  $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
         
                   // write log
                   savelog (@$error);
@@ -14299,7 +14462,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               if (empty ($result_save['result']))
               {
                 $errcode = "20513";
-                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
+                $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
       
                 // write log
                 savelog (@$error);
@@ -14317,7 +14480,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                 if (!$symlink)
                 {
                   $errcode = "10521";
-                  $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|The symbolic link for '".$media_update."' could not be created";
+                  $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The symbolic link for '".$media_update."' could not be created";
                 }
               }
 
@@ -14534,7 +14697,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, 
          $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, 
-         $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+         $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $error = array();
@@ -14590,7 +14753,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
         // log entry
         $errcode = "00101";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|New multimedia file (".$site.", ".$location_esc.", ".$file.", ".$path_source_file.", ".$user.") created by user '".$user."'"; 
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."New multimedia file (".$site.", ".$location_esc.", ".$file.", ".$path_source_file.", ".$user.") created by user '".$user."'"; 
 
         // define media location
         $medialocation = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
@@ -14709,7 +14872,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           deleteobject ($site, $location, $file, $user);
 
           $errcode = "10501";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject failed to move '".$path_source_file."' to '".getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile."' or create the symbolic link"; 
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createmediaobject failed to move '".$path_source_file."' to '".getmedialocation ($site, $mediafile, "abs_path_media").$site."/".$mediafile."' or create the symbolic link"; 
 
           $result['result'] = false;
         }
@@ -14717,9 +14880,8 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
       // object could not be created
       else
       {
-
         $errcode = "10502";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject failed to successfully execute createobject ($site, $location_esc, $file, $template, $user)"; 
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createmediaobject failed to successfully execute createobject ($site, $location_esc, $file, $template, $user) with error '".@$result['message']."' for object '".@$result['object']."'"; 
 
         $result['result'] = false;
       }
@@ -14728,7 +14890,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
     else
     {
       $errcode = "10503";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject could not find the source file '$path_source_file'"; 
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createmediaobject could not find the source file '$path_source_file'"; 
  
       $result['result'] = false;
     }
@@ -14813,7 +14975,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             {
               // set folder values
               $createfolder['result'] = true;
-              $createfolder['folder'] = createfilename ($folder_new);
+              $createfolder['folder'] = createfilename ($folder_new, true);
             }
 
             // create objects
@@ -15088,7 +15250,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
   global $wf_token, $eventsystem,
          $mgmt_config, $mgmt_mediaoptions, $mgmt_docoptions, $hcms_ext,
          $pageaccess, $compaccess, $hiddenfolder, $hcms_linking,
-         $hcms_lang, $lang;
+         $hcms_lang, $lang, $is_webdav;
  
   // default values for action = paste before loading the clipboard
   $error = array();
@@ -15178,7 +15340,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $test = false;
 
           $errcode = "10219";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|loadfile failed for ".$location_esc.$page;
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."loadfile failed for ".$location_esc.$page;
         }
       }
       else
@@ -15186,7 +15348,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         $test = false;
 
         $errcode = "10220";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder or object ".$temp_page." does not exits in ".$location_esc;
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exits in ".$location_esc;
       }
     }
     elseif ($action == "page_paste")
@@ -15274,7 +15436,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                 $test = false;
 
                 $errcode = "10209";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|loadfile failed for ".$location_source_esc.$page;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."loadfile failed for ".$location_source_esc.$page;
               }
             }
             else
@@ -15282,7 +15444,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $test = false;
       
               $errcode = "10210";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Folder or object ".$temp_page." does not exits in ".$location_source_esc;
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exits in ".$location_source_esc;
             }
           }
         }
@@ -15334,8 +15496,11 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
         if ($pagenew != "")
         {
-          // trim
+          // trim object name
           $pagenew = trim ($pagenew);
+
+          // remember new and original provided object name due to WebDAV support
+          $pagenew_orig_webdav = $pagenew;
 
           // replace .recycle extension since it is used to mark objects in the recycle bin
           if (substr ($pagenew, -8) == ".recycle") $pagenew = str_replace (".recycle", "_recycle", $pagenew);
@@ -15344,19 +15509,19 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if (strpos ($pagenew, "_hcm") > 0) $pagenew = str_replace ("_hcm", "hcm", $pagenew);
           
           // remember new object name
-          $pagenew_orig = $pagenew;
           $page_orig = $page;
+          $pagenew_orig = $pagenew;
 
           // create valid file names for
           // existing object name
           if (specialchr ($page, ".-_~") == true) $page = createfilename ($page);
           // new object name
-          $pagenew = createfilename ($pagenew);
+          $pagenew = createfilename ($pagenew, true);
 
           // if pagenew holds only the name
           if ($action == "page_rename")
           {
-            // if multimedia component
+            // if multimedia object
             if ($mediafile_self != "")
             {
               // get extension of multimedia file
@@ -15364,12 +15529,14 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $fileext = $mediafile_self_info['ext'];
               $pagenew = $pagenewname = $pagenew.$fileext;
               $pagenewname_orig = $pagenew_orig.$fileext;
+              $pagenewname_orig_webdav = $pagenew_orig_webdav.$fileext;
             }
             // if object (page or component)
             else
             {
               $pagenew = $pagenewname = $pagenew.$fileext;
               $pagenewname_orig = $pagenew_orig.$fileext;
+              $pagenewname_orig_webdav = $pagenew_orig_webdav.$fileext;
             }
 
             // if object is unpublished
@@ -15380,6 +15547,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           {
             $pagenewname = $pagenew;
             $pagenewname_orig = $pagenew_orig;
+            $pagenewname_orig_webdav = $pagenew_orig_webdav;
 
             // if object is unpublished
             if ($fileinfo['published'] == false) $pagenew = $pagenew.".off"; 
@@ -15657,7 +15825,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                   if ($test == false) 
                   {
                     $errcode = "20104";
-                    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|link_update failed for ".$contentcontainer;
+                    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."link_update failed for ".$contentcontainer;
                   } 
                 }
               } // end foreach link_db_record loop
@@ -15674,7 +15842,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                   link_db_close ($site, $user);
 
                   $errcode = "20102";
-                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|link_db_save failed for $site.link.dat";
+                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."link_db_save failed for '".$site.".link.dat'";
 
                   $add_onload = "";
                   $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />".$hcms_lang['link-management-database-could-not-be-saved'][$lang]."\n";
@@ -15685,7 +15853,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                 link_db_close ($site, $user);
 
                 $errcode = "20103";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|link_db is not array and failed for $site.link.dat";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."link_db is not array and failed for '".$site.".link.dat'";
 
                 $add_onload = "";
                 $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />".$hcms_lang['an-error-occured-while-writing-data-to-the-link-management-database'][$lang]."\n";
@@ -15697,7 +15865,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               link_db_close ($site, $user);
 
               $errcode = "20301";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|link_db_load failed for ".$site;
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."link_db_load failed for ".$site;
 
               $add_onload = "";
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['link-management-error'][$lang]."</span><br />".$hcms_lang['link-management-database-could-not-be-loaded'][$lang]."\n";
@@ -15822,7 +15990,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             if ($test == false)
             {
               $errcode = "10105";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savefile failed for ".$contentfile_self;
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."savefile failed for ".$contentfile_self;
             }
           }
         }
@@ -15889,7 +16057,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                 else
                 {
                   $errcode = "10119";
-                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for ".$mgmt_config['abs_path_link'].$contentfile_id;
+                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."deletefile failed for ".$mgmt_config['abs_path_link'].$contentfile_id;
                 }
               }
 
@@ -16003,7 +16171,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
           // log delete
           $errcode = "00111";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object ".$location_esc.$page." with container ID ".$contentfile_id." has been deleted by user '".$user."' (".getuserip().")";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Object ".$location_esc.$page." with container ID ".$contentfile_id." has been deleted by user '".$user."' (".getuserip().")";
 
           $page = "";
           $pagename = "";
@@ -16021,7 +16189,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       elseif ($show == "" && ($action == "page_rename" || $action == "file_rename"))
       {
         // rename object
-        $test = @rename ($location.$page, $location.$pagenew); 
+        $test = rename ($location.$page, $location.$pagenew); 
 
         if ($test != false)
         {
@@ -16039,14 +16207,15 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
             // save new object name incl. special characters as file parameter
             $filedata = loadlockfile ($user, $location, $pagenew, 3);
-            if ($filedata != "") $filedata = setfilename ($filedata, "name", $pagenew_orig);
+
+            if ($filedata != "") $filedata = setfilename ($filedata, "name", $pagenewname_orig_webdav);
             if ($filedata != "") $result = savelockfile ($user, $location, $pagenew, $filedata);
             else $result = false;
 
             if ($result == false)
             {
               $errcode = "10354";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Object name '".$pagenew_orig."' could not be saved for ".$location_esc.$pagenew;
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Object name '".$pagenew_orig."' could not be saved for ".$location_esc.$pagenew;
             } 
 
             // thumbnail (for support of versions before 5.0)
@@ -16055,7 +16224,8 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
             if (is_file ($location.$object_thumb))
             {
-              @rename ($location.$object_thumb, $location.$object_thumbnew);
+              rename ($location.$object_thumb, $location.$object_thumbnew);
+
               // remote client
               remoteclient ("rename", "abs_path_".$cat, $site, $location, "", $object_thumb, $object_thumbnew);
             }
@@ -16072,7 +16242,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
           // information log
           $errcode = "00106";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object '".$location_esc.$pageold."' has been renamed to '".$location_esc.$pagenew."' by user '".$user."'";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Object '".$location_esc.$pageold."' has been renamed to '".$location_esc.$pagenew."' by user '".$user."'";
 
           $success = true;
         }
@@ -16082,7 +16252,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
 
           $errcode = "10201";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Rename failed for ".$location_esc.$page;
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Rename failed for '".$location_esc.$page."'";
         }
       }
 
@@ -16139,7 +16309,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
 
           $errcode = "10202";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savefile or rename failed for ".$location.$page;
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."savefile or rename failed for '".$location.$page."'";
         }
       }
 
@@ -16161,7 +16331,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           else
           {
             $errcode = "10203";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Copy failed for ".$location_esc.$page; 
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Copy failed for '".$location_esc.$page."'"; 
           }
         }
         // object exists already in the target location
@@ -16189,7 +16359,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
             // log info
             $errcode = "00204";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Object has been moved from ".$location_source_esc.$page." to ".$location_esc.$page." by user '".$user."'"; 
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Object has been moved from '".$location_source_esc.$page."' to '".$location_esc.$page."' by user '".$user."'"; 
 
             // thumbnail (for support of versions before 5.0)
             $object_thumb = substr ($page, 0, strrpos ($page, ".")).".thumb".substr ($page, strrpos ($page, "."));
@@ -16216,7 +16386,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         else
         {
           $errcode = "10204";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Copy failed for ".$location_source.$page." to ".$location;
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Copy failed for '".$location_source.$page."' to '".$location."'";
 
           $add_onload = "";
           $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]." (copy)</span><br />\n"; 
@@ -16272,7 +16442,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if ($test == false)
           {
             $errcode = "10276";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savecontainer failed for container ".$contentfile_self; 
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."savecontainer failed for container ".$contentfile_self; 
           }
 
           if ($test != false)
@@ -16380,7 +16550,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             if ($test == false)
             {
               $errcode = "10206";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savecontainer failed for container ".$contentfile_new; 
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."savecontainer failed for container ".$contentfile_new; 
             }
           }
         }
@@ -16565,7 +16735,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
 
               $errcode = "10208";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savefile failed for ".$location_esc.$page_sec;       
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."savefile failed for '".$location_esc.$page_sec."'";       
             }
           }
         }
@@ -16593,7 +16763,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['could-not-perform-action-due-to-missing-write-permission'][$lang]."</span><br />\n";
 
             $errcode = "10207";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Copy failed for ".$location_source.$page;
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Copy failed for '".$location_source.$page."'";
           }
         }
       }
@@ -16792,7 +16962,7 @@ function deleteunmarkobject ($site, $location, $page, $user)
 
 function deleteobject ($site, $location, $page, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $result = array();
@@ -16819,6 +16989,7 @@ function deleteobject ($site, $location, $page, $user)
       {
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+
         return $result;
       }
     }
@@ -16836,7 +17007,6 @@ function deleteobject ($site, $location, $page, $user)
     if (!empty ($eventsystem['ondeleteobject_post']) && empty ($eventsystem['hide']) && !empty ($result['result'])) 
       ondeleteobject_post ($site, $cat, $location, $page, $user);
 
-    // return results 
     return $result;
   }
   else 
@@ -16844,7 +17014,6 @@ function deleteobject ($site, $location, $page, $user)
     $result['result'] = false;
     $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
 
-    // return results 
     return $result;
   }
 }
@@ -16859,7 +17028,7 @@ function deleteobject ($site, $location, $page, $user)
 
 function renameobject ($site, $location, $page, $pagenew, $user)
 {
-  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
@@ -16867,16 +17036,10 @@ function renameobject ($site, $location, $page, $pagenew, $user)
   // initialize
   $result = array();
 
-  // trim
+  // trim object name
   $pagenew = trim ($pagenew);
 
-  // remove .recycle from object name since it is used for the recycle bin
-  if (substr ($pagenew, -8) == ".recycle") $pagenew = str_replace (".recycle", "_recycle", $pagenew);
-
-  // replace _hcm identifier since it is used to for media files
-  if (strpos ($pagenew, "_hcm") > 0) $pagenew = str_replace ("_hcm", "hcm", $pagenew);
-
-  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && valid_objectname ($user))
   { 
     // publication management config
     if (!isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
@@ -16898,6 +17061,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
       {
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+
         return $result;
       }
     }
@@ -16905,9 +17069,6 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     // eventsystem
     if (!empty ($eventsystem['onrenameobject_pre']) && empty ($eventsystem['hide'])) 
       onrenameobject_pre ($site, $cat, $location, $page, $pagenew, $user);
-
-    // trim object name
-    $pagenew = trim ($pagenew);
  
     $result = manipulateobject ($site, $location, $page, $pagenew, $user, "page_rename");
 
@@ -16915,7 +17076,6 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     if (!empty ($eventsystem['onrenameobject_post']) && empty ($eventsystem['hide']) && !empty ($result['result'])) 
       onrenameobject_post ($site, $cat, $location, $page, $pagenew, $user); 
  
-    // return results 
     return $result;
   }
   else 
@@ -16923,7 +17083,6 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     $result['result'] = false;
     $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
     
-    // return results 
     return $result;
   }
 }
@@ -16971,6 +17130,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
       {
         $result['result'] = false;
         $result['message'] = $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+
         return $result;
       }
     }
@@ -16985,15 +17145,13 @@ function renamefile ($site, $location, $page, $pagenew, $user)
     if (!empty ($eventsystem['onrenameobject_post']) && empty ($eventsystem['hide']) && !empty ($result['result'])) 
       onrenameobject_post ($site, $cat, $location, $page, $pagenew, $user); 
  
-    // return results 
     return $result;
   }
   else 
   {
     $result['result'] = false;
     $result['message'] = $hcms_lang['invalid-input-parameters'][$lang];
-    
-    // return results 
+
     return $result;
   }
 }
@@ -17772,7 +17930,7 @@ function publishobject ($site, $location, $page, $user)
   if (empty ($lang)) $lang = "en";
 
   // create file name
-  if (specialchr ($page, ".-_~") == true) $page = createfilename ($page);
+  if (specialchr ($page, ".-_~") == true) $page = createfilename ($page, false);
 
   // exclude objects in the recycle bin
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && strpos ($location.$page."/", ".recycle/") < 1 && valid_objectname ($user))
@@ -18441,7 +18599,7 @@ function unpublishobject ($site, $location, $page, $user)
   if (empty ($lang)) $lang = "en";
 
   // create file name
-  if (specialchr ($page, ".-_~") == true) $page = createfilename ($page);
+  if (specialchr ($page, ".-_~") == true) $page = createfilename ($page, false);
 
   // exclude objects in the recycle bin
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && strpos ($location.$page."/", ".recycle/") < 1 && valid_objectname ($user))
@@ -19053,7 +19211,7 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
 
 function manipulateallobjects ($action, $objectpath_array, $method="", $force="start", $published_only=false, $user="", $process_id="", $maxitems=10)
 {
-  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang;
+  global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $error = array();
@@ -19598,21 +19756,8 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
                 $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Root folder ".$location.$folder." has been removed after cut & paste action by user '".$user."'"; 
               }
 
-              $test_renamegroup = renamegroupfolder ($site, $cat, $rootpathdelete_array[$temp_id], $rootpathnew_array[$temp_id], $user);
-
-              if ($test_renamegroup == false)
-              {
-                $errcode = "10714";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renamegroupfolder failed for ".$rootpathdelete_array[$temp_id]." to ".$rootpathnew_array[$temp_id]; 
-              }
-
-              $test_renameworkflow = renameworkflowfolder ($site, $cat, $rootpathdelete_array[$temp_id], $rootpathnew_array[$temp_id], $user); 
- 
-              if ($test_renameworkflow == false)
-              {
-                $errcode = "10715";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|renameworkflowfolder failed for ".$rootpathdelete_array[$temp_id]." to ".$rootpathnew_array[$temp_id]; 
-              }
+              renamegroupfolder ($site, $cat, $rootpathdelete_array[$temp_id], $rootpathnew_array[$temp_id], $user);
+              renameworkflowfolder ($site, $cat, $rootpathdelete_array[$temp_id], $rootpathnew_array[$temp_id], $user); 
    
               // remote client
               remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $folder, ""); 
@@ -20409,7 +20554,7 @@ function savelog ($error, $logfile="event")
     // append log data to file or archive file if the file size is too big
     if (is_file ($mgmt_config['abs_path_data']."log/".$logfile) && filesize ($mgmt_config['abs_path_data']."log/".$logfile) < ($archive_size * 1024 * 1024))
     { 
-      $result = appendfile ($mgmt_config['abs_path_data']."log/", $logfile, implode ("\n", $error)."\n");
+      $result = file_put_contents ($mgmt_config['abs_path_data']."log/".$logfile, implode ("\n", $error)."\n", FILE_APPEND | LOCK_EX);
     }
     else
     {
@@ -20417,7 +20562,7 @@ function savelog ($error, $logfile="event")
       if (is_file ($mgmt_config['abs_path_data']."log/".$logfile)) copy ($mgmt_config['abs_path_data']."log/".$logfile, $mgmt_config['abs_path_data']."log/".date("Y-m-d").".".$logfile);
 
       // start new log
-      $result = savefile ($mgmt_config['abs_path_data']."log/", $logfile, implode ("\n", $error)."\n");
+      $result = file_put_contents ($mgmt_config['abs_path_data']."log/".$logfile, implode ("\n", $error)."\n", LOCK_EX);
     }
 
     // save publication log
@@ -20426,7 +20571,7 @@ function savelog ($error, $logfile="event")
       // append log data to file or archive file if the file size is too big
       if (is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log") && filesize ($mgmt_config['abs_path_data']."log/".$site.".publication.log") < ($archive_size * 1024 * 1024))
       { 
-        appendfile ($mgmt_config['abs_path_data']."log/", $site.".publication.log", implode ("\n", $error)."\n");
+        file_put_contents ($mgmt_config['abs_path_data']."log/".$site.".publication.log", implode ("\n", $error)."\n", FILE_APPEND | LOCK_EX);
       }
       else
       {
@@ -20434,7 +20579,7 @@ function savelog ($error, $logfile="event")
         if (is_file ($mgmt_config['abs_path_data']."log/".$site.".publication.log")) copy ($mgmt_config['abs_path_data']."log/".$site.".publication.log", $mgmt_config['abs_path_data']."log/".date("Y-m-d").".".$site.".publication.log");
 
         // start new log
-        savefile ($mgmt_config['abs_path_data']."log/", $site.".publication.log", implode ("\n", $error)."\n");
+        file_put_contents ($mgmt_config['abs_path_data']."log/".$site.".publication.log", implode ("\n", $error)."\n", LOCK_EX);
       }
     }
 
@@ -20444,7 +20589,7 @@ function savelog ($error, $logfile="event")
       // append log data to file or archive file if the file size is too big
       if (is_file ($mgmt_config['abs_path_data']."log/".$user.".user.log") && filesize ($mgmt_config['abs_path_data']."log/".$user.".user.log") < ($archive_size * 1024 * 1024))
       { 
-        appendfile ($mgmt_config['abs_path_data']."log/", $user.".user.log", implode ("\n", $error)."\n");
+        file_put_contents ($mgmt_config['abs_path_data']."log/".$user.".user.log", implode ("\n", $error)."\n", FILE_APPEND | LOCK_EX);
       }
       else
       {
@@ -20452,7 +20597,7 @@ function savelog ($error, $logfile="event")
         if (is_file ($mgmt_config['abs_path_data']."log/".$user.".user.log")) copy ($mgmt_config['abs_path_data']."log/".$user.".user.log", $mgmt_config['abs_path_data']."log/".date("Y-m-d").".".$user.".user.log");
 
         // start new log
-        savefile ($mgmt_config['abs_path_data']."log/", $user.".user.log", implode ("\n", $error)."\n");
+        file_put_contents ($mgmt_config['abs_path_data']."log/".$user.".user.log", implode ("\n", $error)."\n", LOCK_EX);
       }
     }
 
@@ -20665,7 +20810,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   $location = deconvertpath ($location, "file"); 
 
   // create file name
-  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object);
+  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, false);
 
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");

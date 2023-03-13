@@ -764,7 +764,7 @@ else
   // create main Menu points
 
   // ----------------------------------------- home ---------------------------------------------- 
-  if (empty ($hcms_assetbrowser) && $is_mobile)
+  if (empty ($hcms_assetbrowser) && linking_valid() == false && $is_mobile)
   {
     $point = new hcms_menupoint ($hcms_lang['home'][$lang], 'home.php', 'home.png');
     $point->setOnClick('changeSelection(this); minNavFrame();');

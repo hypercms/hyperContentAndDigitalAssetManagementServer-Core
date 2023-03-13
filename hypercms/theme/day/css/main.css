@@ -99,29 +99,19 @@ input[type="search"]::-webkit-search-results-decoration
   display: none;
 }
 
-a 
+a, a:link, a:active, a:visited
 {
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
   text-decoration: none;
-  color: #000000;
+  color: inherit;
   outline: none;
-}
-
-a:link
-{
-  color: #000000;
 }
 
 a:hover 
 {
   color: #505050;
-}
-
-a:visited 
-{
-  color: #000000;
 }
 
 a:active 

@@ -259,7 +259,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         $workflow_class = "";
 
         // read file
-        $objectdata = loadfile ($location.$folder."/", ".folder");
+        $objectdata = loadfile_fast ($location.$folder."/", ".folder");
 
         // folder file exists and can be loaded
         if ($objectdata != false)
@@ -495,9 +495,10 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
       // convert location
       $location_esc = convertpath ($site, $location, $cat);  
-      
+
       // correct file name
-      $object = correctfile ($location, $object, $user);  
+      $object = correctfile ($location, $object, $user);
+
       $file_info = getfileinfo ($site, $location.$object, $cat);
       $object_name = $file_info['name'];
 
@@ -513,7 +514,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $workflow_status = "";
       $workflow_icon = "";
       $workflow_class = "";
-    
+
       // eventsystem
       if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide'])) 
         onobjectlist_pre ($site, $cat, $location, $object, $user);
@@ -538,7 +539,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         else $file_type = getescapedtext ($hcms_lang['file'][$lang])." (".$file_info['type'].")";
 
         // read file
-        $objectdata = loadfile ($location, $object);
+        $objectdata = loadfile_fast ($location, $object);
 
         // get name of media file
         if ($objectdata != false)

@@ -2172,7 +2172,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               $check2 = ($type != 'thumbnail' && substr_count ($imageoptions_ext.".", ".".$format_set.".") > 0);
 
               // check if the type array is present
-              if (is_string ($type) && !empty ($type)) $check3 = array_key_exists ($type, $mgmt_imageoptions[$imageoptions_ext]);
+              if (is_string ($type) && !empty ($type)) $check3 = !empty ($mgmt_imageoptions[$imageoptions_ext][$type]);
               else $check3 = false;
 
               // get image rendering options based on given destination format

@@ -6682,3 +6682,40 @@ Release 03/2023
 - Bug fix: Upload errors of files larger than 10 MB (resumable uploads) have not been displayed in the upload bar in popup_upload_html
 - Bug fix: Service uploadfile did not remove HTTP headers from the UploadHandler
 
+Version 10.1.1
+Release 05/2023
+- Design modifications in all design themes in order to change the design of the hover state of a link 
+- Design modifications in all design theme in order to apply styles to all link states except the hover state
+- Design modifications in Black design themes in order to add a border raduis to all buttons and input elements
+- Modifications in popup_upload_html in order to implement the new local JS function getResponseAndBuildFileMessage
+- Design modifications in all home boxes in order to display object links as a standard link
+- Modifications in the Workplace Integration API in order to implement and support the global variable is_webdav that can be used to create special log entries by the function in the Main API
+- Modifications in function createfilename, createobject, createmediaobject, renameobject, deleteobject, createfolder, renamefolder, deletefolder, uploadfile, uploadhandler, downloadfile, createdownloadlink, createobjectaccesslink, and manipulateallobjects in Main API in order to support the new global variable is_webdav
+- Modifications in function renamegroupfolder, deletegroupfolder, ranemeworkflowfolder, and deleteworkflowfolder in Main API in order to implement error log entries
+- Modifications in function manipulateobject in Main API in order to remove log entries associated to function renamegroupfolder and ranemeworkflowfolder since the log entries will be provided by these functions
+- Modifications in the Workplace Integration API in order to implement the support of the provided original file name and use this name for 8 hours in case a file name has been truncated, due to issues with the WebDAV client and truncated file names
+- Modifications in the Workplace Integration API in order to implement the support of the provided original folder name and use this name for 8 hours in case a folder name has been truncated, due to issues with the WebDAV client and truncated folder names
+- Implementation of the new main configuration setting $mgmt_config['webdav_lock'] in order to enable and disable the file locking
+- Modifications in the Workplace Integration module in order to support the new main configuration setting $mgmt_config['webdav_lock']
+- Modifications in function createobject, createfolder, renamefolder, and manipulateobject in Main API in order to support the originla provided object or folder name for WebDAV support (in case the name will be truncated)
+- Implementation of the recycle bin in the Workplace Integration API
+- Modifications in public function deleteFolder and deleteObject in the Workplace Integration API in order to support the recycle bin
+- Modifications in the public function getRealFolderName and getRealFileName in the Workplace Integration API in order to use function loadfile_fast instead of loadfile on the asset objects
+- Modifications in explorer_objectlist and search_objectlist in order to use function loadfile_fast instead of loadfile
+- Modifications in function savelog in Main API in order to replace function calls appendfile and savefile by file_put_contents using file locking
+- Modifications in function createfilename in Main API in order to support a new input parameter for enabling and disabling the shortening of the file name
+- Modifications in all functions that use function createfilename in the Main API in order to support the new input parameter
+- Modifications in all functions that use function createfilename in the Meta API in order to support the new input parameter
+- Modifications in function GCanalyzeimage in the Cloud Connector module in order to set $mgmt_imageoptions as global
+- Modifications in the Event System file in order to add the missing searchsites parameter that enables the search index for specific websites
+- Modifications in control_objectlist_menu in order to hide the search button if an access link has been used
+- Modifications in frameset_main in order to hide the home button if an access link has been used
+- Modifications in explorer in order to hide the home button in the Mobile Edition if an access link has been used
+- Bug fix: The Workplace Integration returned the truncated file name which caused issues since the WebDAV client expected the provided file name and was not able to save the content in the new file
+- Bug fix: The Workplace Integration returned the truncated folder name which caused issues since the WebDAV client expected the provided folder name and was not able to set the new folder name
+- Bug fix: The public function isLoggedInHyperdav in the Workplace Integration API used a wrong name for the main configuration
+- Bug fix: Function renameobject in Main API applied changed on the provided file name. The file name modifications should only be performed by function manipulteobject in Main API.
+- Bug fix: The use of function savelog in function createfilename in the Main API caused issues since function savelog uses function appendfile and savefile whoch both use function createfilename
+- Bug fix: Existing file names that exceeded the max length have been corrected by function createfilename and therefore could not be accessed
+- Bug fix: Function GCanalyzeimage in the Cloud Connector module did not set the provided image options settings as global, therefore function createmedia failed to create the requested image for the Cloud service
+- Bug fix: The standard Event System file did not specifiy the MyHomepage publication in the searchsites parameter

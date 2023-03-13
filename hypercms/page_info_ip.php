@@ -57,10 +57,9 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
 
 <!-- content -->
 <div class="hcmsWorkplaceFrame">
-  <?php
-  if (!empty ($data['lat']) && !empty ($data['lon'])) 
-  {
-  ?>
+  <?php if (!empty ($data['lat']) && !empty ($data['lon'])) { ?>
+  <?php if (!empty ($mgmt_config['googlemaps_appkey'])) { ?>
+
   <div id="map" style="width:620px; height:400px; margin:10px; border:1px solid grey;"></div>
   <script>
   function initMap ()
@@ -78,6 +77,7 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
 
   initMap();
   </script>
+  <?php } ?>
 
   <div style="margin:10px;">
   <?php
@@ -92,10 +92,7 @@ echo showtopbar ($hcms_lang['geo-location-of'][$lang]." ".$ip, $lang);
     </table>";
   ?>
   </div>
-  <?php
-  }
-  else echo "Error for ".$ip;
-  ?>
+  <?php } else echo "Error for ".$ip; ?>
 </div>
 
 <?php includefooter(); ?>
