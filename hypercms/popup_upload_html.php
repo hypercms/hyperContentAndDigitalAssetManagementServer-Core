@@ -50,9 +50,6 @@ checkusersession ($user, false);
 $objectdata = loadfile ($location, $object);
 $media = getfilename ($objectdata, "media");
 
-// max digits in file name
-if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
-
 // get file info
 $file_info = getfileinfo ($site, $location.$object, $cat);
 

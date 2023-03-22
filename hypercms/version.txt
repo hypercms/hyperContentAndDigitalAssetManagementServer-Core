@@ -6689,6 +6689,7 @@ Release 05/2023
 - Design modifications in Black design themes in order to add a border raduis to all buttons and input elements
 - Modifications in popup_upload_html in order to implement the new local JS function getResponseAndBuildFileMessage
 - Design modifications in all home boxes in order to display object links as a standard link
+- Implementation of the support of long files names that need to be shortened (file names that consists of mainly special characters)
 - Modifications in the Workplace Integration API in order to implement and support the global variable is_webdav that can be used to create special log entries by the function in the Main API
 - Modifications in function createfilename, createobject, createmediaobject, renameobject, deleteobject, createfolder, renamefolder, deletefolder, uploadfile, uploadhandler, downloadfile, createdownloadlink, createobjectaccesslink, and manipulateallobjects in Main API in order to support the new global variable is_webdav
 - Modifications in function renamegroupfolder, deletegroupfolder, ranemeworkflowfolder, and deleteworkflowfolder in Main API in order to implement error log entries
@@ -6711,11 +6712,37 @@ Release 05/2023
 - Modifications in control_objectlist_menu in order to hide the search button if an access link has been used
 - Modifications in frameset_main in order to hide the home button if an access link has been used
 - Modifications in explorer in order to hide the home button in the Mobile Edition if an access link has been used
+- Modifications in function createfilename in Main API in order to replace PHP function strlen by mb_strlen
+- Modifications in userlogin in order to set the focus after the wallpaper
+- Modifications in function rdbms_createqueueentry in DB Connect in order to find duplicate command son the same object and avoid new queue entries for the same command and object
+- Modifications in function loadfile and loadlockfile in Main API in order to verify that the file is not a directory
+- Modifications in function createobject in Main API in order to use a numeration suffix for object names if WebDAV is used and the file name exists already (due to shortened file names)
+- Modifications in function manipulateobject in Main API in order to use a numeration suffix for object names if WebDAV is used and the file name exists already (due to shortened file names)
+- Modifications in function killesssion in Security API in order to change an error code
+- Modifications in function loadfile and loadlockfile in Main API in order to use the original file name in the error log entry
+- Modifications in function correctfile in Main API in order to exclude e-mail addresses used in objectlistcols.json file names from beeing treated by function createfilename
+- Modifications in function userlogin in Security API in order to replace function loadfile by loadfile_fast for loading the users objectlist columns definition file (objectlistcols.json)
+- Implementation of the new function is_longfilename in Main API
+- Modifications in function uploadfile in Main API in order to implement function is_longfilename for the verification of existing files with the same name
+- Modifications in function createobject in Main API in order to implement function is_longfilename for the verification of existing files with the same name
+- Modifications in function specialchr_encode in Main API in order to change teh sequence of the special characters that need to be removed
+- Modifications in function copyfolders in Main API in order to replace function is_dir by is_idir
+- Modifications in function createobject in Main API in order to implement function avoidfilecollision due to issues with same shortened file names that are created at the same time without existing in the file system
+- Modifications in function createdownloadlink, createaccesslink, createobjectaccesslink, createwrapperlink, downloadobject, deletefolder, renamefolder, unpublishobject, and notifyusers in order to remove the check for special characters before calling function createfilename
+- Modifications in function rollbackversion in Main API in order to remove the check for a locked file name before calling function createfilename
+- Modifications in various function in Main API in order to set the default value for the max file name length to 200 instead of 236 characters due to issues with the lenth of media version files
+- Modifications in popup_upload_html in order to remove the unused max file name length setting since the system API will take care of longer file names
+- Modifications in function valid_locationname in Security API in order to set the default value for the max file name length to 200 instead of 236 characters due to issues with the lenth of media version files
+- Modifications in the main configuration setting $mgmt_config['max_digits_filename'] in the installation directory in order to set the default value for the max file name length to 200 instead of 236 characters
 - Bug fix: The Workplace Integration returned the truncated file name which caused issues since the WebDAV client expected the provided file name and was not able to save the content in the new file
 - Bug fix: The Workplace Integration returned the truncated folder name which caused issues since the WebDAV client expected the provided folder name and was not able to set the new folder name
 - Bug fix: The public function isLoggedInHyperdav in the Workplace Integration API used a wrong name for the main configuration
 - Bug fix: Function renameobject in Main API applied changed on the provided file name. The file name modifications should only be performed by function manipulteobject in Main API.
-- Bug fix: The use of function savelog in function createfilename in the Main API caused issues since function savelog uses function appendfile and savefile whoch both use function createfilename
+- Bug fix: The accidental use of function savelog in function createfilename (for testing prurposes) in the Main API can cause a killer loop since function savelog uses function appendfile and savefile which both again use function createfilename
 - Bug fix: Existing file names that exceeded the max length have been corrected by function createfilename and therefore could not be accessed
 - Bug fix: Function GCanalyzeimage in the Cloud Connector module did not set the provided image options settings as global, therefore function createmedia failed to create the requested image for the Cloud service
 - Bug fix: The standard Event System file did not specifiy the MyHomepage publication in the searchsites parameter
+- Bug fix: e-mail addresses used for the user names caused an error when loading the users objectlist columns definitions (objectlistcols.json)
+- Bug fix: Long file names that need to be shortened by function createfilename due to special characters in the name caused issues since the same shorten file name can exist for different files when uploaded at the same time (WebDAV and HTML file upload)
+- Bug fix: The upload of files with the same shortened name at the same time caused an issue due to the same file name since the function is_ifile could not read the new file snice it has not been created by function createobject while the check has been performed  
+- Bug fix: Media version file names have been to long with a max length file name value of 236 characters

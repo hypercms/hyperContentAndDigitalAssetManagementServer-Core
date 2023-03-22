@@ -376,7 +376,7 @@ function specialchr ($expression, $accept="")
 // output: expression without special characters (for file names)
 
 // description:
-// Renames all special characters for file names to an expression according to given rules
+// Renames all special characters for file names according to a set of rules
 
 function specialchr_encode ($expression, $remove="no")
 {
@@ -403,9 +403,8 @@ function specialchr_encode ($expression, $remove="no")
         if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));
 
         // replace invalid file name characters (symbols)
-        $strip = array ("%", "`", "!", "@", "#", "$", "^", "&", "*", "=", 
-                        "\\", "|", ";", ":", "\"", "&quot;", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
-                        "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", ",", "<", "&lt;", ">", "&gt;", "?");
+        $strip = array ("&quot;", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;", "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", "&lt;", "&gt;", 
+                        "'", "\\", "|", ";", ":", "\"", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", ",", "<", ">", "?");
  
         $expression = str_replace ($strip, "", strip_tags ($expression));
 
@@ -1713,13 +1712,50 @@ function includefooter ()
 
 // ========================================== FILES AND LINKS =======================================
 
+// ---------------------- is_longfilename -----------------------------
+// function: is_longfilename()
+// input: file or directory name [string]
+// output: true / false
+
+// description:
+// Checks if the file or directory name might have been shortened by function createfilename
+
+function is_longfilename ($filename)
+{
+  global $mgmt_config, $hcms_lang, $lang, $is_webdav;
+
+  // trim
+  $filename_new = trim ($filename);
+
+  // exclude multimedia file names and objects in the recycle bin
+  if ($filename_new != "" && strpos ($filename_new, "_hcm") <= 0 && substr ($filename_new, -8) != ".recycle")
+  {
+    // default value
+    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
+
+    // check if filename includes special characters
+    if (specialchr ($filename_new, ".-_") == true)
+    {
+      $filename_new = specialchr_encode ($filename_new, "no");
+    }
+
+    // check length of file name (compare function createfilename)
+    if ((mb_strlen ($filename_new) + 14) > $mgmt_config['max_digits_filename'])
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // ---------------------- createfilename -----------------------------
 // function: createfilename()
 // input: file or directory name [string], shorten file name automatically (required for new object or folder names) [optional]
 // output: new filename/false
 
 // description:
-// Creates a valid file name without special characters that does not exceed the maximum file name length
+// Creates a valid file name without special characters that does not exceed the maximum file name length.
 
 function createfilename ($filename, $shorten=false)
 {
@@ -1728,20 +1764,20 @@ function createfilename ($filename, $shorten=false)
   // initialize
   $error = array();
 
+  // default value
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
+
   // trim
   $filename_new = trim ($filename);
 
-  // exclude multimedia file names
-  if (strpos ($filename_new, "_hcm") > 0)
+  // exclude multimedia, e-mail addresses in case of objectlistcols.json and locked file names (this would mean the correct container file name has been provided)
+  if ($shorten == false && (strpos ($filename_new, "_hcm") > 0 || strpos ($filename_new, "@") > 0))
   {
     return $filename_new;
   }
   // object name
   elseif (valid_objectname ($filename_new))
   {
-    // default value
-    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
-
     // check if filename includes special characters
     if (specialchr ($filename_new, ".-_") == true)
     {
@@ -1750,7 +1786,7 @@ function createfilename ($filename, $shorten=false)
 
     // escaped or input file name is too long (plus 11 digits for the hcms media object identifier or the file extension identifiers like .off and .recycle)
     // exclude objects in recycle bin
-    if ($shorten && (strlen ($filename_new) + 11) > $mgmt_config['max_digits_filename'] && substr ($filename_new, -8) != ".recycle")
+    if ($shorten && (mb_strlen ($filename_new) + 11) > $mgmt_config['max_digits_filename'] && substr ($filename_new, -8) != ".recycle")
     {
       if (substr_count ($filename_new, ".") > 0)
       {
@@ -1762,7 +1798,7 @@ function createfilename ($filename, $shorten=false)
       }
       else $file_ext  = "";
 
-      $filename_new = substr ($filename_new, 0, ($mgmt_config['max_digits_filename'] - 11 - strlen ($file_ext)));
+      $filename_new = substr ($filename_new, 0, ($mgmt_config['max_digits_filename'] - 11 - mb_strlen ($file_ext)));
 
       // remove escaped character at the end of the file name that is not fully presented
       if (substr ($filename_new, -2, 1) == "~") $filename_new = substr ($filename_new, 0, -2);
@@ -1827,8 +1863,8 @@ function correctfile ($abs_path, $filename, $user="")
   // correct user name for file lock
   $lock = createlockname ($user);
 
-  // create valid file name if container file is not locked by a user (this would mean the correct container file name has been provided)
-  if (strpos ($filename, ".@") < 1) $filename = createfilename ($filename, false);
+  // create valid file name
+  $filename = createfilename ($filename, false);
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -2434,7 +2470,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
   $location = deconvertpath ($location, "file"); 
 
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
+  $object = createfilename ($object, false);
 
   // check permissions (only if a publication and location has been provided)
   if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
@@ -2538,7 +2574,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     // if object includes special characters
     $object = trim ($object);
     $object = trim ($object, "/");
-    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
+    $object = createfilename ($object, false);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2638,7 +2674,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     // if object includes special characters
     $object = trim ($object);
     $object = trim ($object, "/");
-    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
+    $object = createfilename ($object, false);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2750,7 +2786,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     // if object includes special characters
     $object = trim ($object);
     $object = trim ($object, "/");
-    if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
+    $object = createfilename ($object, false);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -3243,7 +3279,7 @@ function createversion ($site, $file, $user="sys")
 // output: result_array
 
 // description:
-// Makes an older object version the current version.
+// Makes an older object version the current version
 
 function rollbackversion ($site, $location, $page, $container_version, $user="sys")
 {
@@ -3269,7 +3305,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   $location = deconvertpath ($location, "file");
 
   // create valid file name
-  if (strpos ($page, ".@") > 1) $page = createfilename ($page, true);
+  $page = createfilename ($page, false);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
   {
@@ -3842,17 +3878,17 @@ function loadfile ($abs_path, $filename)
   // correct user name for file lock
   $lock = createlockname ($user);
 
-  if (valid_locationname ($abs_path) && valid_objectname ($filename))
+  // add slash if not present at the end of the location string
+  $abs_path = correctpath ($abs_path);
+
+  // deconvert path
+  if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
   {
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
+    $abs_path = deconvertpath ($abs_path, "file");
+  }
 
-    // deconvert path
-    if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
-    {
-      $abs_path = deconvertpath ($abs_path, "file");
-    }
-
+  if (valid_locationname ($abs_path) && valid_objectname ($filename) && !is_dir ($abs_path.$filename))
+  {
     // symbolic link
     if (is_link ($abs_path.$filename))
     {
@@ -3920,7 +3956,7 @@ function loadfile ($abs_path, $filename)
       }
 
       $errcode = "00885";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File ".$abs_path.$filename." can't be loaded within 3 seconds";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File ".$abs_path.$filename_unlocked." can't be loaded within 3 seconds";
 
       // save log
       savelog ($error);
@@ -3950,19 +3986,19 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
   // initialize
   $error = array();
 
-  if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename))
+  // add slash if not present at the end of the location string
+  $abs_path = correctpath ($abs_path);
+
+  // deconvert path
+  if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
+  {
+    $abs_path = deconvertpath ($abs_path, "file");
+  }
+
+  if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename) && !is_dir ($abs_path.$filename))
   {
     // correct user name for file lock
     $lock = createlockname ($user);
-
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
-    // deconvert path
-    if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
-    {
-      $abs_path = deconvertpath ($abs_path, "file");
-    }
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -4082,7 +4118,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       }
 
       $errcode = "00888";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File ".$abs_path.$filename." can't be loaded within 3 seconds";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|File ".$abs_path.$filename_unlocked." can't be loaded within 3 seconds";
 
       // save log
       savelog ($error);
@@ -5089,7 +5125,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
   $location = deconvertpath ($location, "file");
 
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, true);
+  $object = createfilename ($object, false);
 
   if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
   {
@@ -12182,7 +12218,7 @@ function createfolder ($site, $location, $folder, $user)
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // default max length
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
   // initialize
   $result = array();
@@ -12375,7 +12411,7 @@ function createfolders ($site, $location, $folder, $user)
   $result = array();
 
   // default max length
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
   // add slash if not present at the end of the location string
   $location = correctpath ($location);
@@ -12518,7 +12554,7 @@ function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplic
 
                 for ($c=2; $c<=100; $c++)
                 { 
-                  if (is_dir ($rootlocationnew.$rootfoldernew))
+                  if (is_idir ($rootlocationnew.$rootfoldernew))
                   {
                     // reset rootfoldernew name
                     $rootfoldernew = $thisfolder."-Copy".$c;
@@ -12614,7 +12650,7 @@ function deletefolder ($site, $location, $folder, $user)
 
   // folder name
   $folder = trim ($folder);
-  if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder, true);
+  $folder = createfilename ($folder, false);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {
@@ -12747,7 +12783,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // default max length
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
   // initialize
   $error = array();
@@ -12772,7 +12808,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   $foldernew_orig = $foldernew;
 
   // test if folder name includes special characters
-  if (specialchr ($folder, ".-_~") == true) $folder = createfilename ($folder, true);
+  $folder = createfilename ($folder, false);
   $foldernew = createfilename ($foldernew, true);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
@@ -13156,7 +13192,7 @@ function createobject ($site, $location, $page, $template, $user)
   global $eventsystem, $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // default max length
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
   // initialize
   $error = array();
@@ -13195,6 +13231,7 @@ function createobject ($site, $location, $page, $template, $user)
   $page = str_replace ("~", "-", $page);
 
   // create valid object file name
+  $is_longfilename = is_longfilename ($page);
   $page = createfilename ($page, true);
 
   // the max chacracters for an objectpath is 16,000 (due to the database attribute objectpath)
@@ -13312,12 +13349,12 @@ function createobject ($site, $location, $page, $template, $user)
           // $page_orig is defined already 
         }
 
+        // important due to issues with same shortened file names if uploaded at the same time
+        avoidfilecollision();
+
         // check if page already exists (case-insensitive)
         if (!is_ifile ($location.$pagefile) && !is_ifile ($location.$pagename))
         {
-          // ----------------------------- build content file (xml structure)----------------------------
-          $contentstore = "";
-
           // --------------------------------- hyperCMS content ------------------------------------
           // get contentcount and create the content file name
           $contentcount = contentcount ($user);
@@ -13326,6 +13363,48 @@ function createobject ($site, $location, $page, $template, $user)
           {
             $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
+          }
+        }
+        // if a long file name exists already, an enumeration suffix will be used (due to shortened file names)
+        elseif ($mediatype == true && $page != ".folder" && $is_longfilename == true)
+        {
+          // get file name and extension
+          $pagefile_info = getfileinfo ($site, $pagefile, $cat);
+          $pagename_info = getfileinfo ($site, $pagename, $cat);
+
+          $pagefile_temp = $pagefile;
+          $pagename_temp = $pagename;
+
+          for ($c=2; $c<=100; $c++)
+          {
+            if (is_ifile ($location.$pagefile_temp) || is_ifile ($location.$pagename_temp))
+            {
+              // define new file name with suffix
+              $pagefile_temp = $pagefile_info['filename']."-".$c.$pagefile_info['ext'];
+              $pagename_temp = $pagename_info['filename']."-".$c.$pagename_info['ext'];
+
+              $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
+              $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n".$hcms_lang['please-try-another-name'][$lang]."\n";
+            }
+            else
+            {
+              $pagefile = $pagefile_temp;
+              $pagename = $pagename_temp;
+              $add_onload = "";
+              $show = "";
+
+              // --------------------------------- hyperCMS content ------------------------------------
+              // get contentcount and create the content file name
+              $contentcount = contentcount ($user);
+
+              if (empty ($contentcount))
+              {
+                $add_onload = "parent.frames['objFrame'].location='".cleandomain ($mgmt_config['url_path_cms'])."empty.php'; ";
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['severe-error-occured'][$lang]."</span><br />\n".$hcms_lang['contentcount-failure'][$lang]."\n";
+              }
+
+              break;
+            }
           }
         }
         else
@@ -14024,7 +14103,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     }
 
     // default max length
-    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+    if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
     // error if file name is too long
     if (strlen ($global_files['Filedata']['name']) > $mgmt_config['max_digits_filename'])
@@ -14042,6 +14121,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     }
 
     // create valid file name
+    $is_longfilename = is_longfilename ($global_files['Filedata']['name']);
     $filename_new = createfilename ($global_files['Filedata']['name'], true);
 
     // if file exists and is not an update
@@ -14056,7 +14136,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         if (!empty ($object_info['media'])) $media_update = $object_info['media'];
       }
       // error if file exists
-      else
+      elseif ($is_longfilename == false)
       {
         $result['header'] = "HTTP/1.1 400 Bad Request";
         $result['message'] = strip_tags ($hcms_lang['the-file-you-are-trying-to-upload-already-exists'][$lang]);
@@ -14555,7 +14635,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               else unindexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
 
               // add indexcontent command to queue
-              if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "indexcontent (\"".$site."\", \"".$media_root."\", \"".$media_update."\", \"".$contentfile."\", \"\", \"". $user."\");", $user);
+              if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "indexcontent (\"".$site."\", \"".$media_root."\", \"".$media_update."\", \"".$container_id."\", \"\", \"". $user."\");", $user);
               // index content
               else indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
 
@@ -14966,7 +15046,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             if (substr_count ($folder_new, "#U") > 0) $folder_new = convert_unicode2utf8 ($folder_new); 
 
             // check if folder exists already 
-            if (!object_exists ($location_destination.createfilename ($folder_new)))
+            if (!object_exists ($location_destination.createfilename ($folder_new, true)))
             {
               // create folder
               $createfolder = createfolder ($site, $location_destination, $folder_new, $user);
@@ -15514,7 +15594,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
           // create valid file names for
           // existing object name
-          if (specialchr ($page, ".-_~") == true) $page = createfilename ($page);
+          $page = createfilename ($page, false);
           // new object name
           $pagenew = createfilename ($pagenew, true);
 
@@ -15572,10 +15652,38 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-doesnt-exist-or-you-do-not-have-write-permissions'][$lang]."</span><br />\n";
           }
           // if new object exists already (published or unpublished) (case insensitive)
-          elseif ((is_ifile ($location.$pagenew_pub) || is_ifile ($location.$pagenew_unpub)) && strtolower ($location.$page) != strtolower ($location.$pagenew))
+          elseif ($is_webdav == false && (is_ifile ($location.$pagenew_pub) || is_ifile ($location.$pagenew_unpub)) && strtolower ($location.$page) != strtolower ($location.$pagenew))
           {
             $add_onload = "";
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
+          }
+          // if WebDAV is used and the renamed object exists already (case insensitive)
+          elseif ($mediafile_self != "" && $is_webdav && strtolower ($location.$page) != strtolower ($location.$pagenew))
+          {
+            // get file name and extension
+            $pagenew_info = getfileinfo ($site, $pagenew, "comp");
+
+            $pagenew_temp = $pagenew;
+
+            for ($c=2; $c<=100; $c++)
+            {
+              if (is_ifile ($location.$pagenew_temp))
+              {
+                // define new file name with suffix
+                $pagenew_temp = $pagenew_info['filename']."-".$c.$pagenew_info['ext'];
+
+                $add_onload = "";
+                $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
+              }
+              else
+              {
+                $pagenew = $pagenew_temp;
+                $add_onload = "";
+                $show = "";
+
+                break;
+              }
+            }
           }
         }
         else 
@@ -17031,7 +17139,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
   global $eventsystem, $mgmt_config, $cat, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang, $is_webdav;
 
   // default max length
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
   // initialize
   $result = array();
@@ -17106,7 +17214,7 @@ function renamefile ($site, $location, $page, $pagenew, $user)
   $result = array();
 
   // default max length
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($pagenew) && strlen ($pagenew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -17930,7 +18038,7 @@ function publishobject ($site, $location, $page, $user)
   if (empty ($lang)) $lang = "en";
 
   // create file name
-  if (specialchr ($page, ".-_~") == true) $page = createfilename ($page, false);
+  $page = createfilename ($page, false);
 
   // exclude objects in the recycle bin
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && strpos ($location.$page."/", ".recycle/") < 1 && valid_objectname ($user))
@@ -18599,7 +18707,7 @@ function unpublishobject ($site, $location, $page, $user)
   if (empty ($lang)) $lang = "en";
 
   // create file name
-  if (specialchr ($page, ".-_~") == true) $page = createfilename ($page, false);
+  $page = createfilename ($page, false);
 
   // exclude objects in the recycle bin
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && strpos ($location.$page."/", ".recycle/") < 1 && valid_objectname ($user))
@@ -20810,7 +20918,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   $location = deconvertpath ($location, "file"); 
 
   // create file name
-  if (specialchr ($object, ".-_~") == true) $object = createfilename ($object, false);
+  $object = createfilename ($object, false);
 
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");

@@ -5360,14 +5360,29 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
       $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
       // clean input
-      $action = $db->rdbms_escape_string ($action);
+      $action = $db->rdbms_escape_string (strtolower ($action));
       $object = $db->rdbms_escape_string ($object);
       $date = date ("Y-m-d H:i", strtotime ($date));
       if (!empty ($published_only)) $published_only = 1;
       else $published_only = 0;
       if (!empty ($cmd)) $cmd = $db->rdbms_escape_string ($cmd);
       $user = $db->rdbms_escape_string ($user);
+      
+      // find duplicate command
+      if (strtolower ($action) == "execute" && $cmd != "")
+      {
+        $sql = 'SELECT date FROM queue WHERE object_id='.intval ($object_id).' AND action="execute" AND cmd="'.$cmd.'"';
 
+        $errcode = "50773";
+        $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+  
+        if ($done && $row = $db->rdbms_getresultrow ())
+        {
+          if ($row['date'] != "" && strtotime ($row['date']) <= time()) return true;
+        }
+      }
+
+      // create new queue entry
       $sql = 'INSERT IGNORE INTO queue (object_id, action, date, published_only, cmd, user) ';    
       $sql .= 'VALUES ('.intval ($object_id).', "'.$action.'", "'.$date.'", '.intval ($published_only).', "'.$cmd.'", "'.$user.'")';
 

@@ -1904,7 +1904,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
     if (is_file ($mgmt_config['abs_path_data']."checkout/".$user.".objectlistcols.json"))
     {
       // load objectlist definition file
-      $temp_json = loadfile ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json");
+      $temp_json = loadfile_fast ($mgmt_config['abs_path_data']."checkout/", $user.".objectlistcols.json");
 
       // JSON decode the string
       if ($temp_json != "") $columns = json_decode ($temp_json, true);
@@ -2725,7 +2725,7 @@ function killsession ($user="", $destroy_php=true, $remove=false)
   // log information
   if (!empty ($deletesession))
   {
-    $errcode = "00102";
+    $errcode = "00112";
     $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|User '".$user."' with client IP ".$client_ip." is logged out";
     savelog ($error);
   }
@@ -3396,7 +3396,7 @@ function valid_locationname ($variable)
     if (!is_array ($variable) && is_string ($variable))
     {
       // default value
-      if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 236;
+      if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
       
       // if location path is too long
       if (strlen ($variable) > (4096 - $mgmt_config['max_digits_filename'])) return false;
