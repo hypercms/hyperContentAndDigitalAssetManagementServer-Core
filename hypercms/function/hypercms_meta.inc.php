@@ -411,7 +411,7 @@ function importCSVtextcontent ($site, $location, $file_csv, $user, $type="", $de
                 else
                 {
                   // eventsystem
-                  if (!empty ($eventsystem['onsaveobject_pre']) && empty ($eventsystem['hide'])) 
+                  if (!empty ($eventsystem['onsaveobject_pre']) && empty ($eventsystem['hide']) && function_exists ("onsaveobject_pre")) 
                   {
                     $contentdataevent = onsaveobject_pre ($site, $cat, $temp_location, $temp_object, $contentfile, $contentdata_new, $user);
 
@@ -446,6 +446,12 @@ function importCSVtextcontent ($site, $location, $file_csv, $user, $type="", $de
                   }
                   else
                   {
+                    // eventsystem
+                    if (!empty ($eventsystem['onsaveobject_post']) && empty ($eventsystem['hide']) && function_exists ("onsaveobject_post")) 
+                    {
+                      onsaveobject_post ($site, $cat, $temp_location, $temp_object, $contentfile, $contentdata_new, $user);
+                    }
+
                     if (!empty ($report)) echo "<span style=\"color:green;\">CSV content for ".convertpath ($site, $temp_location.$object, $cat)." (".$contentfile.") has been successfully imported</span><br />\n";
 
                     $errcode = "00199";

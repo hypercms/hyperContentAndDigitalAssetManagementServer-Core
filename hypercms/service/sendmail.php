@@ -785,11 +785,11 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
             {
               $bccsent = true;
               $mails = splitstring ($email_bcc);
-              
+
               if (is_array ($mails))
               {
                 $mails = array_unique ($mails);
-                      
+
                 foreach ($mails as $mail)
                 {
                   $mailer->AddBCC ($mail);
@@ -803,11 +803,11 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
 
             // create email recipient array
             $temp_email_to_array = splitstring ($temp_email_to);
-            
+
             if (is_array ($temp_email_to_array))
             {
               $temp_email_to_array = array_unique ($temp_email_to_array);
-              
+
               foreach ($temp_email_to_array as $temp)
               {
                 $mailer->AddAddress ($temp);
@@ -828,7 +828,7 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
             else
             {
               $mail_error[] = $temp_email_to;
-              
+
               $errcode = "20101";
               $error[] = $mgmt_config['today']."|user_sendlink.php|error|".$errcode."|e-mail message could not be sent to '".$temp_email_to."' by user '".$user."'";
             }

@@ -26,6 +26,9 @@ $db_connect = getrequest_esc ("db_connect", "objectname");
 $tagname = getrequest_esc ("tagname", "objectname");
 $id = getrequest_esc ("id", "objectname", "", true);
 $label = getrequest_esc ("label");   
+$linkhref = getrequest_esc ("linkhref");
+$linktext = getrequest_esc ("linktext");
+$linktarget = getrequest_esc ("linktarget");
 $targetlist = getrequest_esc ("targetlist");
 
 // get publication and category
@@ -50,11 +53,6 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initialize
-$linkhref = "";
-$linktarget = "*Null*";
-$linktext = "*Null*";
-
 // convert location
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
@@ -74,8 +72,8 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   if ($db_connect_data != false)
   {
     $linkhref = $db_connect_data['href'];
-    $linktarget = $db_connect_data['target'];
-    $linktext = $db_connect_data['text'];
+    if ($linktarget != "*Null*") $linktarget = $db_connect_data['target'];
+    if ($linktext != "*Null*") $linktext = $db_connect_data['text'];
   }
 }
 
@@ -95,12 +93,21 @@ if (empty ($db_connect_data))
       {
         $temp_array = getcontent ($linknode[0], "<linkhref>");
         if (!empty ($temp_array[0])) $linkhref = $temp_array[0];
+        else $linkhref = "";
         
-        $temp_array = getcontent ($linknode[0], "<linktarget>");
-        if (!empty ($temp_array[0])) $linktarget = $temp_array[0];
+        if ($linktarget != "*Null*")
+        {
+          $temp_array = getcontent ($linknode[0], "<linktarget>");
+          if (!empty ($temp_array[0])) $linktarget = $temp_array[0];
+          else $linktarget = "";
+        }
         
-        $temp_array = getcontent ($linknode[0], "<linktext>");
-        if (!empty ($temp_array[0])) $linktext = $temp_array[0];
+        if ($linktext != "*Null*")
+        {
+          $temp_array = getcontent ($linknode[0], "<linktext>");
+          if (!empty ($temp_array[0])) $linktext = $temp_array[0];
+          else $linktext = "";
+        }
       }  
     }
   }
@@ -439,7 +446,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <tr>
       <td>".getescapedtext ($hcms_lang['link-text'][$lang], $charset, $lang)." </td>
       <td>
-        <input type=\"text\" name=\"linktext\" value=\"".$linktext."\" style=\"width:220px;\" />
+        <input type=\"text\" name=\"linktext\" value=\"".$linktext."\" style=\"width:220px;\" maxlength=\"255\" />
       </td>
     </tr>";
   }

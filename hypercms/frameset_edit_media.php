@@ -29,7 +29,14 @@ $tagname = url_encode (getrequest ("tagname", "url"));
 $id = url_encode (getrequest ("id", "url"));
 $label = url_encode (getrequest ("label", "url"));
 $mediacat = url_encode (getrequest ("mediacat", "url"));
+$mediadir = url_encode (getrequest ("mediadir", "url"));
 $mediatype = url_encode (getrequest ("mediatype", "url")); 
+$mediafile = url_encode (getrequest ("mediafile", "url"));
+$mediaobject = url_encode (getrequest ("mediaobject", "url"));
+$mediaalttext = url_encode (getrequest ("mediaalttext", "url"));
+$mediaalign = url_encode (getrequest ("mediaalign", "url"));
+$mediawidth = url_encode (getrequest ("mediawidth", "url"));
+$mediaheight = url_encode (getrequest ("mediaheight", "url"));
 $scaling = url_encode(getrequest ("scaling", "numeric"));
 
 // ------------------------------ permission section --------------------------------
@@ -99,7 +106,6 @@ else $css_iphone = "";
 
 <body>
   <?php
-  // navigation layer
   if ($mediacat != "comp")
   {
     echo "
@@ -115,7 +121,6 @@ else $css_iphone = "";
   </div>";
   }
 
-  // control layer
   if ($action == "mediafile_delete")
   {
     echo "
@@ -127,19 +132,19 @@ else $css_iphone = "";
   {
     echo "
   <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\">
-    <iframe id=\"controlFrame2\" name=\"controlFrame2\" src=\"media_preview.php?site=".$site."\" frameborder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe>
+    <iframe id=\"controlFrame2\" name=\"controlFrame2\" src=\"media_preview.php?site=".$site."&cat=".$cat."\" frameborder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe>
   </div>";
   }
   else
   {
     echo "
   <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:260px; height:220px; margin:0; padding:0;\">
-    <iframe id=\"controlFrame2\" name=\"controlFrame2\" src=\"media_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".$label."&tagname=".$tagname."&scaling=".$scaling."&mediacat=".$mediacat."&mediatype=".$mediatype."&contenttype=".$contenttype."\" frameborder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe>
+    <iframe id=\"controlFrame2\" name=\"controlFrame2\" src=\"media_edit_page.php?view=".$view."&savetype=".$savetype."&site=".$site."&cat=".$cat."&location=".$location."&page=".$page."&db_connect=".$db_connect."&id=".$id."&label=".$label."&tagname=".$tagname."&mediaalttext=".$mediaalttext."&mediaalign=".$mediaalign."&mediawidth=".$mediawidth."&mediaheight=".$mediaheight."&scaling=".$scaling."&mediacat=".$mediacat."&mediatype=".$mediatype."&contenttype=".$contenttype."&mediafile=".$mediafile."&mediaobject=".$mediaobject."\" frameborder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe>
   </div>";
   }
   ?>
   <div id="mainLayer" style="position:fixed; top:220px; right:0; bottom:0; left:260px; margin:0; padding:0; <?php echo $css_iphone; ?>">
-    <iframe id="mainFrame2" name="mainFrame2" src="" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
+    <iframe id="mainFrame2" name="mainFrame2" src="<?php echo "media_view.php?site=".$site."&mediacat=".$mediacat."&mediafile=".$mediafile."&mediaobject=".$mediaobject."&mediatype=".$mediatype."&scaling=".$scaling; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
 </body>
 </html>

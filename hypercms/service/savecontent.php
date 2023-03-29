@@ -762,7 +762,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
       }
     
       // eventsystem
-      if (!empty ($eventsystem['onsaveobject_pre']) && empty ($eventsystem['hide'])) 
+      if (!empty ($eventsystem['onsaveobject_pre']) && empty ($eventsystem['hide']) && function_exists ("onsaveobject_pre")) 
       {
         $contentdataevent = onsaveobject_pre ($site, $cat, $location, $page, $object_contentfile, $contentdatanew, $user);
 
@@ -811,7 +811,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
         rdbms_setkeywords ($site, $container_id);
 
         // eventsystem
-        if (!empty ($eventsystem['onsaveobject_post']) && empty ($eventsystem['hide']))
+        if (!empty ($eventsystem['onsaveobject_post']) && empty ($eventsystem['hide']) && function_exists ("onsaveobject_post"))
         {
           $contentdataevent = onsaveobject_post ($site, $cat, $location, $page, $object_contentfile, $contentdatanew, $user);
         }

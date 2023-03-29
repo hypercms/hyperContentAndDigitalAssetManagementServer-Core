@@ -104,7 +104,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
           $config_data = implode ("\n", $config_array);
 
           // eventsystem
-          if (!empty ($eventsystem['onsavepublication_pre']) && empty ($eventsystem['hide']))
+          if (!empty ($eventsystem['onsavepublication_pre']) && empty ($eventsystem['hide']) && function_exists ("onsavepublication_pre"))
             onsavepublication_pre ($site_name, $config_data, "-", "-", $user);          
 
           // save config file
@@ -115,7 +115,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $save ==
             $show = "<p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['the-publication-configuration-was-saved-successfully'][$lang])."</p>\n";  
 
             // eventsystem
-            if (!empty ($eventsystem['onsavepublication_post']) && empty ($eventsystem['hide']))
+            if (!empty ($eventsystem['onsavepublication_post']) && empty ($eventsystem['hide']) && function_exists ("onsavepublication_post"))
               onsavepublication_post ($site_name, $config_data, "-", "-", $user);           
           }
           else

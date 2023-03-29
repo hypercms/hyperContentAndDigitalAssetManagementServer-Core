@@ -982,7 +982,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   $usergroups = array();
 
   // eventsystem
-  if (!empty ($eventsystem['onlogon_pre']) && empty ($eventsystem['hide']))
+  if (!empty ($eventsystem['onlogon_pre']) && empty ($eventsystem['hide']) && function_exists ("onlogon_pre"))
   {
     onlogon_pre ($user);
   }
@@ -2093,7 +2093,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   $result['checksum'] = createchecksum (array ($result['instance'], $result['superadmin'], $result['siteaccess'], $result['pageaccess'], $result['compaccess'], $result['rootpermission'], $result['globalpermission'], $result['localpermission']));
 
   // eventsystem
-  if (!empty ($eventsystem['onlogon_post']) && empty ($eventsystem['hide']))
+  if (!empty ($eventsystem['onlogon_post']) && empty ($eventsystem['hide']) && function_exists ("onlogon_post"))
   {
     $temp = onlogon_post ($user, $result);
     if (is_array ($temp)) $result = $temp;
@@ -3390,16 +3390,51 @@ function valid_objectname ($variable)
 function valid_locationname ($variable)
 {
   global $mgmt_config;
+
+  // initialize
+  $error = array();
   
   if ($variable != "")
   {
     if (!is_array ($variable) && is_string ($variable))
     {
-      // default value
+      // default values
       if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
+      if (empty ($mgmt_config['max_digits_location']) || intval ($mgmt_config['max_digits_location']) < 1) $mgmt_config['max_digits_location'] = 4096;
+
+      $variable = trim ($variable);
+
+      // decode special characters in location (decoded path might be shorter than the encoded path)
+      $variable_name = specialchr_decode ($variable);
       
-      // if location path is too long
-      if (strlen ($variable) > (4096 - $mgmt_config['max_digits_filename'])) return false;
+      // encode special characters in location (string might be longer after encoding)
+      $variable = specialchr_encode ($variable, "no");
+
+      // remove component path since it is not used for display (in browser and WebDAV client)
+      if (strpos ("_".$variable_name, $mgmt_config['abs_path_comp']) == 1) $variable_name = str_replace ($mgmt_config['abs_path_comp'], "/", $variable_name);
+
+      if (strpos ("_".$variable_name, "%comp%") == 1) $variable_name = str_replace ("%comp%", "", $variable_name);
+      elseif (strpos ("_".$variable_name, "%page%") == 1) $variable_name = str_replace ("%page%", "", $variable_name);
+
+      // if location path is too long according to the main configuration settings
+      // Windows Explorer (MAX_PATH) only supports only up to 260 characters for the file path incl the drive letter which could be an issue when using WebDAV
+      // database column objectpath supports up to 4096 characters for the file path, same as the standard Linux FS
+      // new main configuration setting $mgmt_config['max_digits_location'] since version 10.1.1 
+      // the max length for file names only will be subtracted if the max path lenth is longer than 260 characters since there could be a lot of warning otherwise with $mgmt_config['max_digits_location'] = 260 and $mgmt_config['max_digits_filename'] = 200
+      if (
+           (intval ($mgmt_config['max_digits_location']) <= 260 && (mb_strlen ($variable_name) + 2) > intval ($mgmt_config['max_digits_location'])) ||
+           (intval ($mgmt_config['max_digits_location']) > 260 && (mb_strlen ($variable_name) + 2) > (intval ($mgmt_config['max_digits_location']) - intval ($mgmt_config['max_digits_filename']))) ||
+           (mb_strlen ($variable) + intval ($mgmt_config['max_digits_filename'])) > 4096
+         )
+      {
+        // warning
+        $errcode = "00900";
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|Location path is too long '".$variable_name."'";
+
+        savelog (@$error);
+
+        return false;
+      }
       
       // invalid location path
       if ($variable == ".") return false;

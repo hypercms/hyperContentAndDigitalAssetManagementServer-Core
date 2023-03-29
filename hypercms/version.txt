@@ -6734,6 +6734,43 @@ Release 05/2023
 - Modifications in popup_upload_html in order to remove the unused max file name length setting since the system API will take care of longer file names
 - Modifications in function valid_locationname in Security API in order to set the default value for the max file name length to 200 instead of 236 characters due to issues with the lenth of media version files
 - Modifications in the main configuration setting $mgmt_config['max_digits_filename'] in the installation directory in order to set the default value for the max file name length to 200 instead of 236 characters
+- Modifications in the Workplace Integration in order to support the original files names for the virtual access and download link files
+- Modifications in the Workplace Integration in order to support longer path names by shortening the folder and file names
+- Implementation of the new main configuration parameter $mgmt_config['max_digits_location'] in the installation directory
+- Modifications in function valid_locationname in Security API in order to support the new main configuration parameter $mgmt_config['max_digits_location']
+- Modifications in function valid_locationname in Security API in order to use multibyte string length function mb_strlen
+- Modifications in function createobject and createfolder in order to report and log errors if the object path is too long
+- Removed unused class in hyperCMS/SiteList from the Workplace Integration module
+- Removed unused class in hyperCMS/ComponentList from the Workplace Integration module
+- Modification in the in the Workplace Integration in order to improve the performance by reducing the call to function getRealFileName (reading the object file and extracttion parameters from it)
+- Modifications in function get, getContentType, getFileContents, getSize, getLastModified of class Sabre_hyperCMS_File in the Workplace Integration in order to support the new parameter for the media file path and replace the call to function getRealFileName
+- Modifications in various functions of class Sabre_hyperCMS_Functions in the Workplace Integration in order to support the new parameter for the media file path of class Sabre_hyperCMS_File and to remove unused parameters
+- Modifications in function getChildsForLocation of class Sabre_hyperCMS_Functions in the Workplace Integration in order to support the new parameter for the type (all, folder, or object)
+- Modifications in function _addChildsFromDir of class Sabre_hyperCMS_Virtual_PublicationFolder in the Workplace Integration in order to support the new parameter of function getChildsForLocation
+- Modifications in function _beforeGet of class Sabre_hyperCMS_Publication in the Workplace Integration in order to support the new parameter of function getChildsForLocation
+- Modifications in function _beforeGet of class Sabre_hyperCMS_Folder in the Workplace Integration in order to support the new parameter of function getChildsForLocation
+- Excluded/deactivated unused modules CalDAV, CardDAV, DAVACL, and VObject in the Workplace Integration
+- Modifications in class Sabre_DAV_Server in the Workplace Integration in order to set DEPTH_INFINITY to 0
+- Modifications in class Sabre_hyperCMS_Log in the Workplace Integration in order to support the activation of the indepenent logging of error and info events
+- Implementation of the new main configuration parameters $mgmt_config['webdav_error_log'] and $mgmt_config['webdav_info_log'] in the main configuration file of the install directory
+- Modifications in the index file in the Workplace Integration in order to support the new main configuration parameters $mgmt_config['webdav_error_log'] and $mgmt_config['webdav_info_log']
+- Modifications in function setGlobalsForConfig of class Sabre_hyperCMS_Functions in the Workplace Integration in order to support the Event System
+- Modifications in the system in order to make the Event System and its functions not mandatory (missing Event System file will not cause errors)
+- Modifications in hypercms root index in order to verify that the Event System function exists
+- Modifications in explorer_objectlist in order to verify that the Event System function exists
+- Modifications in site_edit_inheritance in order to verify that the Event System function exists
+- Modifications in uploadvideo of the Youtube Connector module in order to verify that the Event System function exists
+- Modifications in various function in the Main API that include the Event System in order to verify that the Event System function exists 
+- Modifications in function importCSVtextcontent in the Meta API in order to verify that the Event System function exists
+- Modifications in function importCSVtextcontent in the Meta API in order to implement the onsaveobject_post event
+- Modifications in various function in the Security API that include the Event System in order to verify that the Event System function exists 
+- Modifications in the template engine that includes the Event System in order to verify that the Event System function exists
+- Modifications in service savecontent that includes the Event System in order to verify that the Event System function exists
+- Modifications in link_edit_page in order to set a maxlength of 255 characters for linktext
+- Modifications in media_edit_page in order to set a maxlength or min/max number for mediaalttext, mediawidth, and mediaheight
+- Modifications in the template engine in order to set a maxlength of 255 characters for linktext and mediaalttext, and min/max number for mediawidth and mediaheight
+- Update of the update log in the installation directory
+- Updates in the Installation Guide
 - Bug fix: The Workplace Integration returned the truncated file name which caused issues since the WebDAV client expected the provided file name and was not able to save the content in the new file
 - Bug fix: The Workplace Integration returned the truncated folder name which caused issues since the WebDAV client expected the provided folder name and was not able to set the new folder name
 - Bug fix: The public function isLoggedInHyperdav in the Workplace Integration API used a wrong name for the main configuration
@@ -6745,4 +6782,8 @@ Release 05/2023
 - Bug fix: e-mail addresses used for the user names caused an error when loading the users objectlist columns definitions (objectlistcols.json)
 - Bug fix: Long file names that need to be shortened by function createfilename due to special characters in the name caused issues since the same shorten file name can exist for different files when uploaded at the same time (WebDAV and HTML file upload)
 - Bug fix: The upload of files with the same shortened name at the same time caused an issue due to the same file name since the function is_ifile could not read the new file snice it has not been created by function createobject while the check has been performed  
-- Bug fix: Media version file names have been to long with a max length file name value of 236 characters
+- Bug fix: Media version file names have been too long with a max length file name value of 236 characters
+- Bug fix: Windows has a limitation of 260 characters for the path length (MAX_PATH). This causes objects/files to disappear in Windows Explorer if the path is longer than the limit. This misbehaviour can't be fixed without causing issues due to shortened file names.
+- Bug fix: link_edit_pageand frameset_edit_link did not set the linktarget and linktext in case the content was empty
+- Bug fix: media_edit_page and framset_edit_media did not set mediaalttext, mediaalign, mediawidth, and mediaheight in case the content was empty
+- Bug fix: The template engine did not provide the *Null* values based on the template definitions to link_edit_page and media_edit_page

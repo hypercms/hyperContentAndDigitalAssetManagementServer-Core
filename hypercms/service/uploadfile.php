@@ -84,7 +84,7 @@ if ($token != "" && checktoken ($token, $user))
   {
     $file['Filedata']['tmp_name'] = $mgmt_config['abs_path_temp'].$proxy_file['link'];
     $file['Filedata']['name'] = $proxy_file['name'];
-    
+
     $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
   // from Dropbox (no support of file chunks)
@@ -92,7 +92,7 @@ if ($token != "" && checktoken ($token, $user))
   {
     $file['Filedata']['tmp_name'] = $dropbox_file['link'];
     $file['Filedata']['name'] = $dropbox_file['name'];
-    
+
     $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
   // from FTP server (no support of file chunks)
@@ -100,7 +100,7 @@ if ($token != "" && checktoken ($token, $user))
   {
     $file['Filedata']['tmp_name'] = $ftp_file['link'];
     $file['Filedata']['name'] = $ftp_file['name'];
-    
+
     $result = uploadfile ($site, $location, $cat, $file, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
   }
   // from local file system of user (support of file chunks)
@@ -151,7 +151,7 @@ if ($token != "" && checktoken ($token, $user))
           // remove HTTP headers not sent
           if (!headers_sent())
           {
-            foreach (headers_list() as $header) @header_remove ($header);
+            header_remove ();
           }
 
           // remove/clean previous output
@@ -229,6 +229,7 @@ if ($response_message && !empty ($result['message']))
   // plain text response
   header ('Content-Type: text/plain; charset=utf-8');
   echo $result['message'];
-  exit;
 }
+
+exit;
 ?>

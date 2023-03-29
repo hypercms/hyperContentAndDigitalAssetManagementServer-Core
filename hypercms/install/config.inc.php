@@ -578,6 +578,12 @@ $mgmt_config['maxzipsize'] = 0;
 // A value of not more than 200 digits is recommended since the system adds suffixes for the container ID, versioning and file locking to the file names.
 $mgmt_config['max_digits_filename'] = 200;
 
+// Maximum digits for the location/path
+// Linux has a max path length of 4096 characters.
+// Windows has a limitation of max. 260 characters (MAX_PATH) for the file path including the drive letter.
+// The use of the Workplace Integration (WebDAV) by Windows Explorer is limited by the Windows MAX_PATH setting.
+$mgmt_config['max_digits_location'] = 4096;
+
 // Which types of files (file extensions) are not allowed for upload, example ".asp.jsp.php.pl.sql".
 $mgmt_config['exclude_files'] = ".php.phtml.pl.jsp.asp.aspx.exe.sql.sh.bash";
 
@@ -734,6 +740,10 @@ $mgmt_config['webdav_lifetime'] = 3600;
 
 // Enable (true) or disable (false) the WebDAV file locking
 $mgmt_config['webdav_lock'] = true;
+
+// Enable (true) or disable (false) the WebDAV error and info logging in data/temp
+$mgmt_config['webdav_error_log'] = true;
+$mgmt_config['webdav_info_log'] = false;
 
 // Support password
 // Set a support password for the support log file access

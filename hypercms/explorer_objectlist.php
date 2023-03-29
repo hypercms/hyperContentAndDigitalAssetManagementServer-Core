@@ -225,7 +225,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
       $file_info = getfileinfo ($site, $location.$folder."/.folder", $cat);
 
       // eventsystem
-      if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide'])) 
+      if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide']) && function_exists ("onobjectlist_pre")) 
         onobjectlist_pre ($site, $cat, $location, $folder, $user);        
 
       // if folder exists
@@ -516,7 +516,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $workflow_class = "";
 
       // eventsystem
-      if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide'])) 
+      if (!empty ($eventsystem['onobjectlist_pre']) && empty ($eventsystem['hide']) && function_exists ("onobjectlist_pre")) 
         onobjectlist_pre ($site, $cat, $location, $object, $user);
 
       // if object exists
@@ -667,7 +667,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         }
 
         // eventsystem
-        if (!empty ($eventsystem['onobjectlist_post']) && empty ($eventsystem['hide'])) 
+        if (!empty ($eventsystem['onobjectlist_post']) && empty ($eventsystem['hide']) && function_exists ("onobjectlist_post")) 
           onobjectlist_post ($site, $cat, $location, $object, $contentfile, $contentdata, $usedby, $user);     
 
         // open on double click

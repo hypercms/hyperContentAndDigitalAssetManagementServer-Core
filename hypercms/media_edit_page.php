@@ -29,7 +29,15 @@ $tagname = getrequest_esc ("tagname", "objectname");
 $id = getrequest_esc ("id", "objectname", "", true);
 $label = getrequest_esc ("label");
 $mediacat = getrequest ("mediacat", "objectname");
+$mediatype = getrequest_esc ("mediatype", "objectname", "", true);
+$mediadir = getrequest_esc ("mediadir", "locationname");
+$mediafile = getrequest_esc ("mediafile", "objectname");
 $mediatype = getrequest_esc ("mediatype", "objectname", "", true); 
+$mediaobject = getrequest_esc ("mediaobject", "locationname");
+$mediaalttext = getrequest_esc ("mediaalttext");
+$mediaalign = getrequest_esc ("mediaalign");
+$mediawidth = getrequest_esc ("mediawidth");
+$mediaheight = getrequest_esc ("mediaheight");
 $scaling = getrequest ("scaling", "numeric");
 
 // get publication and category
@@ -55,14 +63,6 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-// initialize
-$mediafile = "";
-$mediaobject = "";
-$mediaalttext = "*Null*";
-$mediaalign = "*Null*";
-$mediawidth = "*Null*";
-$mediaheight = "*Null*";
-
 // load object file and get container and media file
 $objectdata = loadfile ($location, $page);
 $contentfile = getfilename ($objectdata, "content");
@@ -79,10 +79,10 @@ if (!empty ($db_connect) && valid_objectname ($db_connect) && is_file ($mgmt_con
   {
     $mediafile = $db_connect_data['file'];
     $mediaobject = $db_connect_data['object'];
-    $mediaalttext = $db_connect_data['alttext'];
-    $mediaalign = $db_connect_data['align'];
-    $mediawidth = $db_connect_data['width'];
-    $mediaheight = $db_connect_data['height'];
+    if ($mediaalttext != "*Null*") $mediaalttext = $db_connect_data['alttext'];
+    if ($mediaalign != "*Null*") $mediaalign = $db_connect_data['align'];
+    if ($mediawidth != "*Null*") $mediawidth = $db_connect_data['width'];
+    if ($mediaheight != "*Null*") $mediaheight = $db_connect_data['height'];
   }
 }
 
@@ -102,21 +102,39 @@ if (empty ($db_connect_data))
       {
         $temp_array = getcontent ($medianode[0], "<mediafile>");
         if (!empty ($temp_array[0])) $mediafile = $temp_array[0];
+        else $mediafile = "";
         
         $temp_array = getcontent ($medianode[0], "<mediaobject>");
         if (!empty ($temp_array[0])) $mediaobject = $temp_array[0];
+        else $mediaobject = "";
         
-        $temp_array = getcontent ($medianode[0], "<mediaalttext>");
-        if (!empty ($temp_array[0])) $mediaalttext = $temp_array[0];
+        if ($mediaalttext != "*Null*")
+        {
+          $temp_array = getcontent ($medianode[0], "<mediaalttext>");
+          if (!empty ($temp_array[0])) $mediaalttext = $temp_array[0];
+          else $mediaalttext = "";
+        }
         
-        $temp_array = getcontent ($medianode[0], "<mediaalign>");
-        if (!empty ($temp_array[0])) $mediaalign = $temp_array[0];
-        
-        $temp_array = getcontent ($medianode[0], "<mediawidth>");
-        if (!empty ($temp_array[0])) $mediawidth = $temp_array[0];
-        
-        $temp_array = getcontent ($medianode[0], "<mediaheight>");
-        if (!empty ($temp_array[0])) $mediaheight = $temp_array[0];
+        if ($mediaalign != "*Null*") 
+        {
+          $temp_array = getcontent ($medianode[0], "<mediaalign>");
+          if (!empty ($temp_array[0])) $mediaalign = $temp_array[0];
+          else $mediaalign = "";
+        }
+
+        if ($mediawidth != "*Null*")
+        {
+          $temp_array = getcontent ($medianode[0], "<mediawidth>");
+          if (!empty ($temp_array[0])) $mediawidth = $temp_array[0];
+          else $mediawidth = "";
+        }
+
+        if ($mediaheight != "*Null*")
+        {
+          $temp_array = getcontent ($medianode[0], "<mediaheight>");
+          if (!empty ($temp_array[0])) $mediaheight = $temp_array[0];
+          else $mediaheight = "";
+        }
       }  
     }
   }
@@ -452,7 +470,7 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
     <tr>
       <td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['alternative-text'][$lang], $charset, $lang)." </td>
       <td>
-        <input type=\"text\" name=\"mediaalttext\" value=\"".$mediaalttext."\" style=\"width:220px;\" />
+        <input type=\"text\" name=\"mediaalttext\" value=\"".$mediaalttext."\" style=\"width:220px;\" maxlength=\"255\"/>
       </td>
     </tr>";
   }
@@ -518,11 +536,11 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
       <td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">
     ";
       
-    if ($mediawidth != "*Null*") echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang)." <input type=\"number\" name=\"mediawidth\" value=\"".$mediawidth."\" style=\"width:60px;\" />&nbsp;";
+    if ($mediawidth != "*Null*") echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang)." <input type=\"number\" name=\"mediawidth\" value=\"".$mediawidth."\" style=\"width:60px;\" min=\"0\" max=\"99999\"/>&nbsp;";
     else  echo getescapedtext ($hcms_lang['width'][$lang], $charset, $lang).": <input type=\"number\" name=\"mediawidth\" value=\"\" style=\"width:60px;\" disabled=\"disabled\" />&nbsp;";
     
-    if ($mediaheight != "*Null*") echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang)." <input type=\"number\" name=\"mediaheight\" value=\"".$mediaheight."\" style=\"width:60px;\" />";
-    else echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"number\" name=\"mediaheight\" value=\"\" style=\"width:60px;\"  disabled=\"disabled\" />";
+    if ($mediaheight != "*Null*") echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang)." <input type=\"number\" name=\"mediaheight\" value=\"".$mediaheight."\" style=\"width:60px;\" min=\"0\" max=\"99999\"/>";
+    else echo getescapedtext ($hcms_lang['height'][$lang], $charset, $lang).": <input type=\"number\" name=\"mediaheight\" value=\"\" style=\"width:60px;\" disabled=\"disabled\" />";
     
     echo "
       </td>
