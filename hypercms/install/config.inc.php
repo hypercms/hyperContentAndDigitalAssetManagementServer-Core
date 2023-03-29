@@ -723,7 +723,12 @@ $mgmt_config['template_clean_level'] = 3;
 // Logon Timeout
 // How many minutes will an IP and user combination be locked after 10 failed attempts.
 // A value of 0 means there is no timeout.
-$mgmt_config['logon_timeout'] = 10; 
+$mgmt_config['logon_timeout'] = 10;
+
+// Cache Timeout
+// How many minutes will the cache for media access statistics be valid before it expires and need to be recreated.
+// Use "auto" to use the systems default value of one hour or use an integer value for minutes.
+$mgmt_config['mediastatcache_timeout'] = "auto";
 
 // CSRF Protection
 // Define allowed requests per minute.
@@ -734,8 +739,8 @@ $mgmt_config['requests_per_minute'] = 500;
 $mgmt_config['token_lifetime'] = 86400;
 
 // Workplace Integration (WebDAV)
-// Define the time in seconds for the users session cache in seconds (a password change will take effect after the session lifetime)
-// The min. supported value is 10 seconds and the default/fallback value is 3600 seconds
+// Define the time in seconds for the users session cache in seconds (a password change will take effect after the session lifetime).
+// The min. supported value is 10 seconds and the default/fallback value is 3600 seconds.
 $mgmt_config['webdav_lifetime'] = 3600;
 
 // Enable (true) or disable (false) the WebDAV file locking

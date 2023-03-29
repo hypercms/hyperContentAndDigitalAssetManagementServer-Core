@@ -6769,6 +6769,9 @@ Release 05/2023
 - Modifications in link_edit_page in order to set a maxlength of 255 characters for linktext
 - Modifications in media_edit_page in order to set a maxlength or min/max number for mediaalttext, mediawidth, and mediaheight
 - Modifications in the template engine in order to set a maxlength of 255 characters for linktext and mediaalttext, and min/max number for mediawidth and mediaheight
+- Implementation of the new main configuration parameter for the media access statistic cache timeout $mgmt_config['mediastatcache_timeout'] in the main configuration file of the install directory
+- Modifications in service accessstats in order to support the new main configuration parameter $mgmt_config['mediastatcache_timeout']
+- Modifications in page_info_stats in order to support the new main configuration parameter $mgmt_config['mediastatcache_timeout']
 - Update of the update log in the installation directory
 - Updates in the Installation Guide
 - Bug fix: The Workplace Integration returned the truncated file name which caused issues since the WebDAV client expected the provided file name and was not able to save the content in the new file

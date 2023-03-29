@@ -31,7 +31,8 @@ checkusersession ($user);
 suspendsession ();
 
 // define timeout for cache in seconds or use "auto"
-$cache_timeout = "auto";
+if (isset ($mgmt_config['mediastatcache_timeout'])) $cache_timeout = intval ($mgmt_config['mediastatcache_timeout']) * 60;
+else $cache_timeout = "auto";
 
 // chart size in pixels
 if (!empty ($is_mobile))
