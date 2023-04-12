@@ -249,7 +249,10 @@ $(document).ready(function ()
 
               setTimeout(function() {
                 data.context.remove(); 
-                selectcount--; 
+                selectcount--;
+
+                // set total count (for tracking on server)
+                document.getElementById('totalcount').value = selectcount;
               }, 1000);
             }
             // for chunks files use the jqXHR object
@@ -261,7 +264,10 @@ $(document).ready(function ()
               
               setTimeout(function() {
                 data.context.remove(); 
-                selectcount--; 
+                selectcount--;
+
+                // set total count (for tracking on server)
+                document.getElementById('totalcount').value = selectcount;
               }, 1000);
             }
             // file upload has not been started 
@@ -269,6 +275,9 @@ $(document).ready(function ()
             {
               data.context.remove();
               selectcount--;
+
+              // set total count (for tracking on server)
+              document.getElementById('totalcount').value = selectcount;
             }
           });
 
@@ -514,6 +523,9 @@ $(document).ready(function ()
       // serialize form inputs
       var formData = $('form').serializeArray();
     }
+
+    // set total count (for tracking on server)
+    document.getElementById('totalcount').value = selectcount;
   })
   
   // callback on file upload
@@ -545,6 +557,9 @@ $(document).ready(function ()
     setTimeout(function() {
       data.context.remove();
       selectcount--;
+
+      // set total count (for tracking on server)
+      document.getElementById('totalcount').value = selectcount;
     }, hcms_waitTillRemove);
   })
   
@@ -650,6 +665,9 @@ $(document).ready(function ()
             {
               data.context.remove();
               selectcount--;
+
+              // set total count (for tracking on server)
+              document.getElementById('totalcount').value = selectcount;
             }, hcms_waitTillRemove);
           },
           error: function(response) 
@@ -698,6 +716,9 @@ $(document).ready(function ()
               data.context.remove();
               selectcount--;
               queuecount--;
+
+              // set total count (for tracking on server)
+              document.getElementById('totalcount').value = selectcount;
             }
           });
           
@@ -963,6 +984,9 @@ $(document).ready(function ()
             {
               data.context.remove();
               selectcount--;
+
+              // set total count (for tracking on server)
+              document.getElementById('totalcount').value = selectcount;
             }, hcms_waitTillRemove);
           },
           error: function(response) 
@@ -1011,6 +1035,9 @@ $(document).ready(function ()
               data.context.remove();
               selectcount--;
               queuecount--;
+
+              // set total count (for tracking on server)
+              document.getElementById('totalcount').value = selectcount;
             }
           });
 
@@ -1500,6 +1527,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><div style=\"width:90%;
     <input type="hidden" name="user" value="<?php echo $user; ?>" />
     <input type="hidden" name="token" value="<?php echo $token; ?>" />
     <input type="hidden" name="zipcount" id="zipcount" value="" />
+    <input type="hidden" name="totalcount" id="totalcount" value="" />
 
     <div class="hcmsWorkplaceGeneric" style="display:block; position:fixed; top:38px; left:6px; right:6px; z-index:1;">
       <!-- info -->

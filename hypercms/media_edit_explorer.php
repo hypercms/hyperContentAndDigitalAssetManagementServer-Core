@@ -241,7 +241,7 @@ if ($sender == "search")
 
           if ($file_info != false && $file != "Null_media.png")
           {
-            echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /><a href=\"javascript:void(0);\" onClick=\"sendInput('".$site."/".$file."'); goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".showshorttext($file_info['name'], 24)."</a><br />\n";
+            echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /><a href=\"javascript:void(0);\" onClick=\"sendInput('".$site."/".$file."'); goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".showshorttext($file_info['name'], 24, false)."</a><br />\n";
           }
 
           $c++;

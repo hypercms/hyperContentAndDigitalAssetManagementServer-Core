@@ -2480,6 +2480,40 @@ function update_database_v1009 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v1011 ----------------------------------------------
+// function: update_database_v1011()
+// input: %
+// output: true / false
+
+// description: 
+// Update table task by adding the new column depency for support of version 10.1.1.
+
+function update_database_v1011 ()
+{
+  global $mgmt_config;
+
+  if (!checksoftwareversion ("10.1.1"))
+  { 
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.1.1|updated to version 10.1.1"), "update");
+
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset'], "");
+   
+    // alter table project
+    $sql = "ALTER TABLE task ADD dependency VARCHAR(1000) DEFAULT '';";
+    $errcode = "50820";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -2533,6 +2567,7 @@ function updates_all ()
     update_database_v10074 ();
     update_database_v1008 ();
     update_database_v1009 ();
+    update_database_v1011 ();
   }
 }
 
@@ -2596,7 +2631,7 @@ function update_software ($type="update")
     if (empty ($download_json['md5']) || substr ($download_json['link'], 0, 8) != "https://")
     {
       $errcode = "20132";
-      $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Invalid JSON data provided by update service '".$mgmt_config['update_url']."'";
+      $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Invalid JSON data (MD5: ".$download_json['md5'].", Link: ".$download_json['link'].") provided by update service '".$mgmt_config['update_url']."'";
 
       // save event log
       savelog (@$error);

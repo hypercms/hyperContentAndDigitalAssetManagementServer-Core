@@ -1431,4 +1431,5 @@ $hcms_lang['search-wildcard-none']['en'] = "no operator … By default (when nei
 $hcms_lang['search-wildcard-asterisk']['en'] = "* … The asterisk serves as the truncation (or wildcard) operator. Unlike the other operators, it should be appended to the word to be affected.";
 $hcms_lang['search-wildcard-doublequote']['en'] = "\" … A phrase that is enclosed within double quote characters must be present as the phrase literally, as it was typed";
 $hcms_lang['content-modified-by-user']['en'] = "The content has been modified by user '%user%'. Do you want to reload the content?";
+$hcms_lang['dependencies']['en'] = "Dependencies";
 ?>

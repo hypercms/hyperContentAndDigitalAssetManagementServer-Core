@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['hu'] = "nincs operátor … Alapértelmezés
 $hcms_lang['search-wildcard-asterisk']['hu'] = "* … A csillag csonkító (vagy helyettesítő karakter) operátorként szolgál. A többi operátortól eltérően az érintett szóhoz kell hozzáfűzni.";
 $hcms_lang['search-wildcard-doublequote']['hu'] = "\" … A dupla idézőjelek közé zárt kifejezésnek szó szerint kell szerepelnie, ahogyan begépelték";
 $hcms_lang['content-modified-by-user']['hu'] = "A tartalmat '%user%' felhasználó módosította. Szeretné újra betölteni a tartalmat?";
+$hcms_lang['dependencies']['hu'] = "Függőségek";
 ?>

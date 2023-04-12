@@ -6686,7 +6686,7 @@ Version 10.1.1
 Release 05/2023
 - Design modifications in all design themes in order to change the design of the hover state of a link 
 - Design modifications in all design theme in order to apply styles to all link states except the hover state
-- Design modifications in Black design themes in order to add a border raduis to all buttons and input elements
+- Design modifications in Black design themes in order to add a border radius to all buttons and input elements
 - Modifications in popup_upload_html in order to implement the new local JS function getResponseAndBuildFileMessage
 - Design modifications in all home boxes in order to display object links as a standard link
 - Implementation of the support of long files names that need to be shortened (file names that consists of mainly special characters)
@@ -6725,14 +6725,14 @@ Release 05/2023
 - Implementation of the new function is_longfilename in Main API
 - Modifications in function uploadfile in Main API in order to implement function is_longfilename for the verification of existing files with the same name
 - Modifications in function createobject in Main API in order to implement function is_longfilename for the verification of existing files with the same name
-- Modifications in function specialchr_encode in Main API in order to change teh sequence of the special characters that need to be removed
+- Modifications in function specialchr_encode in Main API in order to change the sequence of the special characters that need to be removed
 - Modifications in function copyfolders in Main API in order to replace function is_dir by is_idir
 - Modifications in function createobject in Main API in order to implement function avoidfilecollision due to issues with same shortened file names that are created at the same time without existing in the file system
 - Modifications in function createdownloadlink, createaccesslink, createobjectaccesslink, createwrapperlink, downloadobject, deletefolder, renamefolder, unpublishobject, and notifyusers in order to remove the check for special characters before calling function createfilename
 - Modifications in function rollbackversion in Main API in order to remove the check for a locked file name before calling function createfilename
-- Modifications in various function in Main API in order to set the default value for the max file name length to 200 instead of 236 characters due to issues with the lenth of media version files
+- Modifications in various function in Main API in order to set the default value for the max file name length to 200 instead of 236 characters due to issues with the length of media version files
 - Modifications in popup_upload_html in order to remove the unused max file name length setting since the system API will take care of longer file names
-- Modifications in function valid_locationname in Security API in order to set the default value for the max file name length to 200 instead of 236 characters due to issues with the lenth of media version files
+- Modifications in function valid_locationname in Security API in order to set the default value for the max file name length to 200 instead of 236 characters due to issues with the length of media version files
 - Modifications in the main configuration setting $mgmt_config['max_digits_filename'] in the installation directory in order to set the default value for the max file name length to 200 instead of 236 characters
 - Modifications in the Workplace Integration in order to support the original files names for the virtual access and download link files
 - Modifications in the Workplace Integration in order to support longer path names by shortening the folder and file names
@@ -6742,7 +6742,7 @@ Release 05/2023
 - Modifications in function createobject and createfolder in order to report and log errors if the object path is too long
 - Removed unused class in hyperCMS/SiteList from the Workplace Integration module
 - Removed unused class in hyperCMS/ComponentList from the Workplace Integration module
-- Modification in the in the Workplace Integration in order to improve the performance by reducing the call to function getRealFileName (reading the object file and extracttion parameters from it)
+- Modification in the in the Workplace Integration in order to improve the performance by reducing the call to function getRealFileName (reading the object file and extraction parameters from it)
 - Modifications in function get, getContentType, getFileContents, getSize, getLastModified of class Sabre_hyperCMS_File in the Workplace Integration in order to support the new parameter for the media file path and replace the call to function getRealFileName
 - Modifications in various functions of class Sabre_hyperCMS_Functions in the Workplace Integration in order to support the new parameter for the media file path of class Sabre_hyperCMS_File and to remove unused parameters
 - Modifications in function getChildsForLocation of class Sabre_hyperCMS_Functions in the Workplace Integration in order to support the new parameter for the type (all, folder, or object)
@@ -6772,13 +6772,86 @@ Release 05/2023
 - Implementation of the new main configuration parameter for the media access statistic cache timeout $mgmt_config['mediastatcache_timeout'] in the main configuration file of the install directory
 - Modifications in service accessstats in order to support the new main configuration parameter $mgmt_config['mediastatcache_timeout']
 - Modifications in page_info_stats in order to support the new main configuration parameter $mgmt_config['mediastatcache_timeout']
+- Modifications in template engine and Report API in order to remove async defer when loading the Google Maps API
+- Modifications in control_objectlist_menu in order to enable "send to chat" for iOS in the Mobile Edition
+- Modifications in control_objectlist_menu in order to enable "send to chat" for the desktop
+- Modifications in control_objectlist_menu in order to implement button labels (not activated)
+- Implementation of the new CSS classes hcmsButtonFrame, hcmsButtonLabel, hcmsButtonLabelSizewide in all design themes
+- Modifications in function getescapedtext in Get API in order to allow HTML line breaks
+- Modifications in function showshorttext in UI API in order to trim the text and support the replacement of white spaces by HTML line breaks and the number of lines (max 3)
+- Modifications in explorer_objectlist and search_objectlist in order to support the updated function showshorttext
+- Modifications in all design themes in order to change the font family order beginning with Arial
+- Implementation of a new task management service in the Task Management module in order to provide a service for the task related to a certain object and user
+- Implementation of the new task management service in the template engine in order to support the management of the tasks of a user related to his objects
+- Modifications in function edittask the Task Management API in order to replace the function strlen by the multibyte version mb_strlen
+- Modifications in function edittask the Task Management API in order to verify the *Leave* values when comparing the saved with the new task values
+- Modifications in function rdbms_edittask in DB Connect in order to exclude the update of empty start and finish dates
+- Modifications in function rdbms_gettask in DB Connect in order to set the default order to the task_id instead of startdate (avoid changes in the task order if the start date has been changed)
+- Modifications in Task Management module in order to set the default order to the task_id instead of startdate (avoid changes in the task order if the start date has been changed)
+- Implmentation of the new JS function hcms_serializeFormData, hcms_showLayer (reduced version of hcms_showFormLayer), hcms_hideLayer (reduced version of hcms_hideFormLayer), and hcms_postFormData in main.js
+- Modifications in function showmessage in UI API in order to use the provided ID for the message element with suffix "_text"
+- Modifications in Project Management module in order to exclude the sys user from any task
+- Implementation of the new function getCSS in Get API in order to collect the CSS class names and properties
+- Modifications in function getthemelocation in Get API in order to support the new input parameter for the type of the returned theme location path
+- Modifications in function getthemelocation in Get API in order to use the theme defined in the user session with highest priority
+- Modifications in function showganttchart in Project Management API in order to support colors for the task bars in the Gantt chart
+- Implementation of the new function adjust_brightness in Media API
+- Design modifications in Project Management module in order to add a status bar to the status table cell
+- Design modifications in Task Management module in order to add a status bar to the status table cell
+- Modifications in Task Management module in order to always display finished tasks in the gallery view
+- Implementation of the new session variable hcms_temp_taskview in include/session.inc.php in order to save the task view
+- Implementation of the new function toggletaskview in UI API
+- Modifications in control_objectlist_menu in order to rename the parameter for the service toggleview from view to explorerview
+- Modifications in service toggleview in order to support the new taskview parameter
+- Renamed function toggleview to toggleexplorerview in UI API
+- Modifications in frameset_mobile in order to use the renamed function toggleexplorerview
+- Modifications in JS function hcms_ajaxService and hcms_syncajaxService in order to remove the console logging of the response
+- Removed jQuery from control_objectlist_menu since JS function hcms_ajaxService replaced the JQuery AJAX request
+- Modifications in Task Management module in order to use the service toggleview and restore the selected view while the user session is active
+- Modifications in Task Management module in order to open a folders location and display its content (frameset_objectlist) instead of opening the folder
+- Modifications in Task Management module in order to open objects in the overlay window or in a new window based on the main configuration setting $mgmt_config['object_newwindow']
+- Modifications in Task Management module in order to always display tasks ni the gallery view even if there is no object assigned to the task
+- Design modifications in the CSS class hcmsPriorityMedium in the blue, colorful, and day design theme
+- Modifications in Task Management module in order to create new tasks (without sending a mail)
+- Modifications in Task Management module in order to support the export of all tasks of the selected tab
+- Modifications in function update_software in the Update API in order to log additional information
+- Modifications in function createdocument in Media API in order to add the filter --infilter=CSV:44,34,76,1 to the libreoffice command
+- Modifications in function deletelog in Main API in order to use the log file name in the log entries
+- Modifications in service accessstats in order to support the container ID as input parameter
+- Modifications in Home Box statistic_of_favourites in order to use the path value for the input parameter of function getfavorites
+- Modifications in function rdbms_getmediastat in DB Connect in order to use an identifier for the container ID or the objectpath for the cache file name (avoid the cache being invalid in case the object path has changed)
+- Modifications in function rdbms_getmediastat in DB Connect in order separate the values by a delimiter fo the cache file name (to ensure unique cache file name) 
+- Modifications in function rdbms_getmediastat in DB Connect in order to use the permanent cache if the date range start with the 1st day of a month and ends before today
+- Modifications in Project Management module in order to support dependencies of tasks
+- Modifications in createtables.sql in order to add the new column depency in table task
+- Implementation of the new function update_database_v1011 in the Update API
+- Modifications in function updates_all in the Update API in order to integrate function update_database_v1011
+- Modifications in function rdbms_createtask, rdbms_settask, and rdbms_gettask in DB Connect in order to support task dependencies
+- Modifications in function createtask, rdbms_settask, and rdbms_gettask in Task Management API in order to support task dependencies
+- Modifications in function createtask in Task Management API in order to move the planned input parameter before the project ID parameter
+- Modifications in Project Management module in order to to apply the changes for the input parameters of function createtask
+- Modifications in Project Management module in order to open objects in the overlay window or in a new window based on the main configuration setting $mgmt_config['object_newwindow']
+- Modifications in SOAP API of the Connector module in order to to apply the changes for the input parameters of function createtask
+- Modifications in SOAP API WSDL of the Connector module in order to support task dependencies for the operations "task_create" and "task_edit"
+- Modifications in DB Connect in order to set the SQL mode manually for class hcms_db due to issues with zero dates (require sql_mode="")
+- Modifications in Project Management API ni order to display the project, subproject and task IDs
+- Implementation of the new functions insertuploadlog, updateuploadlog, and loaduploadlog in Main API in order to track the upload of files for a sepcific location/folder
+- Modifications in function uploadfile in Main API in order to disable the process file for uploads and write a new temporary log file for the tracking of the current uploads of a user to a specific locations/folders by using the function updateuploadlog
+- Modifications in popup_upload_html and service uploadfile in order to implement the new parameter totalcount
+- Modifications in uploadfile in order to use function insertuploadlog for the tracking of the current uploads of a user to a specific locations/folders
+- Modifications in page_info in order to display that an upload is in progress for the folder
+- Modifications in function edituser in Main API in order to ignore the *Leave* value for the language session setting
+- Modifications in function deletefile in Main API in order to try up to 3 times to delete a file in case it is locked by another process
+- Modifications in function loadfile_header, loadfile_fast, loadfile, loadlockfile, savefile, savelockfile, appendfile, lockfile, and unlockfile in Main API in order to verify that the file name is not empty and the file exists after correcting the file name
+- Modifications in function appendfile in Main API in order to support saving a file if it does not exist based on a new input parameter
+- Implementation of new text records for dependencies in all language files
 - Update of the update log in the installation directory
-- Updates in the Installation Guide
+- Updates in the Connector, Installation and User Guide
 - Bug fix: The Workplace Integration returned the truncated file name which caused issues since the WebDAV client expected the provided file name and was not able to save the content in the new file
 - Bug fix: The Workplace Integration returned the truncated folder name which caused issues since the WebDAV client expected the provided folder name and was not able to set the new folder name
 - Bug fix: The public function isLoggedInHyperdav in the Workplace Integration API used a wrong name for the main configuration
 - Bug fix: Function renameobject in Main API applied changed on the provided file name. The file name modifications should only be performed by function manipulteobject in Main API.
-- Bug fix: The accidental use of function savelog in function createfilename (for testing prurposes) in the Main API can cause a killer loop since function savelog uses function appendfile and savefile which both again use function createfilename
+- Bug fix: The accidental use of function savelog in function createfilename (for testing purposes) in the Main API can cause a killer loop since function savelog uses function appendfile and savefile which both again use function createfilename
 - Bug fix: Existing file names that exceeded the max length have been corrected by function createfilename and therefore could not be accessed
 - Bug fix: Function GCanalyzeimage in the Cloud Connector module did not set the provided image options settings as global, therefore function createmedia failed to create the requested image for the Cloud service
 - Bug fix: The standard Event System file did not specifiy the MyHomepage publication in the searchsites parameter
@@ -6790,3 +6863,15 @@ Release 05/2023
 - Bug fix: link_edit_pageand frameset_edit_link did not set the linktarget and linktext in case the content was empty
 - Bug fix: media_edit_page and framset_edit_media did not set mediaalttext, mediaalign, mediawidth, and mediaheight in case the content was empty
 - Bug fix: The template engine did not provide the *Null* values based on the template definitions to link_edit_page and media_edit_page
+- Bug fix: The Arabic language file used a wrong character for the line ending of the last language entry
+- Bug fix: Function edittask in the Task Management API did not verify the input parameters and their *Leave* value correctly
+- Bug fix: Function rdbms_edittask in DB Connect did not verify the input parameters and their *Leave* value correctly
+- Bug fix: Function deletelog in Main API did not log the name in case the event.log file has been deleted
+- Bug fix: Function edittask in the Task Management API did not set the project ID in case only the project ID has been changed
+- Bug fix: Function rdbms_externalquery in DB Connect used a duplicate error code 50101 and has been changed to 50999
+- Bug fix: The Polish language file had a missing line ending
+- Bug fix: The Romanian language file had a character (dash) at the end of the file
+- Bug fix: The Russian language file used an unescaped double quote in a text string
+- Bug fix: The Somali language file had a missing line ending
+- Bug fix: The Ukrainian language file had a character (dot) at the end of the text variable
+- Bug fix: The Urdu language file used wrong character for some line endings

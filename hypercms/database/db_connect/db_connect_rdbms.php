@@ -20,7 +20,7 @@ class hcms_db
   // $host = Hostname of the database Server
   // $charset = Charset if applicable
   
-  public function __construct ($type, $host, $user, $pass, $db, $charset="")
+  public function __construct ($type, $host, $user, $pass, $db, $charset="", $sql_mode="TRADITIONAL")
   {
     switch ($type)
     {
@@ -35,9 +35,9 @@ class hcms_db
         $offset = offsettime();
         $this->_db->query ("SET time_zone='".$offset."'");
 
-        // set sql_mode to TRADITIONAL
+        // set sql_mode
         // deprecated: $this->_db->query ("SET SESSION sql_mode = 'STRICT_TRANS_TABLES, STRICT_ALL_TABLES, NO_AUTO_CREATE_USER, NO_ENGINE_SUBSTITUTION'");
-        $this->_db->query ("SET SESSION sql_mode = 'TRADITIONAL'");
+        $this->_db->query ("SET SESSION sql_mode = '".$sql_mode."'");
 
         break;
       case 'odbc':
@@ -3935,13 +3935,13 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
 // output: object ID / false
 
 // description:
-// Returns the ID of an object.
+// Returns the object ID of an object path.
 
 function rdbms_getobject_id ($object)
 {
   global $mgmt_config;
 
-  if ($object != "")
+  if (is_string ($object) && $object != "")
   {
     // correct object name
     // if unpublished object
@@ -6023,33 +6023,41 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
 
 // description:
 // Provides the data of objects based on the information of table dailystats. The results will be sorted by date in descending order (most recent first).
+// If a container ID and an objectpath has been provided, the objectpath will be the 1st priority for the query (since only the objectpath can be used to query all objects of a folder).
 
 function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $container_id="", $objectpath="", $user="", $return_filesize=true, $maxhits=0, $cache_timeout="auto")
 {
   global $mgmt_config;
 
   // define file name for cache (MD5 hash identifies the input parameters)
-  $filename = md5 ($date_from.$date_to.$activity.$container_id.$objectpath.$user.$return_filesize).".stat.json";
+  if ($objectpath != "") $identifier = rdbms_getobject_id ($objectpath); 
+  elseif (intval ($container_id) > 0) $identifier = intval ($container_id);
+  else $identifier = "";
+
+  $filename = md5 ($date_from."|".$date_to."|".$activity."|".$identifier."|".$user."|".$return_filesize).".stat.json";
 
   // initialize
   $dailystat = array();
   $cached = false;
 
   // define automatic cache timeout
-  if (is_string ($cache_timeout) && strtolower ($cache_timeout) == "auto")
+  if ((is_string ($cache_timeout) && strtolower ($cache_timeout) == "auto"))
   {
-    // use permanent cache if the date range ends before today
-    if ($date_to != "" && $date_to < date ("Y-m-d")) $cache_timeout = -1;
-    // set default cache timeout to one hour
-    else $cache_timeout = 60*60*1;
-  } 
+    $cache_timeout = 60*60*1;
+  }
+
+  // use permanent cache if the date range start with the 1st of a month and ends before today (cached results of the past)
+  if (trim ($date_from) != "" && date ('j', strtotime ($date_from)) === '1' && trim ($date_to) != "" && $date_to < date ("Y-m-d"))
+  {
+    $cache_timeout = -1;
+  }
 
   // load and use cached results with timeout
   if (intval ($cache_timeout) > 0 && is_file ($mgmt_config['abs_path_temp'].$filename) && filemtime ($mgmt_config['abs_path_temp'].$filename) > (time() - $cache_timeout))
   {
     $json = loadfile ($mgmt_config['abs_path_temp'], $filename);
 
-    if ($json != "")
+    if (!empty ($json))
     {
       $dailystat = json_decode ($json, true);
       $cached = true;
@@ -6060,7 +6068,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   {
     $json = loadfile ($mgmt_config['abs_path_view'], $filename);
 
-    if ($json != "")
+    if (!empty ($json))
     {
       $dailystat = json_decode ($json, true);
       $cached = true;
@@ -6296,7 +6304,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="", $recyclebin=true)
 // ----------------------------------------------- create task -------------------------------------------------
 // function: rdbms_createtask()
 // input: object ID or object path [string], project/subproject ID if the task should be assigned to a project [integer] (optional), from user name [string], to user name [email-address] (optional), start date [yyyy-mm-dd] (optional), finish date [yyyy-mm-dd] (optional),
-//        category [link,user,workflow] (optional), task name [string], task description [string] (optional), priority [high,medium,low] (optional), planned effort in taskunit [integer] (optional)
+//        category [link,user,workflow] (optional), task name [string], task description [string] (optional), priority [high,medium,low] (optional), planned effort in taskunit [integer] (optional), task ID dependencies [comma separated task IDs] (optional)
 // output: true/false
 // requires: config.inc.php
 
@@ -6304,7 +6312,7 @@ function rdbms_getfilesize ($container_id="", $objectpath="", $recyclebin=true)
 // Creates a new user task and send optional e-mail to user.
 // Since verion 5.8.4 the data will be stored in RDBMS instead of XML files.
 
-function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user="", $startdate="", $finishdate="", $category="", $taskname="", $description="", $priority="low", $planned="")
+function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user="", $startdate="", $finishdate="", $category="", $taskname="", $description="", $priority="low", $planned="", $dependency="")
 {
   global $mgmt_config;
 
@@ -6336,6 +6344,7 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
     if ($description != "") $description = $db->rdbms_escape_string (strip_tags ($description));
     if ($priority != "") $priority = $db->rdbms_escape_string (strtolower (strip_tags ($priority)));
     if ($planned != "") $planned = $db->rdbms_escape_string (correctnumber ($planned));
+    if ($dependency != "") $dependency = $db->rdbms_escape_string (strip_tags ($dependency));
 
     // set user if not defined
     if ($from_user == "")
@@ -6346,7 +6355,7 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
     }
 
     // insert
-    $sql = 'INSERT IGNORE INTO task (object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, planned, status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'","'.$planned.'",0)';
+    $sql = 'INSERT IGNORE INTO task (object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, dependency, planned, status) VALUES ('.$object_id.','.$project_id.',"'.$taskname.'","'.$from_user.'","'.$to_user.'","'.$startdate.'","'.$finishdate.'","'.$category.'","'.$description.'","'.$priority.'","'.$dependency.'","'.$planned.'",0)';
 
     $errcode = "50048";
     $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'insert');
@@ -6364,7 +6373,7 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
 // ----------------------------------------------- set task -------------------------------------------------
 // function: rdbms_settask()
 // input: task ID [integer], object ID [integer or string] (optional), project/subproject ID the task belongs to [integer or string] (optional), to_user name [string] (optional), start date [yyyy-mm-dd or string] (optional), finish date [yyyy-mm-dd or string] (optional),
-//        name of task [string] (optional), task message/description [string] (optional), sendmail [true/false], priority [high,medium,low] (optional), status in percent [0-100] (optional), 
+//        name of task [string] (optional), task message/description [string] (optional), sendmail [true/false], priority [high,medium,low] (optional), status in percent [0-100] (optional), task ID dependencies [comma separated task IDs] (optional)
 //        planned effort in taskunit [float] (optional), actual effort in taskunit [float] (optional)
 // output: true/false
 // requires: config.inc.php
@@ -6374,11 +6383,11 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
 // Since verion 5.8.4 the data will be stored in RDBMS instead of XML files.
 // Use *Leave* as input if a value should not be changed. 
 
-function rdbms_settask ($task_id, $object_id="*Leave*", $project_id="*Leave*", $to_user="*Leave*", $startdate="*Leave*", $finishdate="*Leave*", $taskname="*Leave*", $description="*Leave*", $priority="*Leave*", $status="*Leave*", $planned="*Leave*", $actual="*Leave*")
+function rdbms_settask ($task_id, $object_id="*Leave*", $project_id="*Leave*", $to_user="*Leave*", $startdate="*Leave*", $finishdate="*Leave*", $taskname="*Leave*", $description="*Leave*", $priority="*Leave*", $status="*Leave*", $planned="*Leave*", $actual="*Leave*", $dependency="*Leave*")
 {
   global $mgmt_config;
 
-  if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && intval ($task_id) > 0 && ($taskname == "" || strlen ($taskname) <= 200) && ($description == "" || strlen ($description) <= 3600) && ($priority == "*Leave*" || in_array (strtolower ($priority), array("low","medium","high"))))
+  if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php") && intval ($task_id) > 0 && ($taskname == "*Leave*" || mb_strlen ($taskname) <= 200) && ($description == "*Leave*" || mb_strlen ($description) <= 3600) && ($priority == "*Leave*" || in_array (strtolower ($priority), array("low","medium","high"))))
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -6388,14 +6397,15 @@ function rdbms_settask ($task_id, $object_id="*Leave*", $project_id="*Leave*", $
     if ($object_id != "*Leave*" && intval ($object_id) >= 0) $sql_update[] = 'object_id="'.intval($object_id).'"';
     if ($project_id != "*Leave*" && intval ($project_id) >= 0) $sql_update[] = 'project_id="'.intval($project_id).'"';
     if ($to_user != "*Leave*" && $to_user != "") $sql_update[] = 'to_user="'.$db->rdbms_escape_string (strip_tags ($to_user)).'"';
-    if ($startdate != "*Leave*") $sql_update[] = 'startdate="'.$db->rdbms_escape_string (strip_tags ($startdate)).'"';
-    if ($finishdate != "*Leave*") $sql_update[] = 'finishdate="'.$db->rdbms_escape_string (strip_tags ($finishdate)).'"';
+    if ($startdate != "*Leave*" && trim ($startdate) != "") $sql_update[] = 'startdate="'.$db->rdbms_escape_string (strip_tags ($startdate)).'"';
+    if ($finishdate != "*Leave*" && trim ($finishdate) != "") $sql_update[] = 'finishdate="'.$db->rdbms_escape_string (strip_tags ($finishdate)).'"';
     if ($taskname != "*Leave*" && $taskname != "") $sql_update[] = 'task="'.$db->rdbms_escape_string (strip_tags ($taskname)).'"';
     if ($description != "*Leave*") $sql_update[] = 'description="'.$db->rdbms_escape_string (strip_tags ($description)).'"';
     if ($priority != "*Leave*" && $priority != "") $sql_update[] = 'priority="'.$db->rdbms_escape_string (strtolower (strip_tags ($priority))).'"';
     if ($status != "*Leave*" && intval ($status) >= 0) $sql_update[] = 'status="'.intval ($status).'"';
     if ($planned != "*Leave*" && floatval ($planned) >= 0) $sql_update[] = 'planned="'.correctnumber($planned).'"';
     if ($actual != "*Leave*" && floatval ($actual) >= 0) $sql_update[] = 'actual="'.correctnumber($actual).'"';
+    if ($dependency != "*Leave*") $sql_update[] = 'dependency="'.$db->rdbms_escape_string (strip_tags ($dependency)).'"';
 
     // insert
     $sql = 'UPDATE task SET ';
@@ -6425,7 +6435,7 @@ function rdbms_settask ($task_id, $object_id="*Leave*", $project_id="*Leave*", $
 // description:
 // Reads all values of a task.
 
-function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="", $to_user="", $startdate="", $finishdate="", $order_by="startdate DESC")
+function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="", $to_user="", $startdate="", $finishdate="", $order_by="task_id DESC")
 {
   global $mgmt_config;
 
@@ -6451,7 +6461,7 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
     if ($order_by != "") $order_by = $db->rdbms_escape_string ($order_by);
   
     // get recipients
-    $sql = 'SELECT task_id, object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, status, planned, actual FROM task';
+    $sql = 'SELECT task_id, object_id, project_id, task, from_user, to_user, startdate, finishdate, category, description, priority, status, planned, actual, dependency FROM task';
 
     if ($task_id > 0)
     {
@@ -6467,6 +6477,7 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
       if ($startdate != "") $sql .= ' AND startdate="'.$startdate.'"';
       if ($finishdate != "") $sql .= ' AND finishdate="'.$finishdate.'"';
     }
+    
     if ($order_by != "") $sql .= ' ORDER BY '.$order_by;
 
     $errcode = "50094";
@@ -6497,6 +6508,7 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
           $result[$i]['status'] = $row['status'];
           $result[$i]['planned'] = $row['planned'];
           $result[$i]['actual'] = $row['actual'];
+          $result[$i]['dependency'] = strip_tags (html_entity_decode ($row['dependency']));
 
           $i++;
         }
@@ -6670,7 +6682,7 @@ function rdbms_setproject ($project_id, $subproject_id="*Leave*", $object_id="*L
 
 // ------------------------------------------------ get project -------------------------------------------------
 // function: rdbms_getproject()
-// input: task ID [integer] (optional), object ID [integer] (optional), subproject ID the task belongs to [integer] (optional), user name [string] (optional), attributes for order by SQL statement [string] (optional)    
+// input: project ID [integer] (optional), subproject ID [integer] (optional), object ID [integer] (optional), user name [string] (optional), attributes for order by SQL statement [string] (optional)    
 // output: result array / false on error
 // requires: config.inc.php
 
@@ -6698,7 +6710,7 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
     if ($user != "") $user = $db->rdbms_escape_string ($user);
     if ($order_by != "") $order_by = $db->rdbms_escape_string ($order_by);
 
-    // get recipients
+    // get projects
     $sql = 'SELECT project_id, subproject_id, object_id, project, user, description FROM project WHERE 1=1';
 
     if ($project_id > 0 && $subproject_id < 1) $sql .= ' AND project_id="'.$project_id.'"';
@@ -6717,7 +6729,7 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
       $result = array();
       $i = 0;
 
-      // insert recipients
+      // collect project data
       while ($row = $db->rdbms_getresultrow ('select'))
       {
         if (!empty ($row['project_id']))
@@ -7145,7 +7157,7 @@ function rdbms_externalquery ($sql, $concat_by="")
       // correct %comp% and %page% for query
       $sql = str_replace (array("%comp%/", "%page%/"), array("*comp*/", "*page*/"), $sql);
 
-      $errcode = "50101";
+      $errcode = "50999";
       $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'select');
 
       if ($done)

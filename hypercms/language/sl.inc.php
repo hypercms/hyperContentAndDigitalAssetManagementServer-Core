@@ -1429,4 +1429,5 @@ $hcms_lang['search-wildcard-none']['sl'] = "brez operatorja … Privzeto (če ni
 $hcms_lang['search-wildcard-asterisk']['sl'] = "* … Zvezdica služi kot operator za prirezovanje (ali nadomestni znak). Za razliko od drugih operatorjev jo je treba dodati besedi, na katero vpliva.";
 $hcms_lang['search-wildcard-doublequote']['sl'] = "\" … Besedna zveza, ki je zaprta med dvojnimi narekovaji, mora biti prisotna kot besedna zveza dobesedno, kot je bila vnesena";
 $hcms_lang['content-modified-by-user']['sl'] = "Vsebino je spremenil uporabnik '%user%'. Ali želite znova naložiti vsebino?";
+$hcms_lang['dependencies']['sl'] = "Odvisnosti";
 ?>

@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['ko'] = "연산자 없음 ... 기본적으로
 $hcms_lang['search-wildcard-asterisk']['ko'] = "* ... 별표는 자르기(또는 와일드카드) 연산자 역할을 합니다. 다른 연산자와 달리 영향을 받는 단어에 추가해야 합니다.";
 $hcms_lang['search-wildcard-doublequote']['ko'] = "\" … 큰따옴표로 묶인 문구는 입력한 그대로 그대로 문구로 나타나야 합니다.";
 $hcms_lang['content-modified-by-user']['ko'] = "'%user%' 사용자가 콘텐츠를 수정했습니다. 콘텐츠를 다시 로드하시겠습니까?";
+$hcms_lang['dependencies']['ko'] = "종속성";
 ?>

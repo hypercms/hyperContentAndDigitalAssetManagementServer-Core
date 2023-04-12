@@ -230,7 +230,7 @@ if (is_array ($notify_array))
       echo "
       <tr>
         <td style=\"width:22px; text-align:center;\"><input type=\"checkbox\" id=\"notify".$notify['notify_id']."\" name=\"notify_id[]\" value=\"".$notify['notify_id']."\" /></td>
-        <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><div title=\"".$objectpath."\"><label for=\"notify".$notify['notify_id']."\"><img src=\"".getthemelocation()."img/".$objectinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext (getobject($objectpath), 60)."</label></div></td>
+        <td style=\"white-space:nowrap; overflow:hidden; text-overflow:ellipsis;\"><div title=\"".$objectpath."\"><label for=\"notify".$notify['notify_id']."\"><img src=\"".getthemelocation()."img/".$objectinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;".showshorttext (getobject($objectpath), 60, false)."</label></div></td>
         <td style=\"width:22px; text-align:center;\">".($notify['oncreate'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>
         <td style=\"width:22px; text-align:center;\">".($notify['onedit'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>
         <td style=\"width:22px; text-align:center;\">".($notify['onmove'] > 0 ? "<img src=\"".getthemelocation()."/img/button_textc.png\" class=\"hcmsIconList\" />" : "")."</td>

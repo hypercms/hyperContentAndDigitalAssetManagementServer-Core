@@ -22,6 +22,7 @@ function setsession ($variable, $content="", $write=false)
     {
       // define variable name (prefix hcms_ is required)
       if (strpos ("_".$variable, "hcms_") == 0) $variable = "hcms_".$variable;
+      
       // set value for session variable
       $_SESSION[$variable] = $content;
 

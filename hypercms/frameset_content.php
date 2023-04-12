@@ -28,7 +28,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE html>
 <html>
@@ -172,7 +172,7 @@ if ($is_iphone) $css_iphone = " overflow:scroll !important; -webkit-overflow-scr
 else $css_iphone = "";
 
 // open an object 
-if (isset ($page) && $page != "")
+if (!empty ($page))
 {
   echo "
   <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; height:100px; margin:0; padding:0;\">
@@ -183,7 +183,7 @@ if (isset ($page) && $page != "")
   </div>";
 }
 // open a location  
-elseif (isset ($location) && $location != "")
+elseif (!empty ($location))
 {
   echo "
   <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; height:100px; margin:0; padding:0;\">

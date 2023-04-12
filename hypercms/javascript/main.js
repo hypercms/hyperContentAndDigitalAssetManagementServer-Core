@@ -390,6 +390,110 @@ function hcms_convertGet2Post (link)
   return false;
 }
 
+// ------------------------ serialize form data ----------------------------
+
+function hcms_serializeFormData (form_element)
+{
+  // Get all fields
+  const fields = [].slice.call(form_element.elements, 0);
+
+  return fields
+    .map(function (ele) {
+      const name = ele.name;
+      const type = ele.type;
+
+      // ignore:
+      // - field that doesn't have a name
+      // - disabled field
+      // - file input
+      // - unselected checkbox/radio
+      if (!name || ele.disabled || type === 'file' || (/(checkbox|radio)/.test(type) && !ele.checked))
+      {
+        return '';
+      }
+
+      // multiple select
+      if (type === 'select-multiple')
+      {
+        return ele.options
+          .map(function (opt) {
+              return opt.selected ? `${name}=${encodeURIComponent(opt.value)}` : '';
+          })
+          .filter(function (item) {
+              return item;
+          })
+          .join('&');
+      }
+
+      return `${name}=${encodeURIComponent(ele.value)}`;
+  })
+  .filter(function (item) {
+      return item;
+  })
+  .join('&');
+};
+
+// ---------------------------- post form data using AJAX ----------------------------
+
+function hcms_postFormData (id_form, id_savelayer, id_messagelayer)
+{
+  if (id_form == "" || document.getElementById(id_form) == null) return false;
+
+  return new Promise(function (resolve, reject) {
+
+    // form element
+    var form_element = document.getElementById(id_form);
+
+    // serialize form data
+    const params = hcms_serializeFormData (form_element);
+
+    if (id_savelayer != "") hcms_showLayer (id_savelayer);
+
+    // create new AJAX request
+    const request= new XMLHttpRequest();
+    request.open('POST', form_element.action, true);
+
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+    // handle the events
+    request.onload = function () {
+      if (request.status >= 200 && request.status < 400)
+      {
+        var data = JSON.parse(request.responseText);
+
+        // results
+        if (data)
+        {
+          // show message on error
+          if (id_messagelayer != "" && document.getElementById(id_messagelayer))
+          {
+            if (data['success'] == false && data['message'] != "")
+            {
+              hcms_showLayer (id_messagelayer);
+              document.getElementById(id_messagelayer + '_text').innerHTML = data['message'];
+            }
+          }
+
+          if (id_savelayer != "") hcms_hideLayer (id_savelayer);
+        }
+      }
+    };
+
+    request.onerror = function () {
+      console.log('Internal Server Error');
+
+      if (id_messagelayer != "" && document.getElementById(id_messagelayer))
+      {
+        hcms_showLayer (id_messagelayer);
+        document.getElementById(id_messagelayer + '_text').innerHTML = "Internal Server Error";
+      }
+    };
+
+    // send
+    request.send(params);
+  });
+}
+
 // ----------------------------- async AJAX request --------------------------------
 
 function hcms_ajaxService (url, mimetype)
@@ -420,15 +524,10 @@ function hcms_ajaxService (url, mimetype)
     }
   }
   
-  xmlhttp.onreadystatechange = function()
-  {
+  xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200)
     {
-      return this.responseText;
-    }
-    else
-    {
-      console.error (this.statusText);
+      return xmlhttp.responseText;
     }
   }
 
@@ -474,11 +573,6 @@ function hcms_syncajaxService (url, mimetype)
   if (xmlhttp.status == 200 && xmlhttp.readyState == 4)
   {
     return xmlhttp.responseText;
-  }
-  else
-  {
-    console.error (this.statusText);
-    return false;
   }
 }
 
@@ -1370,13 +1464,13 @@ function hcms_selectAllOptions (select)
 
 // ----------------------------------------  drag layer ---------------------------------------
 
-function hcms_dragLayer (elem, connection_id)
+function hcms_dragLayer (element, id_connection)
 {
-  connection_id = (typeof connection_id !== 'undefined') ? connection_id : '';
+  id_connection = (typeof id_connection !== 'undefined') ? id_connection : '';
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
   // move the DIV from anywhere inside the DIV
-  elem.onmousedown = dragMouseDown;
+  element.onmousedown = dragMouseDown;
 
   function dragMouseDown(e)
   {
@@ -1408,9 +1502,9 @@ function hcms_dragLayer (elem, connection_id)
     elem.style.left = (elem.offsetLeft - pos1) + "px";
 
     // redraw connections based on the affected connection id
-    if (connection_id != '' && typeof hcms_connections_repaintConnections === 'function')
+    if (id_connection != '' && typeof hcms_connections_repaintConnections === 'function')
     {
-      hcms_connections_repaintConnections (connection_id);
+      hcms_connections_repaintConnections (id_connection);
     }
   }
 
@@ -1423,9 +1517,9 @@ function hcms_dragLayer (elem, connection_id)
 }
 
 // Activates dragging of moveelem when elem is dragged and updates all connections that include the connection id (in from or to, connection id)
-function hcms_dragLayers (elem, moveelem, connection_id)
+function hcms_dragLayers (elem, moveelem, id_connection)
 {
-  connection_id = (typeof connection_id !== 'undefined') ? connection_id : '';
+  id_connection = (typeof id_connection !== 'undefined') ? id_connection : '';
 
   // Setting up needed variables
   document.hcms_move = {};
@@ -1469,9 +1563,9 @@ function hcms_dragLayers (elem, moveelem, connection_id)
         document.hcms_move.elem.style.top = (event.clientY - document.hcms_move.diffy) + 'px';
 
         // redraw connections based on the affected connection id
-        if (connection_id != '' && typeof hcms_connections_repaintConnections === 'function')
+        if (id_connection != '' && typeof hcms_connections_repaintConnections === 'function')
         {
-          hcms_connections_repaintConnections (connection_id);
+          hcms_connections_repaintConnections (id_connection);
         }
       }
 
@@ -1490,7 +1584,7 @@ function hcms_dragLayers (elem, moveelem, connection_id)
   }
 }
 
-// ----------------------------------------  show/hide layer ---------------------------------------
+// ---------------------------------- show/hide layer with transition effect ---------------------------------
 
 function hcms_isHiddenLayer (id)
 {
@@ -1621,6 +1715,28 @@ function hcms_displayLayers ()
   }
 }
 
+// ---------------------------- simple show/hide hide layer ----------------------------
+
+function hcms_showLayer (id_element)
+{
+  // overlay while saving
+  if (document.getElementById(id_element))
+  {
+    document.getElementById(id_element).style.display="block";
+  }
+}
+
+function hcms_hideLayer (id_element)
+{
+  // overlay while saving
+  if (document.getElementById(id_element))
+  {
+    document.getElementById(id_element).style.display="none";
+  }
+}
+
+// ----------------------------  show/hide form layer ----------------------------
+
 function hcms_showFormLayer (id, sec)
 {
   // default value
@@ -1726,6 +1842,8 @@ function hcms_switchFormLayer (id)
   else return false;
 }
 
+// ----------------------------  show/hide selector ----------------------------
+
 function hcms_switchSelector (id)
 {
   // uses visibilty
@@ -1787,16 +1905,16 @@ function hcms_hideSelector (id)
 
 // ------------------------------ element style functions -------------------------------
 
-function hcms_elementStyle (Element, ElementClass)
+function hcms_elementStyle (element, class_element)
 {
-  if (Element.className != ElementClass) Element.className = ElementClass;
+  if (element.className != class_element) element.className = class_element;
 }
 
-function hcms_elementbyIdStyle (id, ElementClass)
+function hcms_elementbyIdStyle (id, class_element)
 {
-  var Element = document.getElementById(id);
+  var element = document.getElementById(id);
 
-  if (Element && Element.className != ElementClass) Element.className = ElementClass;
+  if (element && element.className != class_element) element.className = class_element;
 }
 
 // ------------------------------- html entities ----------------------------------
@@ -2030,7 +2148,7 @@ function hcms_sortObjectKey (object)
   else return false;
 }
 
-function sortObjectValue (object, prop, asc)
+function hcms_sortObjectValue (object, prop, asc)
 {
   if ((typeof object === 'object' || typeof object === 'string') && prop != '')
   {
@@ -2334,21 +2452,21 @@ if (hcms_service == false)
 
 // ----------- event listener (cross-browser-support) -------------
 
-function hcms_addEvent (event, elem, func)
+function hcms_addEvent (event, element, func)
 {
   // W3C DOM
-  if (elem.addEventListener)
+  if (element.addEventListener)
   {
-    elem.addEventListener(event, func, false);
+    element.addEventListener(event, func, false);
   }
   // IE DOM
   else if (elem.attachEvent)
   {
-    elem.attachEvent("on"+event, func);
+    element.attachEvent("on"+event, func);
   }
   else
   {
-    elem["on"+event] = func;
+    element["on"+event] = func;
   }
 }
 

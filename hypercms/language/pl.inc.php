@@ -774,7 +774,7 @@ $hcms_lang['encrypt-content']['pl'] = "Szyfrowanie zawartości";
 $hcms_lang['watermark-options-for-images']['pl'] = "Znak wodny dla obrazów";
 $hcms_lang['watermark-options-for-vidoes']['pl'] = "Obrazek ikony filmów opcje znaku wodnego";
 $hcms_lang['last-updated']['pl'] = "Ostatnia aktualizacja";
-$hcms_lang['message']['pl'] = "Wiadomość"
+$hcms_lang['message']['pl'] = "Wiadomość";
 $hcms_lang['messages']['pl'] = "Wiadomości";
 $hcms_lang['send']['pl'] = "Wyślij";
 $hcms_lang['please-check-the-content']['pl'] = "Sprawdź zawartość.";
@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['pl'] = "brak operatora … Domyślnie (gdy n
 $hcms_lang['search-wildcard-asterisk']['pl'] = "* … Gwiazdka służy jako operator obcięcia (lub symbol wieloznaczny). W przeciwieństwie do innych operatorów, powinna być dołączona do słowa, którego dotyczy.";
 $hcms_lang['search-wildcard-doublequote']['pl'] = "\" … Fraza ujęta w cudzysłów musi występować jako fraza dosłownie, tak jak została wpisana";
 $hcms_lang['content-modified-by-user']['pl'] = "Zawartość została zmodyfikowana przez użytkownika '%user%'. Czy chcesz przeładować zawartość?";
+$hcms_lang['dependencies']['pl'] = "Zależności";
 ?>

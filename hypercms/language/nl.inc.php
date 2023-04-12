@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['nl'] = "geen operator … Standaard (wanneer
 $hcms_lang['search-wildcard-asterisk']['nl'] = "* … De asterisk dient als de truncatie (of wildcard) operator. In tegenstelling tot de andere operators, moet deze worden toegevoegd aan het woord dat moet worden beïnvloed.";
 $hcms_lang['search-wildcard-doublequote']['nl'] = "\" … Een zin die tussen dubbele aanhalingstekens staat, moet letterlijk aanwezig zijn als de zin, zoals deze werd getypt";
 $hcms_lang['content-modified-by-user']['nl'] = "De inhoud is gewijzigd door gebruiker '%user%'. Wilt u de inhoud opnieuw laden?";
+$hcms_lang['dependencies']['nl'] = "Afhankelijkheden";
 ?>

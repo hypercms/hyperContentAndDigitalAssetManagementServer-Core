@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['sk'] = "žiadny operátor … V predvolenom 
 $hcms_lang['search-wildcard-asterisk']['sk'] = "* … Hviezdička slúži ako operátor skrátenia (alebo zástupného znaku). Na rozdiel od ostatných operátorov by mala byť pripojená k slovu, ktoré má byť ovplyvnené.";
 $hcms_lang['search-wildcard-doublequote']['sk'] = "\" … Fráza, ktorá je uzavretá medzi dvojitými úvodzovkami, musí byť prítomná ako fráza doslova, tak ako bola napísaná";
 $hcms_lang['content-modified-by-user']['sk'] = "Obsah bol upravený používateľom '%user%'. Chcete obsah znova načítať?";
+$hcms_lang['dependencies']['sk'] = "Závislosti";
 ?>

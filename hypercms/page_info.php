@@ -238,6 +238,34 @@ if ($pagestore != false)
     if ($filesize > 0) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['file-size'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filesize."</td></tr>\n";
     if ($filecount > 0) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['number-of-files'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\">".$filecount."</td></tr>\n";
 
+    // show upload in progress for folder
+    if ($page == ".folder" && !empty ($container_id))
+    {
+      // load temp upload log
+      $logdata = loaduploadlog ($location_esc, "array");
+      
+      if (is_array ($logdata))
+      {
+        $upload_totalcount = 0;
+        $upload_users = array();
+        $upload_users_count = sizeof ($logdata);
+
+        // total uploads outstanding by users
+        if ($upload_users_count > 0) 
+        {
+          foreach ($logdata as $log)
+          {
+            list ($log_user, $log_count) = explode (":", $log);
+
+            $upload_users[] = $log_user;
+            $upload_totalcount += intval ($log_count);
+          }
+        }
+
+        if ($upload_totalcount > 0) echo "<tr><td style=\"vertical-align:top\">".getescapedtext ($hcms_lang['upload'][$lang])." </td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top\"><img src=\"".getthemelocation()."img/loading.gif\" style=\"max-height:22px; margin-right:8px;\" /> ".$upload_totalcount." ".getescapedtext ($hcms_lang['objects'][$lang]." (".$hcms_lang['by-user'][$lang]." ".implode (", ", $upload_users).")")."</td></tr>\n";
+      }
+    }
+
     // file links (only if linking is not used)
     if (linking_valid() == false)
     {

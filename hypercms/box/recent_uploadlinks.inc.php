@@ -108,7 +108,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           }
 
           echo "
-          <div ".$openObject." style=\"display:block; cursor:pointer;\" title=\"".$item_locationname.$item_fileinfo['name']."\"><img src=\"".getthemelocation()."img/".$item_fileinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;<a href=\"javascript:void(0);\">".showshorttext($item_fileinfo['name'], 60)."</a>&nbsp;</div>";
+          <div ".$openObject." style=\"display:block; cursor:pointer;\" title=\"".$item_locationname.$item_fileinfo['name']."\"><img src=\"".getthemelocation()."img/".$item_fileinfo['icon']."\" class=\"hcmsIconList\" />&nbsp;<a href=\"javascript:void(0);\">".showshorttext($item_fileinfo['name'], 60, false)."</a>&nbsp;</div>";
 
           if (!empty ($filewrapperdownload)) echo "
           <div style=\"padding-left:22px;\"><b>".getescapedtext ($hcms_lang['download-link'][$lang])." <img src=\"".getthemelocation("night")."img/button_file_copy.png\" class=\"hcmsButtonTiny hcmsIconList\" onclick=\"hcms_copyToClipboard('".$filewrapperdownload."');\" alt=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" /> </b> <span style=\"word-break:break-all;\">".$filewrapperdownload."</span></div>";

@@ -842,7 +842,7 @@ if (!empty ($login))
                 if (!in_array ($homebox_name, $userbox_array))
                 {
                   $list3_array[] = "
-                  <option value=\"".$homebox_key."\" title=\"".$homebox_name."\">".showshorttext($homebox_name, 30)."</option>";
+                  <option value=\"".$homebox_key."\" title=\"".$homebox_name."\">".showshorttext($homebox_name, 30, false)."</option>";
                 }
               }
   
@@ -870,7 +870,7 @@ if (!empty ($login))
             if (is_array ($userbox_array) && sizeof ($userbox_array) > 0)
             {
               foreach ($userbox_array as $userbox_key => $userbox_name) echo "
-              <option value=\"".$userbox_key."\" title=\"".$userbox_name."\">".showshorttext($userbox_name, 30)."</option>";
+              <option value=\"".$userbox_key."\" title=\"".$userbox_name."\">".showshorttext($userbox_name, 30, false)."</option>";
             }
             ?>
             </select>

@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['th'] = "ไม่มีตัวดำเน
 $hcms_lang['search-wildcard-asterisk']['th'] = "* … เครื่องหมายดอกจันทำหน้าที่เป็นตัวดำเนินการ truncation (หรือ wildcard) ซึ่งแตกต่างจากตัวดำเนินการอื่น ๆ ควรต่อท้ายคำที่จะได้รับผลกระทบ";
 $hcms_lang['search-wildcard-doublequote']['th'] = "\" … วลีที่อยู่ภายในเครื่องหมายคำพูดคู่จะต้องแสดงเป็นวลีตามตัวอักษร ตามที่พิมพ์";
 $hcms_lang['content-modified-by-user']['th'] = "เนื้อหาถูกแก้ไขโดยผู้ใช้ '%user%' คุณต้องการโหลดเนื้อหาซ้ำหรือไม่";
+$hcms_lang['dependencies']['th'] = "การพึ่งพา";
 ?>

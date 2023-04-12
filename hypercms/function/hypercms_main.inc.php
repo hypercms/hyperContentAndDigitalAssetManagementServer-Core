@@ -38,7 +38,8 @@ function correctnumber ($number)
     }
     else return intval ($number);
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------- fixintegeroverflow ------------------------------------------
@@ -194,9 +195,9 @@ function cleancontent ($text, $charset="UTF-8")
     }
 
     if (!empty ($text)) return $text;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------- remove_utf8_bom ------------------------------------------
@@ -342,9 +343,9 @@ function convertchars ($expression, $charset_from="UTF-8", $charset_to="UTF-8")
         else return $expression_orig;
       }
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- specialchr -----------------------------
@@ -427,7 +428,8 @@ function specialchr_encode ($expression, $remove="no")
     if (sizeof ($result_parts) > 1) return implode ("/", $result_parts);
     else return $result_parts[0];
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- specialchr_decode -----------------------------
@@ -482,7 +484,8 @@ function convertdate ($date, $timezone1="", $dateformat1="Y-m-d H:i:s", $timezon
     // convert dateformat
     return $result -> format ($dateformat2);
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- offsettime -----------------------------
@@ -659,11 +662,9 @@ function object_exists ($path)
 
     // folder exists
     if (is_dir ($location.$file) || is_file ($location.$file."/.folder") || is_file ($location.$file."/.folder.recycle")) return true;
-
-    // does not exist
-    return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- is_utf8 -----------------------------
@@ -769,9 +770,9 @@ function splitstring ($string)
     }
 
     if (is_array ($result_array)) return $result_array;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- is_folder -----------------------------
@@ -800,7 +801,8 @@ function is_folder ($path)
 
     return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- is_emptyfolder -----------------------------
@@ -969,7 +971,8 @@ function is_cloudobject ($file)
 
     return $result;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_date --------------------------------
@@ -991,9 +994,9 @@ function is_date ($date, $format="Y-m-d")
     if (!empty ($date)) $date = date ($format, $date);
 
     if (!empty ($date)) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------- is_tempfile -------------------------------------------
@@ -1107,11 +1110,10 @@ function is_thumbnail ($media, $images_only=true)
       if ($images_only == true && substr_count ($media, "_hcm".$container_id.".thumb.jpg") > 0) return true;
       elseif ($images_only == false && substr_count ($media, "_hcm".$container_id.".thumb.") > 0) return true;
       elseif ($images_only == false && substr_count($media, "_hcm".$container_id.".orig.") > 0) return true;
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------- is_preview -------------------------------------------
@@ -1131,11 +1133,10 @@ function is_preview ($media)
     if ($container_id != "")
     {
       if (substr_count ($media, "_hcm".$container_id.".preview.") > 0) return true;
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------- is_config -------------------------------------------
@@ -1155,11 +1156,10 @@ function is_config ($media)
     if ($container_id != "")
     {
       if (substr_count ($media, "_hcm".$container_id.".config.") > 0) return true;
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- is_encryptedfile -----------------------------
@@ -1186,11 +1186,10 @@ function is_encryptedfile ($location, $file)
 
       // encrypt data if media file is not encypted
       if (strpos ("_".$data, "<!-- hyperCMS:encrypted -->") > 0) return true;
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_document --------------------------------
@@ -1215,9 +1214,9 @@ function is_document ($file)
     else $ext = $file;
 
     if (!empty ($hcms_ext['cleartxt']) && !empty ($hcms_ext['bintxt']) && substr_count (strtolower ("_".$hcms_ext['cleartxt'].$hcms_ext['bintxt']).".", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_image --------------------------------
@@ -1242,9 +1241,9 @@ function is_image ($file)
     else $ext = $file;
 
     if (!empty ($hcms_ext['image']) && substr_count (strtolower ("_".$hcms_ext['image']).".", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_rawimage --------------------------------
@@ -1269,9 +1268,9 @@ function is_rawimage ($file)
     else $ext = $file;
 
     if (!empty ($hcms_ext['rawimage']) && substr_count (strtolower ("_".$hcms_ext['rawimage']).".", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_kritaimage --------------------------------
@@ -1293,9 +1292,9 @@ function is_kritaimage ($file)
     else $ext = $file;
 
     if (substr_count ("_.kra.", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_aiimage --------------------------------
@@ -1315,9 +1314,9 @@ function is_aiimage ($file)
     else $ext = $file;
 
     if (substr_count (".ai.eps.", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_video --------------------------------
@@ -1342,9 +1341,9 @@ function is_video ($file)
     else $ext = $file;
 
     if (!empty ($hcms_ext['video']) && substr_count (strtolower ($hcms_ext['video']).".", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_rawvideo --------------------------------
@@ -1369,9 +1368,9 @@ function is_rawvideo ($file)
     else $ext = $file;
 
     if (!empty ($hcms_ext['rawvideo']) && substr_count (strtolower ($hcms_ext['rawvideo']).".", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_audio --------------------------------
@@ -1396,9 +1395,9 @@ function is_audio ($file)
     else $ext = $file;
 
     if (!empty ($hcms_ext['audio']) && substr_count (strtolower ($hcms_ext['audio']).".", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_compressed --------------------------------
@@ -1423,9 +1422,9 @@ function is_compressed ($file)
     else $ext = $file;
 
     if (!empty ($hcms_ext['compressed']) && substr_count (strtolower ($hcms_ext['compressed']).".", ".".$ext.".") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- is_mobilebrowser -----------------------------
@@ -1451,9 +1450,9 @@ function is_mobilebrowser ()
     {
       return true;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- is_iOS -----------------------------
@@ -1476,9 +1475,9 @@ function is_iOS ()
     {
       return true;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_activelanguage --------------------------------
@@ -1501,9 +1500,9 @@ function is_activelanguage ($site, $langcode)
   if (valid_publicationname ($site) && $langcode != "")
   {
     if (substr_count  (",".$mgmt_config[$site]['translate'].",", ",".$langcode.",") > 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------- is_annotation --------------------------------
@@ -1681,10 +1680,9 @@ function in_array_substr ($search, $array)
     {
       if (strpos (" ".$value, $search) > 0)  return true;
     }
-
-    return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ========================================== FOOTER =======================================
@@ -1832,7 +1830,8 @@ function createfilename ($filename, $shorten=false)
       else return "noname";
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createlockname -----------------------------
@@ -1905,10 +1904,9 @@ function correctfile ($abs_path, $filename, $user="")
       $filename = $filename.".@".$lock;
       return $filename;
     }
-    // file doesn't exist
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------------------- correctpath -------------------------------------------
@@ -1937,7 +1935,8 @@ function correctpath ($path, $slash="/")
 
     return $path; 
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------- convertpath -------------------------------------------
@@ -2281,10 +2280,9 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
     // merge and return result
     if (sizeof ($result_parts) > 1) return implode ("|", $result_parts);
     elseif (!empty ($result_parts[0])) return $result_parts[0];
-    else return false;
   }
-  // wrong input
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------- deconvertlink -------------------------------------------
@@ -2388,13 +2386,11 @@ function mediapublicaccess ($mediafile)
         $published = getcontent ($contentdata, "<contentpublished>");
 
         if (!empty ($published[0])) return true;
-        else return false;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createviewlink -----------------------------
@@ -2432,7 +2428,8 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
 
     return $mgmt_config['url_path_cms']."service/".$servicename.".php?site=".urlencode($site)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile).$add;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createportallink -----------------------------
@@ -2523,7 +2520,6 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
       // if ($mgmt_config['secure_links'] == true) return $mgmt_config['url_path_cms']."?hcms_user_token=".hcms_encrypt ($object_id.":".$timetoken."@".$login.":".$password_crypted);
       // else return $mgmt_config['url_path_cms']."?hcms_user=".$login."&hcms_pass=".$password_crypted."&hcms_objref=".$object_id."&hcms_objcode=_".hcms_encrypt ($object_id.":".$timetoken);
       if ($result_db) return $mgmt_config['url_path_cms']."?".$type."=".$hash;
-      else return false;
     }
     else
     {
@@ -2531,11 +2527,10 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createaccesslink failed due to missing object id for: $objectpath";
 
       savelog (@$error);
-
-      return false;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createobjectaccesslink -----------------------------
@@ -2634,11 +2629,10 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createobjectaccesslink failed due to missing object id for object: ".$location.$object.", object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
-
-      return false;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createwrapperlink -----------------------------
@@ -2744,11 +2738,10 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createwrapperlink failed due to missing object id for object: ".$location.$object.", object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
-
-      return false;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createdownloadlink -----------------------------
@@ -2858,11 +2851,10 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createdownloadlink failed due to missing object id for object: ".$objectpath.", object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
-
-      return false;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createmultiaccesslink -----------------------------
@@ -2929,8 +2921,6 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmultiaccesslink failed to create access link for hash=".$hash.", multiobject=".implode("|", $multiobject).", type=".$type.", login=".$login.", lifetime=".$lifetime.", formats=".$formats;
   
         savelog (@$error);
-
-        return false;
       }
     }
     else
@@ -2939,11 +2929,10 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmultiaccesslink failed due to missing input: $multiobject";
 
       savelog (@$error);
-
-      return false;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- createmultidownloadlink -------------------------------------------
@@ -3055,9 +3044,9 @@ function createmultidownloadlink ($site, $multiobject, $name="", $user="", $type
 
     // return result
     if ($media != "" && $result_zip) return createviewlink ($site, $media, $name, true, $linktype).$add;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- cleandomain -----------------------------
@@ -3212,7 +3201,6 @@ function createversion ($site, $file, $user="sys")
 
           return $result;
         }
-        else return false;
       }
       // try container
       elseif (intval ($file) > 0 || strpos ($file, ".xml") > 0)
@@ -3256,9 +3244,7 @@ function createversion ($site, $file, $user="sys")
 
           return $result;
         }
-        else return false;
       }
-      else return false;
     }
     // versioning is disabled
     else
@@ -3270,7 +3256,8 @@ function createversion ($site, $file, $user="sys")
       return true;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------- rollbackversion -------------------------------------------
@@ -3631,11 +3618,10 @@ function deleteversion ($site, $container_version, $user="sys")
         // delete media file
         return deletefile ($versiondir, $container_version, 0);
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- deleteversions -------------------------------------------
@@ -3706,9 +3692,10 @@ function deleteversions ($type, $report, $user="sys")
 
     if ($report_str != false && $report == "yes") return $report_str;
     elseif ($report_str != false) return true;
-    else return false;
+
   }
-  else return false;
+
+  return false;
 }
 
 
@@ -3765,9 +3752,9 @@ function loadfile_header ($abs_path, $filename)
     if ($filesize < $headersize) $headersize = $filesize;
 
     // load header
-    if (is_file ($abs_path.$filename))
+    if (!empty ($filename) && is_file ($abs_path.$filename))
     {
-      $filehandle = @fopen ($abs_path.$filename, "rb");
+      $filehandle = fopen ($abs_path.$filename, "rb");
 
       if ($filename != false)
       {
@@ -3835,7 +3822,7 @@ function loadfile_fast ($abs_path, $filename)
     $filename = correctfile ($abs_path, $filename, $user);
 
     // load file
-    if ($filename != false)
+    if (!empty ($filename) && is_file ($abs_path.$filename))
     { 
       $filehandle = fopen ($abs_path.$filename, "rb");
 
@@ -3906,7 +3893,7 @@ function loadfile ($abs_path, $filename)
     $filename = correctfile ($abs_path, $filename, $user);
 
     // load file
-    if ($filename != false)
+    if (!empty ($filename) && is_file ($abs_path.$filename))
     {
       $filehandle = fopen ($abs_path.$filename, "rb");
 
@@ -3934,9 +3921,9 @@ function loadfile ($abs_path, $filename)
         $filename = $filename_unlocked;
         $filename = correctfile ($abs_path, $filename, $user);
 
-        if (is_file ($abs_path.$filename))
+        if (!empty ($filename) && is_file ($abs_path.$filename))
         {
-          $filehandle = @fopen ($abs_path.$filename, "rb");
+          $filehandle = fopen ($abs_path.$filename, "rb");
 
           if ($filehandle != false)
           {
@@ -4026,7 +4013,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       if (is_file ($abs_path.$filename_unlocked) && !is_file ($abs_path.$filename_unlocked.".@".$lock))
       {
         // lock file
-        $locked = @rename ($abs_path.$filename_unlocked, $abs_path.$filename_unlocked.".@".$lock);
+        $locked = rename ($abs_path.$filename_unlocked, $abs_path.$filename_unlocked.".@".$lock);
       }
       else $locked = true;
 
@@ -4034,9 +4021,9 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       $filename = $filename_unlocked.".@".$lock;
 
       // if file is locked
-      if ($locked == true)
+      if ($locked == true && !empty ($filename) && is_file ($abs_path.$filename))
       {
-        $filehandle = @fopen ($abs_path.$filename, "rb");
+        $filehandle = fopen ($abs_path.$filename, "rb");
 
         // read file data
         if ($filehandle != false)
@@ -4088,9 +4075,9 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
           $filename = $filename_unlocked.".@".$lock;
 
           // if file is locked
-          if ($locked == true)
+          if ($locked == true && !empty ($filename) && is_file ($abs_path.$filename))
           {
-            $filehandle = @fopen ($abs_path.$filename, "rb");
+            $filehandle = fopen ($abs_path.$filename, "rb");
 
             // file can be loaded 
             if ($filehandle != false)
@@ -4204,20 +4191,24 @@ function savefile ($abs_path, $filename, $filedata)
     // if file is offline
     elseif (is_file ($abs_path.$filename.".off")) $filename = $filename.".off";
 
-    $filehandle = fopen ($abs_path.$filename, "wb");
-
-    if ($filehandle != false)
+    // save file
+    if (!empty ($filename))
     {
-      @flock ($filehandle, LOCK_EX);
-      @fwrite ($filehandle, $filedata);
-      @flock ($filehandle, LOCK_UN);
-      @fclose ($filehandle);
+      $filehandle = fopen ($abs_path.$filename, "wb");
 
-      return true;
+      if ($filehandle != false)
+      {
+        @flock ($filehandle, LOCK_EX);
+        @fwrite ($filehandle, $filedata);
+        @flock ($filehandle, LOCK_UN);
+        @fclose ($filehandle);
+
+        return true;
+      }
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ------------------------------------ savelockfile --------------------------------------------
@@ -4275,8 +4266,8 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
     // locked file name of user
     $filename = $filename_unlocked.".@".$lock;
 
-    // if locked file exists
-    if (is_file ($abs_path.$filename))
+    // save locked file
+    if (!empty ($filename) && is_file ($abs_path.$filename) && !is_file ($abs_path.$filename_unlocked))
     {
       $filehandle = fopen ($abs_path.$filename, "wb");
 
@@ -4294,8 +4285,8 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
       if ($filehandle != false) return true;
       else return false;
     }
-    // if file is unlocked (same user might access the same file using different processes)    
-    elseif (is_file ($abs_path.$filename_unlocked))
+    // if file is unlocked or does not exist (same user might access the same file using different processes)    
+    elseif (!empty ($filename_unlocked))
     {
       $filehandle = fopen ($abs_path.$filename_unlocked, "wb");
 
@@ -4308,16 +4299,15 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 
         return true;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------- appendfile -----------------------------------------
 // function: appendfile()
-// input: path to file [string], file name [string], file content [string]
+// input: path to file [string], file name [string], file content [string], save file if it doesn not exist [boolean] (optional)
 // output: true/false
 
 // description: 
@@ -4325,12 +4315,9 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
 // Waits up to 3 seconds for locked files to be unlocked again.
 // Files won't be unlocked if the file is already locked.
 
-function appendfile ($abs_path, $filename, $filedata)
+function appendfile ($abs_path, $filename, $filedata, $savefile=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
-
-  // correct user name for file lock
-  $lock = createlockname ($user);
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename) && $filedata != "")
   {
@@ -4361,16 +4348,11 @@ function appendfile ($abs_path, $filename, $filedata)
       $abs_path = $abs_path.$filename."/";
       $filename = ".folder";
     }
-
-    // check and correct file
-    $filename_unlocked = $filename;
-    $filename_test = correctfile ($abs_path, $filename, $user); 
-    if ($filename_test != false) $filename = $filename_test; 
  
-    // if file exists
-    if (is_file ($abs_path.$filename))
+    // if file does not exist and should be saved
+    if (!correctfile ($abs_path, $filename, $user) && $savefile == true)
     {
-      $filehandle = fopen ($abs_path.$filename, "a");
+      $filehandle = fopen ($abs_path.$filename, "wb");
 
       if ($filehandle != false)
       {
@@ -4384,19 +4366,19 @@ function appendfile ($abs_path, $filename, $filedata)
       else return false;
     }
     // if file is locked by other user or system, wait 3 seconds
-    elseif ($filename_unlocked != ".folder")
+    else
     {
       // set time stamp (now + 3 sec)
       $end = time() + 3;
 
       while (time() <= $end)
       {
-        $filename = $filename_unlocked;
-        $filename = correctfile ($abs_path, $filename, $user);
+        // correct file name
+        $filename_correct = correctfile ($abs_path, $filename, $user);
 
-        if ($filename !== false)
+        if (!empty ($filename_correct) && is_file ($abs_path.$filename_correct))
         { 
-          $filehandle = fopen ($abs_path.$filename, "a");
+          $filehandle = fopen ($abs_path.$filename_correct, "a");
 
           if ($filehandle != false)
           {
@@ -4407,15 +4389,14 @@ function appendfile ($abs_path, $filename, $filedata)
        
             return true;
           }
-          else return false;
         }
         // sleep for 0 - 100 milliseconds, to avoid colission and CPU load
         else usleep (round (rand (0, 100) * 1000));
       }
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------- lockfile --------------------------------------------
@@ -4460,19 +4441,18 @@ function lockfile ($user, $abs_path, $filename)
     if (strpos ($filename, ".@") > 0) $filename = substr ($filename, 0, strpos ($filename, ".@"));
 
     // file is already locked by same user
-    if (is_file ($abs_path.$filename.".@".$lock))
+    if (!empty ($filename) && is_file ($abs_path.$filename.".@".$lock))
     {
       return true;
     }
     // lock file
-    elseif (is_file ($abs_path.$filename))
+    elseif (!empty ($filename) && is_file ($abs_path.$filename))
     {
       return rename ($abs_path.$filename, $abs_path.$filename.".@".$lock);
     }
-    // file cannot be found
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ------------------------------------------ unlockfile -------------------------------------------
@@ -4517,19 +4497,18 @@ function unlockfile ($user, $abs_path, $filename)
     if (strpos ($filename, ".@") > 0) $filename = substr ($filename, 0, strpos ($filename, ".@"));
 
     // file is already unlocked
-    if (is_file ($abs_path.$filename))
+    if (!empty ($filename) && is_file ($abs_path.$filename))
     {
       return true;
     }
     // unlock file
-    elseif (is_file ($abs_path.$filename.".@".$lock))
+    elseif (!empty ($filename) && is_file ($abs_path.$filename.".@".$lock))
     {
       return rename ($abs_path.$filename.".@".$lock, $abs_path.$filename);
     }
-    // file cannot be found
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------ deletefile --------------------------------------------
@@ -4546,9 +4525,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
 
   // initialize
   $error = array();
-
-  // correct user name for file lock
-  $lock = createlockname ($user);
+  $test = false;
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -4561,7 +4538,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
       $abs_path = deconvertpath ($abs_path, "file");
     }
 
-    // if selected file is a symbolic link
+    // if symbolic link
     if (is_link ($abs_path.$filename))
     {
       // delete target file
@@ -4580,25 +4557,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for symbolic link ".$abs_path.$filename;
       }
     }
-    // if selected file is a file
-    elseif (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off") || is_file ($abs_path.$filename.".@".$lock))
-    { 
-      // if file is offline (for objects)
-      if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off"; 
-
-      // if file is locked (for containers)
-      if (is_file ($abs_path.$filename.".@".$lock)) $filename = $filename.".@".$lock; 
-
-      // remove selected file
-      $test = unlink ($abs_path.$filename);
-
-      if ($test == false)
-      {
-        $errcode = "10110";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for file ".$abs_path.$filename;
-      }
-    }
-    // if selected file is a directory
+    // if directory
     elseif (is_dir ($abs_path.$filename))
     { 
       $test = true;
@@ -4641,9 +4600,9 @@ function deletefile ($abs_path, $filename, $recursive=false)
       }
 
       // delete directory itself
-      if ($test != false && is_dir ($abs_path.$filename))
+      if ($test != false && !empty ($filename) && is_dir ($abs_path.$filename))
       {
-        $test = @rmdir ($abs_path.$filename);
+        $test = rmdir ($abs_path.$filename);
 
         if ($test == false)
         {
@@ -4652,7 +4611,30 @@ function deletefile ($abs_path, $filename, $recursive=false)
         }
       }
     }
-    else $test = false;
+    // if file
+    else
+    { 
+      // remove file (try 3 times)
+      for ($i = 1; $i <= 3; $i++)
+      {
+        $filename = correctfile ($abs_path, $filename, $user);
+
+        if (!empty ($filename) && is_file ($abs_path.$filename))
+        {
+          $test = unlink ($abs_path.$filename);
+
+          if ($test == false)
+          {
+            $errcode = "10111";
+            if ($i == 3) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for file ".$abs_path.$filename;
+
+            // sleep for 0 - 100 milliseconds to avoid collision and CPU load
+            usleep (round (rand (0, 100) * 1000));
+          }
+          else break;
+        }
+      }
+    }
 
     // write log
     savelog (@$error);
@@ -10453,7 +10435,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
 
       // check if lanuage was changed and register new language
       // must be registered at last, otherwise a language settings mixture in this script would occure
-      if ($language != "" && $login_cat == "home")
+      if ($language != "" && $language != "*Leave*" && $login_cat == "home")
       {
         $lang = $language;
         $_SESSION['hcms_lang'] = $lang;
@@ -13749,7 +13731,7 @@ function createobject ($site, $location, $page, $template, $user)
     // log entry
     $errcode = "20212";
     $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The new object (".$site.", ".$location.", ".$page.") could not be created by user '".$user."' since the object path is too long";
-  } 
+  }
   // only report error if basic input has been provided
   elseif (valid_publicationname ($site) && $location != "" && substr_count ($location, "/") >= 2 && $page != "" && $user != "")
   {
@@ -13913,14 +13895,14 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
-
-    // define process name
-    $process_name = "uploadfile.".$site.".".md5($location.$global_files['Filedata']['name']);
+ 
+    // define process name (deprecated since version 10.1.1)
+    // $process_name = "uploadfile.".$site.".".md5($location.$global_files['Filedata']['name']);
 
     // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the executing script to finish execution before it can start)
     if (session_id() != "")
     {
-      $session_id = suspendsession ($process_name, $user);
+      $session_id = suspendsession ();
     }
     else $session_id = createuniquetoken ();
 
@@ -14758,7 +14740,10 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     savelog (@$error);
     
     // restart session (that has been previously closed for non-blocking procedure)
-    revokesession ($process_name, $user, $session_id);
+    revokesession ("", "", $session_id);
+
+    // update temp upload information log for upload tracking
+    updateuploadlog ($location_esc, $user);
 
     // include object name or object paths (uncompressed ZIP files) in message
     if (empty ($show_command) && !empty ($result['objectpath'])) $show_command = "[".$result['objectpath']."]";
@@ -20003,7 +19988,8 @@ function createqueueentry ($action, $object, $date, $published_only, $data="", $
       return rdbms_createqueueentry ($action, $object, $date, $published_only, "", $user);
     }
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- savemessage -----------------------------
@@ -20045,9 +20031,9 @@ function savemessage ($data, $type="mail", $user="")
       $mail_file = $mail_id.".".$user.".".strtolower ($type).".php";
       return savefile ($mgmt_config['abs_path_data']."message/", $mail_file, $data_str);
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- remoteclient -----------------------------
@@ -20150,9 +20136,9 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
 
       return $result;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- HTTP_getheader -----------------------------
@@ -20185,7 +20171,8 @@ function HTTP_getheader ($response)
 
     return $headers;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- HTTP_getbody -----------------------------
@@ -20204,7 +20191,8 @@ function HTTP_getbody ($response)
 
     return trim ($body);
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- HTTP_Post -----------------------------
@@ -20343,7 +20331,8 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
  
     return $result;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- HTTP_Get -----------------------------
@@ -20416,7 +20405,8 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
 
     return $result;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- HTTP_Proxy -----------------------------
@@ -20605,7 +20595,8 @@ function loadbalancer ($type)
 
     exit();
   }
-  else return false;
+  
+  return false;
 }
 
 // ================================= LOG FILE OPERATIONS =====================================
@@ -20633,7 +20624,8 @@ function createlogentry ($values)
 
     return implode ("|", $values);
   }
-  else return false;
+  
+  return false;
 }
 
 // --------------------------------------- savelog -------------------------------------------
@@ -20771,7 +20763,8 @@ function savelog ($error, $logfile="event")
 
     return $result;
   }
-  else return false;
+  
+  return false;
 }
 
 // --------------------------------------- loadlog -------------------------------------------
@@ -20800,7 +20793,8 @@ function loadlog ($logfile="event", $return_type="array")
       return file ($mgmt_config['abs_path_data']."log/".$logfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     }
   }
-  else return false;
+  
+  return false;
 }
 
 // --------------------------------------- deletelog -------------------------------------------
@@ -20841,7 +20835,7 @@ function deletelog ($logname="")
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['cleared-all-events-from-list'][$lang]."</span>\n";
 
       $errcode = "00821";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Log '".$logname."' has been deleted by user '".$user."'";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Log '".$logfile."' has been deleted by user '".$user."'";
     }
     else
     {
@@ -20849,7 +20843,7 @@ function deletelog ($logname="")
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['events-list-could-not-be-cleared'][$lang]."</span><br />\n".$hcms_lang['event-log-does-not-exist-or-you-do-not-have-write-permissions'][$lang]."\n";
 
       $errcode = "10822";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Log '".$logname."' could not be deleted by user '".$user."'";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Log '".$logfile."' could not be deleted by user '".$user."'";
     }
   }
 
@@ -20882,7 +20876,8 @@ function debuglog ($code)
     if (is_file ($mgmt_config['abs_path_data']."log/debug.log")) return appendfile ($mgmt_config['abs_path_data']."log/", "debug.log", $code);
     else return savefile ($mgmt_config['abs_path_data']."log/", "debug.log", $code);
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- checksoftwareversion -------------------------------------------
@@ -20918,6 +20913,176 @@ function checksoftwareversion ($version)
     if (strpos ($logdata, "|".$version_compare."|") > 0) return true;
     // compare with installed version
     elseif (!empty ($version_installed) && version_compare ($version_installed, $version_compare, '>=')) return true;
+  }
+
+  return false;
+}
+
+// ---------------------------------------- insertuploadlog --------------------------------------------
+// function: insertuploadlog()
+// input: converted location [string], user name [string], total files count [integer]
+// output: true / false
+
+// description:
+// This function inserts a log record into the temporary log file.
+
+function insertuploadlog ($location_esc, $user, $totalcount)
+{
+  global $mgmt_config;
+
+  if (!empty ($location_esc) && !empty ($user) && intval ($totalcount) > 0)
+  {
+    $filename = "upload.".md5($location_esc).".log";
+    $record = $user.":".intval($totalcount)."\n";
+
+    // upload log file exists
+    if (!empty ($mgmt_config['abs_path_temp']) && is_file ($mgmt_config['abs_path_temp'].$filename))
+    {
+      $logdata = loaduploadlog ($location_esc, "array");
+
+      // valid log data
+      if (is_array ($logdata) && sizeof ($logdata) > 0) 
+      {
+        foreach ($logdata as &$log)
+        {
+          list ($log_user, $log_count) = explode (":", $log);
+
+          // update count for user
+          if ($log_user == $user && intval ($log_count) != intval ($totalcount))
+          {
+            $log = $record;
+            $updated = true;
+          }
+          // user log entry exists and is left unchanged
+          elseif ($log_user == $user)
+          {
+            $do_not_save = true;
+          }
+        }
+      }
+
+      // save updated log
+      if (!empty ($updated))
+      {
+        if (is_array ($logdata)) $logdata_new = implode ("\n", $logdata);
+
+        if (trim ($logdata_new) != "") return savefile ($mgmt_config['abs_path_temp'], $filename, $logdata_new);
+      }
+      // add new log entry
+      elseif (empty ($do_not_save))
+      {
+        return appendfile ($mgmt_config['abs_path_temp'], $filename, $record);
+      }
+    }
+    // create new update log
+    else
+    {
+      return savefile ($mgmt_config['abs_path_temp'], $filename, $record);
+    }
+  }
+
+  return false;
+}
+
+// ---------------------------------------- updateuploadlog --------------------------------------------
+// function: updateuploadlog()
+// input: converted location [string], log record [string]
+// output: true / false
+
+// description:
+// This function reduces the total count by -1 from the temporary log file due to the finished upload by a user.
+
+function updateuploadlog ($location_esc, $user)
+{
+  global $mgmt_config;
+
+  if (!empty ($location_esc) && !empty ($user))
+  {
+    $filename = "upload.".md5($location_esc).".log";
+
+    if (!empty ($mgmt_config['abs_path_temp']) && is_file ($mgmt_config['abs_path_temp'].$filename))
+    {
+      $logdata = loaduploadlog ($location_esc, "array");
+
+      // valid log data
+      if (is_array ($logdata) && sizeof ($logdata) > 0) 
+      {
+        $log_new = array();
+
+        foreach ($logdata as &$log)
+        {
+          list ($log_user, $log_count) = explode (":", $log);
+
+          // update count
+          if ($log_user == $user)
+          {
+            $count = intval ($log_count) - 1;
+            $updated == true;
+
+            if ($count > 0) $log_new[] = $user.":".$count;
+          }
+          else $log_new[] = $log;
+        }
+
+        // save log data
+        if (is_array ($log_new) && sizeof ($log_new) > 0 && !empty ($updated))
+        {
+          $logdata_new = implode ("\n", $log_new);
+
+          if (trim ($logdata_new) != "") return savefile ($mgmt_config['abs_path_temp'], $filename, $logdata_new);
+        }
+        else
+        {
+          return deletefile ($mgmt_config['abs_path_temp'], $filename);
+        }
+      }
+      // invalid log data
+      else
+      {
+        return deletefile ($mgmt_config['abs_path_temp'], $filename);
+      }
+    }
+  }
+
+  return false;
+}
+
+// ---------------------------------------- loaduploadlog --------------------------------------------
+// function: loaduploadlog()
+// input: converted location [string], return type [string,array] (optional)
+// output: file content as string or array / false
+
+// description:
+// Loads a temporary upload log file an returns the data as string or array for all log records.
+
+function loaduploadlog ($location_esc, $return_type="array")
+{
+  global $mgmt_config;
+
+  if (!empty ($location_esc))
+  {
+    $filename = "upload.".md5($location_esc).".log";
+
+    if (!empty ($mgmt_config['abs_path_temp']) && is_file ($mgmt_config['abs_path_temp'].$filename))
+    {
+      // remove outdated log file (older than 8 hours)
+      if ((filemtime ($mgmt_config['abs_path_temp'].$filename) + 28800) < time())
+      {
+        deletefile ($mgmt_config['abs_path_temp'], $filename);
+        
+        return false;
+      }
+
+      // load log file
+      if (strtolower ($return_type) == "string")
+      {
+        return loadfile ($mgmt_config['abs_path_temp'], $filename);
+      }
+      else
+      {
+        return file ($mgmt_config['abs_path_temp'].$filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+      }
+    }
   }
 
   return false;

@@ -98,11 +98,12 @@ CREATE TABLE `task` (
   `startdate` date DEFAULT NULL,
   `finishdate` date DEFAULT NULL,
   `category` char(20) NOT NULL DEFAULT 'user',
-  `description` varchar(3600),
+  `description` varchar(3600) DEFAULT '',
   `priority` char(10) NOT NULL DEFAULT 'low',
-  `status` tinyint(3) NOT NULL,
+  `status` tinyint(3) NOT NULL DEFAULT '0',
   `planned` float(6,2) DEFAULT NULL,
   `actual` float(6,2) DEFAULT NULL,
+  `dependency` varchar(1000) DEFAULT '',
   PRIMARY KEY  (`task_id`),
   KEY `task_to_user` (`to_user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

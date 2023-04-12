@@ -66,6 +66,7 @@ $temp_sessiontime = getsession ("hcms_temp_sessiontime");
 $temp_clipboard = getsession ("hcms_temp_clipboard");
 $temp_explorerview = getsession ("hcms_temp_explorerview");
 $temp_objectview = getsession ("hcms_temp_objectview");
+$temp_taskview = getsession ("hcms_temp_taskview");
 $temp_sidebar = getsession ("hcms_temp_sidebar");
 $temp_site = getsession ("hcms_temp_site");
 $temp_user = getsession ("hcms_temp_user");
@@ -90,6 +91,7 @@ $temp_token = getsession ("hcms_temp_token");
 $hcms_themename = getsession ("hcms_themename");
 $hcms_themelocation = getsession ("hcms_themelocation");
 $hcms_themeinvertcolors = getsession ("hcms_themeinvertcolors");
+$hcms_hoverinvertcolors = getsession ("hcms_hoverinvertcolors");
 
 // filter options for object list
 $objectfilter = getsession ("hcms_objectfilter");

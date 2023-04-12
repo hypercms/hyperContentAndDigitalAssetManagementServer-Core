@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['no'] = "ingen operator … Som standard (nå
 $hcms_lang['search-wildcard-asterisk']['no'] = "* … Stjernen fungerer som trunkerings- (eller jokertegn). I motsetning til de andre operatorene, bør den legges til ordet som skal påvirkes.";
 $hcms_lang['search-wildcard-doublequote']['no'] = "\" … En setning som er omsluttet av doble anførselstegn må være til stede som setningen bokstavelig, slik den ble skrevet inn";
 $hcms_lang['content-modified-by-user']['no'] = "Innholdet har blitt endret av brukeren '%user%'. Vil du laste innholdet på nytt?";
+$hcms_lang['dependencies']['no'] = "Avhengigheter";
 ?>

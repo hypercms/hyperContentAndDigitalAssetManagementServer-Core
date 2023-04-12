@@ -761,7 +761,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                                 <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
                                   $dlink_start."
                                     <div id=\"i".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" /></div>
-                                    <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, true)."</div>
+                                    <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, 3)."</div>
                                   ".$dlink_end."
                                 </div>
                                 ".$linking_buttons."
@@ -1107,7 +1107,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                               <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
                                 $dlink_start."
                                   ".$thumbnail."
-                                  <div class=\"hcmsItemName\">".showshorttext($object_name, 18, true)."</div>
+                                  <div class=\"hcmsItemName\">".showshorttext($object_name, 18, 3)."</div>
                                 ".$dlink_end."
                               </div>
                               ".$linking_buttons."

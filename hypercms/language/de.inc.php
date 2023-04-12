@@ -108,7 +108,7 @@ $hcms_lang['description']['de'] = "Beschreibung";
 $hcms_lang['language']['de'] = "Sprache";
 $hcms_lang['content-type']['de'] = "Content-Typ";
 $hcms_lang['the-object-is-checked-in']['de'] = "Das Objekt wurde entsperrt";
-$hcms_lang['the-object-is-checked-out']['de'] = "Das Objekt urde gesperrt";
+$hcms_lang['the-object-is-checked-out']['de'] = "Das Objekt wurde gesperrt";
 $hcms_lang['object-could-not-be-checked-out']['de'] = "Objekt konnte nicht entsperrt werden";
 $hcms_lang['single-component']['de'] = "Einfachkomponente";
 $hcms_lang['selected-component']['de'] = "gewählte Komponente";
@@ -1432,4 +1432,5 @@ $hcms_lang['search-wildcard-none']['de'] = "kein Operator … Standardmäßig (w
 $hcms_lang['search-wildcard-asterisk']['de'] = "* … Der Stern dient als Platzhalter für beliebige weitere Zeichen (Wildcard-Operator). Im Gegensatz zu den anderen Operatoren muss es an das Wort angehängt oder als Platzhalter eingefügt werden.";
 $hcms_lang['search-wildcard-doublequote']['de'] = "\" … Eine Phrase, die in doppelte Anführungszeichen eingeschlossen ist, muss als Phrase im Wortsinn vorhanden sein, wie sie eingegeben wurde";
 $hcms_lang['content-modified-by-user']['de'] = "Der Inhalte wurde vom Benutzer '%user%' geändert. Wollen Sie den Inhalt neu laden?";
+$hcms_lang['dependencies']['de'] = "Abhängigkeiten";
 ?>

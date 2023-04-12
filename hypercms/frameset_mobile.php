@@ -25,7 +25,7 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-toggleview ($view);
+toggleexplorerview ($view);
 
 // write and close session (non-blocking other frames)
 suspendsession ();

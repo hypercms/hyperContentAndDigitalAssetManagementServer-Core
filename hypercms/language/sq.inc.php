@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['sq'] = "nuk ka operator … Si parazgjedhje 
 $hcms_lang['search-wildcard-asterisk']['sq'] = "* … Ylli shërben si operatori i shkurtimit (ose shkronjave të egra). Ndryshe nga operatorët e tjerë, ai duhet t'i bashkëngjitet fjalës që do të ndikohet.";
 $hcms_lang['search-wildcard-doublequote']['sq'] = "\" … Një frazë që është e mbyllur brenda karaktereve të thonjëzave të dyfishta duhet të jetë e pranishme si frazë fjalë për fjalë, siç është shkruar";
 $hcms_lang['content-modified-by-user']['sq'] = "Përmbajtja është modifikuar nga përdoruesi '%user%'. Dëshironi të rifreskoni përmbajtjen?";
+$hcms_lang['dependencies']['sq'] = "Varësitë";
 ?>

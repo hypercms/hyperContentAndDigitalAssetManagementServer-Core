@@ -179,7 +179,7 @@ suspendsession ();
       {
         $rows .= "
       <tr>
-        <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".showshorttext ($value, 280)."</td>
+        <td style=\"width:120px; vertical-align:top;\">".$key."&nbsp;</td><td class=\"hcmsHeadlineTiny\" style=\"vertical-align:top;\">".showshorttext ($value, 280, false)."</td>
       </tr>";
       }
       

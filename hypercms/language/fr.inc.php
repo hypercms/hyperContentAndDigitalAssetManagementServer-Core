@@ -1431,4 +1431,5 @@ $hcms_lang['search-wildcard-none']['fr'] = "aucun opérateur … Par défaut (lo
 $hcms_lang['search-wildcard-asterisk']['fr'] = "* … L'astérisque sert d'opérateur de troncature (ou caractère générique). Contrairement aux autres opérateurs, il doit être ajouté au mot à affecter.";
 $hcms_lang['search-wildcard-doublequote']['fr'] = "\" … Une phrase entourée de guillemets doubles doit être présente comme la phrase littéralement, telle qu'elle a été tapée";
 $hcms_lang['content-modified-by-user']['fr'] = "Le contenu a été modifié par l'utilisateur '%user%'. Voulez-vous recharger le contenu?";
+$hcms_lang['dependencies']['fr'] = "Dépendances";
 ?>

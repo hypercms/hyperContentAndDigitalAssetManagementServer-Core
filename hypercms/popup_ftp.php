@@ -267,7 +267,7 @@ else
               // no select
               $checkbox = "";
               
-              $link = "<a href=\"?path=".url_encode($path.$name."/")."&multi=".$multi."\" style=\"font-weight:normal;\">".showshorttext($name, 40)."</a>";
+              $link = "<a href=\"?path=".url_encode($path.$name."/")."&multi=".$multi."\" style=\"font-weight:normal;\">".showshorttext($name, 40, false)."</a>";
             }
             // if file
             elseif ($file['type'] == "file")

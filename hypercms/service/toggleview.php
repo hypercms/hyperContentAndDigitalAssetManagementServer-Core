@@ -14,7 +14,8 @@ require ("../function/hypercms_api.inc.php");
 
 
 // input parameters
-$view = getrequest ("view");
+$explorerview = getrequest ("explorerview");
+$taskview = getrequest ("taskview");
 
 // ------------------------------ permission section --------------------------------
 
@@ -23,5 +24,6 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
-toggleview ($view);
+if (!empty ($explorerview)) toggleexplorerview ($explorerview);
+if (!empty ($taskview)) toggletaskview ($taskview);
 ?>

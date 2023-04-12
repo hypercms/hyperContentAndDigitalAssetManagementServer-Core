@@ -6,7 +6,7 @@ html, body
   height: 100%;
   padding: 0;
   margin: 0;
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: Arial, Verdana, Helvetica, sans-serif; 
   font-weight: normal; 
   color: #000000; 
   text-decoration: none;
@@ -26,7 +26,7 @@ input, select, textarea, button, .hcmsTextArea
 {
   border-radius: 0px;
   box-sizing: border-box;
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: Arial, Verdana, Helvetica, sans-serif; 
   font-weight: normal;
   color: #000000;
   text-decoration: none;
@@ -429,7 +429,7 @@ a.hcmsNavigator
 
 .hcmsPriorityMedium
 {
-  background-color: #FDCE7E !important;
+  background-color: #4c96b6 !important;
   color: #000000 !important;
 }
 
@@ -516,6 +516,42 @@ a.hcmsNavigator
   border: 0;
   margin: 0px 0px 2px 2px;
   vertical-align: middle;
+}
+
+.hcmsButtonFrame
+{
+  padding: 0;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
+.hcmsButtonLabel
+{
+  float: left;
+  font-size: 8px;
+  letter-spacing: 0px;
+  min-width: 34px;
+  height: 22px;
+  border: 0;
+  margin: 0px 1px;
+  padding: 0;
+  text-align: center;
+  overflow: hidden;
+  overflow-wrap: break-word;
+}
+
+.hcmsButtonLabelSizeWide
+{
+  min-width: 48px !important;
+}
+
+@media only screen and (max-width: 760px)
+{
+  .hcmsButtonLabel
+  {
+    display: none;
+	}
 }
 
 .hcmsButton

@@ -448,7 +448,7 @@ function closePopup ()
                 foreach ($userbox_array as $userbox_key => $userbox_name)
                 {
                   echo "
-                  <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 40)."</option>";
+                  <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 40, false)."</option>";
                 }
               }
               ?>

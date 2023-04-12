@@ -570,7 +570,7 @@ function generateTaxonomyTree ($site, $tax_id, $runningNumber=1)
           $rnrid .= $i++;
 
           // generating the menupoint object with the needed configuration
-          $point = new hcms_menupoint(showshorttext ($tax_keyword, 32), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.png", $id);
+          $point = new hcms_menupoint(showshorttext ($tax_keyword, 32, false), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode("%taxonomy%/".$site."/all/".$tax_id."/0"), "folder_taxonomy.png", $id);
           $point->setOnClick('hcms_jstree_open("'.$id.'");');
           $point->setTarget('workplFrame');
           $point->setNodeCSSClass('jstree-closed jstree-reload');
@@ -636,7 +636,7 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
         // generating the menupoint object with the needed configuration
         if (strpos ($last_text_id, "=") > 0)
         {
-          $point = new hcms_menupoint(showshorttext ($label, 32), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode($hierarchy_url), "folder_taxonomy.png", $id);
+          $point = new hcms_menupoint(showshorttext ($label, 32, false), 'frameset_objectlist.php?action=base_search&site='.url_encode($site).'&search_expression='.url_encode($hierarchy_url), "folder_taxonomy.png", $id);
           $point->setOnClick('hcms_jstree_open("'.$id.'");');
           $point->setTarget('workplFrame');
           $point->setNodeCSSClass('jstree-closed jstree-reload');
@@ -646,7 +646,7 @@ function generateHierarchyTree ($hierarchy_url, $runningNumber=1)
         }
         else
         {
-          $point = new hcms_menupoint(showshorttext ($label, 32), '#'.$id, "folder.png", $id);
+          $point = new hcms_menupoint(showshorttext ($label, 32, false), '#'.$id, "folder.png", $id);
           $point->setOnClick('hcms_jstree_open("'.$id.'");');
           $point->setNodeCSSClass('jstree-closed jstree-reload');
           $point->setOnMouseOver('hcms_resetContext();');
@@ -1370,7 +1370,7 @@ else
     <script type="text/javascript" src="javascript/rich_calendar/domready.js"></script>
 
     <!-- Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php if (!empty ($mgmt_config['googlemaps_appkey'])) echo $mgmt_config['googlemaps_appkey']; ?>&callback=Function.prototype" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=<?php if (!empty ($mgmt_config['googlemaps_appkey'])) echo $mgmt_config['googlemaps_appkey']; ?>&callback=Function.prototype"></script>
 
     <script type="text/javascript">
 

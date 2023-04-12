@@ -2533,13 +2533,13 @@ $().ready(function() {
 </head>
 
 <body class="hcmsWorkplaceGeneric" style="height:auto;" oninput="textchanged();" onclick="textchanged();">
-  
+
   <!-- save overlay -->  
   <div id="saveLayer" class="hcmsLoadScreen"></div>
 
   <!-- message layer -->
   <?php echo showmessage ($hcms_lang['the-data-was-saved-successfully'][$lang], 580, 80, $lang, "position:fixed; top:60px; left:20px; display:none;", "messageLayer"); ?>
-  
+
   <!-- top bar -->
   <div id="bar" class="hcmsWorkplaceBar">
     <table style="width:100%; height:100%; padding:0; border-spacing:0; border-collapse:collapse;">
@@ -2556,8 +2556,7 @@ $().ready(function() {
       </tr>
     </table>
   </div>
-    
-    
+
   <!-- rendering settings -->
   <div id="renderOptions" style="padding:0px 5px 10px 5px; width:94%; display:none; vertical-align:top; z-index:1; margin:32px 10px 0px 10px;" class="hcmsMediaRendering">
   
@@ -2565,7 +2564,7 @@ $().ready(function() {
     <!-- start edit image -->
     <form name="imageoptions" id="imageoptions" action="" method="post">
       <input type="hidden" id="action" name="action" value="rendermedia" />
-        
+
       <!-- width or height -->
       <div class="cell">
         <div class="row">
@@ -2614,7 +2613,7 @@ $().ready(function() {
             <option value="-90" title="-90&deg;">270&deg;</option>
           </select>
         </div>
-        
+
         <?php if (getimagelib() != "GD") { ?>
         <!-- flip flop -->
         <div>
@@ -2634,7 +2633,7 @@ $().ready(function() {
         <?php } ?>
 
       </div>
-      
+
       <?php if (getimagelib() != "GD") { ?>
       <!-- Effects -->
       <div class="cell">

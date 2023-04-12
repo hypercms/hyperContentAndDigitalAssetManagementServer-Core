@@ -1974,13 +1974,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (isset ($container_id)) $viewstore = str_replace ("%container_id%", $container_id, $viewstore);
 
       // replace the object variables in the template with object hash
-      if ($mgmt_config['db_connect_rdbms'] != "" && isset ($location_esc) && isset ($page)) $objecthash = rdbms_getobject_hash ($location_esc.$page);
+      if (!empty ($mgmt_config['db_connect_rdbms']) && isset ($location_esc) && isset ($page)) $objecthash = rdbms_getobject_hash ($location_esc.$page);
       else $objecthash = "";
 
       $viewstore = str_replace ("%objecthash%", $objecthash, $viewstore);
 
       // replace the object variables in the template with the object ID
-      if ($mgmt_config['db_connect_rdbms'] != "" && isset ($location_esc) && isset ($page)) $object_id = rdbms_getobject_id ($location_esc.$page);
+      if (!empty ($mgmt_config['db_connect_rdbms']) && isset ($location_esc) && isset ($page)) $object_id = rdbms_getobject_id ($location_esc.$page);
       else $object_id = "";
 
       $viewstore = str_replace ("%object_id%", $object_id, $viewstore);
@@ -2100,13 +2100,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (isset ($container_id)) $viewstore = str_replace ("%container_id%", $container_id, $viewstore);
 
       // replace the object variables in the template with object hash
-      if ($mgmt_config['db_connect_rdbms'] != "" && isset ($location_esc) && isset ($page)) $objecthash = rdbms_getobject_hash ($location_esc.$page);
+      if (!empty ($mgmt_config['db_connect_rdbms']) && isset ($location_esc) && isset ($page)) $objecthash = rdbms_getobject_hash ($location_esc.$page);
       else $objecthash = "";
 
       $viewstore = str_replace ("%objecthash%", $objecthash, $viewstore);
 
       // replace the object variables in the template with the object ID
-      if ($mgmt_config['db_connect_rdbms'] != "" && isset ($location_esc) && isset ($page)) $object_id = rdbms_getobject_id ($location_esc.$page);
+      if (!empty ($mgmt_config['db_connect_rdbms']) && isset ($location_esc) && isset ($page)) $object_id = rdbms_getobject_id ($location_esc.$page);
       else $object_id = "";
 
       $viewstore = str_replace ("%object_id%", $object_id, $viewstore);
@@ -8264,7 +8264,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
   if (empty ($recognizefaces_service)) $viewstore .= "
   <!-- Google Maps -->
-  <script src=\"https://maps.googleapis.com/maps/api/js?v=3&key=".(!empty ($mgmt_config['googlemaps_appkey']) ? $mgmt_config['googlemaps_appkey'] : "")."&libraries=places&callback=Function.prototype\" async defer></script>
+  <script src=\"https://maps.googleapis.com/maps/api/js?v=3&key=".(!empty ($mgmt_config['googlemaps_appkey']) ? $mgmt_config['googlemaps_appkey'] : "")."&libraries=places&callback=Function.prototype\"></script>
   ";
 
   $viewstore .= "
@@ -10587,6 +10587,28 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     </div>
     <div style=\"width:100%; height:32px;\">&nbsp;</div>\n";
 
+        // table for form
+        $viewstore .= "
+      <!-- form for content -->
+      <div class=\"hcmsWorkplaceFrame\">";
+
+        // ----------------------------------- tasks of user -----------------------------------
+
+        // get tasks of user 
+        if (!empty ($object_id) && is_file ($mgmt_config['abs_path_cms']."task/task_service.php"))
+        {
+          $task_array = rdbms_gettask ("", $object_id, "", "", $user, "", "", "startdate DESC");
+
+          if (is_array ($task_array))
+          {
+            $viewstore .= "
+      <div class=\"hcmsFormRowLabel\">
+        <b>".getescapedtext ($hcms_lang['my-tasks'][$lang], $charset, $lang)."</b><br/>
+        <iframe src=\"".$mgmt_config['url_path_cms']."task/task_service.php?object_id=".$object_id."\" frameBorder=\"0\" scrolling=\"auto\" style=\"min-width:620px; max-width:1240px; width:calc(100% - 60px); height:108px; border:0; margin:4px 0px 2px -2px; padding:0; overflow:auto;\"></iframe>
+      </div>";
+          }
+        }
+
         // include share links for image and video files
         if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && empty ($recognizefaces_service) && $mediafile != "" && (is_image ($mediafile) || is_video ($mediafile) || is_audio ($mediafile)) && $buildview != "formlock")
         {
@@ -10594,11 +10616,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
           $viewstore .= showsharelinks ($sharelink, $mediafile, $lang, "position:fixed; top:50px; right:12px; width:46px;");
         }
-
-        // table for form
-        $viewstore .= "
-      <!-- form for content -->
-      <div class=\"hcmsWorkplaceFrame\">";
 
         // ----------------------------------- workflow status -----------------------------------
         // provide the workflow status

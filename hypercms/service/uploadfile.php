@@ -16,9 +16,7 @@ require ('../function/uploadhandler.class.php');
 
 // input parameters
 $location = getrequest ("location", "locationname");
-$unzip = getrequest ("unzip");
-$zipname = getrequest ("zipname");
-$zipcount = getrequest ("zipcount");
+$totalcount = getrequest ("totalcount");
 $media_update = getrequest ("media_update");
 $createthumbnail = getrequest ("createthumbnail");
 $contentfile = getrequest ("contentfile", "objectname");
@@ -30,6 +28,10 @@ $overwrite = getrequest ("overwrite");
 $versioning = getrequest ("versioning");
 $deletedate = getrequest ("deletedate");
 $token = getrequest ("token");
+// unzip and zip files
+$unzip = getrequest ("unzip");
+$zipname = getrequest ("zipname");
+$zipcount = getrequest ("zipcount");
 // additional text content
 $text_array = getrequest ("text", "array");
 // Dropbox respond array
@@ -79,6 +81,9 @@ $location_esc = convertpath ($site, $location, $cat);
 // upload file
 if ($token != "" && checktoken ($token, $user))
 {
+  // create upload log entry for user
+  insertuploadlog ($location_esc, $user, $totalcount);
+
   // from hyperCMS PROXY service (no support of file chunks)
   if ($proxy_file)
   {

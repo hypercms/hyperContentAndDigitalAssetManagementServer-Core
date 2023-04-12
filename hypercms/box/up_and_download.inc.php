@@ -19,7 +19,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
       echo "
       <div id=\"stats_".$item_site."\" class=\"hcmsHomeBox\" style=\"text-align:left; cursor:pointer; margin:10px; width:".$width."; height:400px; overflow:auto; ".($is_iphone ? "-webkit-overflow-scrolling:touch;" : "")."\">
         <div class=\"hcmsHeadline\" style=\"margin:6px 2px; white-space:nowrap;\"><img src=\"".getthemelocation("night")."img/site.png\" class=\"hcmsIconList\" /> ".(empty ($is_mobile) ? $title : "")." ".$item_site."</div>";
-        
+
       $rootlocation_esc = "%comp%/".$item_site."/.folder";
 
       echo "

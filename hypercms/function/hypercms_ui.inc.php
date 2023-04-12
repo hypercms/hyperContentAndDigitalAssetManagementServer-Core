@@ -41,15 +41,15 @@ function windowheight ($type="object")
   else return 1000;
 }
 
-// --------------------------------------- toggleview -------------------------------------------
-// function: toggleview ()
+// --------------------------------------- toggleexplorerview -------------------------------------------
+// function: toggleexplorerview ()
 // input: view [detail,small,medium,large]
 // output: true / false
 
 // description:
 // Set explorer objectlist view parameter
 
-function toggleview ($view)
+function toggleexplorerview ($view)
 {
   global $mgmt_config;
 
@@ -57,7 +57,7 @@ function toggleview ($view)
   // if set manually
   if (!empty ($view) && ($view == "detail" || $view == "small" || $view == "medium" || $view == "large"))
   {
-    $_SESSION['hcms_temp_explorerview'] = $view;
+    setsession ('hcms_temp_explorerview', $view, true);
   }
   // if not set and object linking is used, use medium gallery view
   elseif (empty ($_SESSION['hcms_temp_explorerview']) && is_array ($_SESSION['hcms_linking']))
@@ -84,6 +84,27 @@ function toggleview ($view)
   return true;
 }
 
+// --------------------------------------- toggletaskview -------------------------------------------
+// function: toggletaskview ()
+// input: view [boolean]
+// output: true / false
+
+// description:
+// Set task view parameter
+
+function toggletaskview ($view)
+{
+  global $mgmt_config;
+
+  // register task view
+  if (!empty ($view) && $view != "false")
+  {
+    setsession ('hcms_temp_taskview', $view, true);
+  }
+
+  return true;
+}
+
 // --------------------------------------- togglesidebar -------------------------------------------
 // function: togglesidebar ()
 // input: view [boolean]
@@ -97,7 +118,7 @@ function togglesidebar ($view)
   global $mgmt_config;
 
   // register sidebar
-  if (!empty ($view) && $view != false && $view != "false")
+  if (!empty ($view) && $view != "false")
   {
     setsession ('hcms_temp_sidebar', true, true);
   }
@@ -310,8 +331,8 @@ function showdate ($date, $sourceformat="Y-m-d H:i", $targetformat="Y-m-d H:i", 
 
 // --------------------------------------- showshorttext -------------------------------------------
 // function: showshorttext ()
-// input: text [string], max. length of text (minus length starting from the end) [integer] (optional),
-//        line break instead of cut [boolean] only if length is positive (optional), character set for encoding [string] (optional)
+// input: text [string], max. positive length of text or minus value for the length starting from the end [integer] (optional),
+//        use max. 3 line breaks instead of cut only if length is positive [boolean] (optional), character set for encoding [string] (optional)
 // output: shortened text if possible, or orignal text
 
 // description:
@@ -319,8 +340,12 @@ function showdate ($date, $sourceformat="Y-m-d H:i", $targetformat="Y-m-d H:i", 
 
 function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
 {
+  $text = trim ($text);
+
+  // cut or break after certain length
   if ($text != "" && $length > 0)
   {
+    // no line breaks
     if (!$linebreak)
     {
       if (mb_strlen ($text, $charset) > $length)
@@ -329,20 +354,40 @@ function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
       }
       else return $text;
     }
-    else
+    // use line breaks
+    elseif (intval ($linebreak) > 0)
     {
-      // max. 3 lines
-      if (mb_strlen ($text, $charset) > ($length * 3)) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, $length, $charset)."<br />\n".mb_substr ($text, ($length*2), ($length-2), $charset)."...";
-      elseif (mb_strlen ($text, $charset) > ($length * 2)) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, $length, $charset)."<br />\n".mb_substr ($text, ($length*2), NULL, $charset);
-      elseif (mb_strlen ($text, $charset) > $length) $text = mb_substr ($text, 0, $length, $charset)."<br />\n".mb_substr ($text, $length, NULL, $charset);
+      if (intval ($linebreak) > 3) $linebreak = 3;
 
-      // keep 
+      if (mb_strlen ($text, $charset) > ($length * intval ($linebreak))) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, $length, $charset))."<br />\n".trim (mb_substr ($text, ($length*2), ($length-2), $charset))."...";
+      elseif (mb_strlen ($text, $charset) > ($length * intval ($linebreak) - 1)) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, $length, $charset))."<br />\n".trim (mb_substr ($text, ($length*2), NULL, $charset));
+      elseif (mb_strlen ($text, $charset) > $length) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, NULL, $charset));
+
       return $text;
     }
   }
+  // replace white space by line break
+  elseif ($text != "" && $length == 0 && intval ($linebreak) > 0)
+  {
+    $text = wordwrap ($text, 8, "\n", false);
+    $temp_array = explode ("\n", $text);
+
+    if (sizeof ($temp_array) > 3) 
+    {
+      $text = $temp_array[0];
+
+      for ($i = 1; $i <= intval ($linebreak); $i++)
+      {
+        $text = "<br />\n".$temp_array[$i];
+      }
+    }
+
+    return $text;
+  }
+  // cut from end
   elseif ($text != "" && $length < 0)
   {
-    if (mb_strlen ($text, $charset) > ($length * -1)) return "...".mb_substr ($text, $length, $charset);
+    if (mb_strlen ($text, $charset) > ($length * -1)) return "...".trim (mb_substr ($text, $length, $charset));
     else return $text;
   }
   else return $text;
@@ -524,7 +569,7 @@ function showmessage ($show, $width="580px", $height="80px", $lang="en", $style=
     <table style=\"table-layout:fixed; width:100% !important; min-height:calc(".$height." -  10px); padding:0; margin:0; border-spacing:0; border-collapse:collapse;\">
       <tr>
         <td style=\"text-align:left; vertical-align:top; padding:0;\">
-          <div id=\"message_text\" style=\"display:block; width:100%; height:".(intval ($height) - 10)."px; overflow:auto;\">".$show."</div>
+          <div id=\"".$id."_text\" style=\"display:block; width:100%; height:".(intval ($height) - 10)."px; overflow:auto;\">".$show."</div>
         </td>
         <td style=\"width:36px; text-align:right; vertical-align:top; padding:0;\">
           <img name=\"close_".$close_id."\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['close'][$lang], $hcms_charset, $lang)."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('close_".$close_id."','','".getthemelocation()."img/button_close_over.png',1);\" onClick=\"hcms_switchFormLayer('".$id."');\" />
@@ -3746,11 +3791,11 @@ $(document).ready(function()
             {
               if ($callback == "") $result .= "
             <tr>
-              <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 24)."</a></td>
+              <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 24, false)."</a></td>
             </tr>";
               else $result .= "
             <tr>
-              <td style=\"width:28px; text-align:left; vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 20)."</a></td>
+              <td style=\"width:28px; text-align:left; vertical-align:bottom; white-space:nowrap;\" colspan=\"2\"><a href=\"".$_SERVER['PHP_SELF']."?dir=".url_encode($folder_path)."&site=".url_encode($site)."&compcat=".url_encode($compcat)."&mediatype=".url_encode($mediatype)."&lang=".url_encode($lang)."&callback=".url_encode($callback)."&scaling=".url_encode($scalingfactor)."&view=".url_encode($view)."\" title=\"".$location_name."\">".$thumbnail.showshorttext($folder_info['name'], 20, false)."</a></td>
             </tr>";
             }
           }
@@ -3867,7 +3912,7 @@ $(document).ready(function()
               {
                 $result .= "
               <tr>
-                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 24)."</a></td>
+                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 24, false)."</a></td>
                 <td style=\"width:28px; text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompInput('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }
@@ -3875,7 +3920,7 @@ $(document).ready(function()
               {
                 $result .= "
               <tr>
-                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 24)."</a></td>
+                <td style=\"".($view == "gallery" ? "height:".$thumbsize."px; text-align:center;" : "text-align:left;")." vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\" title=\"".$comp_name."\">".$thumbnail.showshorttext($comp_info['name'], 24, false)."</a></td>
                 <td style=\"width:28px; text-align:right; vertical-align:bottom; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"".$alert." if (test == true) sendCompOption('".$comp_name."','".$comp_path."');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
               </tr>";
               }

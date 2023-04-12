@@ -6,7 +6,7 @@ html, body
   height: 100%;
   padding: 0;
   margin: 0;
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: Arial, Verdana, Helvetica, sans-serif; 
   font-weight: normal;
   color: #FFFFFF;
   text-decoration: none;
@@ -24,9 +24,8 @@ img
 
 input, select, textarea, button, .hcmsTextArea 
 {
-  border-radius: 0px;
   box-sizing: border-box;
-  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-family: Arial, Verdana, Helvetica, sans-serif; 
   font-weight: normal;
   color: #000000;
   text-decoration: none;
@@ -34,6 +33,7 @@ input, select, textarea, button, .hcmsTextArea
   vertical-align: middle;
   outline: none;
   border: 1px solid #808080;
+  border-radius: 3px;
   background-color: #F3F3F3;
   margin: 1px 1px 1px 0px;
   padding: 6px 4px;
@@ -43,7 +43,7 @@ input, select, textarea, button, .hcmsTextArea
 select
 {
   -webkit-appearance: none;
-  -webkit-border-radius: 0px;
+  -webkit-border-radius: 3px;
   -moz-appearance: none;
   appearance: none;
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAB3RJTUUH5AIODR8uwkpHZQAAAAlwSFlzAAAHRAAAB0QBKlH81AAAAARnQU1BAACxjwv8YQUAAABhSURBVHjaY2AYXMDd3X0ekPqPjqHiqKC6ulrQwcFhB7JCEB8kjqG4ubmZoaKiQl5BQeE5SCGIBvFB4higoaGBoampiSEjIyOIk5PzG4gG8UHiWBVDMWNkZGQpiIaJDTIAAHhVLzM4i7OKAAAAAElFTkSuQmCC');
@@ -434,7 +434,7 @@ a.hcmsNavigator
 
 .hcmsPriorityMedium
 {
-  background-color: #FCB335 !important;
+  background-color: #3691b8 !important;
 }
 
 .hcmsPriorityLow
@@ -521,6 +521,42 @@ a.hcmsNavigator
   vertical-align: middle;
 }
 
+.hcmsButtonFrame
+{
+  padding: 0;
+  margin: 0;
+  border: 0;
+  float: left;
+}
+
+.hcmsButtonLabel
+{
+  float: left;
+  font-size: 8px;
+  letter-spacing: 0px;
+  min-width: 34px;
+  height: 22px;
+  border: 0;
+  margin: 0px 1px;
+  padding: 0;
+  text-align: center;
+  overflow: hidden;
+  overflow-wrap: break-word;
+}
+
+.hcmsButtonLabelSizeWide
+{
+  min-width: 48px !important;
+}
+
+@media only screen and (max-width: 760px)
+{
+  .hcmsButtonLabel
+  {
+    display: none;
+	}
+}
+
 .hcmsButton
 {
   cursor: pointer;
@@ -534,11 +570,12 @@ a.hcmsNavigator
 {
   padding: 1px;
   margin: 0;
+  border: 1px solid #FF8411;
+  border-radius: 7px;
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
   background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
   background-color: #FFC477;
-  border: 1px solid #FF8411;
 }
 
 .hcmsButtonOff
@@ -565,6 +602,7 @@ a.hcmsNavigator
   padding: 0;
   margin: 0;
   border: 0;
+  border-radius: 7px;
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
   background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
@@ -598,12 +636,13 @@ a.hcmsNavigator
   background-position: center center;
   margin: 0;
   border: 0;
+  border-radius: 7px; 
   float: left;
 }
 
 .hcmsButtonClose:hover
 {
-  background-image: url(../img/button_close_over.png);
+  background-image: url(../img/button_close_over.png); 
 }
 
 .hcmsButtonSizeSquare
@@ -643,6 +682,8 @@ a.hcmsNavigator
 
 .hcmsButtonMenu:hover
 {
+  border: 0;
+  border-radius: 7px;
   background-color: #FB8C0C;
 }
 
@@ -654,6 +695,8 @@ a.hcmsNavigator
 
 .hcmsButtonMenuActive
 {
+  border: 0;
+  border-radius: 7px;
   background-color: #FB8C0C;
   position: relative;
   top: 1px;
@@ -664,6 +707,7 @@ a.hcmsNavigator
   color: #FFFFFF;
   background-color: #3094D7;
   border: 1px solid #469df5;
+  border-radius: 7px;
   display: inline-block;
   padding: 4px 6px;
   text-decoration: none;
@@ -686,6 +730,7 @@ a.hcmsNavigator
   color: #FFFFFF;
   background-color: #69A738;
   border: 1px solid #268a16;
+  border-radius: 7px;
   display: inline-block;
   padding: 4px 6px;
   text-decoration: none;
@@ -708,6 +753,7 @@ a.hcmsNavigator
   color: #FFFFFF;
   background-color: #E58912;
   border: 1px solid #C28B2C;
+  border-radius: 7px;
   display: inline-block;
   padding: 4px 6px;
   text-decoration: none;
@@ -750,6 +796,8 @@ a.hcmsNavigator
 
 .hcmsSelectorItem:hover
 {
+  border: 0;
+  border-radius: 7px;
   background-color: #FB8C14;
 }
 
@@ -1088,7 +1136,7 @@ div.hcmsObjectUnselected
 ::-webkit-scrollbar-thumb
 {
   background: rgb(43, 43, 43); 
-  border-radius: 0px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover

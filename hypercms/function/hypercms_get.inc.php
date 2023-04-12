@@ -503,7 +503,7 @@ function getlabel ($label, $lang="en")
 
 // ----------------------------------------- getescapedtext ------------------------------------------
 // function: getescapedtext()
-// input: text [string], character set of text [string], 2-digit language code [string]
+// input: text [string], character set of text [string] (optional), 2-digit language code [string] (optional)
 // output: HTML escaped text
 
 // description:
@@ -526,7 +526,13 @@ function getescapedtext ($text, $charset="", $lang="")
   }
 
   // escape special characters <, >, &, ", '
-  return html_encode ($text);
+  $text = html_encode ($text);
+
+  // allow HTML line breaks
+  $text = str_replace (array("&lt;br /&gt;", "&lt;br/&gt;"), "<br/>", $text);
+
+  // escape special characters <, >, &, ", '
+  return $text;
 }
 
 // ----------------------------------------- getsearchhistory ------------------------------------------
@@ -982,7 +988,7 @@ function gethierarchy_sublevel ($hierarchy_url)
       $hierarchy_url_new = str_replace ("/".$site."/".$name."/".$level."/", "/".$site."/".$name."/".($level + 1)."/", $hierarchy_url);
 
       // last hierarchy element presents a value pair
-      if (strpos ($last_text_id, "=") > 0)
+      if (is_string ($last_text_id) && strpos ($last_text_id, "=") > 0)
       {
         $hierarchy = gethierarchy_definition ($site, $name);
 
@@ -1011,7 +1017,7 @@ function gethierarchy_sublevel ($hierarchy_url)
         } 
       }
       // last hierarchy element presents a text ID
-      elseif ($last_text_id != "")
+      elseif (is_string ($last_text_id) && $last_text_id != "")
       {
         $text_id_array = array();
 
@@ -2961,26 +2967,26 @@ function getthemes ($site_array=array())
 
 // --------------------------------------- getthemelocation -------------------------------------------
 // function: getthemelocation ()
-// input: theme name [string] (optional)
+// input: theme name [string] (optional), location type [path,url] (optional)
 // output: path to theme / false
 
 // description:
 // Returns the absolute path (URL) of the theme (css and images).
 // If the main configuration setting $mgmt_config['theme'] defines a theme, this theme will be mandatory in case it exists.
 
-function getthemelocation ($theme="")
+function getthemelocation ($theme="", $type="url")
 {
   global $mgmt_config;
 
-  // mandatory theme defined in the main configuration
-  if (trim ($theme) == "" && !empty ($mgmt_config['theme']) && valid_locationname ($mgmt_config['theme']))
-  {
-    $theme = $mgmt_config['theme'];
-  }
   // get theme from session if no input is available
-  elseif (trim ($theme) == "" && !empty ($_SESSION['hcms_themename']) && valid_locationname ($_SESSION['hcms_themename']))
+  if (trim ($theme) == "" && !empty ($_SESSION['hcms_themename']) && valid_locationname ($_SESSION['hcms_themename']))
   {
     $theme = $_SESSION['hcms_themename'];
+  } 
+  // mandatory theme defined in the main configuration
+  elseif (trim ($theme) == "" && !empty ($mgmt_config['theme']) && valid_locationname ($mgmt_config['theme']))
+  {
+    $theme = $mgmt_config['theme'];
   }
 
   // get theme location for portal themes or system themes
@@ -2998,12 +3004,14 @@ function getthemelocation ($theme="")
   // theme defined by session or input parameter
   if (valid_locationname ($theme) && is_dir ($root_abs.$theme."/css"))
   {
-    return cleandomain ($root_url.$theme."/");
+    if ($type == "path") return $root_abs.$theme."/";
+    else return cleandomain ($root_url.$theme."/");
   }
   // default theme
   else
   {
-    return cleandomain ($mgmt_config['url_path_cms']."theme/standard/");
+    if ($type == "path") return $mgmt_config['abs_path_cms']."theme/standard/";
+    else return cleandomain ($mgmt_config['url_path_cms']."theme/standard/");
   }
 }
 
@@ -3077,9 +3085,7 @@ function getcategory ($site, $location)
         }
       } 
     }
-    else return false;
   }
-  else return false;
 
   if (!empty ($cat) && ($cat == "page" || $cat == "comp")) return $cat;
   else return false;
@@ -3227,7 +3233,6 @@ function getmediacontainername ($file)
     $id = substr ($file, $startpos, $length);
 
     if (is_int (intval ($id))) return $id.".xml";
-    else return false;
   }
   
   return false;
@@ -3254,7 +3259,6 @@ function getmediacontainerid ($file)
     $id = substr ($file, $startpos, $length);
 
     if (intval ($id) > 0) return $id;
-    else return false;
   }
   
   return false;
@@ -3279,7 +3283,7 @@ function getcontentcontainerid ($file)
     $id = $file;
   }
 
-  if (intval ($id) > 0) return $id;
+  if (!empty ($id) && intval ($id) > 0) return $id;
   else return false;
 }
 
@@ -3387,7 +3391,7 @@ function getmediafileversion ($container)
 
 function getobjectid ($objectlink)
 {
-  if ($objectlink != "")
+  if (is_string ($objectlink) && $objectlink != "")
   {
     $objectlink_conv = "";
 
@@ -7504,6 +7508,71 @@ function getgroupinformation ($site, $usergroup)
     }
   }
   
+  return false;
+}
+
+// ---------------------------------------------- getCSS ----------------------------------------------
+// function: getCSS()
+// input: CSS file path [string], provide a string to be removed values [array] (optional)
+// output: assoziative array with the class and element names and properties as keys [class->property->value] / false on error
+// requires: config.inc.php
+
+// description:
+// This function collects the CSS classes and their properties.
+
+function getCSS ($file, $clean=array("!important"))
+{
+  if (is_file ($file))
+  {
+    // load CSS file
+    $css = file_get_contents ($file);
+
+    if (!empty ($css))
+    {
+      // master array to hold all values
+      $css_array = array();
+      $element = explode ("}", $css);
+
+      foreach ($element as $element)
+      {
+        // get the class or element name of the CSS element
+        $a_name = explode ("{", $element);
+        $name = $a_name[0];
+
+        // get all the key:value pair styles
+        $a_styles = explode (';', $element);
+
+        // remove element name from first property element
+        $a_styles[0] = str_replace ($name."{", "", $a_styles[0]);
+
+        // loop through each style and split apart the key from the value
+        $count = count ($a_styles);
+
+        for ($a = 0; $a < $count; $a++)
+        {
+          if (!empty ($a_styles[$a]) && strpos ($a_styles[$a], ":") > 0)
+          {
+            $a_key_value = explode (":", $a_styles[$a]);
+
+            // clean value
+            if (is_array ($clean) && sizeof ($clean) > 0)
+            {
+              foreach ($clean as $temp)
+              {
+                $a_key_value[1] = str_replace ($temp, "", $a_key_value[1]);
+              }
+            }
+
+            // build the master css array
+            $css_array[trim ($name)][trim ($a_key_value[0])] = trim ($a_key_value[1]);
+          }
+        }               
+      }
+
+      return $css_array;
+    }
+  }
+
   return false;
 }
 ?>

@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['pt'] = "sem operador … Por padrão (quando
 $hcms_lang['search-wildcard-asterisk']['pt'] = "* … O asterisco serve como operador de truncamento (ou curinga). Ao contrário dos outros operadores, ele deve ser anexado à palavra a ser afetada.";
 $hcms_lang['search-wildcard-doublequote']['pt'] = "\" … Uma frase que está entre aspas duplas deve estar presente como a frase literalmente, como foi digitada";
 $hcms_lang['content-modified-by-user']['pt'] = "O conteúdo foi modificado pelo usuário '%user%'. Deseja recarregar o conteúdo?";
+$hcms_lang['dependencies']['pt'] = "Dependências";
 ?>

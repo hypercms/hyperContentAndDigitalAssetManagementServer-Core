@@ -653,7 +653,7 @@ if (is_array ($result))
             
             echo "
             <th class=\"hcmsHeadline hcmsRowHead1 ".$langcode."\" style=\"width:140px; height:20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-sizing:border-box; ".$style."\">
-              <div style=\"margin-left:5px; float:left;\" title=\"".getescapedtext ($langname)."\">".showshorttext (getescapedtext ($langname), 16)."</div>
+              <div style=\"margin-left:5px; float:left;\" title=\"".getescapedtext ($langname)."\">".showshorttext (getescapedtext ($langname), 16, false)."</div>
             </th>";
           }
         }

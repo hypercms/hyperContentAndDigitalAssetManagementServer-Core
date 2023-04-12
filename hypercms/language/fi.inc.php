@@ -1430,4 +1430,5 @@ $hcms_lang['search-wildcard-none']['fi'] = "ei operaattoria … Oletuksena (kun 
 $hcms_lang['search-wildcard-asterisk']['fi'] = "* … Tähti toimii katkaisuoperaattorina (tai jokerimerkkinä). Toisin kuin muut operaattorit, se tulee liittää sanaan, johon vaikuttaa.";
 $hcms_lang['search-wildcard-doublequote']['fi'] = "\" … Lainausmerkkien sisällä olevan lauseen on oltava kirjaimellisesti, sellaisena kuin se kirjoitettiin";
 $hcms_lang['content-modified-by-user']['fi'] = "Käyttäjä '%user%' on muokannut sisältöä. Haluatko ladata sisällön uudelleen?";
+$hcms_lang['dependencies']['fi'] = "Riippuvuudet";
 ?>

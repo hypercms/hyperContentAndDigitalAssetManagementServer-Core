@@ -221,7 +221,7 @@ function submitLink (url)
             {    
               echo "
           <tr>
-            <td><a href=\"?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".showshorttext($folder_info['name'], 44)."</a></td>
+            <td><a href=\"?dir=".url_encode($folder_path)."&site=".url_encode($site)."&lang=".url_encode($lang)."&CKEditorFuncNum=".url_encode($callback)."\" title=\"".$location_name."\"><img src=\"".getthemelocation()."img/folder.png\" class=\"hcmsIconList\" /> ".showshorttext($folder_info['name'], 44, false)."</a></td>
           </tr>";
             }
           }
@@ -248,7 +248,7 @@ function submitLink (url)
             {
               echo "
             <tr>
-              <td><a href=\"javascript:void(0);\" onClick=\"submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 44)."</a></td>
+              <td><a href=\"javascript:void(0);\" onClick=\"submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 44, false)."</a></td>
             </tr>";
             }
           }

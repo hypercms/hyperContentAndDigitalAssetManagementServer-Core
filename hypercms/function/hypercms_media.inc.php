@@ -9,6 +9,45 @@
 
 // ========================================== MEDIA FUNCTIONS =======================================
 
+// ---------------------------------------- adjust_brightness --------------------------------------------
+// function: adjust_brightness()
+// input: color as hex-code [string], adjust color by percent from darker -100 to lighter 100 [integer]
+// output: adjusted hex-code of the same color / false on error
+
+// description:
+// Provides a darker or lighter version of a provided color (Hex-Code).
+
+function adjust_brightness ($hex, $percent)
+{
+  // negative = darker, positive = lighter
+  $percent = $percent / 100;
+
+  // normalize into a six character long hex string
+  $hex = str_replace ('#', '', $hex);
+
+  if (strlen ($hex) == 3)
+  {
+    $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+  }
+
+  // split into three parts: R, G and B
+  // and convert to decimal
+  $hex = array_map ('hexdec', str_split ($hex, 2));
+
+  foreach ($hex as & $color) 
+  {
+    // adjust color
+    $limit = $percent < 0 ? $color : 255 - $color;
+    $adjust = ceil ($limit * $percent);
+
+    // make two char hex code
+    $color = str_pad (dechex ($color + $adjust), 2, '0', STR_PAD_LEFT);
+  }
+
+  if (is_array ($hex)) return '#'.implode ($hex);
+  else return false;
+}
+
 // ---------------------------------------- valid_jpeg --------------------------------------------
 // function: valid_jpeg()
 // input: path to multimedia file [string]
@@ -5215,7 +5254,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                   elseif ($file_ext == ".ods") $export_filter = ":\"OpenDocument Spreadsheet Flat XML\"";
                   else $export_filter = "";
  
-                  $cmd = getlocation ($mgmt_docpreview[$docpreview_ext])."libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
+                  $cmd = getlocation ($mgmt_docpreview[$docpreview_ext])."libreoffice --headless --convert-to ".shellcmd_encode ($docformat).$export_filter." --infilter=CSV:44,34,76,1 \"".shellcmd_encode ($location_source.$file)."\" --outdir \"".shellcmd_encode ($location_source)."\"";
                 }
                 // default UNOCONV character set is UTF-8
                 // convert only if $mgmt_docpreview mapping exists in $mgmt_docconvert 

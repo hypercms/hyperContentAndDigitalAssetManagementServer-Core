@@ -16,6 +16,7 @@ require ("../function/hypercms_tplengine.inc.php");
 
 
 // input parameters
+$container_id = getrequest ("container_id", "objectname");
 $location_esc = getrequest ("location", "locationname");
 $date_from = getrequest ("date_from");
 $date_to = getrequest ("date_to");
@@ -31,7 +32,10 @@ checkusersession ($user);
 suspendsession ();
 
 // define timeout for cache in seconds or use "auto"
-if (isset ($mgmt_config['mediastatcache_timeout'])) $cache_timeout = intval ($mgmt_config['mediastatcache_timeout']) * 60;
+if (isset ($mgmt_config['mediastatcache_timeout']) && intval ($mgmt_config['mediastatcache_timeout']) > 0)
+{
+  $cache_timeout = intval ($mgmt_config['mediastatcache_timeout']) * 60;
+}
 else $cache_timeout = "auto";
 
 // chart size in pixels
@@ -99,11 +103,13 @@ function next ()
 
 <!-- navigation forms -->
 <form name="previousform" action="" method="post">
+  <input type="hidden" name="container_id" value="<?php echo $container_id; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="date_from" value="<?php echo $previous_date_from; ?>" />
   <input type="hidden" name="date_to" value="<?php echo $previous_date_to; ?>" />
 </form>
 <form name="nextform" action="" method="post">
+  <input type="hidden" name="container_id" value="<?php echo $container_id; ?>" />
   <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
   <input type="hidden" name="date_from" value="<?php echo $next_date_from; ?>" />
   <input type="hidden" name="date_to" value="<?php echo $next_date_to; ?>" />
@@ -122,13 +128,13 @@ function next ()
 
 <!-- chart -->
 <?php
-if (!empty ($location_esc))
+if (!empty ($location_esc) || !empty ($container_id))
 {
   $page = getobject ($location_esc);
   
-  $result_view = rdbms_getmediastat ($date_from, $date_to, "view", "", $location_esc, "", false, 0, $cache_timeout);
-  $result_download = rdbms_getmediastat ($date_from, $date_to, "download", "", $location_esc, "", true, 0, $cache_timeout);
-  $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", "", $location_esc, "", true, 0, $cache_timeout);
+  $result_view = rdbms_getmediastat ($date_from, $date_to, "view", $container_id, $location_esc, "", false, 0, $cache_timeout);
+  $result_download = rdbms_getmediastat ($date_from, $date_to, "download", $container_id, $location_esc, "", true, 0, $cache_timeout);
+  $result_upload = rdbms_getmediastat ($date_from, $date_to, "upload", $container_id, $location_esc, "", true, 0, $cache_timeout);
   
   $date_axis = array();
   $view_axis = array();
