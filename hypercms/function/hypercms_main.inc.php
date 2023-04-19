@@ -732,7 +732,10 @@ function makestring ($array)
 
     return $result;
   }
-  elseif (is_string ($array)) return $array;
+  elseif (is_string ($array))
+  {
+    return $array;
+  }
   else return false;
 }
 
@@ -3684,8 +3687,8 @@ function deleteversions ($type, $report, $user="sys")
         // report
         if (strtolower ($report) == "yes") 
         {
-          if (empty ($test)) $report_str .= "failed to delete ".$entry."<br />\n";
-          else $report_str .= "deleted ".$entry." successfully<br />\n";
+          if (empty ($test)) $report_str .= "Failed to delete ".$entry."<br />\n";
+          else $report_str .= "Deleted ".$entry." successfully<br />\n";
         }
       }
     }
@@ -4525,7 +4528,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
 
   // initialize
   $error = array();
-  $test = false;
+  $result = false;
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -4538,7 +4541,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
       $abs_path = deconvertpath ($abs_path, "file");
     }
 
-    // if symbolic link
+    // symbolic link
     if (is_link ($abs_path.$filename))
     {
       // delete target file
@@ -4548,21 +4551,38 @@ function deletefile ($abs_path, $filename, $recursive=false)
         deletefile (getlocation ($symlinktarget_path), getobject ($symlinktarget_path), $recursive);
       }
 
-      // remove symbolic link
-      $test = unlink ($abs_path.$filename);
+      // delete symbolic link
+      $result = unlink ($abs_path.$filename);
 
-      if ($test == false)
+      if ($result == false)
       {
-        $errcode = "10110";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for symbolic link ".$abs_path.$filename;
+        $errcode = "10109";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not delete symbolic link ".$abs_path.$filename;
       }
     }
-    // if directory
+    // file
+    elseif (is_file ($abs_path.$filename) || is_file ($abs_path.$filename.".off") || is_file ($abs_path.$filename.".@".$user))
+    { 
+      // file is offline (for objects)
+      if (is_file ($abs_path.$filename.".off")) $filename = $filename.".off"; 
+      // file is locked (for containers)
+      elseif (is_file ($abs_path.$filename.".@".$user)) $filename = $filename.".@".$user; 
+
+      // delete file
+      $result = unlink ($abs_path.$filename);
+
+      if ($result == false)
+      {
+        $errcode = "10111";
+        if ($i == 3) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not delete file ".$abs_path.$filename;
+      }
+    }
+    // directory
     elseif (is_dir ($abs_path.$filename))
     { 
-      $test = true;
+      $result = true;
 
-      // check if directory is empty
+      // delete all directories and files recursively
       if (!empty ($recursive)) 
       {
         $dirfiles = scandir ($abs_path.$filename);
@@ -4571,79 +4591,29 @@ function deletefile ($abs_path, $filename, $recursive=false)
         {
           if ($dirfile != "." && $dirfile != "..")
           {
-            // directory
-            if (is_dir ($abs_path.$filename."/".$dirfile)) 
-            {
-              $test = deletefile ($abs_path.$filename."/", $dirfile, $recursive);
-    
-              if ($test == false)
-              {
-                $errcode = "10107";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for directory ".$abs_path.$filename."/".$dirfile;
-                break;
-              }
-            }
-            // file
-            elseif (is_file ($abs_path.$filename."/".$dirfile))
-            {
-              $test = deletefile ($abs_path.$filename."/", $dirfile, $recursive);
-
-              if ($test == false)
-              {
-                $errcode = "10108";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for file ".$abs_path.$filename."/".$dirfile;
-                break;
-              }
-            }
+            $result = deletefile ($abs_path.$filename."/", $dirfile, $recursive);
           }
         }
       }
 
-      // delete directory itself
-      if ($test != false && !empty ($filename) && is_dir ($abs_path.$filename))
+      // delete directory
+      if ($result != false && !empty ($filename) && is_dir ($abs_path.$filename))
       {
-        $test = rmdir ($abs_path.$filename);
+        $result = rmdir ($abs_path.$filename);
 
-        if ($test == false)
+        if ($result == false)
         {
-          $errcode = "10109";
-          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for directory ".$abs_path.$filename;
-        }
-      }
-    }
-    // if file
-    else
-    { 
-      // remove file (try 3 times)
-      for ($i = 1; $i <= 3; $i++)
-      {
-        $filename = correctfile ($abs_path, $filename, $user);
-
-        if (!empty ($filename) && is_file ($abs_path.$filename))
-        {
-          $test = unlink ($abs_path.$filename);
-
-          if ($test == false)
-          {
-            $errcode = "10111";
-            if ($i == 3) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deletefile failed for file ".$abs_path.$filename;
-
-            // sleep for 0 - 100 milliseconds to avoid collision and CPU load
-            usleep (round (rand (0, 100) * 1000));
-          }
-          else break;
+          $errcode = "10110";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not delete directory ".$abs_path.$filename;
         }
       }
     }
 
-    // write log
+    // save log
     savelog (@$error);
-
-    // return result
-    if ($test == true) return true;
-    else return false;
   }
-  else return false;
+
+  return $result;
 }
 
 // ------------------------------------------ restoremediafile --------------------------------------------
@@ -4727,7 +4697,7 @@ function restoremediafile ($site, $mediafile)
     }
   }
 
-  // write log
+  // save log
   savelog (@$error);
 
   $result['result'] = $success;
@@ -5653,12 +5623,10 @@ function savecontainer ($container, $type="work", $data="", $user="", $init=fals
       elseif (is_file ($location.$container)) return savefile ($location, $container, $data);
       // new container
       elseif ($init == true) return savefile ($location, $container, $data);
-      // on error
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ========================================= WORKFLOW ============================================
@@ -6253,16 +6221,15 @@ function inherit_db_save ($inherit_db, $user)
       else 
       {
         unlockfile ($user, $mgmt_config['abs_path_data']."config/", "inheritance.dat");
-        return false;
       } 
     }
-    else return false;
   }
   elseif (is_array ($inherit_db))
   {
     return savelockfile ($user, $mgmt_config['abs_path_data']."config/", "inheritance.dat", "parent:|child|\n");
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------------- inherit_db_getparent --------------------------------------------
@@ -6285,9 +6252,9 @@ function inherit_db_getparent ($inherit_db, $child)
     }
 
     if (is_array ($parents) && sizeof ($parents) > 0) return $parents;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------------- inherit_db_getchild--------------------------------------------
@@ -6308,9 +6275,9 @@ function inherit_db_getchild ($inherit_db, $parent)
     }
 
     if (is_array ($childs) && sizeof ($childs) > 0) return $childs;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------------- inherit_db_setparent --------------------------------------------
@@ -6341,7 +6308,8 @@ function inherit_db_setparent ($inherit_db, $child, $parent_array)
 
     return $inherit_db;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------------- inherit_db_insertparent --------------------------------------------
@@ -7208,16 +7176,16 @@ function createpublication ($site_name, $user="sys")
 
                   if ($test == false)
                   {
-                    $errcode = "10322";
-                    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savelockfile failed for user $user in user.xml.php"; 
+                    $errcode = "10321";
+                    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|savelockfile failed for user '".$user."' in user.xml.php"; 
      
                     unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php"); 
                   }
                 }
                 else 
                 {
-                  $errcode = "20301";
-                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|updatecontent failed for user $user in user.xml.php";
+                  $errcode = "20322";
+                  $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|updatecontent failed for user '".$user."' in user.xml.php";
  
                   unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
                   $test = false;
@@ -7225,8 +7193,8 @@ function createpublication ($site_name, $user="sys")
               } 
               else
               {
-                $errcode = "403101";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Publication access for user $user exists already in user.xml.php";
+                $errcode = "40323";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Publication access for user '".$user."' exists already in user.xml.php";
  
                 unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
                 $test = false;
@@ -7234,8 +7202,8 @@ function createpublication ($site_name, $user="sys")
             }
             else 
             {
-              $errcode = "10302";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|User $user does not exist in user.xml.php";
+              $errcode = "103324";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|User '".$user."' does not exist in user.xml.php";
 
               unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
               $test = false;
@@ -7243,8 +7211,8 @@ function createpublication ($site_name, $user="sys")
           }
           else 
           {
-            $errcode = "10303";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|loadlockfile failed for user $user for user.xml.php";
+            $errcode = "10325";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|loadlockfile failed for user '".$user."' for user.xml.php";
 
             unlockfile ($user, $mgmt_config['abs_path_data']."user/", "user.xml.php");
             $test = false;
@@ -15136,7 +15104,8 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 
     return $result;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- editmediaobject -----------------------------
@@ -15946,7 +15915,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
                   if ($test == false) 
                   {
-                    $errcode = "20104";
+                    $errcode = "20105";
                     $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."link_update failed for ".$contentcontainer;
                   } 
                 }
@@ -15986,7 +15955,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               // unlock file
               link_db_close ($site, $user);
 
-              $errcode = "20301";
+              $errcode = "20104";
               $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."link_db_load failed for ".$site;
 
               $add_onload = "";
@@ -19178,7 +19147,6 @@ function processobjects ($action, $site, $location, $file, $published_only=false
 
           return true;
         }
-        else return false;
       }
       // if object
       elseif (is_file ($location.$file))
@@ -19206,18 +19174,20 @@ function processobjects ($action, $site, $location, $file, $published_only=false
             else $result = deletefolder ($site, getlocation ($location), getobject ($location), $user);
           }
 
+          // on success
+          if (!empty ($result['result']))
+          {
+            return true;
+          }
           // on error
-          if (empty ($result['result']))
+          else
           {
             $errcode = "20420";
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing ($action) failed for ".$location_esc.$file;
 
             // save log
-            savelog (@$error); 
-
-            return false;
+            savelog (@$error);
           }
-          else return true;
         }
       }
       // if provided location or object does not exist
@@ -19227,9 +19197,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing ($action) failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
 
         // save log
-        savelog (@$error); 
-
-        return false;
+        savelog (@$error);
       }
     }
     // if provided location or object does not exist
@@ -19239,12 +19207,11 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing ($action) failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
 
       // save log
-      savelog (@$error); 
-
-      return false;
+      savelog (@$error);
     }
   }
-  else return false; 
+
+  return false; 
 }
 
 // ------------------------------------------ collectobjects --------------------------------------------
@@ -19317,7 +19284,8 @@ function collectobjects ($root_id, $site, $cat, $location, $published_only=false
     // return list array
     return $list;
   }
-  else return false; 
+
+  return false; 
 }
 
 // ------------------------------------------ manipulateallobjects --------------------------------------------
@@ -19979,7 +19947,6 @@ function createqueueentry ($action, $object, $date, $published_only, $data="", $
 
         // create queue entry
         if ($savefile) return rdbms_createqueueentry ($action, $queue_id, $date, $published_only, "", $user);
-        else return false;
       }
     }
     // queue entry with no additional data
@@ -21258,11 +21225,10 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 
         return $mail_sent;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- sendlicensenotification -------------------------------------------
@@ -21366,37 +21332,36 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
 
                 // log notification
                 $errcode = "00900";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|License notification was sent to $email_to for $folderpath, $text_id, $date_begin, $date_end, $user";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|License notification was sent to ".$email_to." for ".$folderpath.", ".$text_id.", ".$date_begin.", ".$date_end.", ".$user."";
               }
               else
               {
                 $errcode = "50902";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|License notification failed for $folderpath, $text_id, $date_begin, $date_end, $user (mail could not be sent)";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|License notification failed for ".$folderpath.", ".$text_id.", ".$date_begin.", ".$date_end.", ".$user." (mail could not be sent)";
               }
             }
             else
             {
               $errcode = "50903";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|License notification failed for $folderpath, $text_id, $date_begin, $date_end, $user (e-mail address does not exist)";
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|License notification failed for ".$folderpath.", ".$text_id.", ".$date_begin.", ".$date_end.", ".$user." (e-mail address does not exist)";
             }
           }
           else
           {
             $errcode = "50904";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|License notification failed for $folderpath, $text_id, $date_begin, $date_end, $user (user does not exist)";
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|License notification failed for ".$folderpath.", ".$text_id.", ".$date_begin.", ".$date_end.", ".$user." (user does not exist)";
           }
         }
       }
-      else return false;
 
       // save log
       savelog (@$error); 
 
       return $mail_sent;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- licensenotification -------------------------------------------
@@ -21677,7 +21642,8 @@ function string_diff ($old, $new, $maxwords=1600)
       string_diff (array_slice($old, $omax + $maxlen), array_slice ($new, $nmax + $maxlen))
     );
   }
-  else return false;
+
+  return false;
 }
 
 function html_diff ($old, $new)
@@ -21765,9 +21731,9 @@ function createfavorite ($site="", $location="", $page="", $id="", $user="")
         return savefile ($dir, $file, "|".$object_id."|");
       }
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- deletefavorite -------------------------------------------
@@ -21827,12 +21793,11 @@ function deletefavorite ($site="", $location="", $page="", $id="", $user="")
 
           return savefile ($dir, $file, $data);
         }
-        else return false;
       }
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ========================================== URL REWRITING =======================================
@@ -21938,9 +21903,9 @@ function rewrite_targetURI ($site, $text_id, $uri, $exclude_dir_esc="", $rewrite
 
       return $result;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------- rewrite_homepage ------------------------------------------
@@ -21976,7 +21941,8 @@ function rewrite_homepage ($site, $rewrite_type="forward")
       return $result;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ========================================== CSV =======================================
@@ -22231,7 +22197,8 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ========================================== MESSAGING =======================================
@@ -22393,7 +22360,8 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
 
     return $result;
   }
-  else return false;
+
+  return false;
 }
 
 // ========================================== ACCESS LINKING =======================================
@@ -22462,9 +22430,9 @@ function linking_objects ($return_text_id=array())
     {
       return $object_path_array;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------------------- linking_inscope ----------------------------------------------

@@ -1511,15 +1511,18 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               // access permissions to asset/component folders
               if (valid_publicationname ($site_name) && !empty ($group_name_admin))
               {
+                // initialize compaccess array
                 if (!isset ($result['compaccess'][$site_name])) $result['compaccess'][$site_name] = array();
 
                 $result['compaccess'][$site_name][$group_name_admin] = deconvertpath ("%comp%/".$site_name."/|", "file");
               }
 
               // access permissions to page folders
-              if (valid_publicationname ($site_name) && !empty ($group_name_admin) && empty ($mgmt_config[$site_name]['dam']))
+              if (valid_publicationname ($site_name) && !empty ($group_name_admin) && empty ($mgmt_config[$site_name]['dam']) && !empty ($mgmt_config[$site_name]['abs_path_page']))
               {
-                if (empty ($result['pageaccess'][$site_name])) $result['pageaccess'][$site_name] = array();
+                // initialize pageaccess array
+                if (!isset ($result['pageaccess'][$site_name])) $result['pageaccess'][$site_name] = array();
+
                 $result['pageaccess'][$site_name][$group_name_admin] = deconvertpath ("%page%/".$site_name."/|", "file");
               }
 

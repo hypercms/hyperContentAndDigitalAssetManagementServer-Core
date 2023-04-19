@@ -239,7 +239,7 @@ function openPopup (url, id)
     // popup layer for the same id exists
     if (document.getElementById(id))
     {
-      maxPopup (id);
+      return maxPopup (id);
     }
     // create new popup layer
     else if (popupwindows <= 5)
@@ -266,11 +266,10 @@ function openPopup (url, id)
     else
     {
       alert ('Max 5 popups');
-
-      // stop execution
-      return false;
     }
   }
+
+  return false;
 }
 
 function minPopup (id)
@@ -295,8 +294,12 @@ function minPopup (id)
       // disable scrolling
       iframe.style.overflow = "hidden";
       iframe.scrolling = "no";
+
+      return true;
     }
   }
+
+  return false;
 }
 
 function maxPopup (id)
@@ -317,7 +320,11 @@ function maxPopup (id)
     // enable scrolling
     iframe.style.overflow = "<?php if (!$is_mobile) echo "auto"; else echo "scroll" ?>";
     iframe.scrolling = "yes";
+
+    return true;
   }
+
+  return false;
 }
 
 function closePopup (id)
@@ -325,7 +332,7 @@ function closePopup (id)
   var warning = "";
 
   // verify if objects being edited in popup layer
-  if (document.getElementById(id+ 'Frame') && typeof document.getElementById(id+ 'Frame').contentWindow.showwarning !== "undefined")
+  if (document.getElementById(id + 'Frame') && typeof document.getElementById(id + 'Frame').contentWindow.showwarning !== "undefined")
   {
     var warning = document.getElementById(id+ 'Frame').contentWindow.showwarning();
 
@@ -338,7 +345,11 @@ function closePopup (id)
     var div = document.getElementById(id); 
     div.parentNode.removeChild(div);
     popupwindows--;
+
+    return true;
   }
+
+  return false;
 }
 
 function showwarning ()
@@ -352,7 +363,11 @@ function setSearchLocation (location, name)
   {
     document.getElementById('navFrame').contentWindow.setSearchLocation (location, name);
     maxSearchFrame();
+
+    return true;
   }
+
+  return false;
 }
 
 function setGlobals ()

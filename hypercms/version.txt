@@ -4898,7 +4898,7 @@ Release 02/2021
 - Modifications in function getrequest in Get API in order to set default value for "array" to array and not an empty string
 - Modifications in explorer_preview in order to hide base64 encoded images
 - Modifications in function showmetadata in UI API in order to display base64 encoded signature images
-- Bug fix: message_objectlist used wrong column index that lead to a misbehaviour when changing the columns width
+- Bug fix: message_objectlist used wrong column index that lead to a misbehavior when changing the columns width
 - Bug fix: Service savecontent changed the character set of multimedia objects based on the publication setting of the character set
 - Bug fix: JS function detectFaceOnImage in template engine did use not use the style height of the image for calculating the ratio
 - Bug fix: Function userlogin in Security API did not use $mgmt_config['passwordexpires'] for the password expiration
@@ -6788,7 +6788,7 @@ Release 05/2023
 - Modifications in function rdbms_edittask in DB Connect in order to exclude the update of empty start and finish dates
 - Modifications in function rdbms_gettask in DB Connect in order to set the default order to the task_id instead of startdate (avoid changes in the task order if the start date has been changed)
 - Modifications in Task Management module in order to set the default order to the task_id instead of startdate (avoid changes in the task order if the start date has been changed)
-- Implmentation of the new JS function hcms_serializeFormData, hcms_showLayer (reduced version of hcms_showFormLayer), hcms_hideLayer (reduced version of hcms_hideFormLayer), and hcms_postFormData in main.js
+- Implementation of the new JS function hcms_serializeFormData, hcms_showLayer (reduced version of hcms_showFormLayer), hcms_hideLayer (reduced version of hcms_hideFormLayer), and hcms_postFormData in main.js
 - Modifications in function showmessage in UI API in order to use the provided ID for the message element with suffix "_text"
 - Modifications in Project Management module in order to exclude the sys user from any task
 - Implementation of the new function getCSS in Get API in order to collect the CSS class names and properties
@@ -6820,10 +6820,10 @@ Release 05/2023
 - Modifications in service accessstats in order to support the container ID as input parameter
 - Modifications in Home Box statistic_of_favourites in order to use the path value for the input parameter of function getfavorites
 - Modifications in function rdbms_getmediastat in DB Connect in order to use an identifier for the container ID or the objectpath for the cache file name (avoid the cache being invalid in case the object path has changed)
-- Modifications in function rdbms_getmediastat in DB Connect in order separate the values by a delimiter fo the cache file name (to ensure unique cache file name) 
+- Modifications in function rdbms_getmediastat in DB Connect in order separate the values by a delimiter for the cache file name (to ensure unique cache file name) 
 - Modifications in function rdbms_getmediastat in DB Connect in order to use the permanent cache if the date range start with the 1st day of a month and ends before today
 - Modifications in Project Management module in order to support dependencies of tasks
-- Modifications in createtables.sql in order to add the new column depency in table task
+- Modifications in createtables.sql in order to add the new column dependency in table task
 - Implementation of the new function update_database_v1011 in the Update API
 - Modifications in function updates_all in the Update API in order to integrate function update_database_v1011
 - Modifications in function rdbms_createtask, rdbms_settask, and rdbms_gettask in DB Connect in order to support task dependencies
@@ -6831,35 +6831,48 @@ Release 05/2023
 - Modifications in function createtask in Task Management API in order to move the planned input parameter before the project ID parameter
 - Modifications in Project Management module in order to to apply the changes for the input parameters of function createtask
 - Modifications in Project Management module in order to open objects in the overlay window or in a new window based on the main configuration setting $mgmt_config['object_newwindow']
-- Modifications in SOAP API of the Connector module in order to to apply the changes for the input parameters of function createtask
+- Modifications in SOAP API of the Connector module in order to apply the changes for the input parameters of function createtask
 - Modifications in SOAP API WSDL of the Connector module in order to support task dependencies for the operations "task_create" and "task_edit"
 - Modifications in DB Connect in order to set the SQL mode manually for class hcms_db due to issues with zero dates (require sql_mode="")
 - Modifications in Project Management API ni order to display the project, subproject and task IDs
 - Implementation of the new functions insertuploadlog, updateuploadlog, and loaduploadlog in Main API in order to track the upload of files for a sepcific location/folder
-- Modifications in function uploadfile in Main API in order to disable the process file for uploads and write a new temporary log file for the tracking of the current uploads of a user to a specific locations/folders by using the function updateuploadlog
+- Modifications in function uploadfile in Main API in order to disable the process file for uploads and write a new temporary log file for the tracking of the current uploads of a user to a specific location/folder by using the function updateuploadlog
 - Modifications in popup_upload_html and service uploadfile in order to implement the new parameter totalcount
-- Modifications in uploadfile in order to use function insertuploadlog for the tracking of the current uploads of a user to a specific locations/folders
+- Modifications in uploadfile in order to use function insertuploadlog for the tracking of the current uploads of a user to a specific location/folder
 - Modifications in page_info in order to display that an upload is in progress for the folder
 - Modifications in function edituser in Main API in order to ignore the *Leave* value for the language session setting
-- Modifications in function deletefile in Main API in order to try up to 3 times to delete a file in case it is locked by another process
 - Modifications in function loadfile_header, loadfile_fast, loadfile, loadlockfile, savefile, savelockfile, appendfile, lockfile, and unlockfile in Main API in order to verify that the file name is not empty and the file exists after correcting the file name
 - Modifications in function appendfile in Main API in order to support saving a file if it does not exist based on a new input parameter
+- Modifications in function deletefile in Main API in order to remove 2 duplicate log events for the recursive function call
+- Modifications in public function getChildsForLocation in class Sabre_hyperCMS_Functions of the Workplace Integration module in order to display duplicate folder names by renaming the folder since the WebDAV client does not support the same folder name on the same location (only if users folder access permissions are used)
+- Modifications in function userlogin in Security API in order to verify an existing page access array using function isset instead of empty and verify that a page root path has been defined
+- Modifications in function reimportmediafiles, importmediafiles, importxmlfiles, and exportxmlfiles in the Import/Export API of the Connector module in order to suspend and revoke the session for non-blocking procedure
+- Modifications in export_forma nd import_form in the Import/Export API of the Connector module in order to open the status in a popup window
+- Modifications in function reimportmediafiles, importmediafiles, importxmlfiles, and exportxmlfiles in the Import/Export API of the Connector module in order to use function showtobbar for the report title
+- Modifications in the import and export index files in order to implement the CSS for the top bar
+- Modifications in the import and export index files in order to implement the measurement of the import and export duration and display the time ate the end of the process
+- Design modifications in the Import/Export Connector module
+- Modifications in explorer in order to add Container ID to the search bar title of Object ID / Link ID
+- Modifications in service sendmail in order to correct the service name in the error log entries
+- Modifications in function rdbms_getobject_id and rdbms_getobject_hash in DB Connect in order to verify that the object name is .folder before trying to create the root folder object if it is missing
+- Modifications in function rdbms_getobject_id and rdbms_getobject_hash in DB Connect in order to implement new log entries if the root folder object needs to be recreated
 - Implementation of new text records for dependencies in all language files
+- Updates in the Hebrew and Thai language file
 - Update of the update log in the installation directory
 - Updates in the Connector, Installation and User Guide
 - Bug fix: The Workplace Integration returned the truncated file name which caused issues since the WebDAV client expected the provided file name and was not able to save the content in the new file
 - Bug fix: The Workplace Integration returned the truncated folder name which caused issues since the WebDAV client expected the provided folder name and was not able to set the new folder name
 - Bug fix: The public function isLoggedInHyperdav in the Workplace Integration API used a wrong name for the main configuration
-- Bug fix: Function renameobject in Main API applied changed on the provided file name. The file name modifications should only be performed by function manipulteobject in Main API.
+- Bug fix: Function renameobject in Main API applied changed on the provided file name. The file name modifications should only be performed by function manipulateobject in Main API.
 - Bug fix: The accidental use of function savelog in function createfilename (for testing purposes) in the Main API can cause a killer loop since function savelog uses function appendfile and savefile which both again use function createfilename
 - Bug fix: Existing file names that exceeded the max length have been corrected by function createfilename and therefore could not be accessed
 - Bug fix: Function GCanalyzeimage in the Cloud Connector module did not set the provided image options settings as global, therefore function createmedia failed to create the requested image for the Cloud service
-- Bug fix: The standard Event System file did not specifiy the MyHomepage publication in the searchsites parameter
+- Bug fix: The standard Event System file did not specify the MyHomepage publication in the searchsites parameter
 - Bug fix: e-mail addresses used for the user names caused an error when loading the users objectlist columns definitions (objectlistcols.json)
 - Bug fix: Long file names that need to be shortened by function createfilename due to special characters in the name caused issues since the same shorten file name can exist for different files when uploaded at the same time (WebDAV and HTML file upload)
 - Bug fix: The upload of files with the same shortened name at the same time caused an issue due to the same file name since the function is_ifile could not read the new file snice it has not been created by function createobject while the check has been performed  
 - Bug fix: Media version file names have been too long with a max length file name value of 236 characters
-- Bug fix: Windows has a limitation of 260 characters for the path length (MAX_PATH). This causes objects/files to disappear in Windows Explorer if the path is longer than the limit. This misbehaviour can't be fixed without causing issues due to shortened file names.
+- Bug fix: Windows has a limitation of 260 characters for the path length (MAX_PATH). This causes objects/files to disappear in Windows Explorer if the path is longer than the limit. This misbehavior can't be fixed without causing issues due to shortened file names.
 - Bug fix: link_edit_pageand frameset_edit_link did not set the linktarget and linktext in case the content was empty
 - Bug fix: media_edit_page and framset_edit_media did not set mediaalttext, mediaalign, mediawidth, and mediaheight in case the content was empty
 - Bug fix: The template engine did not provide the *Null* values based on the template definitions to link_edit_page and media_edit_page
@@ -6875,3 +6888,5 @@ Release 05/2023
 - Bug fix: The Somali language file had a missing line ending
 - Bug fix: The Ukrainian language file had a character (dot) at the end of the text variable
 - Bug fix: The Urdu language file used wrong character for some line endings
+- Bug fix: Public function extractFileFromFileName in class Sabre_hyperCMS_Functions of the Workplace Integration module provided an empty file name since the slash has not been trimmed from the path string
+- Bug fix: Public function getChildsForLocation in class Sabre_hyperCMS_Functions of the Workplace Integration module did provide the same folder name in case the users folder access permissions are used and the folder names have been the same

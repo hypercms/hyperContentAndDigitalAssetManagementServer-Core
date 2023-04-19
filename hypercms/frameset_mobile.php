@@ -222,7 +222,11 @@ function maxPopup (id)
     // enable scrolling
     iframe.style.overflow = "<?php if (!$is_mobile) echo "auto"; else echo "scroll" ?>";
     iframe.scrolling = "yes";
+
+    return true;
   }
+
+  return false;
 }
 
 function closePopup (id)
@@ -230,9 +234,9 @@ function closePopup (id)
   var warning = "";
 
   // verify if objects being edited in popup layer
-  if (document.getElementById(id+ 'Frame') && typeof document.getElementById(id+ 'Frame').contentWindow.showwarning !== "undefined")
+  if (document.getElementById(id + 'Frame') && typeof document.getElementById(id+ 'Frame').contentWindow.showwarning !== "undefined")
   {
-    var warning = document.getElementById(id+ 'Frame').contentWindow.showwarning();
+    var warning = document.getElementById(id + 'Frame').contentWindow.showwarning();
 
     if (warning != "") alert ("<?php echo getescapedtext ($hcms_lang['please-enter-the-metadata-for-your-uploads'][$lang]); ?>");
   }
@@ -243,7 +247,11 @@ function closePopup (id)
     var div = document.getElementById(id); 
     div.parentNode.removeChild(div);
     popupwindows--;
+
+    return true;
   }
+
+  return false;
 }
 
 function setGlobals ()

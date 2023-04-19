@@ -2588,7 +2588,7 @@ else
 
         <!-- ID based search -->
         <div style="display:block; margin-bottom:3px;">
-          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]); ?></span>
+          <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['object-id-link-id'][$lang]." ".$hcms_lang['and'][$lang]." ".$hcms_lang['container-id'][$lang]); ?></span>
           <img onClick="activateIdSearch()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>
 

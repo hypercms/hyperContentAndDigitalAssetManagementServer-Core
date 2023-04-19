@@ -444,7 +444,8 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
    
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- copy content -------------------------------------------------
@@ -515,15 +516,15 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       {
         $sql = 'INSERT INTO keywords_container (id, keyword_id) ';
         $sql .= 'VALUES ('.$container_id_dest.', '.intval($row['keyword_id']).')';
-        
+
         $errcode = "50106";
         $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       }
     }
-    
+
     // copy taxonomy
     $sql = 'SELECT * FROM taxonomy WHERE id='.$container_id_source;
-               
+    
     $errcode = "50107";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'taxonomy');
 
@@ -533,7 +534,7 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
       {
         $sql = 'INSERT INTO taxonomy (id, text_id, taxonomy_id, lang) ';
         $sql .= 'VALUES ('.$container_id_dest.', "'.$db->rdbms_escape_string($row['text_id']).'", '.intval($row['taxonomy_id']).', "'.$db->rdbms_escape_string($row['lang']).'")';
-        
+
         $errcode = "50108";
         $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
       }
@@ -546,7 +547,8 @@ function rdbms_copycontent ($container_id_source, $container_id_dest, $user)
 
     return true;
   }
-  else return false;
+
+ return false;
 }
 
 // ----------------------------------------------- set content -------------------------------------------------
@@ -693,7 +695,7 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
 
                 $errcode = "50007";
                 $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select_textcontent');
-    
+
                 $textcontent = "";
 
                 if ($done)
@@ -723,10 +725,11 @@ function rdbms_setcontent ($site, $container_id, $text_array="", $type_array="",
     savelog ($db->rdbms_geterror());
 
     $db->rdbms_close();
-    
+
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- set keywords -------------------------------------------------
@@ -852,7 +855,8 @@ function rdbms_setkeywords ($site, $container_id)
   
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- set keywords for a publication ------------------------------------------------- 
@@ -899,7 +903,8 @@ function rdbms_setpublicationkeywords ($site, $recreate=false)
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- set taxonomy -------------------------------------------------
@@ -973,9 +978,9 @@ function rdbms_settaxonomy ($site, $container_id, $taxonomy_array)
     
       return true;
     }
-    return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------- set taxonomy for a publication --------------------------------------------
@@ -1092,7 +1097,8 @@ function rdbms_setpublicationtaxonomy ($site="", $recreate=false)
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- get taxonomy -------------------------------------------------
@@ -1139,6 +1145,7 @@ function rdbms_gettaxonomy ($container_id, $text_id)
 
     return $result;
   }
+
   return false;
 }
 
@@ -1178,7 +1185,8 @@ function rdbms_settemplate ($object, $template)
  
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- set media name -------------------------------------------------
@@ -1192,11 +1200,11 @@ function rdbms_settemplate ($object, $template)
 function rdbms_setmedianame ($id, $media)
 {
   global $mgmt_config;
-  
+
   if ($id != "" && $media != "")
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
-    
+
     $id = intval ($id);
     $media = $db->rdbms_escape_string ($media);
 
@@ -1210,10 +1218,11 @@ function rdbms_setmedianame ($id, $media)
     savelog ($db->rdbms_geterror());
 
     $db->rdbms_close();
- 
+
     return true;
   }
-  else return false;
+
+  return false;
 } 
 
 // ----------------------------------------------- set media attributes -------------------------------------------------
@@ -1272,7 +1281,8 @@ function rdbms_setmedia ($id, $filesize="", $filetype="", $width="", $height="",
  
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------------ get media attributes -------------------------------------------------
@@ -1340,11 +1350,11 @@ function rdbms_getmedia ($container_id)
     savelog ($db->rdbms_geterror());
 
     $db->rdbms_close();
-   
+
     if (!empty ($media) && is_array ($media)) return $media;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------------ get duplicate file -------------------------------------------------
@@ -1393,9 +1403,9 @@ function rdbms_getduplicate_file ($site, $md5_hash)
     $db->rdbms_close();
 
     if (is_array ($media) && !empty($media)) return $media;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- rename object -------------------------------------------------
@@ -1483,7 +1493,8 @@ function rdbms_renameobject ($object_old, $object_new)
  
     return true;
   }
-  else return false;
+
+  return false;
 } 
 
 // ----------------------------------------------- delete object ------------------------------------------------- 
@@ -1630,7 +1641,8 @@ function rdbms_deleteobject ($object="", $object_id="")
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- delete content -------------------------------------------------
@@ -1671,7 +1683,8 @@ function rdbms_deletecontent ($site, $container_id, $text_id)
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------ delete keywords of a publication --------------------------------------------
@@ -1721,7 +1734,8 @@ function rdbms_deletepublicationkeywords ($site)
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------ delete taxonomy of a publication --------------------------------------------
@@ -1777,7 +1791,8 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- search content ------------------------------------------------- 
@@ -2946,9 +2961,9 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     {
       return $objectpath;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- replace content -------------------------------------------------
@@ -3198,7 +3213,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
       $error[] = $mgmt_config['today']."|db_connect_rdbms.php|error|".$errcode."|Container '".$container_id_prev."' could not be saved";  
 
       // save log
-      savelog ($error);                                    
+      savelog ($error);
     }
     else
     {
@@ -3220,9 +3235,9 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     {
       return $objectpath;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- search user ------------------------------------------------- 
@@ -3403,9 +3418,9 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
     $db->rdbms_close();
 
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- search recipient ------------------------------------------------- 
@@ -3442,6 +3457,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 
     if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
     if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
+
     $maxhits = intval ($maxhits);
 
     $sql_add_attr = "";
@@ -3611,9 +3627,9 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
     $db->rdbms_close();
 
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
-    else return false;
   }
-  else return false;
+
+  return false;
 } 
 
 // ----------------------------------------------- get content -------------------------------------------------
@@ -3681,9 +3697,9 @@ function rdbms_getcontent ($site, $container_id, $text_ids=array(), $type="", $u
     $db->rdbms_close();
 
     if (is_array ($result) && sizeof ($result) > 0) return $result;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- get keywords ------------------------------------------------- 
@@ -3924,9 +3940,9 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
       $result = array_iunique ($result);
       return $result;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- get object_id ------------------------------------------------- 
@@ -3975,7 +3991,7 @@ function rdbms_getobject_id ($object)
 
     $errcode = "50027";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
-    
+
     if ($done && $row = $db->rdbms_getresultrow ())
     {
       if ($row['deleteuser'] == "") $object_id = $row['object_id'];
@@ -3986,26 +4002,29 @@ function rdbms_getobject_id ($object)
     savelog ($db->rdbms_geterror());
 
     $db->rdbms_close();
-      
+
+    // on success
     if (!empty ($object_id))
     {
       return $object_id;
     }
-    else
+    // if object is a root folder (created since version 5.6.3)
+    elseif (substr_count ($object, "/") == 2 && getobject ($object_esc) == ".folder")
     {
-      // if object is a root folder (created since version 5.6.3)
-      if (substr_count ($object, "/") == 2)
-      {
-        $object_esc = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $object);
-        $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
+      $object_esc = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $object);
+      $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
+      
+      $errcode = "00111";
+      $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|warning|".$errcode."|Recreating root folder object '".$object_esc."' since it is missing";
 
-        if (!empty ($createobject['result'])) return $object_id = rdbms_getobject_id ($object_esc);
-        else return false;
-      }
-      else return false;
+      // save log
+      savelog ($error);
+
+      if (!empty ($createobject['result'])) return $object_id = rdbms_getobject_id ($object_esc);
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- get object_hash ------------------------------------------------- 
@@ -4073,27 +4092,29 @@ function rdbms_getobject_hash ($object="", $container_id="")
 
       $db->rdbms_close();
 
+      // on success
       if (!empty ($hash))
       {
         return $hash;
       }
-      else
+      // if object is a root folder (created since version 5.6.3)
+      elseif (substr_count ($object, "/") == 2 && getobject ($object_esc) == ".folder")
       {
-        // if object is a root folder (created since version 5.6.3)
-        if (substr_count ($object, "/") == 2)
-        {
-          $object_esc = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $object);
-          $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
+        $object_esc = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $object);
+        $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
 
-          if (!empty ($createobject['result'])) return $hash = rdbms_getobject_hash ($object_esc);
-          else return false;
-        }
-        else return false;
+        $errcode = "00112";
+        $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|warning|".$errcode."|Recreating root folder object '".$object_esc."' since it is missing";
+
+        // save log
+        savelog ($error);
+
+        if (!empty ($createobject['result'])) return $hash = rdbms_getobject_hash ($object_esc);
       }
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 } 
 
 // -------------------------------------------- get object by unique id or hash ----------------------------------------------- 
@@ -4154,7 +4175,7 @@ function rdbms_getobject ($object_identifier)
           if ($row['deathtime'] < time())
           {
             $sql = 'DELETE FROM accesslink WHERE hash="'.$object_identifier.'"';
- 
+
             $errcode = "50739";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
@@ -4170,9 +4191,9 @@ function rdbms_getobject ($object_identifier)
     $db->rdbms_close();
 
     if ($objectpath != "") return $objectpath;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------------- get object info by unique id or hash ----------------------------------------------- 
@@ -4411,7 +4432,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
         {
           createmedia ($temp_site, $mediadir.$temp_site."/", $mediadir.$temp_site."/", $media_info['file'], "", "thumbnail", false, true);
         }
-        
+
         if (is_file ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") && filesize ($mediadir.$temp_site."/".$media_info['filename'].".thumb.jpg") > 100)
         {
           $objectpath['thumbnail'] = createviewlink ($temp_site, $media_info['filename'].".thumb.jpg");
@@ -4425,9 +4446,9 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
     $db->rdbms_close();
 
     if ($objectpath != "") return $objectpath;
-    else return false;
   }
-  else return false;
+
+  return false;
 } 
 
 // ------------------------------------------ get objects by container_id or temlpate name -------------------------------------------- 
@@ -4598,9 +4619,9 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
     $db->rdbms_close();
 
     if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- get deleted objects ------------------------------------------------- 
@@ -5034,7 +5055,8 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 
     return $result;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- create accesslink -------------------------------------------------
@@ -5114,9 +5136,9 @@ function rdbms_createaccesslink ($hash, $object_id, $type="al", $user="", $lifet
   
       return true;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 } 
 
 // ------------------------------------------------ get access info -------------------------------------------------
@@ -5178,9 +5200,9 @@ function rdbms_getaccessinfo ($hash)
     $db->rdbms_close();
 
     if (is_array ($result) && sizeof ($result) > 0) return $result;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------------ create recipient -------------------------------------------------
@@ -5239,7 +5261,8 @@ function rdbms_createrecipient ($object, $from_user, $to_user, $email)
    
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------------ get recipients -------------------------------------------------
@@ -5298,9 +5321,9 @@ function rdbms_getrecipients ($object)
     $db->rdbms_close();
 
     if (!empty ($recipient) && sizeof ($recipient) > 0) return $recipient;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- delete recipient -------------------------------------------------
@@ -5331,7 +5354,8 @@ function rdbms_deleterecipient ($recipient_id)
    
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- create queue entry -------------------------------------------------
@@ -5396,9 +5420,9 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
 
       return $done;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- set date of queue entry -------------------------------------------------
@@ -5434,7 +5458,8 @@ function rdbms_setqueueentry ($queue_id, $date)
      
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------------ get queue entries -------------------------------------------------
@@ -5508,9 +5533,9 @@ function rdbms_getqueueentries ($action="", $site="", $date="", $user="", $objec
     $db->rdbms_close();
 
     if (is_array ($queue) && sizeof ($queue) > 0) return $queue;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- delete queue entry -------------------------------------------------
@@ -5563,7 +5588,8 @@ function rdbms_deletequeueentry ($queue_id)
      
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- create notification -------------------------------------------------
@@ -5634,9 +5660,9 @@ function rdbms_createnotification ($object, $events, $user)
 
       return $done;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------------ get notifications -------------------------------------------------
@@ -5773,9 +5799,9 @@ function rdbms_getnotification ($event="", $object="", $user="")
     $db->rdbms_close();
 
     if (is_array ($queue) && sizeof ($queue) > 0) return $queue;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- delete notification -------------------------------------------------
@@ -5821,7 +5847,8 @@ function rdbms_deletenotification ($notify_id="", $object="", $user="")
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- license notification -------------------------------------------------
@@ -5889,9 +5916,9 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
     $db->rdbms_close();
 
     if (is_array ($result) && sizeof ($result) > 0) return $result;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- daily statistics -------------------------------------------------
@@ -6012,7 +6039,8 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
 
     return true;
   }
-  else return false;  
+
+  return false;  
 }
 
 // ----------------------------------------------- get statistics from dailystat -------------------------------------------------
@@ -6296,9 +6324,9 @@ function rdbms_getfilesize ($container_id="", $objectpath="", $recyclebin=true)
     $db->rdbms_close();
  
     if (is_array ($result) && sizeof ($result) > 0) return $result;
-    else return false;
-  } 
-  else return false;
+  }
+
+  return false;
 }
 
 // ----------------------------------------------- create task -------------------------------------------------
@@ -6366,8 +6394,9 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
     $db->rdbms_close();
 
     return true;
-  } 
-  else return false;
+  }
+
+  return false;
 }
 
 // ----------------------------------------------- set task -------------------------------------------------
@@ -6421,8 +6450,9 @@ function rdbms_settask ($task_id, $object_id="*Leave*", $project_id="*Leave*", $
     $db->rdbms_close();
 
     return true;
-  } 
-  else return false;
+  }
+
+  return false;
 }
 
 // ------------------------------------------------ get task -------------------------------------------------
@@ -6521,9 +6551,9 @@ function rdbms_gettask ($task_id="", $object_id="", $project_id="", $from_user="
     $db->rdbms_close();
 
     if (!empty ($result) && is_array (@$result)) return $result;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- delete task -------------------------------------------------
@@ -6569,7 +6599,8 @@ function rdbms_deletetask ($task_id="", $object_id="", $to_user="")
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- create project -------------------------------------------------
@@ -6625,8 +6656,9 @@ function rdbms_createproject ($subproject_id, $object_id=0, $user="", $projectna
     $db->rdbms_close();
 
     return true;
-  } 
-  else return false;
+  }
+
+  return false;
 }
 
 // ----------------------------------------------- edit project -------------------------------------------------
@@ -6676,8 +6708,9 @@ function rdbms_setproject ($project_id, $subproject_id="*Leave*", $object_id="*L
     $db->rdbms_close();
 
     return true;
-  } 
-  else return false;
+  }
+
+  return false;
 }
 
 // ------------------------------------------------ get project -------------------------------------------------
@@ -6755,9 +6788,9 @@ function rdbms_getproject ($project_id="", $subproject_id="", $object_id="", $us
     $db->rdbms_close();
     
     if (!empty ($result) && is_array ($result)) return $result;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- delete project -------------------------------------------------
@@ -6802,7 +6835,8 @@ function rdbms_deleteproject ($project_id="", $object_id="", $user="")
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- edit workflow status -------------------------------------------------
@@ -6844,8 +6878,9 @@ function rdbms_setworkflow ($container_id, $workflowdate, $workflowstatus, $work
     $db->rdbms_close();
 
     return true;
-  } 
-  else return false;
+  }
+
+  return false;
 }
 
 // ----------------------------------------------- get workflow status -------------------------------------------------
@@ -6896,9 +6931,9 @@ function rdbms_getworkflow ($container_id)
     $db->rdbms_close();
 
     if (!empty ($result) && is_array ($result)) return $result;
-    else return false;
-  } 
-  else return false;
+  }
+
+  return false;
 }
 
 // ----------------------------------------------- get table information -------------------------------------------------
@@ -6950,9 +6985,9 @@ function rdbms_gettableinfo ($table)
     $db->rdbms_close();
 
     if (!empty ($info) && is_array (@$info)) return $info;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------------- optimize database -------------------------------------------------
@@ -7034,7 +7069,8 @@ function rdbms_optimizedatabase ()
 
     return true;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------ rdbms_setobjectpathlevel ----------------------------------------------
@@ -7202,10 +7238,9 @@ function rdbms_externalquery ($sql, $concat_by="")
       $db->rdbms_close();
 
       if (!empty ($result) && is_array ($result)) return $result;
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 ?>
