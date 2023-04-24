@@ -320,7 +320,7 @@ function jumpTo (target)
           {
             foreach ($inherit_db as $inherit_db_record)
             {
-              if ($inherit_db_record['parent'] != "" && in_array ($inherit_db_record['parent'], $siteaccess))
+              if ($inherit_db_record['parent'] != "" && array_key_exists ($inherit_db_record['parent'], $siteaccess))
               {
                 $site_array[] = trim ($inherit_db_record['parent']);
               }

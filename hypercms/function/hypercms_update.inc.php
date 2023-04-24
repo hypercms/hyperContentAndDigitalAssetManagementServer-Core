@@ -2323,7 +2323,7 @@ function update_database_v10073 ()
 // output: true / false
 
 // description: 
-// Update the taxonomy index for support of version 10.0.7.4
+// Create index for support of version 10.0.7.4
 
 function update_database_v10074 ()
 {
@@ -2514,6 +2514,56 @@ function update_database_v1011 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v1012 ----------------------------------------------
+// function: update_database_v1012()
+// input: %
+// output: true / false
+
+// description: 
+// Update unknown filetype in table object for support of version 10.1.2.
+
+function update_database_v1012 ()
+{
+  global $mgmt_config;
+
+  if (!checksoftwareversion ("10.1.2"))
+  { 
+    // update log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.1.2|updated to version 10.1.2"), "update");
+
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset'], "");
+   
+    // migrate objectpath
+    $sql = 'SELECT object_id, objectpath FROM object WHERE filetype="unknown"';
+    $errcode = "50821";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'select');
+
+    if ($result)
+    {
+      while ($row = $db->rdbms_getresultrow('select'))
+      {
+        if (!empty ($row['objectpath']))
+        {
+          $filetype = getfiletype ($row['objectpath']);
+
+          // update object
+          if ($filetype != "") $sql = 'UPDATE object SET filetype="'.$filetype.'" WHERE object_id='.$row['object_id'];
+          $errcode = "50822";
+          $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+        }
+      }
+    }
+
+    // save log
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -2568,6 +2618,7 @@ function updates_all ()
     update_database_v1008 ();
     update_database_v1009 ();
     update_database_v1011 ();
+    update_database_v1012 ();
   }
 }
 

@@ -667,7 +667,7 @@ function tpl_globals_extended ($application, $abs_path_cms, $abs_path_rep, $site
   {
     if (!empty ($siteaccess) && is_array ($siteaccess) && sizeof ($siteaccess) > 0)
     {
-      $siteaccessvar = "\$siteaccess = array('".implode ("','", $siteaccess)."');";
+      $siteaccessvar = "\$siteaccess = array('".implode ("','", array_keys ($siteaccess))."');";
     }
     else $siteaccessvar = "\$siteaccess = array('".$site."');";
 
@@ -10996,7 +10996,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
                 if (@substr_count ($list, "%publication%") > 0 && !empty ($siteaccess) && is_array ($siteaccess) && sizeof ($siteaccess) > 0)
                 { 
                   natcasesort ($siteaccess);
-                  $list = str_replace ("%publication%", implode ("|", $siteaccess), $list);
+                  $list = str_replace ("%publication%", implode ("|", array_keys ($siteaccess)), $list);
                 }
 
                 // get list entries

@@ -244,7 +244,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
   }
   
   // check publication access permissions of user
-  if (!in_array ($site_name, $siteaccess)) $preview = "yes";
+  if (!array_key_exists ($site_name, $siteaccess)) $preview = "yes";
   
   // define php script for form action
   if ($preview == "no")
@@ -293,6 +293,10 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <!-- management configuration -->
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;" colspan="2" class="hcmsHeadlineTiny"><div style="padding:10px 0px;"><?php echo getescapedtext ($hcms_lang['management-system-configuration'][$lang]); ?></div> </td>
+    </tr>
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['display-name-optional'][$lang]); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"> <input type="text" id="displayname" name="setting[displayname]" style="width:350px;" maxlength="100" value="<?php if (!empty ($mgmt_config[$site_name]['displayname'])) echo $mgmt_config[$site_name]['displayname']; else echo $site_name; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> /></td>
     </tr>
     <tr> 
       <td style="width:20%; white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?> </td>

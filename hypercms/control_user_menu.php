@@ -555,7 +555,7 @@ function goToURL()
           {
             foreach ($inherit_db as $inherit_db_record)
             {
-              if ($inherit_db_record['parent'] != "" && in_array ($inherit_db_record['parent'], $siteaccess))
+              if ($inherit_db_record['parent'] != "" && array_key_exists ($inherit_db_record['parent'], $siteaccess))
               {
                 $site_array[] = $inherit_db_record['parent'];
               }
@@ -572,7 +572,7 @@ function goToURL()
                 else $selected = "";
                               
                 echo "
-            <option value=\"user_objectlist.php?site=".url_encode($site_item)."\" ".$selected.">".$site_item."</option>";
+            <option value=\"user_objectlist.php?site=".url_encode($site_item)."\" ".$selected." title=\"".$site_item."\">".$siteaccess[$site_item]."</option>";
               }
             }            
           }           

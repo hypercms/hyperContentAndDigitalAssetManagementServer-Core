@@ -823,7 +823,7 @@ function hcms_saveEvent ()
     </tr>
     <tr>
       <td style="text-align:left;">
-        <textarea name="contentfield" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;"><?php echo $contentfield; ?></textarea>
+        <textarea name="contentfield" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box; font-size:1em;"><?php echo $contentfield; ?></textarea>
       </td>
     </tr>
   </table>

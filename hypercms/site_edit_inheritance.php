@@ -288,7 +288,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
                 {
                   if (!empty ($inherit_db_record['parent']))
                   { 
-                    if (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 0 && $inherit_db_record['parent'] != $site_name && in_array ($inherit_db_record['parent'], $siteaccess))
+                    if (substr_count ("|".$inherit_db_record['child'], "|".$site_name."|") == 0 && $inherit_db_record['parent'] != $site_name && array_key_exists ($inherit_db_record['parent'], $siteaccess))
                     {
                       $list1_array[] = "
                       <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";

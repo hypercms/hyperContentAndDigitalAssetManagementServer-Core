@@ -41,7 +41,7 @@ $chat_relations_log = $mgmt_config['abs_path_temp']."/chat_relations.php";
 $date = date ("Y-m-d H:i:s", time());
 
 // publication access of user
-if (is_array ($siteaccess)) $sites = implode (";", $siteaccess);
+if (is_array ($siteaccess)) $sites = implode (";", array_keys ($siteaccess));
 else $sites = "";
 
 // if chat log file does not exist, create it
@@ -92,7 +92,7 @@ switch ($function)
             // get chat message log entries
             list ($chat_date, $chat_sites, $chat_user, $chat_text) = explode ("|", $line);
             
-            foreach ($siteaccess as $site)
+            foreach ($siteaccess as $site => $displayname)
             {
               // verify publication access
               if (substr_count (";".$chat_sites.";", ";".$site.";") > 0)

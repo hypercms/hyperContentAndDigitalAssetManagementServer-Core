@@ -3947,13 +3947,13 @@ function rdbms_gethierarchy_sublevel ($site, $get_text_id, $text_id_array=array(
 
 // ----------------------------------------------- get object_id ------------------------------------------------- 
 // function: rdbms_getobject_id()
-// input: location path or hash of an object [string]
+// input: location path or hash of an object [string], recreate root folder object [boolean] (optional)
 // output: object ID / false
 
 // description:
 // Returns the object ID of an object path.
 
-function rdbms_getobject_id ($object)
+function rdbms_getobject_id ($object, $recreate=false)
 {
   global $mgmt_config;
 
@@ -4009,7 +4009,7 @@ function rdbms_getobject_id ($object)
       return $object_id;
     }
     // if object is a root folder (created since version 5.6.3)
-    elseif (substr_count ($object, "/") == 2 && getobject ($object_esc) == ".folder")
+    elseif (substr_count ($object, "/") == 2 && getobject ($object) == ".folder" && $recreate == true)
     {
       $object_esc = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $object);
       $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");
@@ -4029,13 +4029,13 @@ function rdbms_getobject_id ($object)
 
 // ----------------------------------------------- get object_hash ------------------------------------------------- 
 // function: object_hash()
-// input: location path of an object [string] (optional) OR container ID of an object [integer] (optional)
+// input: location path of an object [string] (optional) OR container ID of an object [integer] (optional), recreate root folder object [boolean] (optional)
 // output: object hash / false
 
 // description:
 // Returns the hash of an object.
 
-function rdbms_getobject_hash ($object="", $container_id="")
+function rdbms_getobject_hash ($object="", $container_id="", $recreate=false)
 {
   global $mgmt_config;
 
@@ -4098,7 +4098,7 @@ function rdbms_getobject_hash ($object="", $container_id="")
         return $hash;
       }
       // if object is a root folder (created since version 5.6.3)
-      elseif (substr_count ($object, "/") == 2 && getobject ($object_esc) == ".folder")
+      elseif (substr_count ($object, "/") == 2 && getobject ($object) == ".folder" && $recreate == true)
       {
         $object_esc = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $object);
         $createobject = createobject (getpublication ($object_esc), getlocation ($object_esc), ".folder", "default.meta.tpl", "sys");

@@ -197,7 +197,7 @@ function checkForm ()
         {
           foreach ($inherit_db as $inherit_db_record)
           {
-            if (!empty ($inherit_db_record['parent']) && !empty ($siteaccess) && is_array ($siteaccess) && in_array ($inherit_db_record['parent'], $siteaccess))
+            if (!empty ($inherit_db_record['parent']) && !empty ($siteaccess) && is_array ($siteaccess) && array_key_exists ($inherit_db_record['parent'], $siteaccess))
             {
               $inherit_db_record['parent'] = trim ($inherit_db_record['parent']);
               $item_options[] = $inherit_db_record['parent'];
@@ -213,7 +213,7 @@ function checkForm ()
           foreach ($item_options as $value)
           {
             echo "
-            <option value=\"".url_encode($value)."\" ".($site_name == $value ? "selected=\"selected\"" : "").">".$value."</option>";
+            <option value=\"".url_encode($value)."\" ".($site_name == $value ? "selected=\"selected\"" : "")." title=\"".$value."\">".$siteaccess[$value]."</option>";
           }
         }
         ?>

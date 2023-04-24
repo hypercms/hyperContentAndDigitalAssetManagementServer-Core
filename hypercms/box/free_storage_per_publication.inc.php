@@ -59,7 +59,7 @@ if (is_array ($siteaccess))
 
   sort ($siteaccess);
   
-  foreach ($siteaccess as $site)
+  foreach ($siteaccess as $site => $displayname)
   {
     if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {

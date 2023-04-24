@@ -48,10 +48,10 @@ suspendsession ();
   {
     $template_array = array();
     
-    foreach ($siteaccess as $site)
+    foreach ($siteaccess as $site => $displayname)
     {
       if (!empty ($site)) echo "
-    <option value=\"".$site."\">".$site."</option>";
+    <option value=\"".$site."\">".$displayname."</option>";
     }
   }
   ?>

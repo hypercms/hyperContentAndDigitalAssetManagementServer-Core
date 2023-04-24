@@ -6856,10 +6856,31 @@ Release 05/2023
 - Modifications in service sendmail in order to correct the service name in the error log entries
 - Modifications in function rdbms_getobject_id and rdbms_getobject_hash in DB Connect in order to verify that the object name is .folder before trying to create the root folder object if it is missing
 - Modifications in function rdbms_getobject_id and rdbms_getobject_hash in DB Connect in order to implement new log entries if the root folder object needs to be recreated
+- Implementation of a display name for publications that can be modified and may include special characters
+- Modifications in function editpublication in Main API in order to support the new display name besides the publication name
+- Modifications in function editpublication in Main API in order to verify that the same publication or display name is not already in use by another publication
+- Modifications in function userlogin in Security API in order to support the new display name besides the unique publication name in the siteaccess parameter
+- Modifications in all system components that use the siteaccess in order to support the new publication name as key and the display name as value of siteaccess array
+- Modifications in the Workplace Integration module in order to support the new display name besides the publication name
+- Modifications in Task Management module in order to keep tasks with references to non-existing objects
+- Modifications in function getobjectlist in Get API in order to support the new input parameter for the return of a readable/decoded objectpath instead of the encoded objectpath
+- Modifications in function getobjectlist in Get API in order to verify that the object hash returned by function rdbms_getobject_hash is valid
+- Modifications in function rdbms_getobject_id and rdbms_getobject_hash in DB Connect in order to support a new input parameter to recreate missing root folder objects
+- Modifications in function executeREST in the REST API of the Connector module in order to support the new input parameter for the return of a readable/decoded objectpath
+- Modifications in function executeREST in the REST API of the Connector module in order to support request with a readable publication/display name in the objectpath, location, or publication
+- Modifications in function getfileinfo in Get API in order to add the support of the new Excel (.xlx .xlam), Adobe Photoshop template (.psdt), Adobe Illustrator template (.ait), Adobe Indesign snippet (.idml) and Adobe InCopy (.icml) file extension
+- Modifications in format_ext in order to add the the MS Excel (.xlx, .xlam), MS Powerpoint template (.thmx), Adobe Photoshop template (.psdt, .xmp), Adobe Illustrator template (.ait), Adobe Indesign snippet (.idml) and Adobe InCopy (.icml) file extensions
+- Modifications in format_ext in order to add the file extensions .mhtml and .mht to the cleartxt category
+- Modifications in format_ext in order to add the file extensions .xlsb, .xlsm, .thmx, .plist, .nib, and .prn to the bintxt category
+- Modifications in format_ext in order to add the file extensions .icns and .xmp to the image category
+- Modifications in format_ext in order to add the file extensions .prproj to the video category
+- Implementation of the new function update_database_v1012 in the update API in order to update the unknown filetype
+- Modifications in function updates_all in the Update API in order to integrate function update_database_v1012
 - Implementation of new text records for dependencies in all language files
+- Design modifications in template_edit
 - Updates in the Hebrew and Thai language file
 - Update of the update log in the installation directory
-- Updates in the Connector, Installation and User Guide
+- Updates in the Administrator, Connector, Installation and User Guide
 - Bug fix: The Workplace Integration returned the truncated file name which caused issues since the WebDAV client expected the provided file name and was not able to save the content in the new file
 - Bug fix: The Workplace Integration returned the truncated folder name which caused issues since the WebDAV client expected the provided folder name and was not able to set the new folder name
 - Bug fix: The public function isLoggedInHyperdav in the Workplace Integration API used a wrong name for the main configuration

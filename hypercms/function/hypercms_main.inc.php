@@ -7420,6 +7420,33 @@ function editpublication ($site_name, $setting, $user="sys")
     // html decode all settings
     $setting = html_decode ($setting);
 
+    // display name of publication
+    if (array_key_exists ('displayname', $setting) && trim ($setting['displayname']) != "")
+    {
+      $displayname_new = trim ($setting['displayname']);
+      $inherit_db = inherit_db_read ();
+      
+      if ($inherit_db != false && sizeof ($inherit_db) > 0)
+      {
+        foreach ($inherit_db as $inherit_db_record)
+        {
+          if (valid_publicationname ($inherit_db_record['parent']))
+          {
+            $temp_site = $inherit_db_record['parent'];
+
+            require ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+
+            // fallback
+            if (!empty ($mgmt_config[$temp_site]['displayname']) && $site_name != $temp_site && ($displayname_new == $mgmt_config[$temp_site]['displayname'] || $displayname_new == $temp_site))
+            {
+              $displayname_new = $site_name;
+            }
+          }
+        }
+      }
+    }
+    else $displayname_new = $site_name;
+
     // set boolean values
     if (array_key_exists ('site_admin', $setting) && $setting['site_admin'] == true) $site_admin_new = "true";
     else $site_admin_new = "false";
@@ -7734,6 +7761,9 @@ function editpublication ($site_name, $setting, $user="sys")
     // config file of management system
     $site_mgmt_config = "<?php
 // ---------------------------------- content management server ----------------------------------------
+// display name of publication
+\$mgmt_config['".$site_name."']['displayname'] = \"".str_replace ("\"", "", $displayname_new)."\";
+
 // Define if users can access the publication
 // configuration.
 // If you are an ISP deactivate (false) this

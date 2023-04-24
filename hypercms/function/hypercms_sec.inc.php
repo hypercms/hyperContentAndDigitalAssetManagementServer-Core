@@ -645,7 +645,7 @@ function checkpublicationpermission ($site, $strict=true)
   if (valid_publicationname ($site) && !empty ($siteaccess) && is_array ($siteaccess))
   {
     // publication is in scope of user
-    if (in_array ($site, $siteaccess)) return "direct";
+    if (array_key_exists ($site, $siteaccess)) return "direct";
     elseif ($strict == true) return false;
 
     // load publication inheritance setting
@@ -655,7 +655,7 @@ function checkpublicationpermission ($site, $strict=true)
     // check access to publication by inheritance
     if (is_array ($child_array))
     {
-      foreach ($siteaccess as $child)
+      foreach ($siteaccess as $child => $displayname)
       {
         // load child publication settings
         if (valid_publicationname ($child)) @require ($mgmt_config['abs_path_data']."config/".$child.".conf.php");
@@ -1477,7 +1477,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                   $permission_str[$site_name][$group_name_admin] = $permission_str_admin;
                 }
 
-                $result['siteaccess'][] = $site_name;
+                $result['siteaccess'][$site_name] = $site_name;
                 $result['rootpermission'] = rootpermission ($site_name, $site_admin, $permission_str);
  
                 break;
@@ -1505,8 +1505,8 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                 }
               }
 
-              // access permissions to publications
-              $result['siteaccess'][] = $site_name;
+              // access permissions to publications and display name of publication
+              $result['siteaccess'][$site_name] = !empty ($mgmt_config[$site_name]['displayname']) ? $mgmt_config[$site_name]['displayname'] : $site_name;
 
               // access permissions to asset/component folders
               if (valid_publicationname ($site_name) && !empty ($group_name_admin))
@@ -1582,8 +1582,6 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
             {
               $site_node = getcontent ($memberof, "<publication>");
               $site_name = $site_node[0];
-              $result['siteaccess'][] = $site_name;
-
               $usergroup = getcontent ($memberof, "<usergroup>");
               $group_string = $usergroup[0];
 
@@ -1597,6 +1595,10 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               {
                 require_once ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php");
 
+                // access permissions to publications and display name of publication
+                $result['siteaccess'][$site_name] = !empty ($mgmt_config[$site_name]['displayname']) ? $mgmt_config[$site_name]['displayname'] : $site_name;
+
+                // hidden folders
                 if (!isset ($result['hiddenfolder'][$site_name])) $result['hiddenfolder'][$site_name] = array();
 
                 // define array of excluded/hidden folders
@@ -2480,7 +2482,7 @@ function writesession ($user, $passwd, $checksum, $siteaccess=array())
     $sessiontime = time();
 
     // session string
-    $sessiondata = session_id()."|".$sessiontime."|".md5 ($passwd)."|".$checksum."|".implode(":", $siteaccess)."\n";
+    $sessiondata = session_id()."|".$sessiontime."|".md5 ($passwd)."|".$checksum."|".implode(":", array_keys($siteaccess))."\n";
 
     // if user session file exists (user didn't log out or same user logged in a second time)
     if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && !empty ($mgmt_config['userconcurrent']))
@@ -3487,7 +3489,7 @@ function valid_publicationname ($variable)
   {
     if (!is_array ($variable) && is_string ($variable))
     {
-      if (!empty ($siteaccess) && is_array ($siteaccess) && !in_array ($variable, $siteaccess)) return false;
+      if (!empty ($siteaccess) && is_array ($siteaccess) && !array_key_exists ($variable, $siteaccess)) return false;
       if ($variable == "*Null*" || $variable == "*no_memberof*") return false;
       if ($variable == "..") return false;
       if (substr_count ($variable, "<") > 0) return false;

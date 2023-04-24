@@ -860,7 +860,7 @@ else
     {
       reset ($siteaccess);
 
-      foreach ($siteaccess as $site_name)
+      foreach ($siteaccess as $site_name => $displayname)
       {
         // include configuration file of publication if not included already
         if (valid_publicationname ($site_name) && is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php"))
@@ -928,7 +928,7 @@ else
     reset ($siteaccess);
 
     // loop through all publications
-    foreach ($siteaccess as $site)  
+    foreach ($siteaccess as $site => $displayname)  
     {
       if (valid_publicationname ($site) || $site == "hcms_empty")
       {
@@ -1057,7 +1057,7 @@ else
         // ------------------------------------------- publication node -----------------------------------------------
         if ((empty ($hcms_portal) || !empty ($mgmt_config[$site]['portalaccesslink'])) && $site != "hcms_empty")
         {
-          $publication = new hcms_menupoint($site, '#site_'.$site, 'site.png', 'site_'.$site);
+          $publication = new hcms_menupoint($displayname, '#site_'.$site, 'site.png', 'site_'.$site);
           $publication->setOnClick('hcms_jstree_toggle_preventDefault("site_'.$site.'", event);');
           $publication->setOnMouseOver('hcms_resetContext();');
 
@@ -2162,7 +2162,7 @@ else
 
         if (is_array ($user_array) && sizeof ($user_array) > 0)
         {
-          foreach ($siteaccess as $site_name)
+          foreach ($siteaccess as $site_name => $displayname)
           {
             if (!empty ($site_name) && !empty ($user_array[$site_name]) && is_array ($user_array[$site_name]))
             {
@@ -2300,10 +2300,10 @@ else
               {
                 $template_array = array();
 
-                foreach ($siteaccess as $site)
+                foreach ($siteaccess as $site => $displayname)
                 {
                   if (valid_publicationname ($site)) echo "
-                <option value=\"".$site."\">".$site."</option>";
+                <option value=\"".$site."\">".$displayname."</option>";
                 }
               }
               ?>
@@ -2347,7 +2347,7 @@ else
           {
             $template_array = array();
 
-            foreach ($siteaccess as $site)
+            foreach ($siteaccess as $site => $displayname)
             {
               $site_array = array();
 

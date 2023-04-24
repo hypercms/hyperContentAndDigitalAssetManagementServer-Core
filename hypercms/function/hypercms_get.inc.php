@@ -2049,14 +2049,14 @@ function getmetadata_container ($container_id, $text_id_array=array())
 // ---------------------------------------- getobjectlist ----------------------------------------
 // function: getobjectlist()
 // input: publication name [string] (optional), location [string] (optional), folder hash code [string,array] (optional), search parameters [array] (optional), information and text IDs to be returned e.g. text:Title [array] (optional), 
-//        verify RESTful API for the publication [boolean] (optional), return all levels even if the user has no access permission to the folder [boolean] (optional)
+//        verify RESTful API for the publication [boolean] (optional), return all levels even if the user has no access permission to the folder [boolean] (optional), return readable/decoded objectpath or encoded objectpath [boolean] (optional)
 // output: result array / false on error
 // requires: config.inc.php
 
 // description:
 // Get all objects of a location. This is a simplified wrapper for function rdbms_searchcontent.
 
-function getobjectlist ($site="", $location="", $folderhash="", $search=array(), $objectlistcols=array(), $checkREST=false, $return_all_levels=true)
+function getobjectlist ($site="", $location="", $folderhash="", $search=array(), $objectlistcols=array(), $checkREST=false, $return_all_levels=true, $readable_objectpath=false)
 {
   global $mgmt_config, $user, $lang, $hcms_lang,
   $rootpermission, $globalpermission, $localpermission,
@@ -2226,40 +2226,50 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       }
     }
 
-    // publication and location not specified, use publication access
-    if ($location == "%publication%" || $location == "%publication%/")
+    // favorites
+    if ($location == "%favorites%" || $location == "%favorites%/")
     {
+      // $root_dir_esc = getfavorites ($user, "path", $objectlistcols);
+    }
+    // publication and location not specified, use publication access
+    elseif ($location == "%publication%" || $location == "%publication%/")
+    {
+      // favorites
+      // $root_dir_esc['virtualfavorites']['objectpath'] = "%favorites%/".$hcms_lang['favorites'][$lang]."/";
+      // $root_dir_esc['virtualfavorites']['location'] = getlocation ($root_dir_esc['virtualfavorites']['objectpath']);
+      // $root_dir_esc['virtualfavorites']['object'] = getobject ($root_dir_esc['virtualfavorites']['objectpath']);
+
       if (!empty ($siteaccess) && is_array ($siteaccess))
       {
         $temp_sites = array_unique ($siteaccess);
         natcasesort ($temp_sites);
 
-        foreach ($temp_sites as $temp_site)
+        foreach ($temp_sites as $temp_site => $temp_displayname)
         {
           // assets
           if (strpos ("_".$location, "%comp%/") > 0)
           {
             $temp_objectpath_esc = "%comp%/".$temp_site."/.folder";
             $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
-            $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+            if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
           }
           // pages
           elseif (strpos ("_".$location, "%page%/") > 0)
           {
             $temp_objectpath_esc = "%page%/".$temp_site."/.folder";
             $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
-            $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+            if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
           }
           // both
           else
           {
             $temp_objectpath_esc = "%comp%/".$temp_site."/.folder";
             $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
-            $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+            if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
 
             $temp_objectpath_esc = "%page%/".$temp_site."/.folder";
             $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
-            $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+            if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
           }
 
           // return publications of user instead of folder access 
@@ -2446,54 +2456,66 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       {
         if (!empty ($hash) && !empty ($temp_array['objectpath']))
         {
-          // get object information
-          if (empty ($result[$hash]['location'])) $result[$hash] = rdbms_getobject_info ($hash, $objectlistcols);
-
-          // get publication
-          $temp_site = getpublication ($temp_array['objectpath']);
-          // get category
-          $temp_cat = getcategory ($temp_site, $temp_array['objectpath']); 
-          // get location
-          $temp_location_esc = getlocation ($temp_array['objectpath']);
-          // get location in file system
-          $temp_location = deconvertpath ($temp_location_esc, "file");               
-          // get object name
-          $temp_object = getobject ($temp_array['objectpath']);  
-          $temp_object = correctfile ($temp_location, $temp_object, $user);
-
-          // recheck access permission
-          $temp_ownergroup = accesspermission ($temp_site, $temp_location, $temp_cat);
-          $setlocalpermission = setlocalpermission ($temp_site, $temp_ownergroup, $temp_cat);
-
-          // checked-out object information
-          if (!empty ($result[$hash]['container_id']))
+          // favorites
+          if (substr ($temp_array['objectpath'], 0, strpos ($temp_array['objectpath'], "/")) == "%favorites%")
           {
-            $container_id = $result[$hash]['container_id'];
-            $temp_locked = getlockedfileinfo (getcontentlocation ($container_id, 'abs_path_content'), $container_id.".xml.wrk");
-
-            if (isset ($temp_locked['user'])) $result[$hash]['usedby'] = $temp_locked['user'];
-            else $result[$hash]['usedby'] = "";
+            $result[$hash]['permission'] = array('root'=>1);
           }
-
-          // remove .folder
-          if (substr ($temp_array['objectpath'], -7) == ".folder") $result[$hash]['objectpath'] = substr ($temp_array['objectpath'], 0, -7);
-
-          // add permissions for valid result row
-          if ((!empty ($setlocalpermission['root']) || $return_all_levels == true || $return_site_access == true) && is_file ($temp_location.$temp_object))
-          {
-            // add users local permissions
-            $result[$hash]['permission'] = $setlocalpermission;
-          }
-          // remove invalid result row
+          // publications, folders and objects
           else
           {
-            unset ($result[$hash]);
+            // get object information
+            if (empty ($result[$hash]['location'])) $result[$hash] = rdbms_getobject_info ($hash, $objectlistcols);
+
+            // get publication
+            $temp_site = getpublication ($temp_array['objectpath']);
+            // get category
+            $temp_cat = getcategory ($temp_site, $temp_array['objectpath']); 
+            // get location
+            $temp_location_esc = getlocation ($temp_array['objectpath']);
+            // get location in file system
+            $temp_location = deconvertpath ($temp_location_esc, "file");               
+            // get object name
+            $temp_object = getobject ($temp_array['objectpath']);  
+            $temp_object = correctfile ($temp_location, $temp_object, $user);
+
+            // recheck access permission
+            $temp_ownergroup = accesspermission ($temp_site, $temp_location, $temp_cat);
+            $setlocalpermission = setlocalpermission ($temp_site, $temp_ownergroup, $temp_cat);
+
+            // checked-out object information
+            if (!empty ($result[$hash]['container_id']))
+            {
+              $container_id = $result[$hash]['container_id'];
+              $temp_locked = getlockedfileinfo (getcontentlocation ($container_id, 'abs_path_content'), $container_id.".xml.wrk");
+
+              if (isset ($temp_locked['user'])) $result[$hash]['usedby'] = $temp_locked['user'];
+              else $result[$hash]['usedby'] = "";
+            }
+
+            // remove .folder
+            if (substr ($temp_array['objectpath'], -7) == ".folder") $result[$hash]['objectpath'] = substr ($temp_array['objectpath'], 0, -7);
+
+            // transform to readable path
+            if ($readable_objectpath == true) $result[$hash]['objectpath'] = "%".$temp_cat ."%".getlocationname ($temp_site, $result[$hash]['objectpath'], $temp_cat, "path");
+
+            // add permissions for valid result row
+            if ((!empty ($setlocalpermission['root']) || $return_all_levels == true || $return_site_access == true) && is_file ($temp_location.$temp_object))
+            {
+              // add users local permissions
+              $result[$hash]['permission'] = $setlocalpermission;
+            }
+            // remove invalid result row
+            else
+            {
+              unset ($result[$hash]);
+            }
           }
         }
       }
     }
   }
- 
+
   // return result
   if (is_array ($result) && sizeof ($result) > 0) return $result;
   else return false;
@@ -2817,10 +2839,13 @@ function getcontainername ($container)
 
 function getlocationname ($site, $location, $cat, $source="path")
 {
-  global $mgmt_config, $lang, $hcms_lang_codepage;
+  global $mgmt_config, $siteaccess, $lang, $hcms_lang_codepage;
 
   if (valid_locationname ($location))
   {
+    // use publication nameas fallback
+    if (empty ($siteaccess)) $siteaccess[$site] = $site;
+
     // publication management config
     if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
@@ -2875,17 +2900,17 @@ function getlocationname ($site, $location, $cat, $source="path")
           $location_folder = getlocation ($location_folder);
         }
 
-        if ($cat == "page") $location_name = "/".$site."/".$location_name;
-        elseif ($cat == "comp") $location_name = "/".$location_name;
+        if ($cat == "page") $location_name = "/".$siteaccess[$site]."/".$location_name;
+        elseif ($cat == "comp") $location_name = "/".$siteaccess[$site]."/".substr ($location_name, strpos ($location_name, "/"));
       }
       // get names from decoding the file path
       else
       {
-        if ($cat == "page") $root_abs = "%page%";
-        elseif ($cat == "comp") $root_abs = "%comp%";
+        if ($cat == "page") $root_abs = "%page%/".$site."/";
+        elseif ($cat == "comp") $root_abs = "%comp%/".$site."/";
         else $root_abs = "";
 
-        if ($root_abs != "") $location_name = str_replace ($root_abs, "", $location_esc);
+        if ($root_abs != "") $location_name = str_replace ($root_abs, "/".$siteaccess[$site]."/", $location_esc);
         $location_name = specialchr_decode ($location_name);
       }
 
@@ -3962,19 +3987,19 @@ function getfileinfo ($site, $file, $cat="comp")
             $file_type = "Calendar";
           }
           // MS Word
-          elseif ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotx")
+          elseif ($file_ext == ".doc" || $file_ext == ".docx" || $file_ext == ".docm" || $file_ext == ".dot" || $file_ext == ".dotm" || $file_ext == ".dotx")
           {
             $file_icon = "file_doc.png";
             $file_type = "MS Word";
           }
           // MS Powerpoint
-          elseif ($file_ext == ".ppt" || $file_ext == ".pptx" || $file_ext == ".pps" || $file_ext == ".ppsx" || $file_ext == ".pot" || $file_ext == ".potm" || $file_ext == ".potx")
+          elseif ($file_ext == ".ppt" || $file_ext == ".pptm" || $file_ext == ".pptx" || $file_ext == ".pps" || $file_ext == ".ppsx" || $file_ext == ".pot" || $file_ext == ".potm" || $file_ext == ".potx"  || $file_ext == ".thmx")
           {
             $file_icon = "file_ppt.png";
             $file_type = "MS Powerpoint";
           }
           // MS Excel
-          elseif ($file_ext == ".xls" || $file_ext == ".xlsx" || $file_ext == ".xlst" || $file_ext == ".xlsm" ||$file_ext == ".csv")
+          elseif ($file_ext == ".xls" || $file_ext == ".xlsb" || $file_ext == ".xlst" || $file_ext == ".xlsx" || $file_ext == ".xlt" || $file_ext == ".xltx" || $file_ext == ".xlsm" || $file_ext == ".xla" || $file_ext == ".xlam" || $file_ext == ".xltm" ||$file_ext == ".csv")
           {
             $file_icon = "file_xls.png";
             $file_type = "MS Excel";
@@ -3986,19 +4011,19 @@ function getfileinfo ($site, $file, $cat="comp")
             $file_type = "Adobe Acrobat";
           }
           // Adobe Illustrator
-          elseif ($file_ext == ".ai" || $file_ext == ".dmw")
+          elseif ($file_ext == ".ai" || $file_ext == ".ait" || $file_ext == ".dmw")
           {
             $file_icon = "file_ai.png";
             $file_type = "Adobe Illustrator";
           }
-          // Adobe InDesign
-          elseif ($file_ext == ".indd" || $file_ext == ".idml")
+          // Adobe InDesign and InCopy
+          elseif ($file_ext == ".indd" || $file_ext == ".icml" || $file_ext == ".idml" || $file_ext == ".idms")
           {
             $file_icon = "file_indd.png";
             $file_type = "Adobe InDesign";
           }
           // Adobe Photoshop
-          elseif ($file_ext == ".psd" || $file_ext == ".psb")
+          elseif ($file_ext == ".psd" || $file_ext == ".psb" || $file_ext == ".psdt" || $file_ext == ".xmp")
           {
             $file_icon = "file_psd.png";
             $file_type = "Adobe Photoshop";
@@ -6256,7 +6281,7 @@ function getusersonline ($sites=array())
 
         foreach ($result as $logon)
         {
-          foreach ($siteaccess as $site)
+          foreach ($siteaccess as $site => $displayname)
           {
             if (!empty ($users[$site][$logon])) $result_filtered[$logon] = $logon;
           }

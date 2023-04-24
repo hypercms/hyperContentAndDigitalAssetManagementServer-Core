@@ -129,7 +129,7 @@ if ($userdata != false)
       {
         $userrecord_big_array = array();
 
-        foreach ($siteaccess as $site_entry)
+        foreach ($siteaccess as $site_entry => $displayname)
         {
           $userrecord_array = selectcontent ($userdata, "<user>", "<publication>", $site_entry);
           $userrecord_big_array = array_merge ($userrecord_big_array,  $userrecord_array);

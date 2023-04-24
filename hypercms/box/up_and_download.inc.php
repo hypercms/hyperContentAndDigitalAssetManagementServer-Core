@@ -9,7 +9,7 @@ if (isset ($siteaccess) && is_array ($siteaccess))
   if (!empty ($is_mobile)) $width = "320px";
   else $width = "670px";
 
-  foreach ($siteaccess as $item_site)
+  foreach ($siteaccess as $item_site => $displayname_site)
   {
     // publication management config
     if (valid_publicationname ($item_site)) require ($mgmt_config['abs_path_data']."config/".$item_site.".conf.php");

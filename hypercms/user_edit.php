@@ -602,7 +602,7 @@ if (!empty ($login))
 
     <?php
     // check if any publication defines a theme
-    foreach ($siteaccess as $entry)
+    foreach ($siteaccess as $entry => $displayname)
     {
       if (!empty ($mgmt_config[$entry]['theme']))
       {
@@ -759,19 +759,21 @@ if (!empty ($login))
                 foreach ($inherit_db as $inherit_db_record)
                 {
                   // check if user has siteaccess
-                  if ($inherit_db_record['parent'] != "" && is_array ($siteaccess) && in_array ($inherit_db_record['parent'], $siteaccess))
+                  if ($inherit_db_record['parent'] != "" && is_array ($siteaccess) && array_key_exists ($inherit_db_record['parent'], $siteaccess))
                   {
+                    $site_name = $inherit_db_record['parent'];
+
                     // unselected sites
                     if (substr_count ($usersite, "|".$inherit_db_record['parent']."|") == 0)
                     {
                       $list1_array[] = "
-                      <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";
+                      <option value=\"".$inherit_db_record['parent']."\" title=\"".$site_name."\">".$siteaccess[$site_name]."</option>";
                     }
                     // selected sites
                     else
                     {
                       $list2_array[] = "
-                      <option value=\"".$inherit_db_record['parent']."\">".$inherit_db_record['parent']."</option>";
+                      <option value=\"".$inherit_db_record['parent']."\" title=\"".$site_name."\">".$siteaccess[$site_name]."</option>";
                     }
                   }
                 }
