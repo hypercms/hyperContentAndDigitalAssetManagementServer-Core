@@ -6876,6 +6876,12 @@ Release 05/2023
 - Modifications in format_ext in order to add the file extensions .prproj to the video category
 - Implementation of the new function update_database_v1012 in the update API in order to update the unknown filetype
 - Modifications in function updates_all in the Update API in order to integrate function update_database_v1012
+- Modifications in function getobjectlist in Get API in order to separate the search expression for the content and the file name search in the objectpath due to performance issues since the search index will not be used if both search expressions are present in the same query
+- Modifications in function rdbms_searchcontent in DB Connect in order to remove the search for an expression in the content and objectpath in the same query due to performance issues (fulltext search index will not be used)
+- Modifications in the standard Event System file in the install directory in order to implement new configuration settings for the search API for websites
+- Modifications in popup_status in order to disable/remove the reload of the object list after publishing or unpublishing objects
+- Modifications in the search API for websites in the install directory in order to support new configuration settings for the result design and the max length of the extract
+- Modifications in the search API for websites in the install directory in order to verify the configuration parameters and define default values as fallback
 - Implementation of new text records for dependencies in all language files
 - Design modifications in template_edit
 - Updates in the Hebrew and Thai language file

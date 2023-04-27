@@ -57,7 +57,7 @@ if (is_array ($siteaccess))
   if (!empty ($is_mobile)) $width = "320px";
   else $width = "320px";
 
-  sort ($siteaccess);
+  natcasesort ($siteaccess);
   
   foreach ($siteaccess as $site => $displayname)
   {
@@ -138,7 +138,7 @@ if (is_array ($siteaccess))
       <table style=\"margin-top:30px; width:100%; padding:0; border:1px solid #000000; border-collapse:collapse;\">
         <tr> 
           <td>
-            <div class=\"".$css_color."\" style=\"width:".ceil($percentage)."%; height:32px; text-align:center; font-size:26px; line-height:32px; overflow:hidden;\">".ceil($percentage)." %</div>
+            <div class=\"".$css_color."\" style=\"width:".ceil ($percentage)."%; height:32px; text-align:center; font-size:26px; line-height:32px; overflow:hidden;\">".ceil ($percentage)." %</div>
           </td>
         </tr>
       </table>";

@@ -2094,8 +2094,9 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     }
   }
 
-  // define default values (add all text IDs)
-  if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "template", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height", "text:temp");
+  // define default values
+  // to add all text IDs use: "text:temp"
+  if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "template", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height");
 
   // search is used (excluding cerrtain search filters)
   if (is_array ($search))
@@ -2111,7 +2112,16 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   }
 
   // query result limit
-  if (empty ($search['limit'])) $search['limit'] = 500;
+  if (!empty ($search['limit']))
+  {
+    if (strpos ($search['limit'], ",") > 0)
+    {
+      list ($starthits, $endhits) = explode (",", $search['limit']);
+      $maxresultsize = intval ($endhits) - intval ($starthits);
+    }
+    else $maxresultsize = intval ($search['limit']);
+  }
+  else $maxresultsize = $search['limit'] = 500;
 
   // search expression
   if (!empty ($search['expression']))
@@ -2445,7 +2455,29 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       // search
       elseif (!empty ($search_dir_esc) && is_array ($search_dir_esc) && sizeof ($search_dir_esc) > 0)
       {
+        // we need to separate the search expression and the file name search due to performance issues since the search index will not be used if both are present in the same query
+        // search for expression in content, requires $search['filename'] = "*Null*"
+        if (!empty ($search['expression_array']) && is_array ($search['expression_array']) && sizeof ($search['expression_array']) > 0)
+        {
+          $search_filename = $search['filename'];
+          $search['filename'] = "*Null*";
+        }
+        
         $result = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols, true);
+
+        // search for file name in objectpath if the previous query ha less than the max size of the result
+        if ($maxresultsize < 1) $maxresultsize = 10;
+
+        if ((empty ($result) || sizeof ($result) < $maxresultsize) && $search['filename'] == "*Null*" && !empty ($search_filename))
+        {
+          $search['expression_array'] = "";
+          $search['filename'] = $search_filename;
+
+          $result_add = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols, true);
+
+          // merge results
+          if (is_array ($result_add) && sizeof ($result_add) > 1) $result = array_merge ($result, $result_add);
+        }
       }
     }
 

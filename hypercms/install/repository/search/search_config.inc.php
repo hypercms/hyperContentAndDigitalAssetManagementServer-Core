@@ -6,10 +6,12 @@ $url_protocol = (!empty($_SERVER['HTTPS'])) ? 'https://' : 'http://';
 
 // location of index file
 $config['indexfile'] = "%abs_path_rep%/search/index/".$site.".dat";
-// CSS style class for the result table
+// CSS style class for the div container of the tiel bar and all results
 $config['css_div'] = "searchtext";
 // CSS style class for the headline of the result table
 $config['css_headline'] = "headline";
+// color code for the div container of a single search result
+$config['css_result'] = "searchresult";
 // color code for the search result title in the search results
 $config['css_title'] = "searchtitle";
 // color code for the URL-presentation in the search results
@@ -24,6 +26,8 @@ $config['maxpages'] = 20;
 $config['showdescription'] = false;
 // show extract with highlighted found expressions in the results
 $config['showextract'] = true;
+// max length of the extract in characters
+$config['maxextract'] = 180;
 // show URL in the results
 $config['showurl'] = true;
 // search expression must match exactly a word in the content (if 'true' * can be used as wild card character)
@@ -53,22 +57,22 @@ $text[0]['bg'] = "резултати";
 $text[0]['ru'] = "попытки";
 $text[0]['mk'] = "Погодоци";
 
-$text[1]['de'] = "Zeige Ergebnisse %start% - %end% von %max% Treffern f&uuml;r die Suche nach '%query%':";
-$text[1]['en'] = "Show results %start% - %end% of %max% hits for the search expression '%query%':";
+$text[1]['de'] = "Zeige Ergebnisse %start% - %end% von %max% Treffern f&uuml;r die Suche nach '%query%'";
+$text[1]['en'] = "Show results %start% - %end% of %max% hits for the search expression '%query%'";
 $text[1]['al'] = "Shfaq rezultatet %start% - %end% nga %max% hits for the search expression '%query%':";
-$text[1]['sk'] = "Uk&aacute;&#382; v&yacute;sledky %start% - %end% z %max% z&aacute;znamov pre h&#318;adan&yacute; v&yacute;raz '%query%':";
-$text[1]['cs'] = "Výsledky %start% - %end% z %max% pro hledaný výraz '%query%':";
-$text[1]['hu'] = "%start% - %end% tal&aacute;lat az &ouml;sszes %max% tal&aacute;lat alapj&aacute;n az '%query%' kifejez&eacute;sre:";
-$text[1]['me'] = "Prika&#382;i rezultate od %start%-%end% za pogotke pri pretrazi izraza '%query%':";
+$text[1]['sk'] = "Uk&aacute;&#382; v&yacute;sledky %start% - %end% z %max% z&aacute;znamov pre h&#318;adan&yacute; v&yacute;raz '%query%'";
+$text[1]['cs'] = "Výsledky %start% - %end% z %max% pro hledaný výraz '%query%'";
+$text[1]['hu'] = "%start% - %end% tal&aacute;lat az &ouml;sszes %max% tal&aacute;lat alapj&aacute;n az '%query%' kifejez&eacute;sre";
+$text[1]['me'] = "Prika&#382;i rezultate od %start%-%end% za pogotke pri pretrazi izraza '%query%'";
 $text[1]['ua'] = "Результати %start%-%end% з %max% за пошуковим запитом '%query%'";
-$text[1]['ro'] = "Afiseaza inregistrarile %start% - %end% din %max% inregistrari pentru textul cautat '%query%':";
+$text[1]['ro'] = "Afiseaza inregistrarile %start% - %end% din %max% inregistrari pentru textul cautat '%query%'";
 $text[1]['hr'] = "Prikaz reultata pretrage  %start% - %end% za traženi pojam";
 $text[1]['rs'] = "Prikaz rezultata pretrage %start% - %end% za traženi pojam";
 $text[1]['pl'] = "Wyniki %start% - %end% z %max% rezultatów wyszukiwania słowa '%query%'";
-$text[1]['it'] = "Mostra i risultati [%start% - %end%] di [%max%] risultati per la ricerca del termine '%query%':";
+$text[1]['it'] = "Mostra i risultati [%start% - %end%] di [%max%] risultati per la ricerca del termine '%query%'";
 $text[1]['ba'] = "Prikaži rezultat [%start% - %end%]  pretrage za traženi izraz '%query%'";
 $text[1]['bg'] = "Показване на [%start% - %end%] от [%max%] резултата от търсенето за '%query%'";
-$text[1]['ru'] = "Показать результат %start% - %end% %max% попыток для поиска запрашиваемого выражения  '%query%' ";
+$text[1]['ru'] = "Показать результат %start% - %end% %max% попыток для поиска запрашиваемого выражения '%query%'";
 $text[1]['mk'] = "Покажи резултати %start% - %end% od %max% погодоци пребаруваниот израз '%query%'";
 
 $text[2]['de'] = "Ergebnisseite";

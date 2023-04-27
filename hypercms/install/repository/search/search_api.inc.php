@@ -171,10 +171,15 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
   if ($query != "" && is_string ($query) && strlen ($query) < 800)
   {
     $data = loadindex ();
-  
+
     if ($lang == "" || !is_string ($lang)) $lang = "en";
     else $lang = htmlspecialchars (strtolower ($lang), ENT_QUOTES | ENT_HTML401, $charset);
-    
+
+    // results per page
+    if (empty ($config['results']) || intval ($config['results']) < 1) $config['results'] = 10;
+    // max result pages
+    if (empty ($config['maxpages']) || intval ($config['maxpages']) < 1) $config['maxpages'] = 20;
+    // save search history
     if (!empty ($config['search_log'])) writehistory ($query);
 
     if (is_array ($data))
@@ -182,9 +187,9 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
       $hquery = createquerypattern ($query);
       $query = htmlspecialchars ($query, ENT_QUOTES | ENT_HTML401, $charset);
       $start = intval ($start, 10);
-    
+
       $i = 0;
-          
+
       foreach ($data as $page)
       {
         if (strlen ($page) > 3 && $i < ($config['maxpages'] * $config['results']))
@@ -198,7 +203,7 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
             $title = $searchindex_record[2];
             $description = $searchindex_record[3];
             $content = $searchindex_record[4];
-            
+
             $query_check = true;
 
             // query attributes is given (all attribute checks must be successful!)
@@ -241,7 +246,7 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
               {
                 if (strlen ($content) > (($slice_count+1)*90000)) $slice = @substr ($url." ".$content, ($slice_count*90000), @strpos ($content, " ", (($slice_count+1)*90000)));
                 else $slice = @substr ($content, ($slice_count*90000));
-                
+
                 $hits_new = preg_match_all ($hquery, $slice, $slice_matches, PREG_OFFSET_CAPTURE);
                 if ($hits_new > 0) $matches = $slice_matches;
                 $hits = $hits + $hits_new;
@@ -249,37 +254,44 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
               }
             }
             else $hits = 0;
-  
+
             if ($hits > 0)
             {
               $hitpos = $matches[0][0][1];
               //var_dump($matches);
-              if ($hitpos-100 < 0) $offset = 0;
-              else $offset = $hitpos - 100; 
+
+              if (empty ($config['maxextract']) || intval ($config['maxextract']) < 1) $config['maxextract'] = 100;
+              else $config['maxextract'] = intval ($config['maxextract']);
+
+              if ($hitpos - $config['maxextract'] < 0) $offset = 0;
+              else $offset = $hitpos - $config['maxextract'];
+
               $startpos = strpos (" ".$content." ", " ", $offset);
-    
-              if ($hitpos + strlen($query) + 100 > strlen($content)) $offset = strlen ($content);
-              else $offset = $hitpos + strlen ($query) + 100;
+
+              if ($hitpos + strlen($query) + $config['maxextract'] > strlen($content)) $offset = strlen ($content);
+              else $offset = $hitpos + strlen ($query) + $config['maxextract'];
+
               $endpos = strpos (" ".$content." ", " ", $offset);
-    
-              $extract = "...".substr ($content, $startpos, $endpos-$startpos)."...";
+
+              $extract = "...".substr ($content, $startpos, $endpos - $startpos)."...";
               $extract = str_ireplace ($matches[0][0][0], "<strong>".$matches[0][0][0]."</strong>", $extract);
-    
+
               $result['hits'][$i] = $hits;
               $result['date'][$i] = $date;
               $result['url'][$i] = $url;
-    
+
               if ($title == "")
               {
-                if (strlen($content) > 40) $offset = 40;
-                else  $offset = strlen ($content);
+                if (strlen ($content) > 40) $offset = 40;
+                else $offset = strlen ($content);
+
                 $title = substr ($content, 0, strpos ($content." ", " ", $offset))."...";
               }
-    
+
               $result['title'][$i] = $title;
               $result['description'][$i] = $description;
               $result['extract'][$i] = $extract;
-    
+
               $i++;
             }
           }
@@ -290,27 +302,27 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
       {
         reset ($result['hits']);
         arsort ($result['hits']); 
-        
+
         if ($start == "" || $start == 0) $start = 1;  
         $end = $start + $config['results'] - 1;
         $max = sizeof ($result['hits']);
         $resultpages = round ($max / $config['results'] + 0.49);
         $currentpage = round ($start / $config['results'] + 0.49);
-     
+
         if ($end > $max) $end = $max;
-        
+
         if ($result_type == "html")
         {
-          echo "<div class='".$config['css_div']."'>\n";
-          echo "<span class='".$config['css_headline']."'>".insertvars ($text[1][$lang])."</span><br /><br />\n";
+          echo "<div class='".(!empty ($config['css_div']) ? $config['css_div'] : "")."'>\n";
+          echo "<span class='".(!empty ($config['css_headline']) ? $config['css_headline'] : "")."'>".insertvars ($text[1][$lang])."</span><br /><br />\n";
         }
-        
+
         for ($i=1; $i<=$end; $i++)
         {
           if ($i>=$start && $i<=$end)
           {
             $id = key ($result['hits']);
-          
+
             $title = $result['title'][$id];
 
             if (strlen ($result['url'][$id]) > 70) $url_short = substr ($result['url'][$id], 0, 70)."...";
@@ -318,7 +330,7 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
 
             $url_ext = strtolower (strrchr ($result['url'][$id], "."));
 
-            if ($config['icon_pdf'] != "" && $url_ext == ".pdf")
+            if (!empty ($config['icon_pdf']) && $url_ext == ".pdf")
             {
               $icon = "<span title='Icon'><img src=\"".$config['icon_pdf']."\" style=\"height:14px; border:0;\" align=\"absmiddle\" /></span>";
             }
@@ -329,14 +341,14 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
               $linktarget = "target=_blank";
             }
             else $linktarget = "";
-      
+
             if ($result_type == "html")
             {
-              echo "<span title='Hits'><strong>".$i.".</strong></span>&nbsp;".$icon."&nbsp;<span title='Title'><a href='".$result['url'][$id]."' class='".$config['css_title']."' ".$linktarget.">".$title."</a></span> <span title='Hits'>[".$result['hits'][$id]." ".$text[0][$lang]."]</span><br />\n";
-              if ($config['showdescription'] == true) echo "<span title='Description'>".$result['description'][$id]."</span><br />\n";
-              if ($config['showextract'] == true) echo "<span title='Extract'>".$result['extract'][$id]."</span><br />\n";
-              if ($config['showurl'] == true) echo "<span title='URL' class='".$config['css_url']."' title='".$result['url'][$id]."'>".$url_short."</span>&nbsp;-&nbsp;".$result['date'][$id]."<br />\n";
-              echo "<br />\n";
+              echo "<div class='".$config['css_result']."'><span title='Hits'><strong>".$i.".</strong></span>&nbsp;".$icon."&nbsp;<span title='Title'><a href='".$result['url'][$id]."' class='".$config['css_title']."' ".$linktarget.">".$title."</a></span> <span title='Hits'>[".$result['hits'][$id]." ".$text[0][$lang]."]</span><br />\n";
+              if (!empty ($config['showdescription'])) echo "<span title='Description'>".$result['description'][$id]."</span><br />\n";
+              if (!empty ($config['showextract'])) echo "<span title='Extract'>".$result['extract'][$id]."</span><br />\n";
+              if (!empty ($config['showurl'])) echo "<span title='URL' class='".$config['css_url']."' title='".$result['url'][$id]."'>".$url_short."</span>&nbsp;-&nbsp;".$result['date'][$id]."<br />\n";
+              echo "</div><br />\n";
             }
           }
           
@@ -372,21 +384,21 @@ function searchinindex ($query, $start, $exclude_url="", $include_url="", $resul
       }
       else
       {
-        if ($result_type == "html") echo "<span class='".$config['css_headline']."'>".insertvars ($text[3][$lang])."</span><br />\n";
+        if ($result_type == "html") echo "<span class='".(!empty ($config['css_headline']) ? $config['css_headline'] : "")."'>".insertvars ($text[3][$lang])."</span><br />\n";
 
         return true;      
       } 
     }
     else
     {
-      if ($result_type == "html") echo "<span class='".$config['css_headline']."'>".$text[4][$lang]."</span><br />\n";
+      if ($result_type == "html") echo "<span class='".(!empty ($config['css_headline']) ? $config['css_headline'] : "")."'>".$text[4][$lang]."</span><br />\n";
   
       return false;
     }
   }
   else
   {
-    if ($result_type == "html") echo "<span class='".$config['css_headline']."'>".$text[5][$lang]."</span><br />\n";
+    if ($result_type == "html") echo "<span class='".(!empty ($config['css_headline']) ? $config['css_headline'] : "")."'>".$text[5][$lang]."</span><br />\n";
 
     return false;
   }
@@ -527,9 +539,10 @@ function renameindex ($oldurl, $newurl)
   
   if ($oldurl!="" && $newurl!="")
   {
-  $data = loadindex ();
+    $data = loadindex ();
     $newdata = "";
     $update = false;
+
     if (is_array ($data))
     {
       foreach ($data as $page)
@@ -538,15 +551,16 @@ function renameindex ($oldurl, $newurl)
         {
           list ($date, $url, $title, $description, $content) = explode ("|", trim ($page));
         
-      if ($oldurl == $url)
+          if ($oldurl == $url)
           {
-      // delete from index if contains exclude path
-      if ($config['exclude_path'] != "" && substr_count ($newurl, $config['exclude_path']) > 0)
-      {
-          $update = true;
-        continue;
-      }
-      $newdata .= date ("Y-m-d", time())."|$newurl|$title|$description|$content\r\n";
+            // delete from index if contains exclude path
+            if ($config['exclude_path'] != "" && substr_count ($newurl, $config['exclude_path']) > 0)
+            {
+                $update = true;
+              continue;
+            }
+
+            $newdata .= date ("Y-m-d", time())."|$newurl|$title|$description|$content\r\n";
             $update = true;
           }
           elseif (substr_count ($url, $oldurl) == 1)
@@ -555,14 +569,14 @@ function renameindex ($oldurl, $newurl)
             if ($config['exclude_path'] != "" && substr_count ($newurl, $config['exclude_path']) > 0)
             {
               $update = true;
-        continue;
+              continue;
             }
+
             $insertUrl = str_replace ($oldurl, $newurl, $url);
             $newdata .= date ("Y-m-d", time())."|$insertUrl|$title|$description|$content\r\n";
             $update = true;
           }
           else $newdata .= $page;
-      
         }
       }
   

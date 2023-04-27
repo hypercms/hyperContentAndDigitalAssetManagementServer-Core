@@ -1912,10 +1912,12 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     // connect
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
+    // escape input values
     if (is_array ($object_type)) foreach ($object_type as &$value) $value = $db->rdbms_escape_string ($value);
     if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
     if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
     if ($template != "") $template = $db->rdbms_escape_string ($template);
+
     if ($maxhits != "")
     {
       if (strpos ($maxhits, ",") > 0)
@@ -2008,31 +2010,23 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       if (is_array ($sql_temp) && sizeof ($sql_temp) > 0) $sql_where['excludepath'] = '('.implode (" AND ", $sql_temp).')';
     }
 
-    // add file name search if expression array is of size 1 and is not a taxonomy, keyword or hierarchy path
-    if (empty ($expression_filename) && is_array ($expression_array) && sizeof ($expression_array) == 1 && !empty ($expression_array[0]) && strpos ("_".$expression_array[0], "%taxonomy%/") < 1 && strpos ("_".$expression_array[0], "%keyword%/") < 1 && strpos ("_".$expression_array[0], "%hierarchy%/") < 1) 
-    {
-      $expression_string = $expression_array[0];
-    }
-    // use file name expression for search
-    else $expression_string = $expression_filename;
-
-    // prepare search expression (transform special characters)
-    if (!empty ($expression_string))
+    // prepare expression for search in objectpath (transform special characters)
+    if (!empty ($expression_filename) && trim ($expression_filename) != "" && $expression_filename != "*Null*")
     {
       $temp_array = array();
       $sql_where['filename'] = "";
 
-      if (substr_count ($expression_string, " AND ") > 0)
+      if (substr_count ($expression_filename, " AND ") > 0)
       {
-        $temp_array[' AND '] = explode (" AND ", $expression_string);
+        $temp_array[' AND '] = explode (" AND ", $expression_filename);
       }
       
-      if (substr_count ($expression_string, " OR ") > 0)
+      if (substr_count ($expression_filename, " OR ") > 0)
       {
-        $temp_array[' OR '] = explode (" OR ", $expression_string);
+        $temp_array[' OR '] = explode (" OR ", $expression_filename);
       }
       
-      if (empty ($temp_array[' AND ']) && empty ($temp_array[' OR '])) $temp_array['none'][0] = $expression_string;
+      if (empty ($temp_array[' AND ']) && empty ($temp_array[' OR '])) $temp_array['none'][0] = $expression_filename;
       
       foreach ($temp_array as $temp_operator => $temp2_array)
       {
@@ -2079,37 +2073,33 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           // operator
           if ($temp_operator != "none" && trim ($sql_where['filename']) != "") $sql_where['filename'] .= $temp_operator;
 
-          // search in location and object name
-          if ($expression_filename != "*Null*")
+          // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
+          // But LIKE also is not able to use the fulltext index or any index if a wildcard is used at the beginning and will therefore be slower
+          if (strtolower ($mgmt_config['search_query_match']) == "like")
           {
-            // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
-            // But LIKE also is not able to use the fulltext index or any index if a wildcard is used at the beginning and will therefore be slower
-            if (strtolower ($mgmt_config['search_query_match']) == "like")
+            // must be case insensitive
+            if (!empty ($temp_expression_2)) $sql_where['filename'] .= '(obj.objectpathname LIKE "'.$temp_expression.'" OR obj.objectpathname LIKE "'.$temp_expression_2.'")';
+            else $sql_where['filename'] .= 'obj.objectpathname LIKE "'.$temp_expression.'"';
+          }
+          // search using MATCH AGAINST and the FULLTEXT INDEX
+          else
+          {
+            // if a location path is used the search must be exact and double quotes need to be used for the path expression
+            if (strpos ("_".$temp_expression, "/") > 0 && strpos ("_".$temp_expression, "\"") < 1 && strpos ("_".$temp_expression, "*") < 1 && strpos (" ".$temp_expression, " +") < 1 && strpos (" ".$temp_expression, " -") < 1)
             {
-              // must be case insensitive
-              if (!empty ($temp_expression_2)) $sql_where['filename'] .= '(obj.objectpathname LIKE "'.$temp_expression.'" OR obj.objectpathname LIKE "'.$temp_expression_2.'")';
-              else $sql_where['filename'] .= 'obj.objectpathname LIKE "'.$temp_expression.'"';
+              $sql_relevance[] = "MATCH (obj.objectpathname) AGAINST ('\"".$temp_expression."\"' IN BOOLEAN MODE) AS relevance";
+              $sql_where['filename'] .= "MATCH (obj.objectpathname) AGAINST ('\"".$temp_expression."\"' IN BOOLEAN MODE)";
             }
-            // search using MATCH AGAINST and the FULLTEXT INDEX
+            // if wildcards are used
+            elseif (preg_match('/["*()@~<>+-]/', $temp_expression))
+            {
+              $sql_relevance[] = "MATCH (obj.objectpathname) AGAINST ('".$temp_expression."' IN BOOLEAN MODE) AS relevance";
+              $sql_where['filename'] .= "MATCH (obj.objectpathname) AGAINST ('".$temp_expression."' IN BOOLEAN MODE)";
+            }
             else
             {
-              // if a location path is used the search must be exact and double quotes need to be used for the path expression
-              if (strpos ("_".$temp_expression, "/") > 0 && strpos ("_".$temp_expression, "\"") < 1 && strpos ("_".$temp_expression, "*") < 1 && strpos (" ".$temp_expression, " +") < 1 && strpos (" ".$temp_expression, " -") < 1)
-              {
-                $sql_relevance[] = "MATCH (obj.objectpathname) AGAINST ('\"".$temp_expression."\"' IN BOOLEAN MODE) AS relevance";
-                $sql_where['filename'] .= "MATCH (obj.objectpathname) AGAINST ('\"".$temp_expression."\"' IN BOOLEAN MODE)";
-              }
-              // if wildcards are used
-              elseif (preg_match('/["*()@~<>+-]/', $temp_expression))
-              {
-                $sql_relevance[] = "MATCH (obj.objectpathname) AGAINST ('".$temp_expression."' IN BOOLEAN MODE) AS relevance";
-                $sql_where['filename'] .= "MATCH (obj.objectpathname) AGAINST ('".$temp_expression."' IN BOOLEAN MODE)";
-              }
-              else
-              {
-                $sql_relevance[] = "MATCH (obj.objectpathname) AGAINST ('".$temp_expression."' IN NATURAL LANGUAGE MODE) AS relevance";
-                $sql_where['filename'] .= "MATCH (obj.objectpathname) AGAINST ('".$temp_expression."' IN NATURAL LANGUAGE MODE)";
-              }
+              $sql_relevance[] = "MATCH (obj.objectpathname) AGAINST ('".$temp_expression."' IN NATURAL LANGUAGE MODE) AS relevance";
+              $sql_where['filename'] .= "MATCH (obj.objectpathname) AGAINST ('".$temp_expression."' IN NATURAL LANGUAGE MODE)";
             }
           }
         }
@@ -2163,6 +2153,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       $sql_where['template'] = 'obj.template="'.$template.'"';
     }
 
+    // query content
     if (is_array ($expression_array) && sizeof ($expression_array) > 0)
     {
       $i = 1;
@@ -2385,7 +2376,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
               if (!empty ($temp_operator) && $temp_operator != "none" && $sql_expr_advanced[$i] != "") $sql_expr_advanced[$i] .= $temp_operator;
             }
             // general search in all textnodes/textcontent in table object since version 10.0.2
-            elseif (!empty ($mgmt_config['search_exact']) || !empty ($temp_expression))
+            elseif (!empty ($mgmt_config['search_exact']) || !empty ($expression))
             {
               $temp_array = array();
               $sql_where_textnodes = "";

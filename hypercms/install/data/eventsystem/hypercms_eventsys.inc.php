@@ -71,12 +71,15 @@ $eventsystem['ondeletegroup_post'] = 0;
 // ======================= for search engine ======================
 
 // Define publications to create search index for
-$eventsystem['searchsites'] = ";MyHomepage;";
+$eventsystem['searchpublications'] = array("MyHomepage");
 
-// Define character set for publications not using UTF-8
+// Define character set for publications which are not using UTF-8
 // $eventsystem ['searchcharset']['publicationname'] = "ISO-8859-1";
 
-// Define language suffix in text ID's
+// Define text ID's that holds the title of a page for a specific publication
+// $eventsystem['searchtitle']['publicationname'] = "Title";
+
+// Define language suffix used in text ID's for a specific publication
 // $eventsystem['searchlanguage']['publicationname'][0] = "_EN";
 // $eventsystem['searchlanguage']['publicationname'][1] = "_DE";
 
@@ -263,7 +266,7 @@ function onrenamefolder_post ($site, $cat, $location, $folder, $foldernew, $user
   $eventsystem['hide'] = 0; 
 
   // insert your program code here
-  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']))
+  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
@@ -334,7 +337,7 @@ function onfileupload_post ($site, $cat, $location, $object, $mediafile, $contai
   // get the file extension of the file
   $mediafile_ext = strtolower (strrchr ($mediafile, "."));
 
-  if (valid_publicationname ($site) && $cat == "comp" && $container != "" && $mediafile_ext == ".pdf" && empty ($mgmt_config[$site]['dam']))
+  if (valid_publicationname ($site) && $cat == "comp" && $container != "" && $mediafile_ext == ".pdf" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
@@ -469,7 +472,7 @@ function onrenameobject_post ($site, $cat, $location, $object, $objectnew, $user
   $eventsystem['hide'] = 0; 
   
   // insert your program code here
-  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']))
+  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
@@ -497,15 +500,15 @@ function ondeleteobject_pre ($site, $cat, $location, $object, $user)
   
   // insert your program code here 
 
-  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['dam']))
+  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
+    include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
+
     // get the file extension of the file
     $object_ext = strtolower (strrchr ($object, "."));
 
     if ($cat == "comp" && $object_ext == ".pdf")
     {
-      include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
-
       $objectdata = loadfile ($location, $object);
       if (!empty ($objectdata)) $mediafile = getfilename ($objectdata, "media");
       if (!empty ($mediafile)) $url = getmedialocation ($site, $mediafile, "url_path_media").$site."/".$mediafile;
@@ -514,8 +517,6 @@ function ondeleteobject_pre ($site, $cat, $location, $object, $user)
 
     if ($cat == "page")
     {
-      include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
-
       $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
       $url = str_replace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$object;
       if (!empty ($url)) removeindex ($url);
@@ -667,7 +668,7 @@ function onpasteobject_post ($site, $cat, $location, $locationnew, $object, $use
   $eventsystem['hide'] = 0; 
   
   // insert your program code here
-  if (valid_publicationname ($site) && $cat == "page" && !file_exists ($location.$object) && empty ($mgmt_config[$site]['dam']))
+  if (valid_publicationname ($site) && $cat == "page" && !file_exists ($location.$object) && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
@@ -748,8 +749,10 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
   $eventsystem['hide'] = 0; 
 
   // insert your program code here  
-  if (valid_publicationname ($site) && $cat == "comp" && empty ($mgmt_config[$site]['dam']))
+  if (valid_publicationname ($site) && $cat == "comp" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
+    include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
+
     $objectdata = loadfile ($location, $object);
     if (!empty ($objectdata)) $mediafile = getfilename ($objectdata, "media");
 
@@ -766,25 +769,26 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
 
       foreach ($eventsystem['searchlanguage'][$site] as $language_suffix)
       {
-        include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
+        if (strpos (strtolower ($object), strtolower ($language_suffix)) > 0 || empty ($language_suffix))
+        {
+          $url = getmedialocation ($site, $mediafile, "url_path_media").$site."/".$mediafile;
+          $title = specialchr_decode ($object);
+          $description = "";
+          
+          if (empty ($container_content)) $container_content = loadcontainer ($container_name, "work", $user);
+          if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>", true);
+          
+          if (!empty ($content_array[0])) $content = $content_array[0];
+          else $content = "";
 
-        $url = getmedialocation ($site, $mediafile, "url_path_media").$site."/".$mediafile;
-        $title = specialchr_decode ($object);
-        $description = "";
-        
-        if (empty ($container_content)) $container_content = loadcontainer ($container_name, "work", $user);
-        if (!empty ($container_content)) $content_array = getcontent ($container_content, "<content>", true);
-        
-        if (!empty ($content_array[0])) $content = $content_array[0];
-        else $content = "";
+          if (!empty ($eventsystem ['searchcharset'][$site])) $charset = $eventsystem ['searchcharset'][$site];
+          else $charset = "UTF-8";
 
-        if (!empty ($eventsystem ['searchcharset'][$site])) $charset = $eventsystem ['searchcharset'][$site];
-        else $charset = "UTF-8";
+          if (!empty ($language_suffix)) $language = array (str_replace ("_", "", strtolower ($language_suffix)));
+          else $language = Null;
 
-        if (!empty ($language_suffix)) $language = array (str_replace ("_", "", strtolower ($language_suffix)));
-        else $language = Null;
-
-        if (!empty ($content)) createindex ($url, $title, $description, $content, $charset, $language);
+          if (!empty ($content)) createindex ($url, $title, $description, $content, $charset, $language);
+        }
       }
     } 
   }
@@ -802,8 +806,11 @@ function onpublishobject_post ($site, $cat, $location, $object, $container_name,
   $eventsystem['hide'] = 0; 
 
   // insert your program code here
-  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']))
+  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
+    include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
+    $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
+
     if (empty ($eventsystem['searchlanguage'][$site]) || !is_array ($eventsystem['searchlanguage'][$site]))
     {
       $eventsystem['searchlanguage'][$site][0] = "";
@@ -811,28 +818,32 @@ function onpublishobject_post ($site, $cat, $location, $object, $container_name,
 
     foreach ($eventsystem['searchlanguage'][$site] as $language_suffix)
     {
-      include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
-      $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
-
       $url = str_replace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$object;
-      $title_array = getcontent ($container_content, "<pagetitle>", true);
 
-      if (empty ($title_array[0]))
+      // title from specific text ID
+      if (!empty ($eventsystem['searchtitle'][$site]))
       {
-        $textnode = selectcontent ($container_content, "<text>", "<text_id>", "Title".$language_suffix);
-        
+        $textnode = selectcontent ($container_content, "<text>", "<text_id>", $eventsystem['searchtitle'][$site].$language_suffix);
+
         if (!empty ($textnode[0])) $title_array = getcontent ($textnode[0], "<textcontent>", true);
       }
-      
+      // general page title
+      else $title_array = getcontent ($container_content, "<pagetitle>", true);
+
       if (!empty ($title_array[0])) $title = $title_array[0];
       else $title = "";
-        
+
+      // description
       $description_array = getcontent ($container_content, "<pagedescription>", true);
       
       if (!empty ($description_array[0])) $description = $description_array[0];
       else $description = "";
-      
-      $content = collectcontent ($container_content);
+
+      // text ID filter
+      if (!empty ($language_suffix)) $text_id = array("*".$language_suffix);
+      else $text_id = "";
+
+      $content = collectcontent ($container_content, $text_id);
 
       if (!empty ($eventsystem ['searchcharset'][$site])) $charset = $eventsystem ['searchcharset'][$site];
       else $charset = "UTF-8";
@@ -857,7 +868,7 @@ function onunpublishobject_pre ($site, $cat, $location, $object, $user)
   $eventsystem['hide'] = 0; 
 
   // insert your program code here  
-  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['dam']))
+  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
     if ($cat == "comp")
     {
@@ -868,7 +879,7 @@ function onunpublishobject_pre ($site, $cat, $location, $object, $user)
       if ($mediafile != "") $mediafile_ext = strtolower (strrchr ($mediafile, "."));
       else $mediafile_ext = "";
 
-      if ($mediafile_ext == ".pdf" && substr_count ($eventsystem['searchsites'], ";".$site.";") == 1)
+      if ($mediafile_ext == ".pdf")
       {
         include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
