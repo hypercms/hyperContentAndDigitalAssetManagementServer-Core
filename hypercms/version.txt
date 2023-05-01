@@ -6689,11 +6689,11 @@ Release 05/2023
 - Design modifications in Black design themes in order to add a border radius to all buttons and input elements
 - Modifications in popup_upload_html in order to implement the new local JS function getResponseAndBuildFileMessage
 - Design modifications in all home boxes in order to display object links as a standard link
-- Implementation of the support of long files names that need to be shortened (file names that consists of mainly special characters)
+- Implementation of the support of long file names that need to be shortened (file names that consists of mainly special characters)
 - Modifications in the Workplace Integration API in order to implement and support the global variable is_webdav that can be used to create special log entries by the function in the Main API
 - Modifications in function createfilename, createobject, createmediaobject, renameobject, deleteobject, createfolder, renamefolder, deletefolder, uploadfile, uploadhandler, downloadfile, createdownloadlink, createobjectaccesslink, and manipulateallobjects in Main API in order to support the new global variable is_webdav
-- Modifications in function renamegroupfolder, deletegroupfolder, ranemeworkflowfolder, and deleteworkflowfolder in Main API in order to implement error log entries
-- Modifications in function manipulateobject in Main API in order to remove log entries associated to function renamegroupfolder and ranemeworkflowfolder since the log entries will be provided by these functions
+- Modifications in function renamegroupfolder, deletegroupfolder, renameworkflowfolder, and deleteworkflowfolder in Main API in order to implement error log entries
+- Modifications in function manipulateobject in Main API in order to remove log entries associated to function renamegroupfolder and renameworkflowfolder since the log entries will be provided by these functions
 - Modifications in the Workplace Integration API in order to implement the support of the provided original file name and use this name for 8 hours in case a file name has been truncated, due to issues with the WebDAV client and truncated file names
 - Modifications in the Workplace Integration API in order to implement the support of the provided original folder name and use this name for 8 hours in case a folder name has been truncated, due to issues with the WebDAV client and truncated folder names
 - Implementation of the new main configuration setting $mgmt_config['webdav_lock'] in order to enable and disable the file locking
@@ -6883,6 +6883,7 @@ Release 05/2023
 - Modifications in popup_status in order to disable/remove the reload of the object list after publishing or unpublishing objects
 - Modifications in the search API for websites in the install directory in order to support new configuration settings for the result design and the max length of the extract
 - Modifications in the search API for websites in the install directory in order to verify the configuration parameters and define default values as fallback
+- Modifications in function manipulateobject in Main API in order to convert and deconvert the location before the basic niput verification since the converted location is required for the result
 - Implementation of new text records for dependencies in all language files
 - Design modifications in template_edit
 - Updates in the Hebrew and Thai language file

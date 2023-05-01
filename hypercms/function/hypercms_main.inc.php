@@ -15363,6 +15363,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
   // add slash if not present at the end of the location path
   $location = correctpath ($location);
+  
+  // convert location
+  $location = deconvertpath ($location, "file");
+  $location_esc = convertpath ($site, $location, $cat);
 
   // get category
   $cat = getcategory ($site, $location);
@@ -15377,10 +15381,6 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
-
-    // convert location
-    $location = deconvertpath ($location, "file");
-    $location_esc = convertpath ($site, $location, $cat);
 
     // remember the current publication and object name
     $temp_site = $site;
