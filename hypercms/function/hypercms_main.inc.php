@@ -7232,7 +7232,7 @@ function createpublication ($site_name, $user="sys")
             if ($test != false)
             {
               // set user permission for new publication and register them in the session
-              $_SESSION['hcms_siteaccess'][] = $site_name;
+              $_SESSION['hcms_siteaccess'][$site_name] = $site_name;
               $_SESSION['hcms_pageaccess'][$site_name]['Administrator'] = deconvertpath ("%page%/".$site_name."/|", "file");
               $_SESSION['hcms_compaccess'][$site_name]['Administrator'] = deconvertpath ("%comp%/".$site_name."/|", "file");
 
@@ -8606,9 +8606,9 @@ function deletepublication ($site_name, $user="sys")
             {
               $buffer = null;
 
-              foreach ($_SESSION['hcms_siteaccess'] as $value)
+              foreach ($_SESSION['hcms_siteaccess'] as $key => $value)
               {
-                if ($value != $site_name) $buffer[] = $value;
+                if ($key != $site_name) $buffer[$key] = $value;
               }
 
               $_SESSION['hcms_siteaccess'] = $buffer;

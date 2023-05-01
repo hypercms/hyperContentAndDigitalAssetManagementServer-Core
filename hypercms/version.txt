@@ -6859,6 +6859,7 @@ Release 05/2023
 - Implementation of a display name for publications that can be modified and may include special characters
 - Modifications in function editpublication in Main API in order to support the new display name besides the publication name
 - Modifications in function editpublication in Main API in order to verify that the same publication or display name is not already in use by another publication
+- Modifications in function deletepublication in Main API in order to support the new display name besides the publication name
 - Modifications in function userlogin in Security API in order to support the new display name besides the unique publication name in the siteaccess parameter
 - Modifications in all system components that use the siteaccess in order to support the new publication name as key and the display name as value of siteaccess array
 - Modifications in the Workplace Integration module in order to support the new display name besides the publication name

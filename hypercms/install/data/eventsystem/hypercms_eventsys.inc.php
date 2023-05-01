@@ -78,6 +78,7 @@ $eventsystem['searchpublications'] = array("MyHomepage");
 
 // Define text ID's that holds the title of a page for a specific publication
 // $eventsystem['searchtitle']['publicationname'] = "Title";
+$eventsystem['searchtitle']['MyHomepage'] = "Title";
 
 // Define language suffix used in text ID's for a specific publication
 // $eventsystem['searchlanguage']['publicationname'][0] = "_EN";

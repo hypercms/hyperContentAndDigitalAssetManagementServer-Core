@@ -505,7 +505,8 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
   { 
     $condvalue = trim ($condvalue);
 
-    // check if wild card characters are used in condvalue
+    // check if wildcard characters are used in condvalue
+    // wildcard at the beginning
     if ($condvalue != "" && $condvalue[0] == "*") 
     {
       $wc_begin = true;
@@ -513,6 +514,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
     }
     else $wc_begin = false;
 
+    // wildcard at the end
     if ($condvalue != "" && $condvalue[strlen ($condvalue) - 1] == "*") 
     {
       $wc_end = true;
