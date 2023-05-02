@@ -15363,13 +15363,13 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
   // add slash if not present at the end of the location path
   $location = correctpath ($location);
+
+  // get category
+  $cat = getcategory ($site, $location);
   
   // convert location
   $location = deconvertpath ($location, "file");
   $location_esc = convertpath ($site, $location, $cat);
-
-  // get category
-  $cat = getcategory ($site, $location);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && valid_objectname ($user) && $action != "")
   {
