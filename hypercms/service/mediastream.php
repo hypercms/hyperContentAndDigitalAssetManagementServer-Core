@@ -15,7 +15,7 @@ require ("../function/hypercms_api.inc.php");
 
 
 // input parameters
-// new crpyted media parameter since version 5.6.3
+// new crypted media parameter since version 5.6.3
 $wm = getrequest ("wm", "url");
 
 // --------------------------------- logic section ----------------------------------

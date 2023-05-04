@@ -40,7 +40,7 @@ if (valid_locationname ($location) && valid_publicationname ($site) && ($cat == 
   if (is_dir (deconvertpath ($location, "file")))
   {
     // add slash if not present at the end of the location string
-    $location = correctpath ($location);   
+    if (substr ($location, -1) != "/") $location = $location."/";
     $location = $location.".folder";
   }
   

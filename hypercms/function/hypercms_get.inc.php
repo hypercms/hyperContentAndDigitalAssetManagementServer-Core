@@ -2080,6 +2080,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     if (valid_publicationname ($site))
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+
       if (empty ($mgmt_config[$site]['connector_rest'])) return false;
     }
     else
@@ -2089,6 +2090,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
       if (valid_publicationname ($site))
       {
         require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+
         if (empty ($mgmt_config[$site]['connector_rest'])) return false;
       }
     }
@@ -2256,34 +2258,43 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
 
         foreach ($temp_sites as $temp_site => $temp_displayname)
         {
-          // assets
-          if (strpos ("_".$location, "%comp%/") > 0)
+          // publication management config
+          if (valid_publicationname ($temp_site) && is_file ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php"))
           {
-            $temp_objectpath_esc = "%comp%/".$temp_site."/.folder";
-            $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
-            if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
-          }
-          // pages
-          elseif (strpos ("_".$location, "%page%/") > 0)
-          {
-            $temp_objectpath_esc = "%page%/".$temp_site."/.folder";
-            $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
-            if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
-          }
-          // both
-          else
-          {
-            $temp_objectpath_esc = "%comp%/".$temp_site."/.folder";
-            $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
-            if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+            require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
 
-            $temp_objectpath_esc = "%page%/".$temp_site."/.folder";
-            $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
-            if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
-          }
+            if ($checkREST == false || !empty ($mgmt_config[$temp_site]['connector_rest']))
+            {
+              // assets
+              if (strpos ("_".$location, "%comp%/") > 0)
+              {
+                $temp_objectpath_esc = "%comp%/".$temp_site."/.folder";
+                $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
+                if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+              }
+              // pages
+              elseif (strpos ("_".$location, "%page%/") > 0)
+              {
+                $temp_objectpath_esc = "%page%/".$temp_site."/.folder";
+                $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
+                if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+              }
+              // both
+              else
+              {
+                $temp_objectpath_esc = "%comp%/".$temp_site."/.folder";
+                $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
+                if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
 
-          // return publications of user instead of folder access 
-          $return_site_access = true;
+                $temp_objectpath_esc = "%page%/".$temp_site."/.folder";
+                $temp_hash = rdbms_getobject_hash ($temp_objectpath_esc);
+                if (!empty ($temp_hash)) $root_dir_esc[$temp_hash]['objectpath'] = $temp_objectpath_esc;
+              }
+
+              // return publications of user instead of folder access 
+              $return_site_access = true;
+            }
+          }
         }
       }
     }
@@ -2302,6 +2313,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
           // verify publication
           if ((valid_publicationname ($site) && $site == $temp_site) || $site == "")
           {
+            // publication management config
             if ($checkREST == true && valid_publicationname ($temp_site)) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
 
             // verify permission for the RESTful API

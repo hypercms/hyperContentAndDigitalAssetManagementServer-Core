@@ -1967,8 +1967,6 @@ function convertpath ($site, $path, $cat="")
       $remove_slash = true;
     }
 
-    $path = correctpath ($path);
-
     if (substr_count ($path, "%page%") == 0 && substr_count ($path, "%comp%") == 0)
     {
       // load config if not available
@@ -2083,8 +2081,6 @@ function convertlink ($site, $path, $cat)
       $path = $path."/";
       $remove_slash = true;
     }
-
-    $path = correctpath ($path);
 
     if (substr_count ($path, "%page%") == 0 && substr_count ($path, "%comp%") == 0 && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
     {
@@ -2348,13 +2344,13 @@ function deconvertlink ($path, $type="url")
         // convert
         if ($type == "url") $path = str_replace ($root_var, $publ_config['url_publ_comp'], $path);
         elseif ($type == "file") $path = str_replace ($root_var, $publ_config['abs_publ_comp'], $path);
-      } 
-
-      return $path;
+      }
     }
-    else return $path;
+
+    return $path;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- mediapublicaccess -----------------------------
@@ -2466,12 +2462,6 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
   // initialize
   $error = array();
 
-  // deconvert location
-  $location = deconvertpath ($location, "file"); 
-
-  // if object includes special characters
-  $object = createfilename ($object, false);
-
   // check permissions (only if a publication and location has been provided)
   if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
   {
@@ -2486,6 +2476,15 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
 
   if (((valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "") || $object_id != "") && (($type == "al" && valid_objectname ($login)) || $type == "dl"))
   {
+    // deconvert location
+    $location = deconvertpath ($location, "file"); 
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
+
+    // if object includes special characters
+    $object = createfilename ($object, false);
+
     // check if object is folder or page/component
     if ($site != "" && $location != "" && $object != "")
     {
@@ -2527,7 +2526,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
     else
     {
       $errcode = "40911";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createaccesslink failed due to missing object id for: $objectpath";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createaccesslink failed due to missing object id for ".$objectpath." (input: ".$site.", ".$location.", ".$object.", ".$cat.", ".$object_id.", ".$login.", ".$type.", ".$lifetime.", ".$formats.")";
 
       savelog (@$error);
     }
@@ -2551,12 +2550,10 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
 
   // initialize
   $error = array();
+  $object_hash = false;
 
   if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
   {
-    // initialize
-    $object_hash = false;
-
     // check permissions (only if a publication and location has been provided)
     if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
     {
@@ -2568,6 +2565,9 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
 
     // deconvert location
     $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // if object includes special characters
     $object = trim ($object);
@@ -2629,7 +2629,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     else
     {
       $errcode = "40912";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createobjectaccesslink failed due to missing object id for object: ".$location.$object.", object ID: ".$object_id.", container ID: ".$container_id;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createobjectaccesslink failed due to missing object id for object ".$location.$object." (input: ".$site.", ".$location.", ".$object.", ".$cat.", ".$object_id.", ".$container_id."), object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
     }
@@ -2667,6 +2667,9 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 
     // deconvert location
     $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // if object includes special characters
     $object = trim ($object);
@@ -2738,7 +2741,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     else
     {
       $errcode = "40913";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createwrapperlink failed due to missing object id for object: ".$location.$object.", object ID: ".$object_id.", container ID: ".$container_id;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createwrapperlink failed due to missing object id for object ".$location.$object."  (input: ".$site.", ".$location.", ".$object.", ".$cat.", ".$object_id.", ".$container_id.", ".$type.", ".$mediaconfig."), object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
     }
@@ -2765,8 +2768,6 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 
   if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
   {
-    $object_hash = false;
-
     // check permissions (only if a publication and location has been provided)
     if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']) && valid_publicationname ($site) && valid_locationname ($location))
     {
@@ -2778,6 +2779,9 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 
     // deconvert location
     $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // if object includes special characters
     $object = trim ($object);
@@ -2851,7 +2855,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     else
     {
       $errcode = "40914";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createdownloadlink failed due to missing object id for object: ".$objectpath.", object ID: ".$object_id.", container ID: ".$container_id;
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createdownloadlink failed due to missing object id for object ".$objectpath." (input: ".$site.", ".$location.", ".$object.", ".$cat.", ".$object_id.", ".$container_id.", ".$type.", ".$mediaconfig."), object ID: ".$object_id.", container ID: ".$container_id;
 
       savelog (@$error);
     }
@@ -3294,15 +3298,15 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   // deconvert location
   $location = deconvertpath ($location, "file");
 
+  // add slash if not present at the end of the location string
+  $location = correctpath ($location);
+
   // create valid file name
   $page = createfilename ($page, false);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
   {
     $cat = getcategory ($site, $location);
-
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
 
     // read actual object info (to get associated content)
     $objectinfo = getobjectinfo ($site, $location, $page);
@@ -3724,14 +3728,14 @@ function loadfile_header ($abs_path, $filename)
   {
     $headersize = 2048;
 
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
     // deconvert path
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // add slash if not present at the end of the location string
+    $abs_path = correctpath ($abs_path);
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -3800,14 +3804,14 @@ function loadfile_fast ($abs_path, $filename)
   // check and correct file
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
     // deconvert path
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // add slash if not present at the end of the location string
+    $abs_path = correctpath ($abs_path);
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -3868,14 +3872,14 @@ function loadfile ($abs_path, $filename)
   // correct user name for file lock
   $lock = createlockname ($user);
 
-  // add slash if not present at the end of the location string
-  $abs_path = correctpath ($abs_path);
-
   // deconvert path
   if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
   {
     $abs_path = deconvertpath ($abs_path, "file");
   }
+
+  // add slash if not present at the end of the location string
+  $abs_path = correctpath ($abs_path);
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename) && !is_dir ($abs_path.$filename))
   {
@@ -3976,14 +3980,14 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
   // initialize
   $error = array();
 
-  // add slash if not present at the end of the location string
-  $abs_path = correctpath ($abs_path);
-
   // deconvert path
   if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
   {
     $abs_path = deconvertpath ($abs_path, "file");
   }
+
+  // add slash if not present at the end of the location string
+  $abs_path = correctpath ($abs_path);
 
   if (valid_objectname ($user) && valid_locationname ($abs_path) && valid_objectname ($filename) && !is_dir ($abs_path.$filename))
   {
@@ -4162,14 +4166,14 @@ function savefile ($abs_path, $filename, $filedata)
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
     // deconvert path
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // add slash if not present at the end of the location string
+    $abs_path = correctpath ($abs_path);
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -4235,14 +4239,14 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
     // correct user name for file lock
     $lock = createlockname ($user);
 
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
     // deconvert path 
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // add slash if not present at the end of the location string
+    $abs_path = correctpath ($abs_path);
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -4324,14 +4328,14 @@ function appendfile ($abs_path, $filename, $filedata, $savefile=false)
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename) && $filedata != "")
   {
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
     // deconvert path 
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // add slash if not present at the end of the location string
+    $abs_path = correctpath ($abs_path);
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -4419,14 +4423,14 @@ function lockfile ($user, $abs_path, $filename)
     // correct user name for file lock
     $lock = createlockname ($user);
 
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
     // deconvert path 
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // add slash if not present at the end of the location string
+    $abs_path = correctpath ($abs_path);
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -4475,14 +4479,14 @@ function unlockfile ($user, $abs_path, $filename)
     // correct user name for file lock
     $lock = createlockname ($user);
 
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
     // deconvert path 
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // add slash if not present at the end of the location string
+    $abs_path = correctpath ($abs_path);
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -4532,14 +4536,14 @@ function deletefile ($abs_path, $filename, $recursive=false)
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
-    // add slash if not present at the end of the location string
-    $abs_path = correctpath ($abs_path);
-
     // deconvert path 
     if (substr_count ($abs_path, "%page%") == 1 || substr_count ($abs_path, "%comp%") == 1)
     {
       $abs_path = deconvertpath ($abs_path, "file");
     }
+
+    // add slash if not present at the end of the location string
+    $abs_path = correctpath ($abs_path);
 
     // symbolic link
     if (is_link ($abs_path.$filename))
@@ -5074,7 +5078,11 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
 {
   global $mgmt_config, $eventsystem, $hcms_lang, $lang;
 
+  // deconvert location
   $location = deconvertpath ($location, "file");
+
+  // add slash if not present at the end of the location string
+  $location = correctpath ($location);
 
   // if object includes special characters
   $object = createfilename ($object, false);
@@ -12243,10 +12251,12 @@ function createfolder ($site, $location, $folder, $user)
 
     // deconvertpath location
     $location = deconvertpath ($location, "file");
-    $location_esc = convertpath ($site, $location, $cat);
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
+
+    // convert location
+    $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
     if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
@@ -12408,9 +12418,6 @@ function createfolders ($site, $location, $folder, $user)
   // default max length
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
-  // add slash if not present at the end of the location string
-  $location = correctpath ($location);
-
   // define category if undefined
   $cat = getcategory ($site, $location);
 
@@ -12424,6 +12431,9 @@ function createfolders ($site, $location, $folder, $user)
 
     // deconvertpath location
     $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // folder exists
     if (is_dir ($location.$folder)) return $result['result'] = true;
@@ -12502,15 +12512,13 @@ function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplic
 
   if (valid_publicationname ($site) && valid_locationname ($location) && $locationnew != "" && $folder != "")
   {
+    // deconvert locations
+    $location = deconvertpath ($location, "file");
+    $locationnew = deconvertpath ($locationnew, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
     $locationnew = correctpath ($locationnew);
- 
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");
-
-    if (substr_count ($locationnew, "%page%") == 1 || substr_count ($locationnew, "%comp%") == 1)
-      $locationnew = deconvertpath ($locationnew, "file"); 
 
     // define category if undefined
     $cat = getcategory ($site, $location);
@@ -12633,14 +12641,16 @@ function deletefolder ($site, $location, $folder, $user)
   // set default language
   if (empty ($lang)) $lang = "en"; 
 
-  // add slash if not present at the end of the location string
-  $location = correctpath ($location);
-
   // define category if undefined
   $cat = getcategory ($site, $location);
 
   // deconvertpath location
   $location = deconvertpath ($location, "file");
+
+  // add slash if not present at the end of the location string
+  $location = correctpath ($location);
+
+  // convert location
   $location_esc = convertpath ($site, $location, $cat);
 
   // folder name
@@ -12675,9 +12685,6 @@ function deletefolder ($site, $location, $folder, $user)
         return $result;
       }
     }
-
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
 
     // eventsystem
     if (!empty ($eventsystem['ondeletefolder_pre']) && empty ($eventsystem['hide']) && function_exists ("ondeletefolder_pre")) 
@@ -12817,11 +12824,13 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
     // define category if undefined
     $cat = getcategory ($site, $location); 
 
+    // deconvertpath location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
-    // deconvertpath location
-    $location = deconvertpath ($location, "file");
+    // convertpath location
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
@@ -13238,12 +13247,11 @@ function createobject ($site, $location, $page, $template, $user)
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
-
-    // convert location
-    $location = deconvertpath ($location, "file");
-    $location_esc = convertpath ($site, $location, $cat); 
 
     //  check if location exists
     if (!is_dir ($location))
@@ -13307,6 +13315,9 @@ function createobject ($site, $location, $page, $template, $user)
           return $result;
         }
       }
+
+      // convert location
+      $location_esc = convertpath ($site, $location, $cat); 
 
       // eventsystem
       if (!empty ($eventsystem['oncreateobject_pre']) && empty ($eventsystem['hide']) && function_exists ("oncreateobject_pre")) 
@@ -13904,11 +13915,13 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     }
     else $session_id = createuniquetoken ();
 
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
     // convert location
-    $location = deconvertpath ($location, "file");
     $location_esc = $result['location_esc'] = convertpath ($site, $location, $cat);
 
     // log entry
@@ -14805,11 +14818,8 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
     }
 
     // deconvert path
-    if (substr_count ($path_source_file, "%page%") == 1 || substr_count ($path_source_file, "%comp%") == 1)
-      $path_source_file = deconvertpath ($path_source_file, "file");
-
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");
+    $path_source_file = deconvertpath ($path_source_file, "file");
+    $location = deconvertpath ($location, "file");
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -15026,11 +15036,8 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
     } 
 
     // deconvert path
-    if (substr_count ($location_source, "%page%") == 1 || substr_count ($location_source, "%comp%") == 1)
-      $location_source = deconvertpath ($location_source, "file");
-
-    if (substr_count ($location_destination, "%page%") == 1 || substr_count ($location_destination, "%comp%") == 1)
-      $location_destination = deconvertpath ($location_destination, "file");
+    $location_source = deconvertpath ($location_source, "file");
+    $location_destination = deconvertpath ($location_destination, "file");
 
     // check if destination directory exists
     if (!is_dir ($location_source) || !is_dir ($location_destination)) return false;
@@ -15166,10 +15173,16 @@ function editmediaobject ($site, $location, $page, $format="jpg", $type="thumbna
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($user))
   {
+    // get category
+    $cat = getcategory ($site, $location);
+
+    // deconvert path
+    $location = deconvertpath ($location, "file");
+  
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
-    $cat = getcategory ($site, $location);
+    // convert location
     $location_esc = convertpath ($site, $location, $cat);
 
     $pagefile_info = getfileinfo ($site, $page, $cat);
@@ -15361,14 +15374,16 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
   // set default language as "en" if not set
   if (empty ($lang)) $lang = "en";
 
-  // add slash if not present at the end of the location path
-  $location = correctpath ($location);
-
   // get category
   $cat = getcategory ($site, $location);
+
+  // deconvert location
+  $location = deconvertpath ($location, "file");
+
+  // add slash if not present at the end of the location path
+  $location = correctpath ($location);
   
   // convert location
-  $location = deconvertpath ($location, "file");
   $location_esc = convertpath ($site, $location, $cat);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && accessgeneral ($site, $location, $cat) && valid_objectname ($user) && $action != "")
@@ -16955,11 +16970,11 @@ function deletemarkobject ($site, $location, $page, $user)
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
-
     // deconvert location
     $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // convert path
     $location_esc = convertpath ($site, $location, $cat);
@@ -17038,11 +17053,13 @@ function deleteunmarkobject ($site, $location, $page, $user)
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
     // convert location
-    $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat);
 
     // unmark as deleted
@@ -17096,8 +17113,11 @@ function deleteobject ($site, $location, $page, $user)
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // check permissions
     if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
@@ -17167,9 +17187,12 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
- 
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");
+
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // check permissions
     if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
@@ -17237,8 +17260,11 @@ function renamefile ($site, $location, $page, $pagenew, $user)
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)
-      $location = deconvertpath ($location, "file");
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // check permissions
     if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
@@ -17316,14 +17342,16 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
-
     // define category if undefined
     $cat = getcategory ($site, $location);
 
-    // convert location
+    // deconvert location
     $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
+
+    // convert location
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
@@ -17438,14 +17466,16 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location); 
-
     // define category if undefined
     $cat = getcategory ($site, $location);
 
-    // convert location
+    // deconvert location
     $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location); 
+
+    // convert location
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
@@ -17567,11 +17597,13 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
     // define category if undefined
     $cat = getcategory ($site, $location);
 
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
     // convert location
-    $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
@@ -17757,10 +17789,11 @@ function lockobject ($site, $location, $page, $user)
     // define category if undefined
     $cat = getcategory ($site, $location);
 
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
-
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1)  $location = deconvertpath ($location, "file");
 
     // define object file name
     if (is_dir ($location.$page))
@@ -17911,10 +17944,11 @@ function unlockobject ($site, $location, $page, $user)
     // define category if undefined
     $cat = getcategory ($site, $location);
 
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
-
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1) $location = deconvertpath ($location, "file");
 
     // define object file name
     if (is_dir ($location.$page))
@@ -18068,11 +18102,13 @@ function publishobject ($site, $location, $page, $user)
     // define category if undefined
     $cat = getcategory ($site, $location);
 
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
     // convert location
-    $location = deconvertpath ($location, "file");
     $location_esc = convertpath ($site, $location, $cat);
 
     // check location (only components of given publication are allowed)
@@ -18636,6 +18672,9 @@ function publishlinkedobject ($site, $location, $page, $user)
     // define category if undefined
     $cat = getcategory ($site, $location);
 
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
+
     if ($cat != "page") 
     {
       $object_array = getlinkedobject ($site, $location, $page, $cat);
@@ -18734,11 +18773,16 @@ function unpublishobject ($site, $location, $page, $user)
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
+    // get category
+    $cat = getcategory ($site, $location);
+
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
-    $cat = getcategory ($site, $location);
-    $location = deconvertpath ($location, "file");
+    // convert location
     $location_esc = convertpath ($site, $location, $cat);
 
     // check permissions
@@ -19138,12 +19182,16 @@ function processobjects ($action, $site, $location, $file, $published_only=false
     {
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
+
+    $action = strtolower ($action);
+
+    // deconvert location
+    $location = deconvertpath ($location, "file");
  
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
  
-    $action = strtolower ($action);
-    $location = deconvertpath ($location, "file");
+    // convert location
     $location_esc = convertpath ($site, $location, "");
 
     // define object file name
@@ -19477,11 +19525,14 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       {
         if ($objectpath != "")
         {
-          $site = getpublication ($objectpath);
-          $location = deconvertpath ($objectpath, "file"); 
-
           // get category
           $cat = getcategory ($site, $objectpath);
+
+          // get publication
+          $site = getpublication ($objectpath);
+
+          // convert location
+          $location = deconvertpath ($objectpath, "file"); 
 
           // check for .folder file and remove it, otherwise the folder is treated as a file
           if (getobject ($location) == ".folder") $location = getlocation ($location);
@@ -21106,8 +21157,6 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   if (empty ($lang)) $lang = "en";
   $lang_to = "en";
 
-  $location = deconvertpath ($location, "file"); 
-
   // create file name
   $object = createfilename ($object, false);
 
@@ -21118,11 +21167,16 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   {
     $mail_sent = false;
 
+    // get category
+    $cat = getcategory ($site, $location);
+
+    // deconvert location
+    $location = deconvertpath ($location, "file");
+
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
     // convert location
-    $cat = getcategory ($site, $location);
     $location_esc = convertpath ($site, $location, $cat);
 
     // get notifications
@@ -21718,6 +21772,7 @@ function createfavorite ($site="", $location="", $page="", $id="", $user="")
       // add slash if not present at the end of the location string
       $location = correctpath ($location);
 
+      // convert location
       if (substr_count ($location, "%page%") != 1 && substr_count ($location, "%comp%") != 1) $location = convertpath ($site, $location, $cat);
 
       $object_id = rdbms_getobject_id ($location.$page);
@@ -21786,6 +21841,7 @@ function deletefavorite ($site="", $location="", $page="", $id="", $user="")
       // add slash if not present at the end of the location string
       $location = correctpath ($location);
 
+      // convert location
       if (substr_count ($location, "%page%") != 1 && substr_count ($location, "%comp%") != 1) $location = convertpath ($site, $location, $cat);
 
       $object_id = rdbms_getobject_id ($location.$page);
@@ -22484,6 +22540,7 @@ function linking_inscope ($site, $location, $page="", $cat="")
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
+    // convert location
     if (valid_publicationname ($site)) $location = convertpath ($site, $location, $cat);
 
     // location must be a inside a linking location path (only links to folders)
@@ -22596,14 +22653,14 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
-
     // get category
     $cat = getcategory ($site, $location);
 
-    // deconvertpath location
+    // deconvert location
     $location = deconvertpath ($location, "file");
+
+    // add slash if not present at the end of the location string
+    $location = correctpath ($location);
 
     // if folder
     if (is_dir ($location.$page)) 

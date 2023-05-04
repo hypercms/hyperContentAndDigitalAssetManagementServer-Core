@@ -6883,7 +6883,10 @@ Release 05/2023
 - Modifications in popup_status in order to disable/remove the reload of the object list after publishing or unpublishing objects
 - Modifications in the search API for websites in the install directory in order to support new configuration settings for the result design and the max length of the extract
 - Modifications in the search API for websites in the install directory in order to verify the configuration parameters and define default values as fallback
-- Modifications in function manipulateobject in Main API in order to convert and deconvert the location before the basic niput verification since the converted location is required for the result
+- Modifications in function manipulateobject in Main API in order to convert and deconvert the location before the basic input verification since the converted location is part of the result
+- Modifications in function getobjectlist in Get API in order to verify that the REST API has been enabled for the publication when the publication root folders are requested
+- Modifications in function createaccesslink, createobjectaccesslink, createwrapperlink, and createdownloadlink in Main API in order to apply function correctpath to the location input parameter
+- Modifications in various functions in Main API in order to optimize the code
 - Implementation of new text records for dependencies in all language files
 - Design modifications in template_edit
 - Updates in the Hebrew and Thai language file

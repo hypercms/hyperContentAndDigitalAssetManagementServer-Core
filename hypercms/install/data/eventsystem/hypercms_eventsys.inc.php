@@ -809,50 +809,60 @@ function onpublishobject_post ($site, $cat, $location, $object, $container_name,
   // insert your program code here
   if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
   {
+    // Search API
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
-    $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
 
-    if (empty ($eventsystem['searchlanguage'][$site]) || !is_array ($eventsystem['searchlanguage'][$site]))
+    // publication management config
+    if (empty ($mgmt_config[$site]['abs_path_page'])) require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    // publication config
+    $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
+
+    if (!empty ($mgmt_config[$site]['abs_path_page']))
     {
-      $eventsystem['searchlanguage'][$site][0] = "";
-    }
-
-    foreach ($eventsystem['searchlanguage'][$site] as $language_suffix)
-    {
-      $url = str_replace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$object;
-
-      // title from specific text ID
-      if (!empty ($eventsystem['searchtitle'][$site]))
+      // set empty suffix as default value if undefined
+      if (empty ($eventsystem['searchlanguage'][$site]) || !is_array ($eventsystem['searchlanguage'][$site]))
       {
-        $textnode = selectcontent ($container_content, "<text>", "<text_id>", $eventsystem['searchtitle'][$site].$language_suffix);
-
-        if (!empty ($textnode[0])) $title_array = getcontent ($textnode[0], "<textcontent>", true);
+        $eventsystem['searchlanguage'][$site][0] = "";
       }
-      // general page title
-      else $title_array = getcontent ($container_content, "<pagetitle>", true);
 
-      if (!empty ($title_array[0])) $title = $title_array[0];
-      else $title = "";
+      foreach ($eventsystem['searchlanguage'][$site] as $language_suffix)
+      {
+        // create URL by replacing the page root path by the root URL 
+        $url = str_replace ($mgmt_config[$site]['abs_path_page'], $publ_config['url_publ_page'], $location).$object;
 
-      // description
-      $description_array = getcontent ($container_content, "<pagedescription>", true);
-      
-      if (!empty ($description_array[0])) $description = $description_array[0];
-      else $description = "";
+        // title from specific text ID
+        if (!empty ($eventsystem['searchtitle'][$site]))
+        {
+          $textnode = selectcontent ($container_content, "<text>", "<text_id>", $eventsystem['searchtitle'][$site].$language_suffix);
 
-      // text ID filter
-      if (!empty ($language_suffix)) $text_id = array("*".$language_suffix);
-      else $text_id = "";
+          if (!empty ($textnode[0])) $title_array = getcontent ($textnode[0], "<textcontent>", true);
+        }
+        // general page title
+        else $title_array = getcontent ($container_content, "<pagetitle>", true);
 
-      $content = collectcontent ($container_content, $text_id);
+        if (!empty ($title_array[0])) $title = $title_array[0];
+        else $title = "";
 
-      if (!empty ($eventsystem ['searchcharset'][$site])) $charset = $eventsystem ['searchcharset'][$site];
-      else $charset = "UTF-8";
+        // description
+        $description_array = getcontent ($container_content, "<pagedescription>", true);
+        
+        if (!empty ($description_array[0])) $description = $description_array[0];
+        else $description = "";
 
-      if (!empty ($language_suffix)) $language = array (str_replace ("_", "", strtolower ($language_suffix)));
-      else $language = Null;
+        // text ID filter
+        if (!empty ($language_suffix)) $text_id = array("*".$language_suffix);
+        else $text_id = "";
 
-      if (!empty ($content)) createindex ($url, $title, $description, $content, $charset, $language);
+        $content = collectcontent ($container_content, $text_id);
+
+        if (!empty ($eventsystem ['searchcharset'][$site])) $charset = $eventsystem ['searchcharset'][$site];
+        else $charset = "UTF-8";
+
+        if (!empty ($language_suffix)) $language = array (str_replace ("_", "", strtolower ($language_suffix)));
+        else $language = Null;
+
+        if (!empty ($content)) createindex ($url, $title, $description, $content, $charset, $language);
+      }
     }
   }
     
