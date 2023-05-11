@@ -6618,7 +6618,7 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
       // base64 encode
       if ($base64 == true)
       {
-        $image = "data:image/jpeg;base64,".base64_encode( file_get_contents ($mediadir.$thumbnail));
+        $image = "data:image/jpeg;base64,".base64_encode (file_get_contents ($mediadir.$thumbnail));
       }
       // view link
       else

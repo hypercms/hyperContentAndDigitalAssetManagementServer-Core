@@ -29,10 +29,12 @@ input, select, textarea, button, .hcmsTextArea
 {
   height: 36px;
   padding: 2px;
+  white-space: nowrap;
 }
 
 .hcmsToolbarBlock
 {
   padding-right: 3px;
   margin-right: 3px;
+  white-space: nowrap;
 }

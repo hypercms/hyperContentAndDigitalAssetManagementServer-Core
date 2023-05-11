@@ -2668,7 +2668,7 @@ function update_software ($type="update")
     $data['key'] = $mgmt_config['diskkey'];
     $data['version'] = $mgmt_config['version'];
 
-    $download_json = HTTP_Post ($mgmt_config['update_url'], $data, "application/x-www-form-urlencoded", "UTF-8", "", "body");
+    $download_json = HTTP_Post ($mgmt_config['update_url'], $data, "application/x-www-form-urlencoded", "", "body");
 
     // verify download link
     if (empty ($download_json)) return false;

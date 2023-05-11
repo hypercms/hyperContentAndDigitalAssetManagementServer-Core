@@ -2942,7 +2942,7 @@ function checkdiskkey ()
 
       // result must be true or the default hash key is provided by the system (free edition)
       if ((is_array ($result) && $result[0] == "true") || ($mgmt_config[$key] == "tg3234g234zg78ze8whf" && $data['modules'] == "")) return true;
-      else return false; 
+      else return false;
     }
     elseif (!empty ($mgmt_config[$hash]))
     {
@@ -2950,10 +2950,10 @@ function checkdiskkey ()
 
       if ($result != "")
       {
-        list ($server_ip, $modules, $cpu, $users, $storage, $timestamp) = explode (";", $result);
+        list ($server_ips, $modules, $cpu, $users, $storage, $timestamp) = explode (";", $result);
 
         // check limits
-        if ($server_ip == $data['server_ip'] && $modules == $data['modules'] && (intval ($cpu) <= 0 || intval ($data['cpu']) <= intval ($cpu)) && (intval ($users) <= 0 || intval ($data['users']) <= intval ($users)) && (intval ($storage) <= 0 || intval ($data['storage']) <= intval ($storage)) && ($timestamp <= 0 || time() <= $timestamp))
+        if (strpos (" ".$server_ips." ", $data['server_ip']) > 0 && $modules == $data['modules'] && (intval ($cpu) <= 0 || intval ($data['cpu']) <= intval ($cpu)) && (intval ($users) <= 0 || intval ($data['users']) <= intval ($users)) && (intval ($storage) <= 0 || intval ($data['storage']) <= intval ($storage)) && ($timestamp <= 0 || time() <= $timestamp))
         {
           return true;
         }
@@ -2961,7 +2961,7 @@ function checkdiskkey ()
         {
           // warning
           $errcode = "00130";
-          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|IP ".$data['server_ip']."(".$server_ip."), Modules ".$data['modules']."(".$modules."), CPU ".$data['cpu']."(".$cpu."), Users ".$data['users']."(".$users."), Storage ".$data['storage']."(".$storage."), Time ".time()."(".$timestamp.")";
+          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|IP=".$data['server_ip']." (".$server_ip."), Modules=".$data['modules']." (".$modules."), CPU=".$data['cpu']." (".$cpu."), Users=".$data['users']." (".$users."), Storage=".$data['storage']." (".$storage."), Time=".time()." (".$timestamp.")";
 
           savelog (@$error, "license");
           

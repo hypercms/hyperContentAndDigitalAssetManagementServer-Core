@@ -65,7 +65,7 @@ input:focus, select:focus, textarea:focus, .hcmsTextArea:focus
   border: 1px solid #FC9300;
 }
 
-input:disabled, select:disabled, textarea:disabled, button:disabled
+.disabled, input:disabled, select:disabled, textarea:disabled, button:disabled
 {
   filter: alpha(opacity=35);
   -moz-opacity: 0.35;
@@ -313,7 +313,7 @@ a.hcmsLink
 .hcmsToolbarBlock
 {
   float: left;
-  border-right: 2px solid #6DA6F5; 
+  border-right: 2px solid #6DA6F5;
 }
 
 a.hcmsNavigator
@@ -429,13 +429,13 @@ a.hcmsNavigator
 
 .hcmsPriorityMedium
 {
-  background-color: #4c96b6 !important;
+  background-color: #67a1ff !important;
   color: #000000 !important;
 }
 
 .hcmsPriorityLow
 {
-  background-color: #AECDFE !important;
+  background-color: #91bbff !important;
   color: #000000 !important;
 }
 

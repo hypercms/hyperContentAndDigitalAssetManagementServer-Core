@@ -369,7 +369,8 @@ if ($authorized == true || $force == "stop")
     // reload objectlist called by objectlist or control objectlist
     else if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame'] && window.top.frames['workplFrame'].frames['mainFrame'].location.pathname.indexOf('explorer_objectlist.php') > -1)
     {
-      window.top.frames['workplFrame'].frames['mainFrame'].location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+      // deprecated since version 10.1.1
+      // window.top.frames['workplFrame'].frames['mainFrame'].location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
 
       // close popup in main frame
       popupclose();

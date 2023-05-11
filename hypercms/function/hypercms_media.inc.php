@@ -1204,7 +1204,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
     }
 
     // try other methods
-    $filedata = @file_get_contents ($location_source.$file);
+    $filedata = HTTP_Get_contents ($location_source.$file);
 
     if ($filedata != "")
     {

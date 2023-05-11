@@ -5113,7 +5113,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
     else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
 
     // get content via HTTP in order ro render page
-    $content = @file_get_contents ($url_host.$prefix.$file_ext.$add);
+    $content = HTTP_Get_contents ($url_host.$prefix.$file_ext.$add);
 
     // deprecated since version 9.0.4 for performance improvemenents with presentation components:
     // remove temp file
@@ -5230,7 +5230,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     // read file without headers, no streaming supported (used by WebDAV)
     if ($force == "noheader")
     {
-      $filedata = @file_get_contents ($location.$media);
+      $filedata = HTTP_Get_contents ($location.$media);
     }
     // stream file and provide headers
     else
@@ -14005,7 +14005,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       elseif (substr ($global_files['Filedata']['tmp_name'], 0, 4) == "http")
       {
         // get remote file
-        $filedata = @file_get_contents ($global_files['Filedata']['tmp_name']);
+        $filedata = HTTP_Get_contents ($global_files['Filedata']['tmp_name']);
 
         if ($filedata && file_put_contents ($temp_file, $filedata) && is_file ($temp_file))
         {
@@ -19124,7 +19124,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
     else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_cms']);
 
     // call sendmail service
-    $response = HTTP_Post ($url_host."service/sendmail.php", $data, "application/x-www-form-urlencoded", "UTF-8");
+    $response = HTTP_Post ($url_host."service/sendmail.php", $data, "application/x-www-form-urlencoded", "", "body");
 
     // decode JSON response
     $result = json_decode ($response, true);
@@ -19525,11 +19525,11 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       {
         if ($objectpath != "")
         {
-          // get category
-          $cat = getcategory ($site, $objectpath);
-
           // get publication
           $site = getpublication ($objectpath);
+
+          // get category
+          $cat = getcategory ($site, $objectpath);
 
           // convert location
           $location = deconvertpath ($objectpath, "file"); 
@@ -20195,16 +20195,33 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
 // output: HTTP header [array] / false on error
 
 // description:
-// Extracts the HTTP headers from the response string (header and body are seperated by an empty line)
+// Extracts the HTTP headers from the response string (header and body are separated by an empty line)
 
 function HTTP_getheader ($response)
 {
+  // separate header from body
   if (strpos ($response, "\r\n\r\n") > 0)
   {
     $headers = array();
     $headertext = substr ($response, 0, strpos ($response, "\r\n\r\n"));
+  }
+  // assuming it is a header
+  else $headertext = $response;
 
-    foreach (explode ("\r\n", $headertext) as $i => $line)
+  // split header into array
+  if (!is_array ($headertext))
+  {
+    $header_array = explode ("\r\n", $headertext);
+  }
+  // array provided
+  elseif (is_array ($headertext))
+  {
+    $header_array = $headertext;
+  }
+
+  if (!empty ($header_array))
+  {
+    foreach ($header_array as $i => $line)
     {
       if ($i === 0)
       {
@@ -20226,10 +20243,10 @@ function HTTP_getheader ($response)
 // ---------------------- HTTP_getbody -----------------------------
 // function: HTTP_getbody()
 // input: HTTP response [string]
-// output: HTTP body [string] / false on error
+// output: HTTP body [string]
 
 // description:
-// Extracts the HTTP body from the response string (header and body are seperated by an empty line)
+// Extracts the HTTP body from the response string (header and body are separated by an empty line)
 
 function HTTP_getbody ($response)
 {
@@ -20240,156 +20257,143 @@ function HTTP_getbody ($response)
     return trim ($body);
   }
   
-  return false;
+  return $response;
 }
 
 // ---------------------- HTTP_Post -----------------------------
 // function: HTTP_Post()
-// input: URL [string], data (raw data) [array], content-type [application/x-www-form-urlencoded,multipart/form-data] (optional), character set [string] (optional), referrer [string] (optional), response type [full,header,body] (optional)
+// input: URL [string], data (raw data) [array], content-type [application/x-www-form-urlencoded,multipart/form-data] (optional), character set [string] (optional), referrer [string] (optional), response type [header,body] (optional), 
+//        without the certificate issuer verification [bollean] (optional)
 // output: HTTP response [string], header [array], or body [string] based on the requested response type / false on error
 
 // description:
-// Sends data via HTTP post and returns the response body
+// Sends data via HTTP post and returns the response header or body
 
-function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded", $charset="UTF-8", $referrer="", $response_type="body") 
+function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded", $charset="UTF-8", $referrer="", $response_type="body", $insecure=true) 
 {
   global $mgmt_config;
 
   // initialize
   $error = array();
+  $result = false;
+
+  // reset insecure parameter
+  if (!empty ($mgmt_config['https_verify_ca'])) $insecure = false;
 
   if ($URL != "" && substr_count ($URL, "://") > 0)
   {
-    $request = "";
-
-    // parsing the given URL
-    $URL_Info = parse_url ($URL);
-
-    // if SSL is used
-    if (substr_count ($URL, "https://")==1)
-    {
-      $Host_protocol = "ssl://";
-
-      // Find out which port is needed - if not given use standard (=443)
-      if (!isset ($URL_Info["port"])) $URL_Info["port"] = 443;
-    }
-    else
-    {
-      $Host_protocol = "";
-
-      // Find out which port is needed - if not given use standard (=80)
-      if (!isset ($URL_Info["port"])) $URL_Info["port"] = 80;
-    }
-
     // if not given use this script as referrer
     if ($referrer == "" && isset ($_SERVER["SCRIPT_URI"])) $referrer = $_SERVER["SCRIPT_URI"];
 
-    // building POST-request
+    // define header
+    $header = array();
+
+    if (!empty ($referrer)) $header[] = "Referer: ".$referrer;
+
     // for content-type = application/x-www-form-urlencoded 
-    if ($contenttype == "application/x-www-form-urlencoded")
+    if (strtolower ($contenttype) == "application/x-www-form-urlencoded")
     {
-      // making string from $data
-      $data_string = "";
-
-      if (is_array ($data))
-      {
-        $data_string = http_build_query ($data);
-      }
-
-      $request .= "POST ".$URL_Info["path"]." HTTP/1.1\r\n";
-      $request .= "Host: ".$URL_Info["host"]."\r\n";
-      $request .= "Referer: ".$referrer."\r\n";
-      $request .= "Content-type: ".$contenttype."; charset=".$charset."\r\n";
-      $request .= "Content-length: ".strlen ($data_string)."\r\n";
-      $request .= "Connection: close\r\n";
-      $request .= "\r\n";
-      $request .= $data_string;
+      // create POST data
+      if (is_array ($data)) $postdata = http_build_query ($data);
+      else $postdata = "";
+      
+      // headers
+      if (!empty ($charset)) $header[] = "Content-type: ".$contenttype."; charset=".$charset;
+      else $header[] = "Content-type: ".$contenttype;
     }
     // for content-type = multipart/form-data
-    elseif ($contenttype == "multipart/form-data")
+    elseif (strtolower ($contenttype) == "multipart/form-data")
     {
-      $boundary = "---------------------".substr(md5(rand(0,32000)),0,10);
+      // define boundary
+      $boundary = "---------------------".substr (md5 (rand (0, 32000)), 0, 10);
 
-      // making string from $data
-      $data_string = "";
+      // create POST data
+      $postdata = "";
  
       if (is_array ($data))
       {
         foreach ($data as $key => $val)
         {
+          // exclude file content
           if ($key != "content")
           {
-            $data_string .= "--$boundary\r\n";
-            $data_string .= "Content-Disposition: form-data; name=\"".$key."\"\r\n\r\n".$val."\r\n";
+            $postdata .= "--".$boundary."\r\n";
+            $postdata .= "Content-Disposition: form-data; name=\"".$key."\"\r\n\r\n".$val."\r\n";
           }
         }
  
-        $data_string .= "--$boundary\r\n";
+        $postdata .= "--$boundary\r\n";
       }
 
-      $request .= "POST ".$URL_Info["path"]." HTTP/1.0\r\n";
-      $request .= "Host: ".$URL_Info["host"]."\r\n";
-      if (!empty ($referrer)) $request .= "Referer: ".$referrer."\r\n";
-      //$request .= "Keep-Alive: 300\n";
-      //$request .= "Connection: keep-alive\n";
-      $request .= "Content-type: multipart/form-data; boundary=".$boundary."\r\n";
-
-      // collect FILE data
+      // collect file data
       if ($data['page'] != "")
       {
-        $data_string .= "Content-Disposition: form-data; name=\"Filedata\"; filename=\"".$data['page']."\"\r\n";
-        $data_string .= "Content-Type: ".getmimetype ($data['page'])."\r\n";
-        $data_string .= "Content-Transfer-Encoding: binary\r\n\r\n";
-        $data_string .= $data['content']."\r\n";
-        $data_string .= "--$boundary--\r\n";
+        $postdata .= "Content-Disposition: form-data; name=\"Filedata\"; filename=\"".$data['page']."\"\r\n";
+        $postdata .= "Content-Type: ".getmimetype ($data['page'])."\r\n";
+        $postdata .= "Content-Transfer-Encoding: binary\r\n\r\n";
+        $postdata .= $data['content']."\r\n";
+        $postdata .= "--".$boundary."--\r\n";
       }
 
-      $request .= "Content-length: ".strlen($data_string)."\r\n";
-      $request .= "\r\n";
-      $request .= $data_string;
+      // headers
+      $header[] = "Content-type: multipart/form-data; boundary=".$boundary;
+      $header[] = "Content-length: ".strlen ($postdata)."\r\n";
     }
- 
-    $fp = @fsockopen ($Host_protocol.$URL_Info["host"], $URL_Info["port"]);
 
-    $result = "";
+    // POST options
+    $opts = array();
 
-    if ($fp)
+    $opts['http'] = array(
+      'method'  => 'POST',
+      'header'  => implode ("\r\n", $header),
+      'content' => $postdata
+    );
+
+    if (!empty ($insecure)) $opts['ssl'] = array(
+      'verify_peer' => false,
+      'verify_peer_name' => false
+    );
+
+    $context  = stream_context_create ($opts);
+
+    // send request
+    $result = file_get_contents ($URL, false, $context);
+
+    // on success
+    if (!empty ($result))
     {
-      @fwrite ($fp, $request);
-
-      while (!feof ($fp)) 
-      {
-        $result .= @fgets ($fp, 1024);
-      }
-
-      @fclose ($fp);
-
-      // deprecated since version 9.1.5
-      // remove HTTP header information from the xml/html-document
-      // if (strpos ($result, "<") > 0) $result = substr ($result, strpos ($result, "<"), strrpos ($result, ">") - strpos ($result, "<") + 1);
-      // remove HTTP header information from the JSON string
-      // elseif (strpos ($result, "{") > 0) $result = substr ($result, strpos ($result, "{"), strrpos ($result, "}") - strpos ($result, "{") + 1);
-
       // remove HTTP body information from the response
-      if (strtolower ($response_type) == "header") $result = HTTP_getheader ($result);
+      if (strtolower ($response_type) == "header")
+      {
+        if (!empty ($http_response_header)) $result = HTTP_getheader ($http_response_header);
+        else $result = HTTP_getheader ($result);
+      }
       // remove HTTP header information from the response
-      elseif (strtolower ($response_type) == "body") $result = HTTP_getbody ($result);
+      elseif (strtolower ($response_type) == "body")
+      {
+        $result = HTTP_getbody ($result);
+      }
     }
-    else $result = false;
- 
-    return $result;
+    // on error
+    else
+    {
+      $errcode = "10821";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not send POST request to ".$URL;
+
+      savelog (@$error);
+    }
   }
-  
-  return false;
+
+  return $result;
 }
 
 // ---------------------- HTTP_Get -----------------------------
 // function: HTTP_Get()
-// input: URL [string],  data (raw data) [array] (optional), content-type [string excl. charset] (optional), character set [string] (optional), response type [full,header,body] (optional)
+// input: URL [string], data (raw data) [array] (optional), content-type [string excl. charset] (optional), character set [string] (optional), response type [full,header,body] (optional)
 // output: HTTP response [string], header [array], or body [string] based on the requested response type / false on error
 
 // description:
-// Sends data via http get and returns response
+// Sends data via http get and returns the response
 
 function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencoded", $charset="UTF-8", $response_type="body") 
 {
@@ -20397,6 +20401,7 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
   
   // initialize
   $error = array();
+  $result = false;
 
   if ($URL != "" && substr_count ($URL, "://") > 0)
   {
@@ -20417,7 +20422,6 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
     $request .= "GET ".$URL_Info["path"].$data_string." HTTP/1.1\n";
 
     $request .= "Connection: close\n";
-    $request .= "User-Agent: Mozilla/4.05C-SGI [en] (X11; I; IRIX 6.5 IP22)\n";
     $request .= "Cache-Control: no-cache\n";
     $request .= "Content-Type: ".$contenttype."; charset=".$charset."\r\n";
 
@@ -20449,12 +20453,80 @@ function HTTP_Get ($URL, $data="", $contenttype="application/x-www-form-urlencod
       // remove HTTP header information from the response
       elseif (strtolower ($response_type) == "body") $result = HTTP_getbody ($result);
     }
-    else $result = false;
-
-    return $result;
   }
   
-  return false;
+  return $result;
+}
+
+// ---------------------- HTTP_Get_contents -----------------------------
+// function: HTTP_Get_contents()
+// input: URL or path [string], response type [header,body] (optional), without the certificate issuer verification [bollean] (optional)
+// output:response [string] / false on error
+
+// description:
+// Sends a standard http get request with or without certificate issuer verification and returns the response.
+// This is a wrapper function for the PHP function file_get_contents.
+
+function HTTP_Get_contents ($URL, $response_type="body", $insecure=true)
+{
+  global $mgmt_config;
+
+  // initialize
+  $error = array();
+  $result = false;
+
+  // reset insecure parameter
+  if (!empty ($mgmt_config['https_verify_ca'])) $insecure = false;
+
+  // GET request
+  if ($URL != "" && substr_count ($URL, "://") > 0)
+  {
+    $context = null;
+
+    if (!empty ($insecure) && substr ($URL, 0, 6) == "https:")
+    {
+      $context = stream_context_create ([
+        'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false
+        ]
+      ]);
+    }
+
+    // send request
+    $result = file_get_contents ($URL, false, $context);
+
+    // on success
+    if (!empty ($result))
+    {
+      // remove HTTP body information from the response
+      if (strtolower ($response_type) == "header")
+      {
+        if (!empty ($http_response_header)) $result = HTTP_getheader ($http_response_header);
+        else $result = HTTP_getheader ($result);
+      }
+      // remove HTTP header information from the response
+      elseif (strtolower ($response_type) == "body")
+      {
+        $result = HTTP_getbody ($result);
+      }
+    }
+    // on error
+    else
+    {
+      $errcode = "10822";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not send GET request to ".$URL;
+
+      savelog (@$error);
+    }
+  }
+  // read file
+  elseif ($URL != "" && is_file ($URL))
+  {
+    $result = file_get_contents ($URL);
+  }
+
+  return $result;
 }
 
 // ---------------------- HTTP_Proxy -----------------------------
@@ -22055,7 +22127,7 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
 
   if ($file != "" && is_file ($file))
   {
-    $data = file_get_contents ($file);
+    $data = HTTP_Get_contents ($file);
 
     // prepare and save CSV data
     if ($data != "")

@@ -35,72 +35,7 @@ else $preview = "yes";
 checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>hyperCMS</title>
-<meta charset="<?php echo getcodepage ($lang); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
-<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
-<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
-<script type="text/javascript" src="javascript/click.min.js"></script>
-<script type="text/javascript">
 
-function markAll ()
-{
-  f = document.forms[0];
- 
-  for (i = 0; i < f.elements.length; i++)
-  {
-    if (f.elements[i].name != "select")
-      if (!f.elements[i].checked) f.elements[i].click();
-  }
-}
-
-function unmarkAll ()
-{
-  f = document.forms[0];
-  
-  for (i = 0; i < f.elements.length; i++)
-  {
-    if (f.elements[i].name != "select")
-      if (f.elements[i].checked) f.elements[i].click();
-  }
-}
-
-function checkMark ()
-{
-  if (document.forms['groupform'].selectall.checked) markAll();
-  else unmarkAll();
-}
-
-function goToAccess (target)
-{
-  document.forms['groupform'].elements['cat'].value = target;
-  document.forms['groupform'].submit();
-}
-
-function saveGroup ()
-{
-  hcms_showFormLayer ('savelayer', 0);
-  document.forms['groupform'].submit();
-}
-
-function hcms_saveEvent ()
-{
-  saveGroup();
-}
-</script>
-</head>
-
-<body class="hcmsWorkplaceGeneric" onload="hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png')">
-
-<!-- saving --> 
-<div id="savelayer" class="hcmsLoadScreen"></div>
-
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
-<?php
 // check if login is an attribute of a sent string
 if (strpos ($group_name, ".php") > 0)
 {
@@ -335,6 +270,147 @@ else
   $title = getescapedtext ($hcms_lang['permissions-of-group'][$lang]);
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>hyperCMS</title>
+<meta charset="<?php echo getcodepage ($lang); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
+<link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
+<script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
+<script type="text/javascript" src="javascript/click.min.js"></script>
+<style>
+.box
+{
+  display: inline-block;
+  vertical-align: top;
+  width: <?php if ($is_mobile) echo "360"; else echo "480"; ?>px;
+  margin: 0px 10px 10px 0px;
+  overflow: auto;
+}
+</style>
+<script type="text/javascript">
+
+function markAll ()
+{
+  f = document.forms[0];
+ 
+  for (i = 0; i < f.elements.length; i++)
+  {
+    if (f.elements[i].name != "select")
+      if (!f.elements[i].checked) f.elements[i].click();
+  }
+}
+
+function unmarkAll ()
+{
+  f = document.forms[0];
+  
+  for (i = 0; i < f.elements.length; i++)
+  {
+    if (f.elements[i].name != "select")
+      if (f.elements[i].checked) f.elements[i].click();
+  }
+}
+
+function checkMark ()
+{
+  if (document.forms['groupform'].selectall.checked) markAll();
+  else unmarkAll();
+}
+
+function switchPermissions (groupelement, classname)
+{
+  if (groupelement && classname != "")
+  {
+    const rows = document.getElementsByClassName(classname);
+
+    for (let i = 0; i < rows.length; i++)
+    {
+      if (groupelement.checked == true) rows[i].classList.remove("disabled");
+      else rows[i].classList.add("disabled");
+    }
+  }
+}
+
+function initPermissions ()
+{
+  if (document.getElementById('desktopglobal')) switchPermissions (document.getElementById('desktopglobal'), 'hcmsDesktop');
+  if (document.getElementById('siteglobal')) switchPermissions (document.getElementById('siteglobal'), 'hcmsPublications');
+
+  if (document.getElementById('administration'))
+  {
+    switchPermissions (document.getElementById('administration'), 'hcmsAdministration');
+
+    if (document.getElementById('administration').checked == true)
+    {
+      if (document.getElementById('userglobal')) switchPermissions (document.getElementById('userglobal'), 'hcmsUsers');
+      if (document.getElementById('groupglobal')) switchPermissions (document.getElementById('groupglobal'), 'hcmsGroups');
+    }
+  }
+
+  if (document.getElementById('persglobal'))
+  {
+    switchPermissions (document.getElementById('persglobal'), 'hcmsPersonalization');
+
+    if (document.getElementById('persglobal').checked == true)
+    {
+      switchPermissions (document.getElementById('perstrack'), 'hcmsPersonalizationTracking');
+      switchPermissions (document.getElementById('persprof'), 'hcmsPersonalizationProfile');
+    }
+  }
+
+  if (document.getElementById('workflowglobal'))
+  {
+    switchPermissions (document.getElementById('workflowglobal'), 'hcmsWorkflow');
+
+    if (document.getElementById('workflowglobal').checked == true)
+    {
+      switchPermissions (document.getElementById('workflowproc'), 'hcmsWorkflowEditor');
+      switchPermissions (document.getElementById('workflowscript'), 'hcmsWorkflowScript');
+    }
+  }
+
+  if (document.getElementById('templateglobal'))
+  {
+    switchPermissions (document.getElementById('templateglobal'), 'hcmsTemplate');
+
+    if (document.getElementById('templateglobal').checked == true)
+    {
+      switchPermissions (document.getElementById('tpl'), 'hcmsTemplateEditor');
+      switchPermissions (document.getElementById('tplmedia'), 'hcmsTemplateMedia');
+    }
+  }
+
+  if (document.getElementById('componentglobal')) switchPermissions (document.getElementById('componentglobal'), 'hcmsAssets');
+  if (document.getElementById('pageglobal')) switchPermissions (document.getElementById('pageglobal'), 'hcmsPages');
+}
+
+function goToAccess (target)
+{
+  document.forms['groupform'].elements['cat'].value = target;
+  document.forms['groupform'].submit();
+}
+
+function saveGroup ()
+{
+  hcms_showFormLayer ('savelayer', 0);
+  document.forms['groupform'].submit();
+}
+
+function hcms_saveEvent ()
+{
+  saveGroup();
+}
+</script>
+</head>
+
+<body class="hcmsWorkplaceGeneric" onload="initPermissions(); hcms_preloadImages('<?php echo getthemelocation(); ?>img/button_ok_over.png');">
+
+<!-- saving --> 
+<div id="savelayer" class="hcmsLoadScreen"></div>
+
+<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
 
 <p class="hcmsHeadline"><?php echo $title; ?> <?php echo $group_name; ?></p>
 
@@ -345,8 +421,8 @@ else
   <input type="hidden" name="group_name" value="<?php echo $group_name; ?>">
   <input type="hidden" name="permission[default]" value="dummy">
   <input type="hidden" name="token" value="<?php echo createtoken ($user); ?>">
-  
-  <table class="hcmsTableStandard" style="min-width:320px;">
+
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr>
       <td style="white-space:nowrap;"><label><input type="checkbox" name="selectall" onClick="checkMark();" />
       <?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></label></td>
@@ -355,336 +431,369 @@ else
       <td>&nbsp;</td>
       <td>&nbsp;</td>
     </tr>
-
+  </table>
+  
+  
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
     <!-- Desktop -->
     <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[desktopglobal]" value="1" <?php if ($desktopglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="desktopglobal" name="permission[desktopglobal]" onclick="initPermissions();" value="1" <?php if ($desktopglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <b><img src="<?php echo getthemelocation(); ?>img/desk.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-desktop-management'][$lang]." / ".$hcms_lang['plugins'][$lang]); ?> &nbsp;</b></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsDesktop">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[desktopsetting]" value="1" <?php if ($desktopsetting==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['personal-settings'][$lang]); ?></label></td>
     </tr>
-
     <?php if (is_file ($mgmt_config['abs_path_cms']."project/project_list.php")) { ?>
     <!-- Projects -->
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsDesktop">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[desktopprojectmgmt]" value="1" <?php if ($desktopprojectmgmt==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['project-management'][$lang]); ?></label></td>
     </tr>
     <?php } ?>
-
     <?php if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?>
     <!-- Tasks -->
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsDesktop">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[desktoptaskmgmt]" value="1" <?php if ($desktoptaskmgmt==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?></label></td>
     </tr>
     <?php } ?>
-
     <!-- Favorites -->
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsDesktop">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[desktopfavorites]" value="1" <?php if ($desktopfavorites==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['favorites'][$lang]); ?></label></td>
     </tr>
-
     <!-- Checkoud out -->
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsDesktop">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[desktopcheckedout]" value="1" <?php if ($desktopcheckedout==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['checked-out-items'][$lang]); ?></label></td>
     </tr>
-
     <!-- Time travel -->
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsDesktop">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[desktoptimetravel]" value="1" <?php if ($desktoptimetravel==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['travel-though-time'][$lang]); ?></label></td>
     </tr>
+  </table>
+  </div>
 
-    <?php if (!empty ($mgmt_config[$site]['site_admin'])) { ?>
-    <!-- Publications -->
+  <?php if (!empty ($mgmt_config[$site]['site_admin'])) { ?>
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
+      <!-- Publications -->
     <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[siteglobal]" value="1" <?php if ($siteglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="siteglobal" name="permission[siteglobal]" onclick="initPermissions();" value="1" <?php if ($siteglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <b><img src="<?php echo getthemelocation(); ?>img/site.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-publication-management'][$lang]); ?></b></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPublications">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[sitecreate]" value="1" <?php if ($sitecreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-publication'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsPublications">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[sitedelete]" value="1" <?php if ($sitedelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-publication'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPublications">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[siteedit]" value="1" <?php if ($siteedit==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['edit-publication'][$lang]); ?></label></td>
     </tr>
-    <?php } ?>
+    </table>
+  </div>
+  <?php } ?>
 
-    <!-- Users -->
+  <!-- Administration of users and groups -->
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[userglobal]" value="1" <?php if ($userglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="administration" name="permission[administration]" onclick="initPermissions();" value="1" <?php if ($userglobal==1 || $groupglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+      <b><img src="<?php echo getthemelocation(); ?>img/admin.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['administration'][$lang]); ?></b></td>
+    </tr>
+    <tr class="hcmsRowHead2 hcmsAdministration">
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="userglobal" name="permission[userglobal]" onclick="initPermissions();" value="1" <?php if ($userglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <b><img src="<?php echo getthemelocation(); ?>img/user.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-user-management'][$lang]); ?></b></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAdministration hcmsUsers">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[usercreate]" value="1" <?php if ($usercreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-user'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsAdministration hcmsUsers">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[userdelete]" value="1" <?php if ($userdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-user'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAdministration hcmsUsers">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[useredit]" value="1" <?php if ($useredit==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['edit-user'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[groupglobal]" value="1" <?php if ($groupglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
+    <tr class="hcmsRowHead2 hcmsAdministration">
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="groupglobal" name="permission[groupglobal]" onclick="initPermissions();" value="1" <?php if ($groupglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
       <b><img src="<?php echo getthemelocation(); ?>img/usergroup.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-group-management'][$lang]); ?></b></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAdministration hcmsGroups">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[groupcreate]" value="1" <?php if ($groupcreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-group'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsAdministration hcmsGroups">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[groupdelete]" value="1" <?php if ($groupdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-group'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAdministration hcmsGroups">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[groupedit]" value="1" <?php if ($groupedit==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['edit-group'][$lang]); ?></label></td>
     </tr>
+  </table>
+  </div>
 
-    <?php if (!isset ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false) { ?>
-    <!-- Personalization -->
+  <?php if (!isset ($mgmt_config[$site]['dam']) || $mgmt_config[$site]['dam'] == false) { ?>
+  <!-- Personalization -->
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr class="hcmsRowHead1"> 
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[persglobal]" value="1" <?php if ($persglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="persglobal" name="permission[persglobal]" onclick="initPermissions();" value="1" <?php if ($perstrack==1 || $persprof==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
       <b><img src="<?php echo getthemelocation(); ?>img/pers_registration.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-personalization-management'][$lang]); ?></b></td>
     </tr>
-    <tr class="hcmsRowHead2">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[perstrack]" value="1" <?php if ($perstrack==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
+    <tr class="hcmsRowHead2 hcmsPersonalization">
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="perstrack" name="permission[perstrack]" onclick="initPermissions();" value="1" <?php if ($perstrack==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
       <?php echo getescapedtext ($hcms_lang['grant-customer-registration-permissions'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPersonalization hcmsPersonalizationTracking">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[perstrackcreate]" value="1" <?php if ($perstrackcreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-customer-registration'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsPersonalization hcmsPersonalizationTracking">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[perstrackdelete]" value="1" <?php if ($perstrackdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-customer-registration'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPersonalization hcmsPersonalizationTracking">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[perstrackedit]" value="1" <?php if ($perstrackedit==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['edit-customer-registration'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowHead2">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[persprof]" value="1" <?php if ($persprof==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
+    <tr class="hcmsRowHead2 hcmsPersonalization">
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="persprof" name="permission[persprof]" onclick="initPermissions();" value="1" <?php if ($persprof==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
       <?php echo getescapedtext ($hcms_lang['grant-customer-profile-permissions'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPersonalization hcmsPersonalizationProfile">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[persprofcreate]" value="1" <?php if ($persprofcreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-customer-profile'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsPersonalization hcmsPersonalizationProfile">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[persprofdelete]" value="1" <?php if ($persprofdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-customer-profile'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPersonalization hcmsPersonalizationProfile">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[persprofedit]" value="1" <?php if ($persprofedit==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['edit-customer-profile'][$lang]); ?></label></td>
     </tr>
-    <?php } ?>
+  </table>
+  </div>
+  <?php } ?>
 
-    <?php if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php")) { ?>
-    <!-- Workflows -->
+  <?php if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php")) { ?>
+  <!-- Workflows -->
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowglobal]" value="1" <?php if ($workflowglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="workflowglobal" name="permission[workflowglobal]" onclick="initPermissions();" value="1" <?php if ($workflowproc==1 || $workflowscript==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
       <b><img src="<?php echo getthemelocation(); ?>img/workflow.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-workflow-management'][$lang]); ?></b></td>
     </tr>
-    <tr class="hcmsRowHead2">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowproc]" value="1" <?php if ($workflowproc==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
+    <tr class="hcmsRowHead2 hcmsWorkflow">
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="workflowproc" name="permission[workflowproc]" onclick="initPermissions();" value="1" <?php if ($workflowproc==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
       <?php echo getescapedtext ($hcms_lang['grant-workflow-manager-permissions'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsWorkflow hcmsWorkflowEditor">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowproccreate]" value="1" <?php if ($workflowproccreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-workflow'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsWorkflow hcmsWorkflowEditor">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowprocdelete]" value="1" <?php if ($workflowprocdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-workflow'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsWorkflow hcmsWorkflowEditor">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowprocedit]" value="1" <?php if ($workflowprocedit==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['edit-workflow'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsWorkflow hcmsWorkflowEditor">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowprocfolder]" value="1" <?php if ($workflowprocfolder==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['define-workflow-field-of-application'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowHead2">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowscript]" value="1" <?php if ($workflowscript==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
+    <tr class="hcmsRowHead2 hcmsWorkflow">
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="workflowscript" name="permission[workflowscript]" onclick="initPermissions();" value="1" <?php if ($workflowscript==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> 
       <?php echo getescapedtext ($hcms_lang['grant-workflow-script-permissions'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsWorkflow hcmsWorkflowScript">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowscriptcreate]" value="1" <?php if ($workflowscriptcreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-workflow-script'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsWorkflow hcmsWorkflowScript">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowscriptdelete]" value="1" <?php if ($workflowscriptdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-workflow-script'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsWorkflow hcmsWorkflowScript">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[workflowscriptedit]" value="1" <?php if ($workflowscriptedit==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['edit-workflow-script'][$lang]); ?></label></td>
     </tr>
-    <?php } ?>
+  </table>
+  </div>
+  <?php } ?>
 
-    <!-- Templates -->
+  <!-- Templates -->
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[templateglobal]" value="1" <?php if ($templateglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="templateglobal" name="permission[templateglobal]" onclick="initPermissions();" value="1" <?php if ($tpl==1 || $tplmedia==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <b><img src="<?php echo getthemelocation(); ?>img/template.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-template-management'][$lang]); ?></b></td>
     </tr>
-    <tr class="hcmsRowHead2">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tpl]" value="1" <?php if ($tpl==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+    <tr class="hcmsRowHead2 hcmsTemplate">
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="tpl" name="permission[tpl]" onclick="initPermissions();" value="1" <?php if ($tpl==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['grant-template-permissions'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsTemplate hcmsTemplateEditor">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tplcreate]" value="1" <?php if ($tplcreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-template'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsTemplate hcmsTemplateEditor">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tpldelete]" value="1" <?php if ($tpldelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-template'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsTemplate hcmsTemplateEditor">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tpledit]" value="1" <?php if ($tpledit==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['edit-template'][$lang]); ?></label></td>
     </tr>
     <tr>
-      <td class="hcmsRowHead2" style="white-space:nowrap;"><label><input type="checkbox" name="permission[tplmedia]" value="1" <?php if ($tplmedia==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+      <td class="hcmsRowHead2 hcmsTemplate" style="white-space:nowrap;"><label><input type="checkbox" id="tplmedia" name="permission[tplmedia]" onclick="initPermissions();" value="1" <?php if ($tplmedia==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['grant-template-media-permissions'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsTemplate hcmsTemplateMedia">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tplmediacatcreate]" value="1" <?php if ($tplmediacatcreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-template-media-category'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsTemplate hcmsTemplateMedia">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tplmediacatdelete]" value="1" <?php if ($tplmediacatdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-template-media-category'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsTemplate hcmsTemplateMedia">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tplmediacatrename]" value="1" <?php if ($tplmediacatrename==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['rename-template-media-category'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsTemplate hcmsTemplateMedia">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tplmediaupload]" value="1" <?php if ($tplmediaupload==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['upload-template-media'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsTemplate hcmsTemplateMedia">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[tplmediadelete]" value="1" <?php if ($tplmediadelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-template-media'][$lang]); ?></label></td>
     </tr>
+  </table>
+  </div>
 
-    <!-- Assets -->
+  <!-- Assets -->
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[componentglobal]" value="1" <?php if ($componentglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="componentglobal" name="permission[componentglobal]" onclick="initPermissions();" value="1" <?php if ($componentglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <b><img src="<?php echo getthemelocation(); ?>img/folder_comp.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-asset-management'][$lang]); ?></b></td>
     </tr>
-    <tr class="<?php if (!empty ($mgmt_config[$site]['sendmail'])) echo "hcmsRowData1"; ?>">
+    <tr class="<?php if (!empty ($mgmt_config[$site]['sendmail'])) echo "hcmsRowData1 hcmsAssets"; ?>">
       <td style="white-space:nowrap;">
         <div class="hcmsButtonTiny" style="white-space:nowrap;" onClick="goToAccess('comp');"><img class="hcmsIconList" src="<?php echo getthemelocation(); ?>img/folder_comp.png" name="go_compaccess" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['access-to-folders'][$lang]); ?></div>
       </td>
     </tr>
     <?php if (!empty ($mgmt_config[$site]['sendmail'])) { ?>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[compsendlink]" value="1" <?php if ($compsendlink==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['send-mail-link'][$lang]); ?></label></td>
     </tr >
     <?php } ?>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[compfoldercreate]" value="1" <?php if ($compfoldercreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[compfolderdelete]" value="1" <?php if ($compfolderdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-folder'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[compfolderrename]" value="1" <?php if ($compfolderrename==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['cutcopypasterename-folder'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[compcreate]" value="1" <?php if ($compcreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['createcheckoutedit-component'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[compupload]" value="1" <?php if ($compupload==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['uploadcheckoutedit-file'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[compdownload]" value="1" <?php if ($compdownload==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['download-file'][$lang]); ?></label></td>
     </tr> 
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[compdelete]" value="1" <?php if ($compdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-component-or-file'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[comprename]" value="1" <?php if ($comprename==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['cutcopypasterename-component-or-file'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsAssets">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[comppublish]" value="1" <?php if ($comppublish==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['publishunpublish-assets'][$lang]); ?></label></td>
     </tr>
+  </table>
+  </div>
 
-    <?php if (!$mgmt_config[$site]['dam']) { ?>
-    <!-- Pages -->
+  <?php if (!$mgmt_config[$site]['dam']) { ?>
+  <!-- Pages -->
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pageglobal]" value="1" <?php if ($pageglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="pageglobal" name="permission[pageglobal]" onclick="initPermissions();" value="1" <?php if ($pageglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <b><img src="<?php echo getthemelocation(); ?>img/folder_page.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-page-management'][$lang]); ?></b></td>
     </tr>
-    <tr class="<?php if ($mgmt_config[$site]['sendmail']) echo "hcmsRowData1"; ?>">
+    <tr class="<?php if ($mgmt_config[$site]['sendmail']) echo "hcmsRowData1 hcmsPages"; ?>">
       <td style="white-space:nowrap;">
         <div class="hcmsButtonTiny" onClick="goToAccess('page');"><img class="hcmsIconList" src="<?php echo getthemelocation(); ?>img/folder_page.png" name="go_pageaccess" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['access-to-folders'][$lang]); ?></div>
       </td>
     </tr>
     <?php if ($mgmt_config[$site]['sendmail']) { ?>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsPages">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pagesendlink]" value="1" <?php if ($pagesendlink==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['send-mail-link'][$lang]); ?></label></td>
     </tr>
     <?php } ?>   
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPages">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pagefoldercreate]" value="1" <?php if ($pagefoldercreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['create-folder'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsPages">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pagefolderdelete]" value="1" <?php if ($pagefolderdelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-folder'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPages">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pagefolderrename]" value="1" <?php if ($pagefolderrename==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['cutcopypasterename-folder'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsPages">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pagecreate]" value="1" <?php if ($pagecreate==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['createcheckoutedit-page'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPages">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pagedelete]" value="1" <?php if ($pagedelete==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['delete-page'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData2">
+    <tr class="hcmsRowData2 hcmsPages">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pagerename]" value="1" <?php if ($pagerename==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['cutcopypasterename-page'][$lang]); ?></label></td>
     </tr>
-    <tr class="hcmsRowData1">
+    <tr class="hcmsRowData1 hcmsPages">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[pagepublish]" value="1" <?php if ($pagepublish==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
       <?php echo getescapedtext ($hcms_lang['publishunpublish-page'][$lang]); ?></label></td>
     </tr>
-    <?php } ?>
+  </table>
+  </div>
+  <?php } ?>
 
     <?php
     if (is_file ($mgmt_config['abs_path_data']."config/plugin.global.php"))
@@ -694,9 +803,11 @@ else
       if (is_array ($mgmt_plugin) && sizeof ($mgmt_plugin) > 0)
       {
         ?>
-    <!-- Plugins -->
+  <!-- Plugins -->
+  <div class="box">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr class="hcmsRowHead1">
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[plugnis]" value="1" checked="checked" disabled="disabled" /> <b><img src="<?php echo getthemelocation(); ?>img/plugin.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['plugins'][$lang]); ?></b></td>
+      <td style="white-space:nowrap;"><label><input type="checkbox" id="plugins" name="permission[plugnis]" value="1" checked="checked" disabled="disabled" /> <b><img src="<?php echo getthemelocation(); ?>img/plugin.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['plugins'][$lang]); ?></b></td>
     </tr>
         <?php
         foreach ($mgmt_plugin as $temp_name => $temp_array)
@@ -717,7 +828,10 @@ else
       }
     }
     ?>
+  </table>
+  </div>
 
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr> 
       <td>&nbsp;</td>
       <td>&nbsp;</td>
@@ -737,5 +851,6 @@ else
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

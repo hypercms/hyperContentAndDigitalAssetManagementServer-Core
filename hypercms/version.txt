@@ -6922,3 +6922,20 @@ Release 05/2023
 - Bug fix: The Urdu language file used wrong character for some line endings
 - Bug fix: Public function extractFileFromFileName in class Sabre_hyperCMS_Functions of the Workplace Integration module provided an empty file name since the slash has not been trimmed from the path string
 - Bug fix: Public function getChildsForLocation in class Sabre_hyperCMS_Functions of the Workplace Integration module did provide the same folder name in case the users folder access permissions are used and the folder names have been the same
+
+Version 10.1.2
+Release 09/2023
+- Implementation of the new main configuration parameter $mgmt_config['tplengine_localexecute'] in order to support the local execution of template code without a HTTP request
+- Implementation of the new function tpl_getobjectview in the template engine in order to execute the template code
+- Modifications in the template engine in order to use the new function tpl_getobjectview for executing the template code and creating the view of an object
+- Modifications in function getwallpaper in Get API in order to support locally stored wallpapers without the wallpaper service based on the day of the year
+- Modifications in function checkdiskkey in Security API in order to support multiple server IP addresses
+- Implementation of the new function HTTP_Get_contents in Main API in order to support Get requests without the certificate issuer verification (wrapper function for PHP file_get_contents)
+- Modifications in template engine, Main API, Get API, Media API, Meta API, media_taxonomy_import, and page_info_ip in order to replace the PHP function file_get_contents by function HTTP_Get_contents
+- Implementation of the new version of function HTTP_Post in Main API in order to support HTTP Post requests without the certificate issuer verification (wrapper function for PHP file_get_contents)
+- Modifications in function HTTP_getheader in Main API in order to support headers from full responses that include the header and body as well as header arrays
+- Modifications in function HTTP_getbody in Main API in order to support an input that includes only the response body
+- Implementation of the new main configuration parameter $mgmt_config['https_verify_ca'] in order to enable and sisable the SSL certificate issuer verification in function HTTP_Post and HTTP_Get_contents
+- Added CSS class disabled to main.css in all design themes
+- Modifications in group_edit_form in order to implement a new user interface with floating permission boxes and grayed-out sub permissions if the main permission is disabled
+- Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty

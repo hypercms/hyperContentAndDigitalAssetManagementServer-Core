@@ -76,7 +76,7 @@ function importCSVtextcontent ($site, $location, $file_csv, $user, $type="", $de
     $cat = getcategory ($site, $location);
 
     // convert to input character set
-    $data = file_get_contents ($file_csv);
+    $data = HTTP_Get_contents ($file_csv);
 
     if ($data != "")
     {
@@ -536,7 +536,7 @@ function importtaxonomy ($site, $recreate=false)
               // get file contents
               if (!empty ($importfile))
               {
-                $filedata = file_get_contents ($importfile);
+                $filedata = HTTP_Get_contents ($importfile);
 
                 // load or get file
                 if (!empty ($filedata)) $save = savefile (getlocation ($file_csv), getobject ($file_csv), $filedata);
@@ -1776,7 +1776,7 @@ function xmp_getdata ($file)
     }
 
     // load file
-    $content = @file_get_contents ($file);
+    $content = HTTP_Get_contents ($file);
 
     // delete temp file
     if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
@@ -2070,7 +2070,7 @@ function krita_getdata ($file)
     elseif (is_file ($temp_dir."documentinfo.xml"))
     {
       // load file
-      $content = @file_get_contents ($temp_dir."documentinfo.xml");
+      $content = HTTP_Get_contents ($temp_dir."documentinfo.xml");
 
       if ($content != false)
       {

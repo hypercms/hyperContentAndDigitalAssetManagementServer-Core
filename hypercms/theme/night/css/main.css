@@ -67,7 +67,7 @@ input:focus, select:focus, textarea:focus, .hcmsTextArea:focus
   border: 1px solid #FC9300;
 }
 
-input:disabled, select:disabled, textarea:disabled, button:disabled
+.disabled, input:disabled, select:disabled, textarea:disabled, button:disabled
 {
   filter: alpha(opacity=35);
   -moz-opacity: 0.35;
@@ -307,7 +307,7 @@ a.hcmsLink
 .hcmsToolbarBlock
 {
   float: left;
-  border-right: 2px solid #FFFFFF; 
+  border-right: 2px solid #FFFFFF;
 }
 
 a.hcmsNavigator

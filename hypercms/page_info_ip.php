@@ -30,7 +30,7 @@ if ($ip != "")
   // timeout after 5 seconds
   ini_set ("default_socket_timeout", 5);
   // use external service
-  $json = file_get_contents ("http://ip-api.com/json/".$ip);
+  $json = HTTP_Get_contents ("http://ip-api.com/json/".$ip);
   if (!empty ($json)) $data = json_decode ($json, true);
 }
 ?>

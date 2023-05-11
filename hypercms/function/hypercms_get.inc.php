@@ -2488,7 +2488,11 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
           $result_add = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols, true);
 
           // merge results
-          if (is_array ($result_add) && sizeof ($result_add) > 1) $result = array_merge ($result, $result_add);
+          if (is_array ($result_add) && sizeof ($result_add) > 1)
+          {
+            if (is_array ($result)) $result = array_merge ($result, $result_add);
+            else $result = $result_add;
+          }
         }
       }
     }
@@ -2760,7 +2764,7 @@ function getwallpaper ($theme="", $version="")
     }
 
     // get wallpaper name
-    $wallpaper_name = @file_get_contents ("https://cloud.hypercms.net/wallpaper/?action=name&version=".urlencode($version));
+    $wallpaper_name = HTTP_Get_contents ("https://cloud.hypercms.net/wallpaper/?action=name&version=".urlencode($version));
 
     if (!empty ($wallpaper_name) && strlen ($wallpaper_name) < 100)
     {
@@ -2768,7 +2772,7 @@ function getwallpaper ($theme="", $version="")
       if (!is_file ($mgmt_config['abs_path_view'].$wallpaper_name))
       {
         // get wallpaper file
-        $wallpaper_file = @file_get_contents ("https://cloud.hypercms.net/wallpaper/?action=get&name=".urlencode($wallpaper_name));
+        $wallpaper_file = HTTP_Get_contents ("https://cloud.hypercms.net/wallpaper/?action=get&name=".urlencode($wallpaper_name));
 
         if (!empty ($wallpaper_file))
         {
@@ -2777,6 +2781,23 @@ function getwallpaper ($theme="", $version="")
       }
       else return $mgmt_config['url_path_view'].$wallpaper_name;
     }
+    // no connection to wallpaper service
+    else
+    { 
+      $errcode = "00820";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|Wallpaper service not available";
+
+      savelog (@$error);
+
+      // define wallpaper (based on day number)
+      $day = date ("z") + 1;
+
+      if (is_file ($mgmt_config['abs_path_view'].$day.".jpg")) $file_name = $day.".jpg";
+      elseif (is_file ($mgmt_config['abs_path_view'].$day.".mp4")) $file_name = $day.".mp4";
+
+      // provide wallpaper name
+      if (!empty ($file_name)) return $mgmt_config['url_path_view'].$file_name;
+    }  
   }
 
   // 4. default wallpaper

@@ -60,7 +60,7 @@ if (checktoken ($token, $user) && valid_publicationname ($site))
     // get file contents
     elseif (!empty ($importfile))
     {
-      $filedata = file_get_contents ($importfile);
+      $filedata = HTTP_Get_contents ($importfile);
 
       // load or get file
       if (!empty ($filedata)) $save = savefile ($mgmt_config['abs_path_data']."include/", $site.".taxonomy.csv", $filedata);

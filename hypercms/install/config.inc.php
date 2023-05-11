@@ -564,6 +564,13 @@ $mgmt_config['application']['php'] = true;
 $mgmt_config['application']['jsp'] = false;
 $mgmt_config['application']['asp'] = false;
 
+// Execute the PHP template code locally using the CLI (true) and not remotely using the URL (false)
+$mgmt_config['tplengine_localexecute'] = false;
+
+// Verify the certificate issuer when using HTTPS requests (true) or not (false)
+// If enabled it cannot be overruled by the insecure input parameter of function HTTP_Post and HTTP_Get_contents.
+$mgmt_config['https_verify_ca'] = true;
+
 // File Upload
 // Maximum file size in MB allowed for upload. set value to 0 to enable all sizes.
 // Check webserver and php.ini restrictions too!
@@ -637,7 +644,7 @@ $mgmt_config['search_operator'] = "";
 // "match" has performance advantages if no wildcard-character is used and permits the use of special operators.
 // Please keep in mind that "match" uses the stopword list of the database and the "like" operator will be used in combination
 // in order to avoid empty search results due to stopwords restrictions of the database.
-// "like" cant use a fulltext search index and will be slower but will lead to more or the same results since it uses the text content as is.
+// "like" cannot use a fulltext search index and will be slower but will lead to more or the same results since it uses the text content as is.
 $mgmt_config['search_query_match'] = "match";
 
 // Maximum number of search results (per page/request).
@@ -649,13 +656,13 @@ $mgmt_config['search_max_results'] = 300;
 $mgmt_config['strongpassword'] = true;
 
 // Define the minimum password length
-// The maximum password length is 100 characters and can't be changed.
+// The maximum password length is 100 characters and cannot be changed.
 $mgmt_config['passwordminlength'] = 10;
 
 // Password dictionary of passwords that must not be used (blacklist), use "," as delimiter. 
 $mgmt_config['passwordblacklist'] = "";
 
-// Number of passwords in the history that can't be reused again.
+// Number of passwords in the history that cannot be reused again.
 $mgmt_config['passwordhistory'] = 0;
 
 // Password expiration in number of days (0 means it never expires).
@@ -672,7 +679,7 @@ $mgmt_config['multifactorauth'] = false;
 $mgmt_config['userregistration'] = false;
 
 // User account expiration in number of days (0 means it never expires).
-// If no user activity has been logged for a certain time, the user can't login anymore
+// If no user activity has been logged for a certain time, the user cannot login anymore
 // IMPORTANT: This feature requires $mgmt_config['user_log'] = true
 $mgmt_config['userexpires'] = 0;
 

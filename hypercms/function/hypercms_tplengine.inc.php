@@ -16,6 +16,76 @@
 // These functions are used for creating the desired output depending on the presentation technology.
 // The functions are used by buildview and viewinclusions.
 
+// execute template code and create object view
+function tpl_getobjectview ($script, $parameter="", $viewstore="", $type="php")
+{
+  global $mgmt_config;
+
+  if ($script != "")
+  {
+    // prepare parameters
+    if ($viewstore != "" && $type == "php" && !empty ($mgmt_config['tplengine_localexecute']) && $parameter != "")
+    {
+      if (substr ($parameter, 0, 1) == "?") $parameter = substr ($parameter, 1);
+      $parameter_array = explode ("&", $parameter);
+
+      if (sizeof ($parameter_array) > 0)
+      {
+        $parameter_vars = "if (empty (\$_SESSION)) \$_SESSION = array();\n";
+
+        foreach ($parameter_array as $temp)
+        {
+          list ($key, $value) = explode ("=", $temp);
+          
+          // if ($key == "PHPSESSID") $parameter_vars .= "session_id('".$value."');\n";
+          
+          if ($key != "PHPSESSID")
+          {
+            $key = str_replace (array("hcms_session[", "]"), "", $key);
+            $parameter_vars .= "\$_SESSION['".$key."'] = \"".addslashes ($value)."\";\n";
+          }
+        }
+
+        $viewstore = str_replace ("// hypercms:include_session_vars", $parameter_vars, $viewstore);
+      }
+    }
+
+    // save view in temp file
+    if ($viewstore != "")
+    {
+      $save = savefile ($mgmt_config['abs_path_view'], $script, $viewstore);
+      avoidfilecollision();
+    }
+    else $save = true;
+    
+    // execute script code
+    if ($save == true)
+    {
+      if ($type == "php" && !empty ($mgmt_config['tplengine_localexecute']) && is_file ($mgmt_config['abs_path_view'].$script))
+      {
+        @exec ("php ".$mgmt_config['abs_path_view'].$script." 2>&1", $view);
+
+        if (is_array ($view)) $view = implode ("\n", $view);
+      }
+      else
+      {
+        // define URL of host
+        if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
+        else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+        
+        $view = HTTP_Get_contents ($url_host.$script.$parameter);
+      }
+    }
+
+    // delete temp file
+    if ($viewstore != "") deletefile ($mgmt_config['abs_path_view'], $script, 0);
+
+    return $view;
+  }
+
+  return false;  
+}
+
 // inclusions of files (depending on OS)
 function tpl_compinclude ($application, $file, $os_cms)
 {
@@ -696,6 +766,8 @@ if (valid_publicationname (\$site)) require (\$mgmt_config['abs_path_data'].'con
 \$abs_publ_media = \$publ_config['abs_publ_media'];
 \$url_publ_tplmedia = \$publ_config['url_publ_tplmedia'];
 \$abs_publ_tplmedia = \$publ_config['abs_publ_tplmedia'];
+
+// hypercms:include_session_vars
 
 @chdir ('".$location."');
 
@@ -6943,18 +7015,19 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           // define URL of host
                           if (empty ($mgmt_config['localhost'])) $url_host = $complink;
                           else $url_host = $mgmt_config['localhost'].cleandomain ($complink);
-                          
+
                           if (strtolower ($include) == "static")
                           {
                             // deconvert path
-                            $complink = deconvertpath ($complink, "file"); 
-                            $component .= @file_get_contents ($url_host); 
+                            $complink = deconvertpath ($complink, "file");
+                            $component .= @file_get_contents ($url_host);
                           }
                           else
                           {
                             // deconvert path
-                            $complink = deconvertpath ($complink, "url");     
-                            $component .= @file_get_contents ($url_host);
+                            //$complink = deconvertpath ($complink, "url");
+                            //$component .= @file_get_contents ($url_host);
+                            $component .= tpl_getobjectview ($complink, "", "", strtolower (strrchr ($file, ".")));
                           }
                         }
                       }
@@ -7439,42 +7512,29 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // change directory to location to have correct hrefs
               $viewstore =  tpl_globals_extended ("php", $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
 
-              // save pageview in temp
-              $test = savefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.php", $viewstore);
-
               $viewstore_buffer = $viewstore;
 
+              // add session parameter
+              if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
+              else $pageview_parameter = "?hcms_session['hcms']=void";
+
+              // add language setting from session
+              if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
+
+              // close session file
+              suspendsession ();
+
               // execute code
-              if ($test == true)
-              {
-                // add session parameter
-                if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
-                else $pageview_parameter = "?hcms_session['hcms']=void";
+              $viewstore = tpl_getobjectview ($unique_id.".pageview.php", $pageview_parameter, $viewstore, "php");
 
-                // add language setting from session
-                if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
+              // empty response
+              if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
 
-                // close session file
-                suspendsession ();
+              // reopen session file
+              revokesession ("", "", $session_id);
 
-                // define URL of host
-                if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
-                else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
-
-                // execute code
-                $viewstore = file_get_contents ($url_host.$unique_id.".pageview.php".$pageview_parameter);
-
-                // empty response
-                if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
-
-                // reopen session file
-                revokesession ("", "", $session_id);
-
-                // error handling
-                $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.php");
-
-                deletefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.php", 0);
-              }
+              // error handling
+              $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.php");
             }
 
             // execute application code (non PHP)
@@ -7483,41 +7543,29 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // change directory to location to have correct hrefs
               $viewstore =  tpl_globals_extended ($application, $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
 
-              // save pageview in temp
-              $test = savefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.".$templateext, $viewstore);
-
               $viewstore_buffer = $viewstore;
 
+              // add session parameter
+              if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
+              else $pageview_parameter = "?hcms_session['hcms']=void";
+
+              // add language setting from session
+              if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
+
+              // close session file
+              suspendsession ();
+
               // execute code
-              if ($test == true)
-              {
-                // add session parameter
-                if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
-                else $pageview_parameter = "?hcms_session['hcms']=void";
+              $viewstore = tpl_getobjectview ($unique_id.".pageview.".$templateext, $pageview_parameter, $viewstore, $templateext);
 
-                // add language setting from session
-                if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
- 
-                // close session file
-                suspendsession ();
+              // empty response
+              if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
 
-                // define URL of host
-                if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
-                else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+              // reopen session file
+              revokesession ("", "", $session_id);
 
-                $viewstore = @file_get_contents ($url_host.$unique_id.".pageview.".$templateext.$pageview_parameter);
-
-                // empty response
-                if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
-
-                // reopen session file
-                revokesession ("", "", $session_id);
-
-                // error handling
-                $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.".$templateext);
-
-                deletefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.".$templateext, 0);
-              }
+              // error handling
+              $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.".$templateext);
             }
           }
           // Publish
@@ -7543,69 +7591,57 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
               $viewstore = tpl_globals_extended ("php", $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
 
-              // save pageview in temp
-              $result_save = savefile ($mgmt_config['abs_path_view'], $unique_id.".generate.php", $viewstore);
-
               $viewstore_buffer = $viewstore;
 
-              if ($result_save == true)
+              // add user name from session
+              if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
+              else $pageview_parameter = "?hcms_session['hcms']=void";
+
+              // add language setting from session
+              if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
+
+              // close session file
+              suspendsession ();
+
+              // execute code of generator (e.g. create a PDF file)
+              $viewstore_save = tpl_getobjectview ($unique_id.".generate.php", $pageview_parameter, $viewstore, "php");
+
+              // empty response
+              if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
+
+              // reopen session file
+              revokesession ("", "", $session_id);
+
+              // error handling
+              $viewstore = errorhandler ($viewstore_buffer, $viewstore_save, $unique_id.".generate.php");
+
+              // creation of the file was successful, save it to the media repository
+              if ($viewstore == $viewstore_save)
               {
-                // add user name from session
-                if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
-                else $pageview_parameter = "?hcms_session['hcms']=void";
+                $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
 
-                // add language setting from session
-                if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
+                // save media file
+                $result_save = savefile ($mediadir, $mediafile, $viewstore);
 
-                // close session file
-                suspendsession ();
+                // create thumbnail
+                createmedia ($site, $mediadir, $mediadir, $mediafile, "", "thumbnail", true, true);
 
-                // define URL of host
-                if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
-                else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+                // remote client
+                remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", "", $mediafile, "");
 
-                // execute code of generator (e.g. create a PDF file)
-                $viewstore_save = @file_get_contents ($url_host.$unique_id.".generate.php".$pageview_parameter);
+                $errorview = "";
+              }
+              // on error
+              else
+              {
+                $errorview = "\n\n".$viewstore;
 
-                // empty response
-                if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
+                // clean view for event log
+                $errview = strip_tags ($viewstore);
+                $errview = substr ($errview, 0, strpos (trim ($errview, "\n"), "\n"));
 
-                // reopen session file
-                revokesession ("", "", $session_id);
-
-                // error handling
-                $viewstore = errorhandler ($viewstore_buffer, $viewstore_save, $unique_id.".generate.php");
-
-                deletefile ($mgmt_config['abs_path_view'], $unique_id.".generate.php", 0);
-
-                // creation of the file was successful, save it to the media repository
-                if ($viewstore == $viewstore_save)
-                {
-                  $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
-
-                  // save media file
-                  $result_save = savefile ($mediadir, $mediafile, $viewstore);
-
-                  // create thumbnail
-                  createmedia ($site, $mediadir, $mediadir, $mediafile, "", "thumbnail", true, true);
-
-                  // remote client
-                  remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $mediafile, "abs_path_media").$site."/", "", $mediafile, "");
-
-                  $errorview = "";
-                }
-                // on error
-                else
-                {
-                  $errorview = "\n\n".$viewstore;
-
-                  // clean view for event log
-                  $errview = strip_tags ($viewstore);
-                  $errview = substr ($errview, 0, strpos (trim ($errview, "\n"), "\n"));
-
-                  $errcode = "10201";
-                  $error[] = $mgmt_config['today']."|hypercms_tplengine.inc.php|error|".$errcode."|Generator failed to render file ".$mediafile." with error: ".$errview;
-                }
+                $errcode = "10201";
+                $error[] = $mgmt_config['today']."|hypercms_tplengine.inc.php|error|".$errcode."|Generator failed to render file ".$mediafile." with error: ".$errview;
               }
 
               // set viewstore
@@ -7617,42 +7653,29 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // change directory to location to have correct hrefs
               $viewstore = tpl_globals_extended ("php", $mgmt_config['abs_path_cms'], $mgmt_config['abs_path_rep'], $site, $location).$viewstore;
 
-              // save pageview in temp
-              $result_save = savefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.php", $viewstore);
-
               $viewstore_buffer = $viewstore;
 
-              // execute php code
-              if ($result_save == true)
-              {
-                // add user name from session
-                if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
-                else $pageview_parameter = "?hcms_session['hcms']=void";
+              // add user name from session
+              if (!empty ($session_id)) $pageview_parameter = "?PHPSESSID=".$session_id;
+              else $pageview_parameter = "?hcms_session['hcms']=void";
 
-                // add language setting from session
-                if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
+              // add language setting from session
+              if (!empty ($_SESSION[$language_sessionvar])) $pageview_parameter .= "&hcms_session[".$language_sessionvar."]=".url_encode ($_SESSION[$language_sessionvar]);
 
-                // close session file
-                suspendsession ();
+              // close session file
+              suspendsession ();
 
-                // define URL of host
-                if (empty ($mgmt_config['localhost'])) $url_host = $mgmt_config['url_path_view'];
-                else $url_host = $mgmt_config['localhost'].cleandomain ($mgmt_config['url_path_view']);
+              // execute code
+              $viewstore = tpl_getobjectview ($unique_id.".pageview.php", $pageview_parameter, $viewstore, "php");
 
-                // execute code
-                $viewstore = @file_get_contents ($url_host.$unique_id.".pageview.php".$pageview_parameter);
+              // empty response
+              if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
 
-                // empty response
-                if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
+              // reopen session file
+              revokesession ("", "", $session_id);
 
-                // reopen session file
-                revokesession ("", "", $session_id);
-
-                // error handling
-                $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.php");
-
-                deletefile ($mgmt_config['abs_path_view'], $unique_id.".pageview.php", 0);
-              }
+              // error handling
+              $viewstore = errorhandler ($viewstore_buffer, $viewstore, $unique_id.".pageview.php");
             }
 
             // transform back
