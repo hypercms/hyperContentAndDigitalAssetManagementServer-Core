@@ -38,7 +38,7 @@ function resolvepermission ($permission_array, $segment, $position)
 // output: global permission array/false
 
 // description:
-// Deseralizes the permission string and and returns the root permission array
+// Deserializes the permission string and and returns the root permission array
 
 function rootpermission ($site_name, $site_admin, $permission_str)
 {
@@ -122,7 +122,7 @@ function rootpermission ($site_name, $site_admin, $permission_str)
 // output: global permission array/false
 
 // description:
-// Deseralizes the permission string and returns the global permission array
+// Deserializes the permission string and returns the global permission array
 
 function globalpermission ($site_name, $permission_str)
 {
@@ -261,7 +261,7 @@ function globalpermission ($site_name, $permission_str)
 // output: local permission array/false
 
 // description:
-// Deseralizes the permission string and returns the local permission array
+// Deserializes the permission string and returns the local permission array
 
 function localpermission ($site_name, $permission_str)
 {
@@ -3416,7 +3416,7 @@ function valid_locationname ($variable)
       $variable = specialchr_encode ($variable, "no");
 
       // remove component path since it is not used for display (in browser and WebDAV client)
-      if (strpos ("_".$variable_name, $mgmt_config['abs_path_comp']) == 1) $variable_name = str_replace ($mgmt_config['abs_path_comp'], "/", $variable_name);
+      if (!empty ($mgmt_config['abs_path_comp']) && strpos ("_".$variable_name, $mgmt_config['abs_path_comp']) == 1) $variable_name = str_replace ($mgmt_config['abs_path_comp'], "/", $variable_name);
 
       if (strpos ("_".$variable_name, "%comp%") == 1) $variable_name = str_replace ("%comp%", "", $variable_name);
       elseif (strpos ("_".$variable_name, "%page%") == 1) $variable_name = str_replace ("%page%", "", $variable_name);

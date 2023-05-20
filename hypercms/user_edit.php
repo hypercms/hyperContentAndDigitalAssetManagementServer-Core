@@ -759,7 +759,7 @@ if (!empty ($login))
                 foreach ($inherit_db as $inherit_db_record)
                 {
                   // check if user has siteaccess
-                  if ($inherit_db_record['parent'] != "" && is_array ($siteaccess) && array_key_exists ($inherit_db_record['parent'], $siteaccess))
+                  if (!empty ($inherit_db_record['parent']) && is_array ($siteaccess) && array_key_exists ($inherit_db_record['parent'], $siteaccess))
                   {
                     $site_name = $inherit_db_record['parent'];
 

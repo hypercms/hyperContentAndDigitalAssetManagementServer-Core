@@ -6427,11 +6427,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   // get content
                   $compnode = selectcontent ($contentdata, "<component>", "<component_id>", $id);
 
-                  if (!empty ($compnode[0])) $temp_array = getcontent ($compnode[0], "<componentfiles>");
-                  if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
+                  if (!empty ($compnode[0]))
+                  {
+                    $temp_array = getcontent ($compnode[0], "<componentfiles>");
+                    if (!empty ($temp_array[0])) $contentbot = $temp_array[0];
 
-                  if (!empty ($compnode[0])) $temp_array = getcontent ($compnode[0], "<componentcond>");
-                  if (!empty ($temp_array[0])) $condbot = trim ($temp_array[0]);
+                    $temp_array = getcontent ($compnode[0], "<componentcond>");
+                    if (!empty ($temp_array[0])) $condbot = trim ($temp_array[0]);
+                  }
                 }
 
                 // set default value eventually given by tag
@@ -7840,6 +7843,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   </head>
   <body class=\"hcmsWorkplaceGeneric\">\n";
 
+              // meta info button
               if ($buildview != "preview") $viewstore_new .= "<div id=\"meta_info\" style=\"position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_dragLayers(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div><div style=\"width:100%; height:38px; display:block;\">&nbsp;</div>";
 
               $viewstore_new .= $viewstore."\n</body>\n</html>";

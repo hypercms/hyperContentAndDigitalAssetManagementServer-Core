@@ -1041,6 +1041,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                 createmedia ($item_site, $thumbdir.$item_site."/", $thumbdir.$item_site."/", $media_info['file'], "", "thumbnail", true, true);
               }          
 
+              // thumbnail image
               if (is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg"))
               {
                 // galleryview - view option for locked multimedia objects

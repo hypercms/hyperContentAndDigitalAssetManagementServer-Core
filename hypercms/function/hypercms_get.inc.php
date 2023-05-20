@@ -5794,7 +5794,6 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
           }
         }
       }
-      else return false;
     }
     // publication configuration
     elseif ($type == "url_publ_media" || $type == "abs_publ_media")
@@ -5810,11 +5809,10 @@ function getmedialocation ($site, $file, $type, $resolve_symlink=false)
       {
         return $publ_config[$type];
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 } 
 
 // ---------------------- getlockedfileinfo -----------------------------
@@ -5851,7 +5849,6 @@ function getlockedfileinfo ($location, $file)
           } 
         }
       }
-      else return false;
     }
     // file exists (is not locked)
     else
@@ -5862,7 +5859,8 @@ function getlockedfileinfo ($location, $file)
       return $result;
     }
   }
-  else return false; 
+
+  return false; 
 }
 
 // ---------------------------------------- getlockobjects --------------------------------------------
@@ -5965,13 +5963,11 @@ function getlockedobjects ($user, $return_text_id=array())
         {
           return $object_array;
         }
-        else return false;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- getfavorites -------------------------------------------
@@ -6040,12 +6036,11 @@ function getfavorites ($user, $output="path", $return_text_id=array())
         {
           return $object_path_array;
         }
-        else return false;
       }
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- getclipboard -------------------------------------------
@@ -6108,11 +6103,10 @@ function getclipboard ($output="path", $return_text_id=array())
       {
         return $object_path_array;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ====================================== HOME BOXES =========================================
@@ -6358,9 +6352,9 @@ function getusersonline ($sites=array())
 
       return $result;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------ getchatstate ----------------------------------
@@ -6384,9 +6378,9 @@ function getchatstate ($register=true)
     if ($register == true && $state >= 0) $_SESSION['hcms_temp_chatstate'] = $state;
 
     if ($state >= 0) return $state;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------ getimagelib ----------------------------------
@@ -6408,9 +6402,9 @@ function getimagelib ()
     }
 
     if (!empty ($result)) return $result;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ======================================== GET FILEPOINTER =====================================
@@ -6461,9 +6455,9 @@ function getfilename ($filedata, $tagname)
 
       return $filename;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ======================================== TAG HANDLING ============================================
@@ -6516,11 +6510,10 @@ function gethypertag ($filedata, $tagname, $offset=0)
 
       // return hyperCMS tag array (the array key is the start position of the tag)
       if (is_array ($hypertag)) return $hypertag;
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- gethypertagname ---------------------------
@@ -6548,9 +6541,9 @@ function gethypertagname ($tagdata)
     $hypertagname = substr ($tagdata, $namestart, $nameend - $namestart);
  
     if ($hypertagname != false && $hypertagname != "") return $hypertagname;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------ gethtmltag ------------------------------
@@ -6668,13 +6661,11 @@ function gethtmltag ($filedata, $tag)
           if (strlen ($htmltag) < strlen ($tag)) return $tag;
           else return $htmltag;
         }
-        else return false;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------ gethtmltags ------------------------------
@@ -6797,13 +6788,11 @@ function gethtmltags ($filedata, $tag)
           if (strlen ($htmltag) < strlen ($tag)) return $tag;
           else return $htmltag;
         }
-        else return false;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- getattribute --------------------------------
@@ -6957,12 +6946,11 @@ function getattribute ($string, $attribute, $secure=true)
 
           return $value;
         }
-        else return false;
       }
-      else return false;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------- getoption --------------------------------
@@ -6991,9 +6979,9 @@ function getoption ($string, $option)
 
       return $value;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------- getthumbnailsize --------------------------------
@@ -7211,7 +7199,6 @@ function getcharset ($site, $data)
     if (!empty ($charset)) $result['charset'] = $charset;
 
     if (is_array ($result)) return $result;
-    else return false;
   }
   // use publication settings
   elseif (valid_publicationname ($site))
@@ -7220,9 +7207,9 @@ function getcharset ($site, $data)
     $result['charset'] = $mgmt_config[$site]['default_codepage'];
 
     if (!empty ($result) && is_array ($result)) return $result;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------ getartid ----------------------------------
@@ -7327,9 +7314,9 @@ function getdirectoryfiles ($dir, $pattern="")
 
       return $item_files;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------------------- getuserinformation ----------------------------------------------

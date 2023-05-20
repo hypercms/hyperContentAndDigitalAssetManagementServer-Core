@@ -15404,10 +15404,6 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     // load publication inheritance setting
     $inherit_db = inherit_db_read ();
     $parent_array = inherit_db_getparent ($inherit_db, $site);
-
-      // eventsystem for paste
-    if ($action == "page_paste" && $eventsystem['onpasteobject_pre'] == 1 && empty ($eventsystem['hide']))
-      onpasteobject_pre ($site, $cat, $location_source, $location, $page, $user); 
  
     // get object information of the selected item
     if ($action != "page_paste" && valid_objectname ($page))
@@ -15497,6 +15493,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $location_source = $location_source.$page."/";
               $location_source_esc = $location_source_esc.$page."/";
             }
+
+            // eventsystem for paste
+            if ($eventsystem['onpasteobject_pre'] == 1 && empty ($eventsystem['hide']))
+              onpasteobject_pre ($site, $cat, $location_source, $location, $page, $user); 
 
             // check if object may be pasted in the current publication
             if ($site == $site_source || (!empty ($mgmt_config[$site]['inherit_obj']) && !empty ($parent_array) && in_array ($site_source, $parent_array)))
@@ -15890,13 +15890,18 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                     if ($contentuser != false)
                     {
                       // send mail to user
-                      if ($mgmt_config[$site]['sendmail'] == true)
+                      if (!empty ($mgmt_config[$site]['sendmail']))
                       {
                         if (!isset ($user_data) || $user_data == "") $user_data = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
-                        $user_record = selectcontent ($user_data, "<user>", "<login>", $contentuser);
-                        $to_email_array = getcontent ($user_record[0], "<email>");
-                        $to_email = $to_email_array[0];
+
+                        if (!empty ($user_data))
+                        {
+                          $user_record = selectcontent ($user_data, "<user>", "<login>", $contentuser);
+                          $to_email_array = getcontent ($user_record[0], "<email>");
+                          $to_email = $to_email_array[0];
+                        }
                       }
+                      else $to_email = "";
 
                       // set message
                       $message = $hcms_lang['there-is-a-new-task-due-to-broken-link'][$lang];
@@ -20505,16 +20510,11 @@ function HTTP_Get_contents ($URL, $response_type="body", $insecure=true)
         if (!empty ($http_response_header)) $result = HTTP_getheader ($http_response_header);
         else $result = HTTP_getheader ($result);
       }
-      // remove HTTP header information from the response
-      elseif (strtolower ($response_type) == "body")
-      {
-        $result = HTTP_getbody ($result);
-      }
     }
     // on error
     else
     {
-      $errcode = "10822";
+      $errcode = "10261";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not send GET request to ".$URL;
 
       savelog (@$error);

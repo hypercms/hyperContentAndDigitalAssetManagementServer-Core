@@ -6937,5 +6937,8 @@ Release 09/2023
 - Modifications in function HTTP_getbody in Main API in order to support an input that includes only the response body
 - Implementation of the new main configuration parameter $mgmt_config['https_verify_ca'] in order to enable and sisable the SSL certificate issuer verification in function HTTP_Post and HTTP_Get_contents
 - Added CSS class disabled to main.css in all design themes
-- Modifications in group_edit_form in order to implement a new user interface with floating permission boxes and grayed-out sub permissions if the main permission is disabled
+- Modifications in group_edit_form in order to implement a new user interface with floating permission boxes and greyed-out sub permissions if the main permission is disabled
+- Modifications in function manipulateobject in Main API in order to set value of variable to_email if no e-mail address will be extracted form the user directory
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
+- Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
+- Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
