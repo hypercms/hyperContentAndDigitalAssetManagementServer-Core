@@ -3763,15 +3763,12 @@ function loadfile_header ($abs_path, $filename)
     {
       $filehandle = fopen ($abs_path.$filename, "rb");
 
-      if ($filename != false)
+      if ($filehandle != false)
       {
-        if ($filehandle != false)
-        {
-          $filedata = @fread ($filehandle, 2048);
-          @fclose ($filehandle);
+        $filedata = @fread ($filehandle, 2048);
+        @fclose ($filehandle);
 
-          return $filedata;
-        }
+        return $filedata;
       }
 
       $errcode = "00883";
@@ -13108,8 +13105,8 @@ function correctcontainername ($container_id)
 // output: true/false
 
 // description:
-// This functions reads and defines the contentcount for the creation of a new container
-// It will unlock the contentcoount file if it has been locked by a user
+// This functions reads and defines the contentcount for the creation of a new container.
+// It will unlock the contentcount file if it has been locked by a user.
 
 function contentcount ($user)
 {
@@ -21137,7 +21134,7 @@ function updateuploadlog ($location_esc, $user)
           if ($log_user == $user)
           {
             $count = intval ($log_count) - 1;
-            $updated == true;
+            $updated = true;
 
             if ($count > 0) $log_new[] = $user.":".$count;
           }

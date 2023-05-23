@@ -2490,7 +2490,16 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
           // merge results
           if (is_array ($result_add) && sizeof ($result_add) > 1)
           {
-            if (is_array ($result)) $result = array_merge ($result, $result_add);
+            if (is_array ($result))
+            {
+              // total count
+              if (!empty ($result['count']) && !empty ($result_add['count'])) $count = $result['count'] + $result_add['count'];
+              else $count = 0;
+
+              $result = array_merge ($result, $result_add);
+
+              if (!empty ($count)) $result['count'] = $count;
+            }
             else $result = $result_add;
           }
         }

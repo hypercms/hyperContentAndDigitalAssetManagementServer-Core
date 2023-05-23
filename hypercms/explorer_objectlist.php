@@ -861,7 +861,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       // object does not exist or user has no access permission 
       else $objects_total--;
     }
-  } 
+  }
 }
 ?>
 <!DOCTYPE html>

@@ -6939,6 +6939,10 @@ Release 09/2023
 - Added CSS class disabled to main.css in all design themes
 - Modifications in group_edit_form in order to implement a new user interface with floating permission boxes and greyed-out sub permissions if the main permission is disabled
 - Modifications in function manipulateobject in Main API in order to set value of variable to_email if no e-mail address will be extracted form the user directory
+- Modifications in function loadfile_header in Main API in order to remove a duplicate condition
+- Modifications in function getobjectlist in Get API in order to calculate the count of both search results provied by function rdbms_searchcontent
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
+- Bug fix: Service recognizefaces used a wrong condition syntax
+- Bug fix: Function updateuploadlog in Main API did not set the value of variable updated correctly
