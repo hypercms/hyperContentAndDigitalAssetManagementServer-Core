@@ -244,7 +244,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
         $items_id++;
 
         // user status
-        if (is_array ($user_online_array) && in_array ($object_array['login'][$key], $user_online_array)) $user_status = getescapedtext ($hcms_lang['active'][$lang]);
+        if (is_array ($user_online_array) && array_key_exists ($object_array['login'][$key], $user_online_array)) $user_status = getescapedtext ($hcms_lang['active'][$lang]);
         else $user_status = getescapedtext ($hcms_lang['logged-out'][$lang]);
 
         // open on double click

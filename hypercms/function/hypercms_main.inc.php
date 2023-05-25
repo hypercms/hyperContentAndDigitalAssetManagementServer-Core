@@ -21209,13 +21209,13 @@ function loaduploadlog ($location_esc, $return_type="array")
 
 // --------------------------------------- notifyusers -------------------------------------------
 // function: notifyusers()
-// input: publication name [string], location [string], object name [string], event name [oncreate,onedit,onmove,ondelete], user name [string]
+// input: publication name [string], location [string], object name [string], event name [oncreate,onedit,onmove,ondelete], user name of the sender [string]
 // output: true / false on error
 
 // description:
 // Notifies all users based on the given event and location
 
-function notifyusers ($site, $location, $object, $event, $user_from)
+function notifyusers ($site, $location, $object, $event, $from_user)
 {
   global $user, $mgmt_config, $hcms_lang_codepage, $hcms_lang, $lang;
 
@@ -21224,7 +21224,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 
   // set default language
   if (empty ($lang)) $lang = "en";
-  $lang_to = "en";
+  $to_lang = "en";
 
   // create file name
   $object = createfilename ($object, false);
@@ -21232,7 +21232,7 @@ function notifyusers ($site, $location, $object, $event, $user_from)
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
 
-  if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user_from) && (empty ($mgmt_config['notify_exclude_users']) || strpos ("_;".$mgmt_config['notify_exclude_users'].";", ";".$user_from.";") < 1))
+  if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($from_user) && (empty ($mgmt_config['notify_exclude_users']) || strpos ("_;".$mgmt_config['notify_exclude_users'].";", ";".$from_user.";") < 1))
   {
     $mail_sent = false;
 
@@ -21264,96 +21264,115 @@ function notifyusers ($site, $location, $object, $event, $user_from)
         foreach ($notify_array as $notify)
         {
           // dont notify the same user multiple times and don't inform the user if he took the action
-          if (!empty ($notify['user']) && !in_array ($notify['user'], $user_memory) && $notify['user'] != $user_from)
+          if (!empty ($notify['user']) && !in_array ($notify['user'], $user_memory) && $notify['user'] != $from_user)
           {
             // get user node of sender and extract required information
-            $usernode_from = selectcontent ($userdata, "<user>", "<login>", $user_from);
+            $from_usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);
 
-            if (!empty ($usernode_from[0])) $temp = getcontent ($usernode_from[0], "<email>");
+            if (!empty ($from_usernode[0]))
+            {
+              // realname
+              $temp = getcontent ($from_usernode[0], "<realname>");
 
-            if (!empty ($temp[0])) $email_from = $temp[0];
-            else $email_from = "";
-            
+              if (!empty ($temp[0])) $from_realname = $temp[0];
+              else $from_realname = "";
+
+              // email
+              $temp = getcontent ($from_usernode[0], "<email>");
+
+              if (!empty ($temp[0])) $from_email = $temp[0];
+              else $from_email = "";
+            }
+
             // get user node of recipient and extract required information
-            $usernode = selectcontent ($userdata, "<user>", "<login>", $notify['user']);
+            $to_usernode = selectcontent ($userdata, "<user>", "<login>", $notify['user']);
 
             // add user to memory to avoid multiple notifications for the same user
             $user_memory[] = $notify['user'];
 
-            if (is_array ($usernode))
+            if (is_array ($to_usernode))
             {
+              // realname
+              $temp = getcontent ($to_usernode[0], "<realname>");
+
+              if (!empty ($temp[0])) $to_realname = $temp[0];
+              else $to_realname = "";
+
               // email
-              $temp = getcontent ($usernode[0], "<email>");
+              $temp = getcontent ($to_usernode[0], "<email>");
               
-              if (!empty ($temp[0])) $email_to = $temp[0];
-              else $email_to = "";
+              if (!empty ($temp[0])) $to_email = $temp[0];
+              else $to_email = "";
 
               // language
-              $temp = getcontent ($usernode[0], "<language>");
+              $temp = getcontent ($to_usernode[0], "<language>");
 
-              if (!empty ($temp[0])) $lang_to = $temp[0];
-              else $lang_to = "en";
+              if (!empty ($temp[0])) $to_lang = $temp[0];
+              else $to_lang = "en";
             }
 
             // load language of user if it has not been loaded
-            if (!empty ($lang_to) && empty ($hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to]))
+            if (!empty ($to_lang) && empty ($hcms_lang['this-is-an-automatically-generated-mail-notification'][$to_lang]))
             {
-              require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang_to));
+              require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($to_lang));
             }
 
-            if (!empty ($email_to))
+            if (!empty ($to_email))
             {
               // text options
               if ($event == "oncreate")
               {
-                $text_opt = $hcms_lang['user-user-createduploaded-the-following-object'][$lang_to];
+                $text_opt = $hcms_lang['user-user-createduploaded-the-following-object'][$to_lang];
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = createaccesslink ($site, $location_esc, $object, $cat, "", $notify['user'], "al");
               }
               elseif ($event == "onedit")
               {
-                $text_opt = $hcms_lang['user-user-edited-the-following-object'][$lang_to];
+                $text_opt = $hcms_lang['user-user-edited-the-following-object'][$to_lang];
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = createaccesslink ($site, $location_esc, $object, $cat, "", $notify['user'], "al");
               }
               elseif ($event == "onmove")
               {
-                $text_opt = $hcms_lang['user-user-moved-the-following-object'][$lang_to];
+                $text_opt = $hcms_lang['user-user-moved-the-following-object'][$to_lang];
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = createaccesslink ($site, $location_esc, $object, $cat, "", $notify['user'], "al");
               }
               elseif ($event == "ondelete")
               {
-                $text_opt = $hcms_lang['user-user-deleted-the-following-object'][$lang_to];
+                $text_opt = $hcms_lang['user-user-deleted-the-following-object'][$to_lang];
                 $object_name = getlocationname ($site, $location_esc.$object, $cat);
                 $accesslink = "";
               }
 
-              // mail notification
-              if (!empty ($email_from)) $sender = $user_from." [<a href=\"mailto:".$email_from."\">".$email_from."</a>]";
-              else $sender = $user_from;
+              // define sender
+              if (!empty ($from_realname)) $sender = $from_realname;
+              else $sender = $from_user;
 
-              $mail_title = $hcms_lang['hypercms-notification'][$lang_to];
+              if (!empty ($from_email)) $sender = $sender." [<a href=\"mailto:".$from_email."\">".$from_email."</a>]";
+
+              // mail notification
+              $mail_title = $hcms_lang['hypercms-notification'][$to_lang];
               $mail_fullbody = "<b>".str_replace ("%user%", $sender, $text_opt)."</b>\n";
               $mail_fullbody .= $mgmt_config['today']." ";
-              if ($cat == "comp") $mail_fullbody .= $hcms_lang['in-assets'][$lang_to];
-              elseif ($cat == "page") $mail_fullbody .= $hcms_lang['in-pages'][$lang_to];
+              if ($cat == "comp") $mail_fullbody .= $hcms_lang['in-assets'][$to_lang];
+              elseif ($cat == "page") $mail_fullbody .= $hcms_lang['in-pages'][$to_lang];
               $mail_fullbody .= ": ".$object_name;
               if ($accesslink != "") $mail_fullbody .=  " (".$accesslink.")";
-              $mail_fullbody .= "\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];
+              $mail_fullbody .= "\n\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$to_lang];
               $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
 
               $mailer = new HyperMailer();
 
               // if the mailserver config entry is empty, the email address of the user will be used for FROM
               $mailer->IsHTML(true);
-              $mailer->CharSet = $hcms_lang_codepage[$lang_to]; 
+              $mailer->CharSet = $hcms_lang_codepage[$to_lang]; 
               if (!empty ($mgmt_config[$site]['mailserver'])) $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
               else $mailer->From = "automailer@hypercms.net";
               $mailer->FromName = "hyperCMS Automailer";
-              $mailer->AddAddress ($email_to);
-              $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang_to]);
-              $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang_to]);
+              $mailer->AddAddress ($to_email);
+              $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$to_lang]);
+              $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$to_lang]);
 
               // send mail
               if ($mailer->Send())
@@ -21362,12 +21381,12 @@ function notifyusers ($site, $location, $object, $event, $user_from)
 
                 // log notification
                 $errcode = "00802";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Notification has been sent to ".$notify['user']." (".$email_to.") on object ".$location_esc.$object; 
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Notification has been sent to ".$notify['user']." (".$to_email.") on object ".$location_esc.$object; 
               }
               else
               {
                 $errcode = "50802";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Notification failed for ".$notify['user']." (".$email_to.") on object ".$location_esc.$object." (mail could not be sent)";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Notification failed for ".$notify['user']." (".$to_email.") on object ".$location_esc.$object." (mail could not be sent)";
               }
             }
           }
@@ -21434,28 +21453,28 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
           if ($mail_receiver_array != false)
           { 
             // email
-            $buffer_array = getcontent ($mail_receiver_array[0], "<email>");
+            $temp = getcontent ($mail_receiver_array[0], "<email>");
 
-            if ($buffer_array != false && $buffer_array[0] != "") $email_to = $buffer_array[0];
-            else $email_to = "";
+            if (!empty ($temp[0])) $to_email = $temp[0];
+            else $to_email = "";
 
             // language
-            $buffer_array = getcontent ($mail_receiver_array[0], "<language>");
+            $temp = getcontent ($mail_receiver_array[0], "<language>");
 
-            if ($buffer_array != false && $buffer_array[0] != "") $lang_to = $buffer_array[0];
-            else $lang_to = "en";
+            if (!empty ($temp[0])) $to_lang = $temp[0];
+            else $to_lang = "en";
 
-            if ($email_to != "")
+            if ($to_email != "")
             {
               // load language of user if it has not been loaded
-              if (!empty ($lang_to) && empty ($hcms_lang['hypercms-warning-regarding-copyrights'][$lang_to]))
+              if (!empty ($to_lang) && empty ($hcms_lang['hypercms-warning-regarding-copyrights'][$to_lang]))
               {
-                require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang_to));
+                require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($to_lang));
               }
 
               // mail notification
-              $mail_title = $hcms_lang['hypercms-warning-regarding-copyrights'][$lang_to];
-              $mail_fullbody = "<b>".$hcms_lang['the-following-copyrights-are-due-shortly'][$lang_to]."</b>\n";
+              $mail_title = $hcms_lang['hypercms-warning-regarding-copyrights'][$to_lang];
+              $mail_fullbody = "<b>".$hcms_lang['the-following-copyrights-are-due-shortly'][$to_lang]."</b>\n";
 
               foreach ($result_array as $result)
               { 
@@ -21463,7 +21482,7 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
                 $mail_fullbody .= $result['date'].": ".$result['link']."\n";
               }
 
-              $mail_fullbody .= "\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang_to];
+              $mail_fullbody .= "\n".$hcms_lang['this-is-an-automatically-generated-mail-notification'][$to_lang];
               $mail_fullbody = "<span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">".$mail_fullbody."</span>";
 
               $mailer = new HyperMailer();
@@ -21474,7 +21493,7 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
               if (!empty ($mgmt_config[$site]['mailserver'])) $mailer->From = "automailer@".$mgmt_config[$site]['mailserver'];
               else $mailer->From = "automailer@hypercms.net";
               $mailer->FromName = "hyperCMS Automailer";
-              $mailer->AddAddress ($email_to);
+              $mailer->AddAddress ($to_email);
               $mailer->Subject = html_decode ($mail_title, $hcms_lang_codepage[$lang]);
               $mailer->Body = html_decode (nl2br ($mail_fullbody), $hcms_lang_codepage[$lang]);
 
@@ -21485,7 +21504,7 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
 
                 // log notification
                 $errcode = "00900";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|License notification was sent to ".$email_to." for ".$folderpath.", ".$text_id.", ".$date_begin.", ".$date_end.", ".$user."";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|License notification was sent to ".$to_email." for ".$folderpath.", ".$text_id.", ".$date_begin.", ".$date_end.", ".$user."";
               }
               else
               {
@@ -22360,7 +22379,7 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
 
 // ---------------------------------------------- sendmessage ----------------------------------------------
 // function: sendmessage()
-// input: from user name [string] (optional), to user name [string], title [string], message [string], object ID or object path [string] (optional), publication name [string] (optional)
+// input: from user name [string] (optional), user name of receiver [string], title [string], message [string], object ID or object path [string] (optional), publication name [string] (optional)
 // output: true/false
 // requires: config.inc.php
 
@@ -22407,18 +22426,24 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
       if ($from_user != "")
       {
         // get user node and extract required information
-        $usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);
+        $from_usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);
 
-        if (!empty ($usernode[0]))
+        if (!empty ($from_usernode[0]))
         {
+          // realname
+          $temp = getcontent ($from_usernode[0], "<realname>");
+
+          if (!empty ($temp[0])) $from_realname = $temp[0];
+          else $from_realname = "";
+
           // email
-          $temp = getcontent ($usernode[0], "<email>");
+          $temp = getcontent ($from_usernode[0], "<email>");
 
           if (!empty ($temp[0])) $from_email = $temp[0];
           else $from_email = "";
 
           // language
-          $temp = getcontent ($usernode[0], "<language>");
+          $temp = getcontent ($from_usernode[0], "<language>");
 
           if (!empty ($temp[0])) $from_lang = $temp[0];
           else $from_lang = "en";
@@ -22426,18 +22451,18 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
       }
 
       // get user node and extract required information
-      $usernode = selectcontent ($userdata, "<user>", "<login>", $to_user);
+      $to_usernode = selectcontent ($userdata, "<user>", "<login>", $to_user);
 
-      if (!empty ($usernode[0]))
+      if (!empty ($to_usernode[0]))
       {
         // email
-        $temp = getcontent ($usernode[0], "<email>");
+        $temp = getcontent ($to_usernode[0], "<email>");
 
         if (!empty ($temp[0])) $to_email = $temp[0];
         else $to_email = "";
  
         // language
-        $temp = getcontent ($usernode[0], "<language>");
+        $temp = getcontent ($to_usernode[0], "<language>");
 
         if (!empty ($temp[0])) $to_lang = $temp[0];
         else $to_lang = "en";
@@ -22445,7 +22470,7 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
         // publication
         if ($site == "")
         {
-          $temp = getcontent ($usernode[0], "<publication>");
+          $temp = getcontent ($to_usernode[0], "<publication>");
 
           if (!empty ($temp[0])) $site = $temp[0];
         }
@@ -22461,9 +22486,11 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
         require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($to_lang));
       }
 
-      // email schema
-      if (!empty ($from_email)) $sender = $from_user." [<a href='mailto:".$from_email."'>".$from_email."</a>]";
+      // define sender
+      if (!empty ($from_realname)) $sender = $from_realname;
       else $sender = $from_user;
+
+      if (!empty ($from_email)) $sender = $sender." [<a href='mailto:".$from_email."'>".$from_email."</a>]";
 
       $body = "
   <span style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px;\">

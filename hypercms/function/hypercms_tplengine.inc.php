@@ -950,8 +950,18 @@ function followlink ($site, $follow)
 // input: source code, return code, error identifier
 // output: error message and view of the code with line identifiers
 
+// description:
+// The four types of PHP errors are:
+// 1. Warning Error
+// 2. Notice Error
+// 3. Parse Error
+// 4. Fatal Error
+
 function errorhandler ($source_code, $return_code, $error_identifier)
 {
+  // identifiers for the PHP error types
+  $error_type = array("Warning: ", "Notice: ", "Parse error: ", "Fatal error: ");
+
   // error handling
   if (strpos ("_".$return_code, $error_identifier) > 0 && (strpos ("_".$return_code, " on line ") > 0 || strpos ("_".$return_code, "TCPDF ERROR:") > 0))
   {
@@ -961,6 +971,7 @@ function errorhandler ($source_code, $return_code, $error_identifier)
     $source_code_array = explode ("\n", $source_code);
 
     $source_code = "";
+    $return_code_extracted = "Undefined error";
     $i = 0;
 
     foreach ($source_code_array as $buffer)
@@ -972,18 +983,29 @@ function errorhandler ($source_code, $return_code, $error_identifier)
     // clean return code for PHP notice
     if (strlen ($return_code) > 800)
     {
-      if (strpos ("_".$return_code, "Notice: ") > 0 && strpos ("_".$return_code, " on line ", strpos ($return_code, "Notice: ")) > 0)
+      foreach ($error_type as $temp)
       {
-        $start = strpos ($return_code, "Notice: ");
-        $length = strpos ($return_code, PHP_EOL, strpos ($return_code, "Notice: ")) - $start;
-        $return_code = substr ($return_code, $start, $length);
+        if (strpos ("_".$return_code, $temp) > 0)
+        {
+          if (strpos ("_".$return_code, " on line ", strpos ($return_code, $temp)) > 0)
+          {
+            $start = strpos ($return_code, $temp);
+            $length = strpos ($return_code, PHP_EOL, strpos ($return_code, $temp)) - $start;
+            
+            if (!empty ($length))
+            {
+              $return_code_extracted = substr ($return_code, $start, $length);
+              break;
+            }
+          }
+        }
       }
     }
 
     return "
     <!-- hyperCMS:ErrorCodeBegin -->
     <span style=\"font-size:11px; font-family:Arial, Helvetica, sans-serif;\">
-      <span style=\"color:red;\">".$return_code."</span><br />
+      <span style=\"color:red;\">".$return_code_extracted."</span><br />
       ".$source_code."
     </span>
     <!-- hyperCMS:ErrorCodeEnd -->";
@@ -8082,7 +8104,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           if ($ctrlreload == "yes")
           {
             $button_formview = "<a href=\"".cleandomain ($mgmt_config['url_path_cms'])."page_view.php?view=formedit&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."\"><img src=\"".getthemelocation()."img/edit_form.png\" style=\"display:inline; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['form-view'][$lang], $charset, $lang)."\" /></a>";
-            $viewstore = str_replace ("<!-- hyperCMS:ErrorCodeBegin -->", $button_formview, $viewstore);
+            
+            if (substr_count (strtolower ($viewstore), "<body") > 0)
+            {
+              $bodytag = gethtmltag ($viewstore, "<body");
+
+              if (!empty ($bodytag)) $viewstore = str_replace ($bodytag, $bodytag."\n".$button_formview, $viewstore);
+            }
+            else $viewstore = str_replace ("<!-- hyperCMS:ErrorCodeBegin -->", $button_formview, $viewstore);
 
             if ($ctrlreload == "yes")
             {

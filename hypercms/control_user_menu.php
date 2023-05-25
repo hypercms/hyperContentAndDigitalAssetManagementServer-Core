@@ -454,7 +454,7 @@ function goToURL()
     // get online users
     $user_online_array = getusersonline ();
 
-    if ((!$multiobject || $multiobject_count <= 1) && $login != "" && is_array ($user_online_array) && in_array ($login, $user_online_array) && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
+    if ((!$multiobject || $multiobject_count <= 1) && $login != "" && is_array ($user_online_array) && array_key_exists ($login, $user_online_array) && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
       echo "<img ".
              "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".

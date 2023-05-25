@@ -6351,7 +6351,13 @@ function getusersonline ($sites=array())
         {
           foreach ($siteaccess as $site => $displayname)
           {
-            if (!empty ($users[$site][$logon])) $result_filtered[$logon] = $logon;
+            if (!empty ($users[$site][$logon]))
+            {
+              // select a user attribute that identifies the user
+              if (!empty ($users[$site][$logon]['realname'])) $result_filtered[$logon] = $users[$site][$logon]['realname'];
+              elseif (!empty ($users[$site][$logon]['email'])) $result_filtered[$logon] = $users[$site][$logon]['email'];
+              else $result_filtered[$logon] = $logon;
+            }
           }
         }
 

@@ -6941,8 +6941,17 @@ Release 09/2023
 - Modifications in function manipulateobject in Main API in order to set value of variable to_email if no e-mail address will be extracted form the user directory
 - Modifications in function loadfile_header in Main API in order to remove a duplicate condition
 - Modifications in function getobjectlist in Get API in order to calculate the count of both search results provied by function rdbms_searchcontent
+- Modifications in control_user_menu and user_objectlist in order to use the array key (user name) instead of the array value of the result provided by function getusersonline
+- Modifications in function getusersonline in Get API in order to return the reasl user nameor e-mail in the result
+- Display of the username plus the real name or e-mail address of the users in the select box of the chat window
+- Modifications in the chat service in order to use the users real name or e-mail address for the reference in the messages
+- Modifications in function sendmessage, notifyusers, and sendlicensenotification in Main API in order to use the users real name instead of the user name for the message title
+- Design modifications in the chat window
+- Modifications in template engine in order to insert the form edit button after the body tag if a body tag exists in the document
+- Modifications in function errorhandler in template engine in order to support all PHP error types
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
 - Bug fix: Service recognizefaces used a wrong condition syntax
 - Bug fix: Function updateuploadlog in Main API did not set the value of variable updated correctly
+- Bug fix: version_template did not exclude the tabel column head for "owner" if the main configuration setting $mgmt_config['version_owner'] has been disabled

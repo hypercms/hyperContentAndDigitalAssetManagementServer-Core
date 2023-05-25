@@ -160,11 +160,11 @@ function getusersonline ()
   
   if (usersonline)
   {
-    for (var i in usersonline)
+    for (var login in usersonline)
     {
-      if (usersonline.hasOwnProperty(i) && usersonline[i] != "<?php echo $user; ?>")
+      if (usersonline.hasOwnProperty(login) && login != "<?php echo $user; ?>")
       {
-        result = result + "    <div class=\"hcmsSelectorItem\" style=\"text-align:left;\" onclick=\"invite('" + usersonline[i] + "');\"><img src=\"<?php echo getthemelocation($hcms_hoverinvertcolors)."img/user.png"; ?>\" class=\"hcmsIconList\" /> <span class=\"hcmsInvertHoverTextColor\">" + usersonline[i] + "&nbsp;</span></div>\n";
+        result = result + "    <div class=\"hcmsSelectorItem\" style=\"text-align:left;\" onclick=\"invite('" + login + "');\"><img src=\"<?php echo getthemelocation($hcms_hoverinvertcolors)."img/user.png"; ?>\" class=\"hcmsIconList\" /> <span class=\"hcmsInvertHoverTextColor\">" + usersonline[login] + "&nbsp;</span></div>\n";
       }
     }
   }
@@ -190,7 +190,7 @@ function initialize ()
     <tr>
       <td style="width:38px; height:38px; text-align:left; white-space:nowrap;">
         <img src="<?php echo getthemelocation(); ?>img/button_user_new.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:3px;" onClick="hcms_switchSelector('select_user');" alt="<?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?>" />
-        <div id="select_user" class="hcmsSelector" style="position:absolute; top:32px; left:5px; visibility:hidden; z-index:999; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;"></div>
+        <div id="select_user" class="hcmsSelector" style="position:absolute; top:32px; left:5px; visibility:hidden; z-index:999; max-width:280px; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;"></div>
         <?php if (!empty ($mgmt_config['chat_type']) && strtolower ($mgmt_config['chat_type']) == "private") { ?>
         <img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:3px;" onClick="uninvite();" alt="<?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>" />
         <?php } ?>

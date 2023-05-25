@@ -41,7 +41,7 @@ $error = array();
 $add_onload = "";
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // template directory
 if (valid_publicationname ($site)) $versiondir = $mgmt_config['abs_path_template'].$site."/";
@@ -220,7 +220,9 @@ function toggledelete (source)
     <tr>
       <td style="white-space:nowrap; width:160px;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['version-date'][$lang]); ?></td>
       <td style="white-space:nowrap;" class="hcmsHeadline"><?php echo $pagecomp; ?></td>
+      <?php if (!empty ($mgmt_config['version_owner'])) { ?>
       <td style="white-space:nowrap; width:120px;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['owner'][$lang]); ?></td>
+      <?php } ?>
       <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['compare'][$lang]); ?></td>
       <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['current'][$lang]); ?></td>
       <td style="white-space:nowrap; width:60px; text-align:center;" class="hcmsHeadline"><label style="cursor:pointer;"><input type="checkbox" onclick="toggledelete(this);" style="display:none" /><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></label></td>
