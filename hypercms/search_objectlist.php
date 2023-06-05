@@ -681,7 +681,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               else $dragevent = "";
 
               // metadata
-              $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
+              $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".(!empty ($file_modified) ? getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n" : "").$metadata;             
 
               $listview .= "
                           <tr id=\"g".$items_id."\" style=\"cursor:pointer\" ".$selectclick.">
@@ -690,12 +690,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                                 ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end." ".$workflow_icon."
                               </div>
                             </td>";
-    
+
               if (!$is_mobile)
               {
                 $listview .= "
                               <td id=\"h".$items_id."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block; \">".$item_location."</div></td>";
-  
+
                 if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
                 {
                   $i = 2;
@@ -704,9 +704,9 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   {
                     if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px;";
                     else $style_td = "";
-                    
+
                     $style_div = "";
-                    
+
                     if ($active == 1)
                     {
                       if ($key == 'createdate')
@@ -743,10 +743,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                         if (!empty ($container_info[$key])) $title = $container_info[$key];
                         else $title = "";
                       }
-                      
+
                       $listview .= "
                               <td id=\"h".$items_id."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
-                      
+
                       $i++;
                     }
                   }
@@ -793,7 +793,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
           $object = correctfile ($location, $object, $user); 
           $file_info = getfileinfo ($item_site, $location.$object, $item_cat);
           $object_name = $file_info['name'];
-  
+
           // check access permission
           $ownergroup = accesspermission ($item_site, $location, $item_cat);
           $setlocalpermission = setlocalpermission ($item_site, $ownergroup, $item_cat);
@@ -815,12 +815,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             elseif ($file_info['type'] == "Component") $file_type = getescapedtext ($hcms_lang['object-component'][$lang]);    
             // multimedia object 
             else $file_type = getescapedtext ($hcms_lang['file'][$lang])." (".$file_info['type'].")";
-  
+
             // read file
             if (empty ($container_id) || (empty ($mediafile)  && (is_supported ($mgmt_imagepreview, $object) || is_supported ($mgmt_mediapreview, $object) || is_supported ($mgmt_docpreview, $object))))
             {
               $objectdata = loadfile_fast ($location, $object);
-  
+
               if (!empty ($objectdata))
               {
                 // get name of content file and load content container
@@ -865,27 +865,31 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   $file_connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&from_page=objectlist');\">".getescapedtext ($hcms_lang['show-where-used'][$lang])."</a>";
                 }
               }
-  
+
+              // object with media file
               if ($mediafile != false)
               {
-                // location of file
-                $mediadir = getmedialocation ($item_site, $mediafile, "abs_path_media");
-                
                 // fallback for file size and date modified
-                if (empty ($file_size) && is_file ($mediadir.$item_site."/".$mediafile))
+                if (empty ($file_size) && !empty ($objectlistcols_reduced['filesize']))
                 {
-                  $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
-                  $file_size = number_format ($file_size, 0, ".", " ");
-                  
-                  $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));
+                  // location of file
+                  $mediadir = getmedialocation ($item_site, $mediafile, "abs_path_media");
+
+                  if (is_file ($mediadir.$item_site."/".$mediafile))
+                  {
+                    $file_size = round (@filesize ($mediadir.$item_site."/".$mediafile) / 1024);
+                    $file_size = number_format ($file_size, 0, ".", " ");
+                    
+                    $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$item_site."/".$mediafile));
+                  }
                 }
-                
+
                 // media file info
                 $media_info = getfileinfo ($item_site, $mediafile, $item_cat);
-                
+
                 // get metadata for media file
                 if (!empty ($mgmt_config['explorer_list_metadata']) && !$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
-                
+
                 // link for copy & paste of download links (not if an access link is used)
                 if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
                 {
@@ -901,14 +905,17 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               // object without media file
               else
               {
-                // get file size
-                $file_size = round (@filesize ($location.$object) / 1024);
-                if ($file_size == 0) $file_size = 1;
-                $file_size = number_format ($file_size, 0, ".", " ");
-                
                 // get file time
-                $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object));
-                
+                if (!empty ($objectlistcols_reduced['date'])) $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object));
+
+                // get file size
+                if (!empty ($objectlistcols_reduced['filesize']))
+                {
+                  $file_size = round (@filesize ($location.$object) / 1024);
+                  if ($file_size == 0) $file_size = 1;
+                  $file_size = number_format ($file_size, 0, ".", " ");
+                }
+
                 // link for copy & paste of download links (not if an access link is used)
                 if (!empty ($mgmt_config[$item_site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
                 {
@@ -929,30 +936,30 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
             // onclick for marking objects
             $selectclick = "onClick=\"hcms_selectObject(this.id, event);\" ";
-            
+
             // set context
             $hcms_setObjectcontext = "onMouseOver=\"hcms_setObjectcontext('".$item_site."', '".$item_cat."', '".$location_esc."', '".$object."', '".$object_name."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
-  
+
             // metadata
-            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;
-            
+            $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".(!empty ($file_modified) ? getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n" : "").(!empty ($file_size) ? getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n" : "").$metadata;
+
             // listview - view option for un/published objects
             if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"hcmsIconList hcmsIconOff\"";
             else $class_image = "class=\"hcmsIconList\"";
-            
+
             // listview - view option for locked objects
             if ($usedby != "")
             {
               $file_info['icon'] = "file_lock.png";
             }
-            
+
             // drag events
             if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
             {
               $dragevent = "draggable=\"true\" ondragstart=\"hcms_drag(event)\"";
             }
             else $dragevent = "";
-            
+
             $listview .= "
                          <tr id=\"g".$items_id."\" style=\"cursor:pointer;\" ".$selectclick.">
                            <td id=\"h".$items_id."_0\"class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
@@ -960,16 +967,16 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                                ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end." ".$workflow_icon."
                              </div>
                            </td>";
-            
+
             if (!$is_mobile)
             {
               $listview .= "
                            <td id=\"h".$items_id."_1\" class=\"hcmsCol1 hcmsCell\" style=\"width:250px;\"><div ".$hcms_setObjectcontext." title=\"".$item_location."\" style=\"display:block;\">".$item_location."</div></td>";
-  
+
               if (!empty ($objectlistcols_reduced) && is_array ($objectlistcols_reduced))
               {
                 $i = 2;
-                
+
                 foreach ($objectlistcols_reduced as $key => $active)
                 {
                   if ($i < (sizeof ($objectlistcols_reduced) + 1)) $style_td = "width:125px;";
@@ -978,7 +985,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                   if ($active == 1)
                   {
                     $style_div = "";
-                    
+
                     if ($key == 'createdate')
                     {
                       $title = "<span style=\"display:none;\">".date ("YmdHi", strtotime ($file_created))."</span>".showdate ($file_created, "Y-m-d H:i", $hcms_lang_date[$lang]);
@@ -1016,7 +1023,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
                     $listview .= "
                             <td id=\"h".$items_id."_".$i."\" class=\"hcmsCol".$i." hcmsCell\" style=\"".$style_td."\"><div ".$hcms_setObjectcontext." style=\"display:block; ".$style_div."\">".$title."</div></td>";
-                  
+
                     $i++;
                   }
                 }
@@ -1029,36 +1036,27 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             // if there is a thumb file, display the thumb
             if ($mediafile != false && empty ($usedby))
             {
-              // get thumbnail location
-              $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
-
-              // prepare source media file
-              preparemediafile ($item_site, $thumbdir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
-  
               // try to create thumbnail if not available
-              if (!empty ($mgmt_config['recreate_preview']) && (!is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg")))
+              if (!empty ($mgmt_config['recreate_preview']))
               {
-                createmedia ($item_site, $thumbdir.$item_site."/", $thumbdir.$item_site."/", $media_info['file'], "", "thumbnail", true, true);
+                // get thumbnail location
+                $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
+
+                // prepare source media file
+                preparemediafile ($item_site, $thumbdir.$item_site."/", $media_info['filename'].".thumb.jpg", $user);
+
+                if (!is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg"))
+                {
+                  createmedia ($item_site, $thumbdir.$item_site."/", $thumbdir.$item_site."/", $media_info['file'], "", "thumbnail", true, true);
+                }
               }          
 
               // thumbnail image
-              if (is_file ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$item_site."/".$media_info['filename'].".thumb.jpg"))
-              {
-                // galleryview - view option for locked multimedia objects
-                if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
-                else $class_image = "class=\"lazyload hcmsImageItem\"";
+              // galleryview - view option for locked multimedia objects
+              if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
+              else $class_image = "class=\"lazyload hcmsImageItem\"";
 
-                $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name))."\" ".$class_image." /></div>";
-              }
-              // display file icon if thumbnail fails 
-              else
-              {
-                // galleryview - view option for locked multimedia objects
-                if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"hcmsIconOff\"";
-                else $class_image = "";
-                        
-                $thumbnail = "<div id=\"i".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." style=\"max-width:186px; max-height:186px;\" /></div>";
-              }           
+              $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name, false, "wrapper", $file_info['icon']))."\" ".$class_image." /></div>";
             }
             // display file icon for non multimedia objects 
             else
@@ -1090,19 +1088,19 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               $linking_buttons .= "
               <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";
             }
-            
+
             // if assetbrowser is used display edit button
             if (!empty ($hcms_assetbrowser) && $mediafile != "" && $setlocalpermission['root'] == 1)
             {   
               $linking_buttons .= "
               <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"parent.parent.returnMedia('".$location_esc.$object."', '".$object_name."', '".$imgwidth."', '".$imgheight."', '".$file_modified."', '".$file_size."');\">".getescapedtext ($hcms_lang['select'][$lang])."</button>";
             }
-            
+
             if ($linking_buttons != "")
             {
               $linking_buttons = "<div style=\"width:100%; margin:0 auto; padding:0; text-align:center;\">".$linking_buttons."</div>";
             }
-  
+
             $galleryview .= "
                             <div id=\"t".$items_id."\" ".$selectclick." class=\"hcmsObjectUnselected\">
                               <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".

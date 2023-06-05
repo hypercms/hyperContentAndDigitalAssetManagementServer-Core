@@ -53,7 +53,7 @@ function rootpermission ($site_name, $site_admin, $permission_str)
   if (is_array ($permission_str) && valid_publicationname ($site_name))
   {
     // initialize
-    if (!isset ($rootpermission)) $rootpermission = array();
+    if (!isset ($rootpermission) || !is_array ($rootpermission)) $rootpermission = array();
 
     if (!isset ($rootpermission['desktop'])) $rootpermission['desktop'] = 0;
     if (!isset ($rootpermission['desktopsetting'])) $rootpermission['desktopsetting'] = 0;

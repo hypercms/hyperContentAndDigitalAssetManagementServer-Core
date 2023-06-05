@@ -384,7 +384,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         else $dragevent = "";
 
         // metadata
-        $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".$metadata;             
+        $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".(!empty ($file_modified) ? getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n" : "").$metadata;             
 
         $listview .= "
                       <tr id=\"g".$items_id."\" style=\"cursor:pointer\" ".$selectclick.">
@@ -609,17 +609,21 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           // get media file
           $mediafile = getfilename ($objectdata, "media");
 
+          // object with media file
           if ($mediafile != false)
           {
-            // location of media file
-            $mediadir = getmedialocation ($site, $mediafile, "abs_path_media");
-
             // fallback for file size and date modified
-            if (empty ($file_size) && is_file ($mediadir.$site."/".$mediafile))
+            if (empty ($file_size) && !empty ($objectlistcols[$site][$cat]['filesize']))
             {
-              $file_size = round (@filesize ($mediadir.$site."/".$mediafile) / 1024);
-              $file_size = number_format ($file_size, 0, ".", " ");              
-              $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));               
+              // location of media file
+              $mediadir = getmedialocation ($site, $mediafile, "abs_path_media");
+
+              if (is_file ($mediadir.$site."/".$mediafile))
+              {
+                $file_size = round (@filesize ($mediadir.$site."/".$mediafile) / 1024);
+                $file_size = number_format ($file_size, 0, ".", " ");              
+                $file_modified = date ("Y-m-d H:i", @filemtime ($mediadir.$site."/".$mediafile));               
+              }
             }
 
             // media file info
@@ -627,7 +631,6 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
             // get metadata for media file
             if (!empty ($mgmt_config['explorer_list_metadata']) && !$is_mobile && !$temp_sidebar) $metadata = getmetadata ("", "", $contentfile, " \r\n");
-            else $metadata = "";
 
             // link for copy & paste of download links (not if an access link is used)
             if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
@@ -645,12 +648,15 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           else
           {
             // get file time
-            $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object)); 
+            if (!empty ($objectlistcols[$site][$cat]['date'])) $file_modified = date ("Y-m-d H:i", @filemtime ($location.$object)); 
             
             // get file size
-            $file_size = round (@filesize ($location.$object) / 1024);
-            if ($file_size == 0) $file_size = 1;
-            $file_size = number_format ($file_size, 0, ".", " ");
+            if (!empty ($objectlistcols[$site][$cat]['filesize']))
+            {
+              $file_size = round (@filesize ($location.$object) / 1024);
+              if ($file_size == 0) $file_size = 1;
+              $file_size = number_format ($file_size, 0, ".", " ");
+            }
 
             // link for copy & paste of download links (not if an access link is used)
             if (!empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['download'] == 1 && linking_valid() == false)
@@ -680,7 +686,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         $hcms_setObjectcontext = "onmouseover=\"hcms_setObjectcontext('".$site."', '".$cat."', '".$location_esc."', '".$object."', '".$file_info['name']."', '".$file_info['type']."', '".$mediafile."', '', '', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
         // metadata
-        $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n".getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n".$metadata;             
+        $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$object_name." \r\n".(!empty ($file_modified) ? getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n" : "").(!empty ($file_size) ? getescapedtext ($hcms_lang['size-in-kb'][$lang]).": ".$file_size." \r\n" : "").$metadata;             
 
         // listview - view option for un/published objects
         if ($file_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
@@ -772,36 +778,27 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         // if there is a thumb file, display the thumb
         if ($mediafile != false && empty ($usedby))
         {
-          // get thumbnail location
-          $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
-
-          // prepare source media file
-          preparemediafile ($site, $thumbdir.$site."/", $media_info['filename'].".thumb.jpg", $user);
-
           // try to create thumbnail if not available
-          if (!empty ($mgmt_config['recreate_preview']) && (!is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg")))
+          if (!empty ($mgmt_config['recreate_preview']))
           {
-            createmedia ($site, $thumbdir.$site."/", $thumbdir.$site."/", $media_info['file'], "", "thumbnail", true, true);
+            // get thumbnail location
+            $thumbdir = getmedialocation ($site, $media_info['filename'].".thumb.jpg", "abs_path_media");
+
+            // prepare source media file
+            preparemediafile ($site, $thumbdir.$site."/", $media_info['filename'].".thumb.jpg", $user);
+
+            if (!is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || !is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg"))
+            {
+              createmedia ($site, $thumbdir.$site."/", $thumbdir.$site."/", $media_info['file'], "", "thumbnail", true, true);
+            }
           }
 
           // thumbnail image
-          if (is_file ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg") || is_cloudobject ($thumbdir.$site."/".$media_info['filename'].".thumb.jpg"))
-          {
-            // galleryview - view option for locked multimedia objects
-            if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
-            else $class_image  = "class=\"lazyload hcmsImageItem\"";
+          // galleryview - view option for locked multimedia objects
+          if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
+          else $class_image  = "class=\"lazyload hcmsImageItem\"";
 
-            $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($site, $media_info['filename'].".thumb.jpg"))."\" ".$class_image." /></div>";
-          }
-          // display file icon if thumbnail is not available 
-          else
-          {
-            // galleryview - view option for locked multimedia objects
-            if ($file_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
-            else $class_image = "";
-                    
-            $thumbnail = "<div id=\"i".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /></div>";
-          }           
+          $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($site, $media_info['filename'].".thumb.jpg", $object_name, false, "wrapper", $file_info['icon']))."\" ".$class_image." /></div>";      
         }
         // display file icon for non multimedia objects 
         else

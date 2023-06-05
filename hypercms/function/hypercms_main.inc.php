@@ -2394,14 +2394,14 @@ function mediapublicaccess ($mediafile)
 
 // ---------------------- createviewlink -----------------------------
 // function: createviewlink()
-// input: publication name [string], media file name [string], media name [string] (optional), force reload [boolean] (optional), link type [wrapper,download] (optional)
+// input: publication name [string], media file name [string], media name [string] (optional), force reload [boolean] (optional), link type [wrapper,download] (optional), alternative file name from design theme [string] (optional)
 // output: URL for download of the multimedia file / false on error
 
 // description:
 // The view link is mainly used inside the system as a reference to a multimedia file. 
 // The database is not required since the object hash or ID is not needed to create the view link.
 
-function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type="wrapper")
+function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type="wrapper", $altfile="")
 {
   global $user, $mgmt_config;
 
@@ -2425,7 +2425,7 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
     if (strtolower ($type) == "download") $servicename = "mediadownload";
     else $servicename = "mediawrapper";
 
-    return $mgmt_config['url_path_cms']."service/".$servicename.".php?site=".urlencode($site)."&media=".urlencode($site."/".$mediafile)."&token=".hcms_crypt($site."/".$mediafile).$add;
+    return $mgmt_config['url_path_cms']."service/".$servicename.".php?site=".urlencode($site)."&media=".urlencode($site."/".$mediafile)."&alt=".urlencode($altfile)."&token=".hcms_crypt($site."/".$mediafile).$add;
   }
 
   return false;
@@ -12306,7 +12306,7 @@ function createfolder ($site, $location, $folder, $user)
 
         if (!empty ($folderfile['result']))
         {
-          $errcode = "10263";
+          $errcode = "00263";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."New folder '".$folder_orig."' was created in '".$location_esc."' by user '".$user."'";
 
           $add_onload = "parent.frames['mainFrame'].location.reload(); ";

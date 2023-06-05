@@ -523,7 +523,7 @@ function tpl_globals ($application, $container, $charset)
   // URL rewrting is only supported by PHP, no translations to JSP and ASP
   if ($application == "php")
   {
-    return "<?php \$hypercms_contentcontainer = \"$container\"; \$hypercms_today = date(\"YmdHi\", time()); if (!empty(\$hypercms_session) && is_array(\$hypercms_session)) foreach (\$hypercms_session as \$key=>\$value) \$_SESSION[\$key] = \$value; ?>\n";
+    return "<?php \$hypercms_contentcontainer = \"$container\"; \$hypercms_today = date(\"YmdHi\", time()); if (!empty(\$hypercms_session) && is_array(\$hypercms_session) && session_id()!=\"\") foreach (\$hypercms_session as \$key=>\$value) \$_SESSION[\$key] = \$value; ?>\n";
   }
   elseif ($application == "jsp")
   {
@@ -959,29 +959,17 @@ function followlink ($site, $follow)
 
 function errorhandler ($source_code, $return_code, $error_identifier)
 {
+  // define global variables
+  global $mgmt_config;
+  
   // identifiers for the PHP error types
-  $error_type = array("Warning: ", "Notice: ", "Parse error: ", "Fatal error: ");
+  $error_type = array("Warning", "Notice", "Parse error", "Fatal error");
 
   // error handling
   if (strpos ("_".$return_code, $error_identifier) > 0 && (strpos ("_".$return_code, " on line ") > 0 || strpos ("_".$return_code, "TCPDF ERROR:") > 0))
   {
-    $source_code = str_replace ("<", "&lt;", $source_code);
-    $source_code = str_replace (">", "&gt;", $source_code);
-    $source_code = str_replace (" ", "&nbsp;", $source_code);
-    $source_code_array = explode ("\n", $source_code);
-
-    $source_code = "";
-    $return_code_extracted = "Undefined error";
-    $i = 0;
-
-    foreach ($source_code_array as $buffer)
-    {
-      $i++;
-      $source_code .= "<b>".$i."</b>&nbsp;&nbsp;".$buffer."<br />\n";
-    }
-
     // clean return code for PHP notice
-    if (strlen ($return_code) > 800)
+    if (strlen ($return_code) > 60)
     {
       foreach ($error_type as $temp)
       {
@@ -1002,12 +990,48 @@ function errorhandler ($source_code, $return_code, $error_identifier)
       }
     }
 
+    // error message could not be extracted
+    if (empty ($return_code_extracted))
+    {
+      // undefined error message
+      $return_code_extracted = "Undefined error: Inspect source code for details";
+
+      $return_code = str_replace (array("<", ">", " "), array("&lt;", "&gt;", "&nbsp;"), $return_code);
+      
+      if (strlen ($return_code) > 800) $source_code_array = explode ("\n", $return_code);
+      else $source_code_array = explode ("\n", $source_code);
+  
+      $source_code = "";
+      $i = 0;
+  
+      foreach ($source_code_array as $buffer)
+      {
+        $i++;
+        $source_code .= "<b>".$i."</b>&nbsp;&nbsp;".$buffer."<br />\n";
+      }
+    }
+    // error message 
+    else
+    {
+      $source_code = str_replace (array("<", ">", " "), array("&lt;", "&gt;", "&nbsp;"), $source_code);
+      $source_code_array = explode ("\n", $source_code);
+  
+      $source_code = "";
+      $i = 0;
+  
+      foreach ($source_code_array as $buffer)
+      {
+        $i++;
+        $source_code .= "<b>".$i."</b>&nbsp;&nbsp;".$buffer."<br />\n";
+      }
+    }
+
     return "
     <!-- hyperCMS:ErrorCodeBegin -->
-    <span style=\"font-size:11px; font-family:Arial, Helvetica, sans-serif;\">
+    <div style=\"font-size:12px; font-family:Arial, Helvetica, sans-serif; background-color:#f0f0f0\">
       <span style=\"color:red;\">".$return_code_extracted."</span><br />
       ".$source_code."
-    </span>
+    </div>
     <!-- hyperCMS:ErrorCodeEnd -->";
   }
   else return $return_code;

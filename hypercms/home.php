@@ -81,7 +81,7 @@ video#videoScreen
   -moz-transform: translateX(-50%) translateY(-50%);
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
-  background: url('<?php echo getthemelocation(); ?>img/backgrd_start.png') no-repeat;
+  background: url('<?php echo getthemelocation(); ?>img/backgrd_start.jpg') no-repeat;
   background-size: cover;
 }
 
@@ -398,7 +398,7 @@ function closePopup ()
 
 <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
 <!-- video background -->
-<video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation(); ?>/img/backgrd_start.png">
+<video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation(); ?>/img/backgrd_start.jpg">
   <source src="<?php echo $wallpaper; ?>" type="video/mp4">
 </video>
 <?php } ?>

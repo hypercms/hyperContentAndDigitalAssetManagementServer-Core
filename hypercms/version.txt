@@ -6949,9 +6949,25 @@ Release 09/2023
 - Design modifications in the chat window
 - Modifications in template engine in order to insert the form edit button after the body tag if a body tag exists in the document
 - Modifications in function errorhandler in template engine in order to support all PHP error types
+- Modifications in export_form in the Import/Export module in order to verify the export source location and provide an error message
+- Modifications in the background images of the design themes in order to match the color schema of the design
+- Changed the value of the main configuration setting $mgmt_config['template_clean_level'] from 3 to 2 in the install directory
+- Modifications in function importobjects in the Import/Export API of the Connector module in order to read the import jobs of version 10.0.3 only if the separator count of a job record is at least 9
+- Modifications in function importobjects and exportobjects in the Import/Export API of the Connector module in order to verify that the job record is not empty and valid
+- Modifications in function tpl_tsinsertcomponent in template engine in order to set session parameters only if a session exists
+- Modifications in function rootpermission in Security API in order to initialize the rootpermission variable as array in case it is not an array
+- Modifications in function getobjectlist in Get API in order to initialize the search variable as array in case it is not an array
+- Modifications in function getlabel in Get API in order to verify the label record
+- Modifications in function createviewlink in Main API in order to support altenative media files in case the requested media file does not exist
+- Modifications in service mediawrapper in order to support alternative media files in case the requested media file does not exist
+- Modifications in explorer_objectlist and search_objectlist in order to implement the new version of function createviewlink and remove the verification of the media file (increases performance significantly if the storage access is slow since the file access will only be performed by service mediawrapper)
+- Modifications in function showcompexplorer in UI API in order to implement the new version of function createviewlink and remove the verification of the media file (increases performance significantly if the storage access is slow since the file access will only be performed by service mediawrapper)
+- Modifications in all design themes in order to change to the JPEG format of the backgrd_start image
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
 - Bug fix: Service recognizefaces used a wrong condition syntax
 - Bug fix: Function updateuploadlog in Main API did not set the value of variable updated correctly
 - Bug fix: version_template did not exclude the tabel column head for "owner" if the main configuration setting $mgmt_config['version_owner'] has been disabled
+- Bug fix: Function exportobjects and importobjects in the Import/Export API of the Connector module used PHP function time instead of date
+- Bug fix: Function createnavigation in UI API did not initialize the child arrays for the navigation

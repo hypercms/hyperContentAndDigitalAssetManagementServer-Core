@@ -479,7 +479,7 @@ video#videoScreen
     -moz-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
-    background: url('<?php echo getthemelocation($themename); ?>/img/backgrd_start.png') no-repeat;
+    background: url('<?php echo getthemelocation($themename); ?>/img/backgrd_start.jpg') no-repeat;
     background-size: cover; 
 }
 
@@ -684,7 +684,7 @@ function blurbackground (blur)
 </script>
 </head>
 
-<body onload="focusform(); is_mobilebrowser(); is_iOS(); html5support(); setwallpaper();">
+<body onload="is_mobilebrowser(); is_iOS(); html5support(); setwallpaper(); focusform();">
 
   <!-- load screen --> 
   <div id="hcmsLoadScreen" class="hcmsLoadScreen"></div>
@@ -692,7 +692,7 @@ function blurbackground (blur)
   <!-- wallpaper -->
   <div id="startScreen" class="hcmsStartScreen">
     <?php if (!empty ($wallpaper) && is_video ($wallpaper)) { ?>
-    <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.png">
+    <video id="videoScreen" playsinline="true" preload="auto" autoplay="true" loop="loop" muted="true" volume="0" poster="<?php echo getthemelocation($themename); ?>/img/backgrd_start.jpg">
       <source src="<?php echo $wallpaper; ?>" type="video/mp4">
     </video>
     <?php } ?>

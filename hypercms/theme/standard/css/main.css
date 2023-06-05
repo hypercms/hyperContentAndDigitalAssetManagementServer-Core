@@ -182,7 +182,7 @@ a.hcmsLink
   z-index: 1;
   display: block;
   height: 100%;
-  background-image: url('../img/backgrd_start.png');
+  background-image: url('../img/backgrd_start.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -483,6 +483,9 @@ a.hcmsNavigator
 {
   display: inline-block;
   z-index: 1000;
+  min-width: 320px;
+  height: 400px;
+  margin: 10px 0px 0px 10px;
   padding: 5px;
   overflow: auto;
   filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;

@@ -18,6 +18,7 @@ require ("../include/format_ext.inc.php");
 // input parameters
 $site = getrequest_esc ("site", "publicationname");
 $media = getrequest_esc ("media", "objectname");
+$alt = getrequest_esc ("alt", "objectname");
 $name = getrequest_esc ("name");
 $token = getrequest ("token");
 // alternative input parameters
@@ -199,7 +200,7 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
     exit;
   }
 
-  // Location
+  // verify that the requested file exists and define location
   // ... of multimedia file in repository
   if (is_file (getmedialocation ($site, $media, "abs_path_media").$media) || is_cloudobject (getmedialocation ($site, getobject($media), "abs_path_media").$site."/".getobject ($media)))
   {
@@ -215,6 +216,20 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
   {
     $media_root = $mgmt_config['abs_path_temp'];
     $media = getobject ($media);
+  }
+  // use alternative media file from design theme
+  elseif (!empty ($alt) && is_file (getthemelocation ("", "path")."img/".$alt))
+  {
+    // display inline
+    header ("Content-Disposition: inline; filename=\"".$name."\"");
+    // content-type
+    header ("Content-Type: ".getmimetype ($alt));
+    // keep in cache for 30 days
+    header ("Cache-Control: max-age=2592000, public");
+    header ("Expires: ".gmdate ('D, d M Y H:i:s', time() + 2592000) . ' GMT');
+
+    readfile (getthemelocation("", "path")."img/".$alt);
+    exit;
   }
 
   // download media file

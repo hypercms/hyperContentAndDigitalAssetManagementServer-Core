@@ -473,13 +473,16 @@ function getlabel ($label, $lang="en")
         
         foreach ($labels_array as $label_entry)
         {
-          list ($langcode, $text) = explode (":", $label_entry);
-          $langcode = trim ($langcode);
-          $result[$langcode] = trim ($text);
+          if (substr_count ($label_entry, ":") > 0)
+          {
+            list ($langcode, $text) = explode (":", $label_entry);
+            $langcode = trim ($langcode);
+            $result[$langcode] = trim ($text);
 
-          if ($i == 0 || $langcode == "en") $result['default'] = $result[$langcode];
+            if ($i == 0 || $langcode == "en") $result['default'] = $result[$langcode];
 
-          $i++;
+            $i++;
+          }
         }
       }
     }
@@ -2065,6 +2068,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
 
   // initialize
   $result = array();
+  if (!is_array ($search)) $search = array();
   $root_dir_esc = array();
   $search_dir_esc = array();
   $search_active = false;
@@ -2810,7 +2814,7 @@ function getwallpaper ($theme="", $version="")
   }
 
   // 4. default wallpaper
-  return getthemelocation($theme)."img/backgrd_start.png";
+  return getthemelocation($theme)."img/backgrd_start.jpg";
 }
  
 // ======================================== GET INFORMATION ===========================================

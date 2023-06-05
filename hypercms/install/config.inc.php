@@ -725,7 +725,7 @@ $mgmt_config['aes256_key'] = "h1y2p3e4r5c6m7s8s9m0c1r2e3p4y5h6";
 // Use $mgmt_config['publication-name']['template_clean_level'] for publication specific settings
 // Cleaning level of template code from none = 0 to strong = 5
 // (no cleaning = 0, basic set of disabled functions = 1, 1 + file access functions = 2, 2 + include functions = 3, 3 + hyperCMS API file functions = 4, No server side script allowed = 5)
-$mgmt_config['template_clean_level'] = 3;
+$mgmt_config['template_clean_level'] = 2;
 
 // Logon Timeout
 // How many minutes will an IP and user combination be locked after 10 failed attempts.
@@ -1005,6 +1005,7 @@ $mgmt_config['mergepdf'] = "%mergepdf%";
 
 // Define Database Access
 // You can define a persistent database connection by providing "p:dbhost" for 'dbhost'.
+// The default MariaDB or MySQL port is 3306.
 $mgmt_config['db_connect_rdbms'] = "db_connect_rdbms.php";
 $mgmt_config['dbconnect'] = "mysql"; // values: mysql, odbc
 $mgmt_config['dbhost'] = "%dbhost%";

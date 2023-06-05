@@ -3846,19 +3846,19 @@ $(document).ready(function()
               $objectinfo = getobjectinfo ($site, getlocation ($object), getobject ($object));
 
               // gallery view
-              if ($view == "gallery" && !empty ($objectinfo['media']))
+              if ($view == "gallery")
               {
-                $mediafile = $objectinfo['media'];
-                $mediainfo = getfileinfo ($site, $mediafile, "comp");
-                $thumbnailfile = $mediainfo['filename'].".thumb.jpg";
-                $thumbnail = "";
-                $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
-
-                $container_info = getmetadata_container ($objectinfo['container_id']);
-                 
-                // use thumbnail preview
-                if (is_file ($mediadir.$thumbnailfile))
+                // use thumbnail file
+                if (!empty ($objectinfo['media']))
                 {
+                  $mediafile = $objectinfo['media'];
+                  $mediainfo = getfileinfo ($site, $mediafile, "comp");
+                  $thumbnailfile = $mediainfo['filename'].".thumb.jpg";
+                  $thumbnail = "";
+                  $mediadir = getmedialocation ($site, $objectinfo['media'], "abs_path_media").$site."/";
+
+                  $container_info = getmetadata_container ($objectinfo['container_id']);
+
                   // use original image size from RDBMS
                   $style_size = "";
 
@@ -3875,37 +3875,25 @@ $(document).ready(function()
                   if ($comp_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
                   else $class_image = "class=\"lazyload hcmsImageItem\"";
 
-                  $thumbnail = "<img data-src=\"".cleandomain (createviewlink ($site, $thumbnailfile, $objectinfo['name']))."\" ".$class_image." style=\"".$style_size." margin-top:10px;\" /><br/>";
+                  $thumbnail = "<img data-src=\"".cleandomain (createviewlink ($site, $thumbnailfile, $objectinfo['name'], false, "wrapper", $comp_info['icon']))."\" ".$class_image." style=\"".$style_size." margin-top:10px;\" /><br/>";
                 }
-                // use standard file icon as thumbnail
+                // use standard file icon if it is not a media object 
                 else
                 {
-                  // view option for un/published objects
-                  if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
-                  else $class_image = "";
-
-                  $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." style=\"margin-top:10px; width:".$thumbsize."px; height:".$thumbsize."px;\" /><br/>";
-                }
-              }
-              // use standard file icon if it is not a media object 
-              else
-              {
-                // gallery view - view option for un/published objects
-                if ($view == "gallery")
-                {
+                  // gallery view - view option for un/published objects
                   if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconOff\"";
                   else $class_image = "";
 
                   $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." style=\"margin-top:10px; width:".$thumbsize."px; height:".$thumbsize."px\" /><br/>";
                 }
-                // list view - view option for un/published objects
-                else
-                {
-                  if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
-                  else $class_image = "class=\"hcmsIconList\"";
+              }
+              // list view - view option for un/published objects
+              else
+              {
+                if ($comp_info['published'] == false) $class_image = "class=\"hcmsIconList hcmsIconOff\"";
+                else $class_image = "class=\"hcmsIconList\"";
 
-                  $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ";
-                }
+                $thumbnail = "<img src=\"".getthemelocation()."img/".$comp_info['icon']."\" ".$class_image." /> ";
               }
 
               if ($compcat == "single")
@@ -6070,6 +6058,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
               if (substr_count ($currentobject, $docroot.$object) == 1) $add_css = $navi_config['attr_li_active'];
               else $add_css = ""; 
 
+              if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
               $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$navi['link']."|".str_replace("|", "&#124;", $navi['title']);
               $navitem[$navi['order'].'.'.$i]['sub'] = "";
 
@@ -6090,6 +6079,7 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
                 if ($navi['order'] == "X") $navi['order'] = $i;
 
                 // create main item for sub navigation
+                if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
                 $navitem[$navi['order'].'.'.$i]['item'] = $navi_config['attr_li_dropdown']."|#|".$navi['title'];
                 $navitem[$navi['order'].'.'.$i]['sub'] = "";
               }
@@ -6112,11 +6102,15 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
                     if ($navi['order'] == "X") $navi['order'] = $key;
 
                     // create main item for sub navigation
+                    if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
                     $navitem[$navi['order'].'.'.$i]['item'] = $value['item'];
                     $navitem[$navi['order'].'.'.$i]['sub'] = "";
                   }
                   else
                   {
+                    // sub navigation
+                    if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
+                    if (empty ($navitem[$navi['order'].'.'.$i]['sub'])) $navitem[$navi['order'].'.'.$i]['sub'] = array();
                     $navitem[$navi['order'].'.'.$i]['sub'][$key] = $value;
                   }
 
