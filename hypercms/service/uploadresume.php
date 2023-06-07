@@ -65,7 +65,7 @@ if (is_file ($mgmt_config['abs_path_temp'].$upload_tempdir."/".$file))
   // delete file upload
   if ($action == "delete")
   {
-    $delete = deletefile ($mgmt_config['abs_path_temp'], $upload_tempdir, 1);
+    if (is_dir ($mgmt_config['abs_path_temp'].$upload_tempdir)) $delete = deletefile ($mgmt_config['abs_path_temp'], $upload_tempdir, 1);
 
     $errcode = "00101";
     $error[] = $mgmt_config['today']."|service/uploadresume.php|information|".$errcode."|The upload of file '".htmlspecialchars($location_esc.$file)."' (".($delete ? "deleted chunks" : "failed to delete chunks").") has been aborted by user '".htmlspecialchars($user)."'";

@@ -55,18 +55,23 @@ if ($setlocalpermission['root'] == 1 && $setlocalpermission['delete'] == 1 && va
 
   // video individual files
   // local media file
-  deletefile ($medialocation.$site."/", $mediafile, 0);
+  if (is_file ($medialocation.$site."/".$mediafile)) deletefile ($medialocation.$site."/", $mediafile, 0);
+
   // cloud storage
   if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile, $user);
+
   // remote client
   remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile, "");
 
   // media player config file
   $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".media".$mediafile_ext)).".config".$mediafile_ext;
+
   // local media file
-  deletefile ($medialocation.$site."/", $mediafile_config, 0);
+  if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
+
   // cloud storage
   if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
+
   // remote client
   remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_config, "");
 

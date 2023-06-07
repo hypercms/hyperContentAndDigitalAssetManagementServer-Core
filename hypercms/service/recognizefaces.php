@@ -75,7 +75,7 @@ if (is_facerecognition ($user))
       $contentfile = $result['container'];
 
       // object is managed by the system
-      if ($contentfile != false)
+      if (!empty ($contentfile))
       {
         header ('Content-Type: text/html; charset='.$charset);
         echo $viewstore;
@@ -86,7 +86,7 @@ if (is_facerecognition ($user))
   else
   {
     echo "<!DOCTYPE html>\n";
-    echo "<html lang=\"".(!empty ($lang) ? : $lang : "en")."\">\n";
+    echo "<html lang=\"".(!empty ($lang) ? $lang : "en")."\">\n";
     echo "<head>\n";
     echo "<title>hyperCMS</title>\n";
     echo "<meta charset=\"".getcodepage ($lang)."\" />\n";

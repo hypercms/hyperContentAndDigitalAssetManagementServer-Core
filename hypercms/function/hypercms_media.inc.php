@@ -771,7 +771,10 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       } 
 
       // delete temp file
-      if (!empty ($temp['result']) && !empty ($temp['created'])) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+      if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile']))
+      {
+        deletefile ($temp['templocation'], $temp['tempfile'], 0);
+      }
 
       // write to content container and database
       if (empty ($return_content))
@@ -1264,7 +1267,10 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
       }
 
       // delete temp file
-      if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+      if (!empty ($temp_source['result']) && !empty ($temp_source['created']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+      {
+        deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+      }
 
       // save thumbnail file
       if (!empty ($result))
@@ -1529,7 +1535,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
         if (!empty ($fileinfo['ext']) && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
         {
           // remove destination file if it exists
-          deletefile ($location_dest, $newfile, 0);
+          if (is_file ($location_dest.$newfile)) deletefile ($location_dest, $newfile, 0);
 
           // Removed option "-f image2" in version 9.0.2:
           // -f is the format of the input/output and image2 is the demuxer. See ffmpeg documenation for more info: http://www.ffmpeg.org/ffmpeg-formats.html#Demuxers
@@ -1544,7 +1550,10 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
     }
 
     // delete temp file
-    if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+    if (!empty ($temp_source['result']) && !empty ($temp_source['created']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+    {
+      deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+    }
 
     // if thumbnail creation has been executed
     if (!empty ($executed))
@@ -1683,7 +1692,7 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
         if (!empty ($fileinfo['ext']) && substr_count ($mediapreview_ext.".", $fileinfo['ext'].".") > 0 && !empty ($mgmt_mediapreview[$mediapreview_ext]))
         {
           // remove destination file if it exists
-          deletefile ($location_dest, $newfile, 0);
+          if (is_file ($location_dest.$newfile)) deletefile ($location_dest, $newfile, 0);
 
           // -r option sets framerate per second
           $cmd = $mgmt_mediapreview[$mediapreview_ext]." ".$noautorotate." -i \"".shellcmd_encode ($location_source.$file)."\" ".$correct."  -r ".shellcmd_encode ($fs)." ".$size." \"".shellcmd_encode ($location_dest.$newfile)."-%05d.".$format."\"";
@@ -1697,7 +1706,10 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
     }
 
     // delete temp file
-    if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+    if (!empty ($temp_source['result']) && !empty ($temp_source['created']) && is_file ($temp_source['templocation'].$temp_source['tempfile'])) 
+    {
+      deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+    }
 
     // if thumbnail creation has been executed
     if (!empty ($executed))
@@ -2097,7 +2109,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               $temp_file_2 = convertimage ($site, $location_temp.$temp_file, $location_temp, "jpg", "RGB", "", $thumb_width, $thumb_height, 0, "px", 72, "", false);
 
               // remove temp file
-              deletefile ($location_temp, $temp_file, 0);
+              if (is_file ($location_temp.$temp_file)) deletefile ($location_temp, $temp_file, 0);
 
               // move temporary thumbnail file to destination
               if ($temp_file_2 != "" && is_file ($location_temp.$temp_file_2)) rename ($location_temp.$temp_file_2, $location_dest.$newfile); 
@@ -2625,12 +2637,16 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         for ($p=0; $p<=10000; $p++)
                         {
                           $temp = $newfile."-".$p.".jpg";
+
                           // local media file
-                          $delete_1 = deletefile ($location_dest, $temp, 0);
+                          if (is_file ($location_dest.$temp)) $delete_1 = deletefile ($location_dest, $temp, 0);
+
                           // cloud storage
                           if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $location_dest, $temp, $user);
+
                           // remote client
                           remoteclient ("delete", "abs_path_media", $site, $location_dest, "", $temp, "");
+
                           // break if no more page is available
                           if (empty ($delete_1) && empty ($delete_2)) break;
                         }
@@ -2651,7 +2667,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                         for ($p=0; $p<=10000; $p++)
                         {
                           $temp = $newfile."-".$p.".".$format;
-                          deletefile ($location_dest, $temp, 0);
+
+                          if (is_file ($location_dest.$temp)) deletefile ($location_dest, $temp, 0);
                         }
                       }
 
@@ -2859,7 +2876,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       // delete original image, if it has been converted to another format (another file extension)
                       if ($type == "original" && !empty ($file_ext) && !empty ($newfile_ext) && $file_ext != $newfile_ext)
                       {
-                        deletefile ($location_source_orig, $file_orig, 0);
+                        if (is_file ($location_source_orig.$file_orig)) deletefile ($location_source_orig, $file_orig, 0);
 
                         // delete from cloud storage
                         if (function_exists ("deletecloudobject")) deletecloudobject ($site, $location_source_orig, $file_orig, $user);
@@ -3920,8 +3937,15 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     }
 
     // delete temp files
-    if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
-    if (!empty ($temp_raw) && $temp_raw['result'] && $temp_raw['created']) deletefile ($temp_raw['templocation'], $temp_raw['tempfile'], 0);
+    if (!empty ($temp_source['result']) && !empty ($temp_source['created']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+    {
+      deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+    }
+
+    if (!empty ($temp_raw['result']) && !empty ($temp_raw['created']) && is_file ($temp_raw['templocation'].$temp_raw['tempfile']))
+    {
+      deletefile ($temp_raw['templocation'], $temp_raw['tempfile'], 0);
+    }
 
     // encrypt and save data if media file is not a thumbnail image
     if (is_file ($mgmt_config['abs_path_cms']."encryption/hypercms_encryption.inc.php") && $force_no_encrypt == false && !empty ($newfile) && !is_thumbnail ($newfile) && isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true)
@@ -4221,7 +4245,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
           if ($result)
           {
             // delete old zip file
-            deletefile ($location_dest, $newname, 0);
+            if (is_file ($location_dest.$newname)) deletefile ($location_dest, $newname, 0);
 
             // Windows
             if (!empty ($mgmt_config['os_cms']) && $mgmt_config['os_cms'] == "WIN")
@@ -5356,7 +5380,10 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
       }
 
       // delete temp file
-      if ($temp_source['result'] && $temp_source['created']) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+      if (!empty ($temp_source['result']) && !empty ($temp_source['created']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+      {
+        deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+      }
     }
 
     // on success
@@ -5500,10 +5527,10 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
             $result = createmediaobjects ($site, $unzippath_temp, $location, $user);
 
             // delete unzipped temporary files in temporary directory
-            deletefile ($location_temp, $unzipname_temp, 1);
+            if (is_file ($location_temp.$unzipname_temp)) deletefile ($location_temp, $unzipname_temp, 1);
 
             // delete decrypted temporary file
-            if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 1);
+            if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile'])) deletefile ($temp['templocation'], $temp['tempfile'], 1);
 
             return $result;
           }
@@ -5648,7 +5675,7 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
     @exec ($cmd." 2>&1", $output, $errorCode);
 
     // remove temp files
-    if ($remove == true) deletefile (getlocation ($source), getobject ($source), 1);
+    if ($remove == true && is_file ($source)) deletefile (getlocation ($source), getobject ($source), 1);
 
     // errors during compressions of files
     if ($errorCode && is_array ($output))
@@ -5759,7 +5786,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     }
 
     // temporary directory for file collection
-    $tempDir = $mgmt_config['abs_path_temp'];
+    $temp_dir = $mgmt_config['abs_path_temp'];
 
     if ($flatzip == false)
     {
@@ -5792,9 +5819,9 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     }
 
     // create unique temp directory to collect the files for compression
-    $tempFolderName = uniqid ("zip_");
-    $tempFolder = $tempDir.$tempFolderName;
-    @mkdir ($tempFolder, $mgmt_config['fspermission'], true);
+    $temp_foldername = uniqid ("zip_");
+    $temp_folder = $temp_dir.$temp_foldername;
+    @mkdir ($temp_folder, $mgmt_config['fspermission'], true);
 
     // walk through objects and get the multimedia files reference
     for ($i=0; $i<sizeof($multiobject_array); $i++)
@@ -5814,7 +5841,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
           if (!empty ($commonRoot))
           {
             $destinationFolder = str_replace ($commonRoot, "", $location);
-            @mkdir ($tempFolder."/".$destinationFolder, $mgmt_config['fspermission'], true);
+            @mkdir ($temp_folder."/".$destinationFolder, $mgmt_config['fspermission'], true);
           }
           else $destinationFolder = "";
 
@@ -5857,14 +5884,14 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
                   }
 
                   // copy file to new location
-                  $mediatarget = $tempFolder."/".specialchr_decode ($destinationFolder.$filename);
+                  $mediatarget = $temp_folder."/".specialchr_decode ($destinationFolder.$filename);
 
                   for ($c=1; $c<=100; $c++)
                   {
                     if (is_file ($mediatarget))
                     {
                       $fileinfo = getfileinfo ($site, $filename, $cat);
-                      $mediatarget = $tempFolder."/".specialchr_decode ($destinationFolder.$fileinfo['filename']."-".$c."".$fileinfo['ext']);
+                      $mediatarget = $temp_folder."/".specialchr_decode ($destinationFolder.$fileinfo['filename']."-".$c."".$fileinfo['ext']);
                     }
                     else break;
                   }
@@ -5872,7 +5899,10 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
                   copy ($mediadir.$mediafile, $mediatarget);
 
                   // remove decrypted temporary file
-                  if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+                  if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile']))
+                  {
+                    deletefile ($temp['templocation'], $temp['tempfile'], 0);
+                  }
                 }
               }
             }
@@ -5885,7 +5915,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
                 $location = substr ($location, 0, -1);
               }
 
-              $container_id_array = clonefolder ($site, $location.$filename, $tempFolder."/".specialchr_decode ($destinationFolder), $user, $activity);
+              $container_id_array = clonefolder ($site, $location.$filename, $temp_folder."/".specialchr_decode ($destinationFolder), $user, $activity);
 
               // save container IDs for statistics in temp file
               if (is_array ($container_id_array) && sizeof ($container_id_array) > 0)
@@ -5900,7 +5930,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     }
 
     // save info file if there is nothing to be packed
-    if (is_emptyfolder ($tempFolder)) savefile ($tempFolder, $hcms_lang['no-results-available'][$lang], "");
+    if (is_emptyfolder ($temp_folder)) savefile ($temp_folder, $hcms_lang['no-results-available'][$lang], "");
 
     // remove old zip file
     if (is_file ($destination.$zipfilename.".zip")) deletefile ($destination, $zipfilename.".zip", false);
@@ -5908,13 +5938,13 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     // Windows
     if ($mgmt_config['os_cms'] == "WIN")
     {
-      $cmd = "cd \"".shellcmd_encode ($tempFolder)."\" & ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
+      $cmd = "cd \"".shellcmd_encode ($temp_folder)."\" & ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
       $cmd = str_replace ("/", "\\", $cmd);
     }
     // UNIX
     else
     {
-      $cmd = "cd \"".shellcmd_encode ($tempFolder)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
+      $cmd = "cd \"".shellcmd_encode ($temp_folder)."\" ; ".$mgmt_compress['.zip']." -r -0 \"".shellcmd_encode ($destination.$zipfilename).".zip\" *";
     }
 
     // compress files to ZIP format
@@ -5922,7 +5952,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     @exec ($cmd." 2>&1", $output, $errorCode);
 
     // remove temp files
-    deletefile ($tempDir, $tempFolderName, 1);
+    if (is_dir ($temp_dir.$temp_foldername)) deletefile ($temp_dir, $temp_foldername, 1);
 
     // errors during compressions of files
     if ($errorCode && is_array ($output))

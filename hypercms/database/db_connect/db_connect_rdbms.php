@@ -4828,7 +4828,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
   if (is_array ($objects) && sizeof ($objects) > 0 && $user != "" && (strtolower ($mark) == "set" || strtolower ($mark) == "unset"))
   {
     // initialie
-    $result = true;
+    $result = false;
     $session_id = "";
 
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
@@ -4891,7 +4891,6 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
               {
                 $errcode = "10901";
                 $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Delete mark (rename) failed for folder '".$object."'";
-                $result = false;
               }
               // update query
               else $sql = 'UPDATE IGNORE object SET deleteuser="'.$user.'", deletedate="'.$date.'", objectpath="'.$object_folder.'.recycle/.folder" WHERE objectpath="'.$object_folder.'/.folder"';
@@ -4900,7 +4899,6 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             {
               $errcode = "10902";
               $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Delete mark failed for folder '".$object."' since a folder with the same name exists already";
-              $result = false;
             }
           }
           // restore
@@ -4927,10 +4925,10 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             {
               $errcode = "10904";
               $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Restore failed for folder '".$object."' since a folder with the same name exists already";
-              $result = false;
             }
           }
 
+          // execute SQL
           if (!empty ($sql))
           {
             $errcode = "50071";
@@ -4939,6 +4937,8 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
             // for all subitems of the selected folder
             if ($done)
             {
+              $result = true;
+
               if ($mark == "set" && substr ($object_abs, -8) != ".recycle")
               {
                 $sql = 'UPDATE IGNORE object SET deleteuser="['.$user.']", deletedate="'.$date.'", objectpath=REPLACE(objectpath, "'.$object_folder.'/", "'.$object_folder.'.recycle/") WHERE objectpath!="'.$object_folder.'/" AND objectpath LIKE "'.$object_folder.'/%"';
@@ -5027,6 +5027,28 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
           {
             $errcode = "50073";
             $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
+
+            if ($done)
+            {
+              $result = true;
+            }
+          }
+        }
+
+        // object does not exists in DB but has already been marked as deleted => delete permanently
+        if ($result == false && $mark == "set" && substr ($object, -8) == ".recycle")
+        {
+          // if folder
+          if (is_dir ($object_abs))
+          {
+            // delete all objects in folder
+            $result = processobjects ("delete", $site, getlocation ($object), getobject ($object), false, $user);
+          }
+          // if object
+          else 
+          {
+            $temp = deleteobject ($site, getlocation ($object), getobject ($object), $user);
+            $result = $temp['result'];
           }
         }
       }
@@ -5562,7 +5584,11 @@ function rdbms_deletequeueentry ($queue_id)
       if ($row['action'] == "mail") 
       {
         $mailfile = $row['object_id'].".".$row['user'].".mail.php";
-        deletefile ($mgmt_config['abs_path_data']."queue/", $mailfile, 0);
+
+        if (is_file ($mgmt_config['abs_path_data']."queue/".$mailfile))
+        {
+          deletefile ($mgmt_config['abs_path_data']."queue/", $mailfile, 0);
+        }
       }
     }
 

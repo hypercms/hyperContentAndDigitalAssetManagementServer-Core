@@ -134,9 +134,9 @@ if (is_file ("../config/config.inc.php"))
           {
             if ($file != "." && $file != ".." && is_file ($location.$file))
             {
-              if (filemtime ($location.$file) + $timespan < time())
+              if (is_file ($locationl.$file) && filemtime ($location.$file) + $timespan < time())
               {
-                deletefile ($location, $file, 0);
+                deletefile ($location, $file, false);
               }
             }
           }

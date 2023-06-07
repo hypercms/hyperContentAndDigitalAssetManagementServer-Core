@@ -160,7 +160,7 @@ if (valid_locationname ($location))
     {
       foreach ($scandir as $file) 
       {
-        if ($location.$file != "" && $file != "." && $file != ".." && substr ($file, -8) != ".recycle") 
+        if ($location.$file != "" && $file != "." && $file != ".." && (!is_hiddenfile ($file) || $user == "sys")) 
         {
           // if linking is not used or object is in linking scope
           if (linking_inscope ($site, $location, $file, $cat) == true)
@@ -184,7 +184,7 @@ if (valid_locationname ($location))
                 }
               }
             }
-            elseif (is_file ($location.$file) && !is_hiddenfile ($file))
+            elseif (is_file ($location.$file) && $file != ".folder")
             {
               $object_array[] = $file;            
               $objects_total++;     
@@ -229,7 +229,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         onobjectlist_pre ($site, $cat, $location, $folder, $user);        
 
       // if folder exists
-      if (valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder) && !$file_info['deleted'])
+      if (valid_locationname ($location) && valid_objectname ($folder) && is_dir ($location.$folder) && (!$file_info['deleted'] || $user == "sys"))
       {
         // count valid objects
         $items_row++;
@@ -383,12 +383,16 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         }
         else $dragevent = "";
 
+        // folder in recycle bin
+        if (substr ($folder, -8) == ".recycle") $class_recbin = "hcmsStripe";
+        else $class_recbin = "";
+
         // metadata
         $metadata = getescapedtext ($hcms_lang['name'][$lang]).": ".$folder_name." \r\n".(!empty ($file_modified) ? getescapedtext ($hcms_lang['date-modified'][$lang]).": ".showdate ($file_modified, "Y-m-d H:i", $hcms_lang_date[$lang])." \r\n" : "").$metadata;             
 
         $listview .= "
                       <tr id=\"g".$items_id."\" style=\"cursor:pointer\" ".$selectclick.">
-                       <td id=\"h".$items_id."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">                
+                       <td id=\"h".$items_id."_0\" class=\"hcmsCol0 hcmsCell ".$class_recbin."\" style=\"width:280px;\">                
                          <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$metadata."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">
                            ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".$folder_name.$dlink_end." ".$workflow_icon."
                          </div>
@@ -456,15 +460,15 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         $listview .= "</tr>";
     
         $galleryview .= "
-                       <div id=\"t".$items_id."\" ".$selectclick." class=\"hcmsObjectUnselected\">
-                          <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
-                            $dlink_start."
-                              <div id=\"i".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\" data-objectpath=\"".$location_esc.$folder."/\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" /></div>
-                              <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, 3)."</div>
-                            ".$dlink_end."
-                          </div>
-                          ".$linking_buttons."
-                       </div>";
+                      <div id=\"t".$items_id."\" ".$selectclick." class=\"hcmsObjectUnselected\">
+                        <div class=\"hcmsObjectGalleryMarker ".$workflow_class." ".$class_recbin."\" ".$hcms_setObjectcontext." ".$openFolder." title=\"".$folder_name."\" ondrop=\"hcms_drop(event)\" ondragover=\"hcms_allowDrop(event)\" ".$dragevent.">".
+                          $dlink_start."
+                            <div id=\"i".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\" data-objectpath=\"".$location_esc.$folder."/\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" /></div>
+                            <div class=\"hcmsItemName\">".showshorttext($folder_name, 18, 3)."</div>
+                          ".$dlink_end."
+                        </div>
+                        ".$linking_buttons."
+                      </div>";
       }
       // object does not exist or user has no access permission 
       else $objects_total--;
@@ -520,7 +524,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
         onobjectlist_pre ($site, $cat, $location, $object, $user);
 
       // if object exists
-      if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object) && !$file_info['deleted'] && ($cat == "page" || objectfilter ($object)))       
+      if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object) && (!$file_info['deleted'] || $user == "sys") && ($cat == "page" || objectfilter ($object)))       
       {
         // count valid objects
         $items_row++;
@@ -705,9 +709,13 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           $file_info['icon'] = "file_lock.png";
         }
 
+        // folder in recycle bin
+        if (substr ($objectpath, -8) == ".recycle") $class_recbin = "hcmsStripe";
+        else $class_recbin = "";
+
         $listview .= "
                       <tr id=\"g".$items_id."\" style=\"cursor:pointer;\" ".$selectclick.">
-                        <td id=\"h".$items_id."_0\" class=\"hcmsCol0 hcmsCell\" style=\"width:280px;\">
+                        <td id=\"h".$items_id."_0\" class=\"hcmsCol0 hcmsCell ".$class_recbin."\" style=\"width:280px;\">
                           <div class=\"hcmsObjectListMarker\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">
                             ".$dlink_start."<img src=\"".getthemelocation()."img/".$file_info['icon']."\" ".$class_image." /> ".$object_name.$dlink_end." ".$workflow_icon."
                           </div>
@@ -846,7 +854,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
         $galleryview .= "
                         <div id=\"t".$items_id."\" ".$selectclick." class=\"hcmsObjectUnselected\">
-                          <div class=\"hcmsObjectGalleryMarker ".$workflow_class."\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
+                          <div class=\"hcmsObjectGalleryMarker ".$workflow_class." ".$class_recbin."\" ".$hcms_setObjectcontext." ".$openObject." title=\"".$metadata."\" ".$dragevent.">".
                             $dlink_start."
                               ".$thumbnail."
                               <div class=\"hcmsItemName\">".showshorttext($object_name, 18, 3)."</div>
@@ -998,6 +1006,18 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
   background-repeat: no-repeat !important;
   background-position: 98% 98% !important;
   background-size: 22px 22px !important;
+}
+
+.hcmsStripe
+{
+  color: white;
+  background: repeating-linear-gradient(
+    45deg,
+    #bf571b,
+    #bf571b 10px,
+    #9c9b98 10px,
+    #9c9b98 20px
+  );
 }
 
 @media screen and (max-width: 360px)

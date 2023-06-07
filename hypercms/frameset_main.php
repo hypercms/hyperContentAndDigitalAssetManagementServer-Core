@@ -354,7 +354,7 @@ function closePopup (id)
 
 function showwarning ()
 {
-  return "<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-all-events'][$lang]); ?>";
+  return "<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>";
 }
 
 function setSearchLocation (location, name)

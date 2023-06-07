@@ -235,7 +235,7 @@ if ($authorized == true || $force == "stop")
     // process objects:
     // method is used for action = paste -> methods: cut, copy, linkcopy
     // $source_root and $source_folder are passed as global variables to the functions and are needed if action = paste.
-    if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
+    if ($from_page != "recyclebin" && $user != "sys" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
 
     $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $process);
     
@@ -391,7 +391,10 @@ if ($authorized == true || $force == "stop")
   // cancel process
   elseif ($force == "stop")
   {
-    deletefile ($mgmt_config['abs_path_temp'], session_id().".coll.dat", 1);
+    if (is_file ($mgmt_config['abs_path_temp'].session_id().".coll.dat"))
+    {
+      deletefile ($mgmt_config['abs_path_temp'], session_id().".coll.dat", true);
+    }
   
     $add_javascript = "
     popupclose();

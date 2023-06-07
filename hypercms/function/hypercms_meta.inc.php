@@ -1210,8 +1210,15 @@ function copymetadata ($file_source, $file_dest)
         @exec ($cmdv." 2>&1", $output, $errorCode);
 
         // delete temp files
-        if (!empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty($temp_source['tempfile'])) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
-        if (!empty ($temp_dest['crypted']) && !empty ($temp_source['templocation']) && !empty($temp_source['tempfile'])) deletefile ($temp_dest['templocation'], $temp_dest['tempfile'], 0);
+        if (!empty ($temp_source['crypted']) && !empty ($temp_source['templocation']) && !empty($temp_source['tempfile']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+        {
+          deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+        }
+
+        if (!empty ($temp_dest['crypted']) && !empty ($temp_source['templocation']) && !empty($temp_source['tempfile']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+        {
+          deletefile ($temp_dest['templocation'], $temp_dest['tempfile'], 0);
+        }
 
         // on error
         if ($errorCode)
@@ -1286,7 +1293,10 @@ function extractmetadata ($file)
         @exec ($cmd." 2>&1", $output, $errorCode);
 
         // delete temp file
-        if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+        if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile']))
+        {
+          deletefile ($temp['templocation'], $temp['tempfile'], 0);
+        }
 
         // on error
         if ($errorCode)
@@ -1779,7 +1789,10 @@ function xmp_getdata ($file)
     $content = HTTP_Get_contents ($file);
 
     // delete temp file
-    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile']))
+    {
+      deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    }
 
     $result = array();
 
@@ -2111,7 +2124,10 @@ function krita_getdata ($file)
     if (is_dir ($temp_dir)) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
 
     // delete temp file
-    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile']))
+    {
+      deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    }
 
     return $result;
 	}
@@ -2218,7 +2234,10 @@ function exif_getdata ($file)
 		$exif = exif_read_data ($file, 0, true);
 
     // delete temp file
-    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile']))
+    {
+      deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    }
 		
     // date and time
 		if (isset ($exif["EXIF"]["DateTimeOriginal"]))
@@ -2499,7 +2518,10 @@ function iptc_getdata ($file)
     else $iptc = false;
 
     // delete temp file
-    if ($temp['result'] && $temp['created']) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile']))
+    {
+      deletefile ($temp['templocation'], $temp['tempfile'], 0);
+    }
 
     $result = array();
 
@@ -4481,7 +4503,10 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
         }
 
         // delete temp file
-        if (!empty ($temp['result']) && !empty ($temp['created'])) deletefile ($temp['templocation'], $temp['tempfile'], 0);
+        if (!empty ($temp['result']) && !empty ($temp['created']) && is_file ($temp['templocation'].$temp['tempfile']))
+        {
+          deletefile ($temp['templocation'], $temp['tempfile'], 0);
+        }
 
         if ($containerdata != false)
         {

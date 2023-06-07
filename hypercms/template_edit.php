@@ -571,6 +571,9 @@ function savetemplate (mode)
 {
   if (document.forms['template_edit'].elements['extension'])
   {
+    // disable warning
+    window.onbeforeunload = function() {}
+
     if (document.forms['template_edit'].elements['extension'].value != "")
     {
       if (mode == "preview")
@@ -604,6 +607,10 @@ function savetemplate (mode)
 function hcms_saveEvent ()
 {
   savetemplate('');
+}
+
+window.onbeforeunload = function() {
+  return "<?php echo getescapedtext ($hcms_lang['warning'][$lang]); ?>";
 }
 </script>
 </head>

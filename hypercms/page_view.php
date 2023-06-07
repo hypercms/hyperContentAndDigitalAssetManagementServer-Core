@@ -94,7 +94,10 @@ if ($action == "wf_reset" && valid_publicationname ($site) && checkglobalpermiss
 {
   $objectinfo = getobjectinfo ($site, $location, $page);
 
-  if (!empty ($objectinfo['container'])) deletefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $objectinfo['container'], false);
+  if (!empty ($objectinfo['container']) && is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$objectinfo['container']))
+  {
+    deletefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $objectinfo['container'], false);
+  }
 }
 
 // set view in session

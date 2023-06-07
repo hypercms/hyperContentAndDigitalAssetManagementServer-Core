@@ -84,7 +84,7 @@ if ($action == "set")
     savefile ($mgmt_config['abs_path_temp'], session_id().".dates.php", $data);
   }
 }
-elseif ($action == "clean")
+elseif ($action == "clean" && is_file ($mgmt_config['abs_path_temp'].session_id().".dates.php"))
 {
   deletefile ($mgmt_config['abs_path_temp'], session_id().".dates.php", 0);
 }

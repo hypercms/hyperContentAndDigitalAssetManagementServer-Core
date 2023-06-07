@@ -248,6 +248,15 @@ elseif ($objectpath_esc != "")
   }  
 }
 
+// if no name has been provided
+if (empty ($name))
+{
+  if ($objectpath_esc != "") $media_info = getfileinfo ($site, $objectpath_esc, $cat);
+  else $media_info = getfileinfo ($site, getobject ($media), "comp");
+  
+  $name = $media_info['name'];
+}
+
 // ---------------------------------- download file -----------------------------------
 // Publication
 if (substr_count ($media, "/") == 1) $site = substr ($media, 0, strpos ($media, "/"));
@@ -268,7 +277,9 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
 
   // Location
   // ... of multimedia file in repository
-  if (is_file (getmedialocation ($site, getobject($media), "abs_path_media").$media) || is_cloudobject (getmedialocation ($site, getobject($media), "abs_path_media").$site."/".getobject ($media)))
+  $temp_media = getmedialocation ($site, getobject($media), "abs_path_media").$site."/".getobject ($media);
+
+  if (is_file ($temp_media) || is_cloudobject ($temp_media))
   {
     $media_root = getmedialocation ($site, getobject($media), "abs_path_media");
   }
@@ -335,17 +346,8 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
     }  
     
     // if media is given
-    if ($media != "")
+    if (!empty ($media))
     {
-      // if no name has been provided
-      if ($name == "")
-      {
-        if ($objectpath_esc != "") $media_info = getfileinfo ($site, $objectpath_esc, "comp");
-        else $media_info = getfileinfo ($site, getobject ($media), "comp");
-        
-        $name = $media_info['name'];
-      }
-
       // replace file extension if file was converted
       if (!empty ($media_info_new['ext']))
       {
@@ -375,7 +377,7 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
   }
 }
 // page or component
-elseif ($objectpath_esc != "" && is_file ($location.$object))
+elseif (!empty ($objectpath_esc) && is_file ($location.$object))
 {
   // reset user if a user ID has been provided by the request
   if (!empty ($extuser)) $user = $extuser;
@@ -383,15 +385,6 @@ elseif ($objectpath_esc != "" && is_file ($location.$object))
   // convert HTML to PDF
   if (strtolower ($type) == "pdf")
   {
-    // if no name has been provided
-    if ($name == "")
-    {
-      if ($objectpath_esc != "") $media_info = getfileinfo ($site, $objectpath_esc, "comp");
-      else $media_info = getfileinfo ($site, getobject ($media), "comp");
-      
-      $name = $media_info['name'];
-    }
-
     // temp pdf file
     $pdf_file = $mgmt_config['abs_path_temp'].$name.".pdf";
 

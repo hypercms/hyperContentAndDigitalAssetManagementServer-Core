@@ -621,7 +621,7 @@ if (($usedby == "" || $usedby == $user) && checktoken ($token, $user) && valid_l
           elseif (is_dir ($thumbfile_location.$container_id))
           {
             // delete JSON file for video player
-            deletefile ($thumbfile_location.$container_id."/", "faces.json", false);
+            if (is_file ($thumbfile_location.$container_id."/"."faces.json")) deletefile ($thumbfile_location.$container_id."/", "faces.json", false);
 
             // remove existing face images
             $scandir = scandir ($thumbfile_location.$container_id);

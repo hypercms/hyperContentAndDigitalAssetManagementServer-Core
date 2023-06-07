@@ -2694,7 +2694,10 @@ function killsession ($user="", $destroy_php=true, $remove=false)
     // delete session file
     if ($remove == true)
     {
-      $deletesession = deletefile ($mgmt_config['abs_path_data']."session/", $user.".dat", 0);
+      if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
+      {
+        $deletesession = deletefile ($mgmt_config['abs_path_data']."session/", $user.".dat", 0);
+      }
     }
     else
     {
@@ -2703,9 +2706,9 @@ function killsession ($user="", $destroy_php=true, $remove=false)
   }
 
   // delete session data and temporary files
-  deletefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", 0);
-  deletefile ($mgmt_config['abs_path_temp'], session_id().".dat", 0);
-  deletefile ($mgmt_config['abs_path_temp'], session_id().".js", 0);
+  if (is_file ($mgmt_config['abs_path_data']."session/".session_id().".dat")) deletefile ($mgmt_config['abs_path_data']."session/", session_id().".dat", 0);
+  if (is_file ($mgmt_config['abs_path_temp'].session_id().".dat")) deletefile ($mgmt_config['abs_path_temp'], session_id().".dat", 0);
+  if (is_file ($mgmt_config['abs_path_temp'].session_id().".js")) deletefile ($mgmt_config['abs_path_temp'], session_id().".js", 0);
 
   // delete service files
   $services = getsession ("hcms_services");
@@ -2718,7 +2721,10 @@ function killsession ($user="", $destroy_php=true, $remove=false)
       {
         foreach ($hash_array as $hash)
         {
-          deletefile ($mgmt_config['abs_path_data']."session/", $servicename.".".$hash.".dat", 0);
+          if (is_file ($mgmt_config['abs_path_data']."session/".$servicename.".".$hash.".dat"))
+          {
+            deletefile ($mgmt_config['abs_path_data']."session/", $servicename.".".$hash.".dat", 0);
+          }
         }
       }
     }

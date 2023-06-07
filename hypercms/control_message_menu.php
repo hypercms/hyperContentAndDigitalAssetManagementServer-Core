@@ -53,7 +53,10 @@ if ($action == "delete" && checktoken ($token, $user) && $message_id != "" && $m
       {
         if (valid_objectname ($message_id) && $result == true)
         {
-          $result = deletefile ($mgmt_config['abs_path_data']."message/", $message_id.".php", 0);
+          if (is_file ($mgmt_config['abs_path_data']."message/".$message_id.".php"))
+          {
+            $result = deletefile ($mgmt_config['abs_path_data']."message/", $message_id.".php", 0);
+          }
         }
       }
       

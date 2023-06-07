@@ -243,7 +243,7 @@ if (checktoken ($token, $user))
     {
       $import = importCSVtextcontent ($site, $location, $file_temp, $user, "", "", "", "utf-8", $createobject, $template);
       
-      deletefile (getlocation ($file_temp), getobject ($file_temp), 0);
+      if (is_file ($file_temp)) deletefile (getlocation ($file_temp), getobject ($file_temp), 0);
     }
 
     if (!empty ($import)) $show = getescapedtext ($hcms_lang['the-data-was-saved-successfully'][$lang]);
@@ -478,6 +478,14 @@ function submitToSelf (action)
     form.submit();
   }
   else alert ('<?php echo getescapedtext ($hcms_lang['error-occured'][$lang]); ?>');
+}
+
+function emptyRecycleBin (token)
+{
+  if (typeof parent.frames['mainFrame'].hcms_emptyRecycleBin === 'function')
+  {
+    parent.frames['mainFrame'].hcms_emptyRecycleBin(token);
+  }
 }
 
 function unzip (id)
@@ -1039,10 +1047,13 @@ else
     <div class="hcmsButtonFrame">
     <?php
     // object edit buttons
+    if ($from_page == "recyclebin") $edit_button_count = 6;
+    else $edit_button_count = 7;
+
     echo "
     <div id=\"button_obj_edit\" onclick=\"hcms_hideSelector('select_obj_view'); hcms_hideSelector('select_obj_convert'); hcms_switchSelector('select_obj_edit');\" class=\"hcmsButton hcmsHoverColor hcmsButtonSizeWide\">
       <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_edit\" alt=\"".getescapedtext($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext($hcms_lang['edit'][$lang])."\" /><img src=\"".getthemelocation($hcms_themeinvertcolors)."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />
-      <div id=\"select_obj_edit\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:36px; visibility:hidden; z-index:999; width:".(36*7)."px; max-height:38px; overflow:auto; overflow-x:auto; overflow-y:hidden; white-space:nowrap;\">";
+      <div id=\"select_obj_edit\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:36px; visibility:hidden; z-index:999; width:".(36 * $edit_button_count)."px; max-height:38px; overflow:auto; overflow-x:auto; overflow-y:hidden; white-space:nowrap;\">";
 
     // Edit Button   
     if (
@@ -1129,10 +1140,9 @@ else
       echo "
       <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }    
-    ?>
-    
-    <?php
+
     // Cut, Copy, Linked-Copy Button
+    // if object (object permissions)
     if (($multiobject_count > 0 || ($page != ".folder" && $page != "")) && $from_page != "recyclebin")
     {
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
@@ -1148,7 +1158,7 @@ else
         echo "
         <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_cut.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
       }
-  
+
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
       {
         echo "
@@ -1162,7 +1172,7 @@ else
         echo "
         <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_copy.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";
       }
-      
+
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
       {
         echo "
@@ -1177,6 +1187,7 @@ else
         <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_copylinked.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
       }    
     }
+    // if folder (folder permissions)
     elseif (($multiobject_count > 0 || $folder != "") && $from_page != "recyclebin")
     {
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1)
@@ -1190,7 +1201,7 @@ else
         echo "
         <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_cut.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
       }
-  
+
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1)
       {
         echo "
@@ -1202,7 +1213,7 @@ else
         echo "
         <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_copy.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
       }
-      
+
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1)
       {
         echo "
@@ -1215,6 +1226,27 @@ else
         <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_copylinked.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
       }      
     }
+    // if Recycle Bin
+    elseif ($from_page == "recyclebin") 
+    {
+      // empty recycle bin
+      echo "
+        <img onclick=\"emptyRecycleBin ('".$token_new."'); document.getElementById('button_obj_edit').display='none';\" ".
+          "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" id=\"pic_obj_emptybin\" src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_recycle_bin.png\" alt=\"".getescapedtext ($hcms_lang['empty-recycle-bin'][$lang])."\" title=\"".getescapedtext ($hcms_lang['empty-recycle-bin'][$lang])."\" />";
+
+      // restore from bin
+      if ($multiobject_count > 0 || $folder != "" || $page != "")
+      {
+        echo "
+        <img onclick=\"if (locklayer == false) submitToPopup('popup_status.php', 'restore', 'restore".uniqid()."'); document.getElementById('button_obj_edit').display='none';\" ".
+          "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" id=\"pic_obj_restorebin\" src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_import.png\" alt=\"".getescapedtext ($hcms_lang['restore'][$lang])."\" title=\"".getescapedtext ($hcms_lang['restore'][$lang])."\" />";
+      }
+      else
+      {
+        echo "
+        <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_import.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      } 
+    }
     else
     {
       echo "
@@ -1222,6 +1254,7 @@ else
         <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_copy.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />
         <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_copylinked.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
+
      // Paste Button
     if ($from_page == "" && ($setlocalpermission['root'] == 1 && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)))
     {

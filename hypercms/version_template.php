@@ -98,9 +98,9 @@ if (checkglobalpermission ($site, 'tpldelete') == 1 && is_array ($delete) && siz
 {
   foreach ($delete as $file_v_del)
   {
-    if (valid_objectname ($file_v_del))
+    if (valid_objectname ($file_v_del) && is_file ($versiondir.$file_v_del))
     {
-      $deletefile = deletefile ($versiondir, $file_v_del, 0);
+      $deletefile = deletefile ($versiondir, $file_v_del, false);
     
       if ($deletefile == true)
       {

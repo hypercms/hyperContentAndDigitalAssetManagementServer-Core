@@ -359,9 +359,21 @@ function showshorttext ($text, $length=0, $linebreak=false, $charset="UTF-8")
     {
       if (intval ($linebreak) > 3) $linebreak = 3;
 
-      if (mb_strlen ($text, $charset) > ($length * intval ($linebreak))) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, $length, $charset))."<br />\n".trim (mb_substr ($text, ($length*2), ($length-2), $charset))."...";
-      elseif (mb_strlen ($text, $charset) > ($length * intval ($linebreak) - 1)) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, $length, $charset))."<br />\n".trim (mb_substr ($text, ($length*2), NULL, $charset));
-      elseif (mb_strlen ($text, $charset) > $length) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, NULL, $charset));
+      if ($linebreak = 3)
+      {
+        if (mb_strlen ($text, $charset) > ($length * 3)) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, $length, $charset))."<br />\n".trim (mb_substr ($text, ($length*2), $length, $charset))."...";
+        elseif (mb_strlen ($text, $charset) > ($length * 2)) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, $length, $charset))."<br />\n".trim (mb_substr ($text, ($length*2), NULL, $charset));
+        elseif (mb_strlen ($text, $charset) > ($length * 1)) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, NULL, $charset));
+      }
+      elseif ($linebreak = 2)
+      {
+        if (mb_strlen ($text, $charset) > ($length * 2)) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, $length, $charset))."...";
+        elseif (mb_strlen ($text, $charset) > ($length * 1)) $text = trim (mb_substr ($text, 0, $length, $charset))."<br />\n".trim (mb_substr ($text, $length, NULL, $charset));
+      }
+      elseif ($linebreak = 1)
+      {
+        if (mb_strlen ($text, $charset) > $length) $text = trim (mb_substr ($text, 0, $length, $charset))."...";
+      }
 
       return $text;
     }
@@ -1492,8 +1504,9 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   for ($p=0; $p<=10000; $p++)
                   {
                     $temp = $annotation_filename."-".$p.".jpg";
+                    
                     // local media file
-                    $delete_1 = deletefile ($thumb_root, $temp, 0);
+                    if (is_file ($thumb_root.$temp)) $delete_1 = deletefile ($thumb_root, $temp, 0);
                     // cloud storage
                     if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $thumb_root, $temp, $user);
                     // remote client
@@ -3723,7 +3736,7 @@ $(document).ready(function()
       {
         foreach ($scandir as $comp_entry)
         {
-          if ($comp_entry != "" && $comp_entry != "." && $comp_entry != ".." && $comp_entry != ".folder")
+          if ($comp_entry != "" && $comp_entry != "." && $comp_entry != ".." && !is_hiddenfile ($comp_entry))
           {
             if ($dir != $mgmt_config['abs_path_comp'] || ($dir == $mgmt_config['abs_path_comp'] && ($mgmt_config[$site]['inherit_comp'] == true && is_array ($parent_array) && in_array ($comp_entry, $parent_array)) || $comp_entry == $site))
             {
@@ -3741,7 +3754,7 @@ $(document).ready(function()
                 }
               }
               // files
-              elseif (is_file ($dir.$comp_entry))
+              elseif (is_file ($dir.$comp_entry) && $comp_entry != ".folder")
               {
                 $comp_entry_file[] = $dir_esc.$comp_entry;
               }

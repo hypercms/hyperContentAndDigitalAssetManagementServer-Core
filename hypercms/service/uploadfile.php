@@ -171,7 +171,10 @@ if ($token != "" && checktoken ($token, $user))
       $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
 
       // remove temp directory used for uploaded file chunks
-      if (is_dir ($mgmt_config['abs_path_temp'].$upload_tempdir)) deletefile ($mgmt_config['abs_path_temp'], $upload_tempdir, 1);
+      if (is_dir ($mgmt_config['abs_path_temp'].$upload_tempdir))
+      {
+        deletefile ($mgmt_config['abs_path_temp'], $upload_tempdir, 1);
+      }
     }
   }
 

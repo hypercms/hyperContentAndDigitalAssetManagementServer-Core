@@ -6963,6 +6963,31 @@ Release 09/2023
 - Modifications in explorer_objectlist and search_objectlist in order to implement the new version of function createviewlink and remove the verification of the media file (increases performance significantly if the storage access is slow since the file access will only be performed by service mediawrapper)
 - Modifications in function showcompexplorer in UI API in order to implement the new version of function createviewlink and remove the verification of the media file (increases performance significantly if the storage access is slow since the file access will only be performed by service mediawrapper)
 - Modifications in all design themes in order to change to the JPEG format of the backgrd_start image
+- Modifications in home, resetpassword, userlogin, userregister, and the Get API in order to support the new JPEG format of backgrd_start
+- Modifications in service mediadownload and mediawrapper in order to define the file name if missing before the streaming section
+- Modifications in service mediawrapper in order to verify that the thumbnail image is a valid jpeg file (function valid_jpeg)
+- Modifications in function getlocationname in Get API in order to initialize a missing siteaccess variable as array
+- Modifications in is_hiddenfile in Main API in order to include objects in the recycle bin as hidden (.recycle)
+- Modifications in explorer_objectlist, link_edit_explorer, and text_link_explorer in order filter objects by function is_hiddenfile
+- Modifications in function showcompexplorer in UI API in order filter objects by function is_hiddenfile
+- Modifications in function rdbms_setdeletedobjects in DB Connect in order to permanently remove objects that have been deleted but still exist in the file system
+- Modifications in function showshorttext in UI API in order to optimze line breaks and text ending
+- Modifications in popup_status in order to delete objects instead of using the recycle bin for the system user (even if the recycle bin is enabled)
+- Modifications in function manipulateobject in Main API in order to verify that a value for variable contentfile_self exists
+- Modifications in control_objectlist_menu in order to implement the recycle bin buttons for "empty recycle bin" and "restore" to the edit selector
+- Modifications in function rollbackversion, deleteversion, deleteversions, deleteinstance, deletepublication, deletepersonalization, deletetemplate, edituser, deletefrommediacat, updateuploadlog, loaduploadlog, deletemediafiles, and deleteannotationimages in Main API in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist 
+- Modifications in function indexcontent, createthumbnail_indesign, createthumbnail_video, createimages_video, createmedia, convertmedia, unzipfile, zipfiles_helper, and zipfiles in Media API in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist 
+- Modifications in function copymetadata, extractmetadata, xml_getdata, krita_getdata, exif_getdata, iptc_getdata, and setmetadata in Meta API in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in function showmedia in UI API in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in function killsession in Security API in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in service deletemedia, savecontent, sendmail, and uploadresume in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in control_message_menu, control_objectlist_menu, history, page_view, popup_status, and version_template in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in function rdbms_deletequeueentry in DB Connect in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in function movetempfile in Encryption API of the Encryption module in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in daily job in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in function exportxmlfiles in Import/Export API of the Connector module in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in the Youtube Connector of the Connector module in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
+- Modifications in template_edit in order to display a warning before the editor will be closed
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components

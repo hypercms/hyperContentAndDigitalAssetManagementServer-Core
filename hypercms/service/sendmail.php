@@ -716,7 +716,10 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
                             $mailer->AddAttachment ($attachment, $attachment_name);
                             
                             // delete temp file
-                            if (!empty ($temp_source['result']) && !empty ($temp_source['created'])) deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+                            if (!empty ($temp_source['result']) && !empty ($temp_source['created']) && is_file ($temp_source['templocation'].$temp_source['tempfile']))
+                            {
+                              deletefile ($temp_source['templocation'], $temp_source['tempfile'], 0);
+                            }
                           }
                         }
                       }

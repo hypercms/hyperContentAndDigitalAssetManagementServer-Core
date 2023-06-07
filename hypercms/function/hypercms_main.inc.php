@@ -1056,6 +1056,7 @@ function is_hiddenfile ($path)
 
   // patterns
   $hiddenfile_patterns = array (
+    '/^.*\.recycle$/',    // object in recycle bin
     '/^.folder$/', // folder file
     '/^.htaccess$/', // Apache htaccess file
     '/^web.config$/' // MS IIS web.config file
@@ -3406,7 +3407,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
                 }
 
                 // delete restored file
-                deletefile ($thumbdir, $container_version, 0);
+                if (is_file ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, 0);
               }
               // imported/linked external media file without container ID in its file name
               // will be restorted in the external location
@@ -3428,7 +3429,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
                 }
 
                 // delete restored file
-                deletefile ($thumbdir, $container_version, 0);
+                if (is_file ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, 0);
 
                 // create new symbolic link
                 if (is_file ($target_location.$target_file))
@@ -3595,7 +3596,7 @@ function deleteversion ($site, $container_version, $user="sys")
         if (is_file ($mediadir.$container_version)) $media_result = deletefile ($mediadir, $container_version, false);
 
         // fallback delete of symbolic link to media file (if exported file)
-        if (is_link ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, 0);
+        if (is_link ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, false);
 
         // cloud storage
         if (function_exists ("deletecloudobject")) deletecloudobject ($site, $thumbdir, $container_version, $user);
@@ -3607,7 +3608,7 @@ function deleteversion ($site, $container_version, $user="sys")
 
       if (is_file ($thumbdir.$thumbnail))
       {
-        $thumbnail_result = deletefile ($thumbdir, $thumbnail, false);
+        if (is_file ($thumbdir.$thumbnail)) $thumbnail_result = deletefile ($thumbdir, $thumbnail, false);
 
         // cloud storage
         if (function_exists ("deletecloudobject")) deletecloudobject ($site, $thumbdir, $thumbnail, $user);
@@ -3623,7 +3624,7 @@ function deleteversion ($site, $container_version, $user="sys")
         savelog ($error);
 
         // delete media file
-        return deletefile ($versiondir, $container_version, 0);
+        if (is_file ($versiondir.$container_version)) return deletefile ($versiondir, $container_version, false);
       }
     }
   }
@@ -3685,7 +3686,8 @@ function deleteversions ($type, $report, $user="sys")
         // remove template or other version
         else
         {
-          $test = deletefile ($versiondir, $entry, false);
+          if (is_file ($versiondir.$entry)) $test = deletefile ($versiondir, $entry, false);
+          else $test = false;
         }
 
         // report
@@ -4797,10 +4799,13 @@ function deleteannotationimages ($site, $mediafile)
 
     // image annotation file
     $mediafile_annotation = substr ($mediafile, 0, strrpos ($mediafile, ".")).".annotation.jpg";
+
     // local media file
-    deletefile ($medialocation.$site."/", $mediafile_annotation, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_annotation)) deletefile ($medialocation.$site."/", $mediafile_annotation, 0);
+
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_annotation, $user);
+
     // remote client
     remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_annotation, "");
 
@@ -4812,14 +4817,18 @@ function deleteannotationimages ($site, $mediafile)
       for ($p=0; $p<=100000; $p++)
       {
         $temp = $docfile_annotation."-".$p.".jpg";
+
         // local media file
-        $delete_1 = deletefile ($medialocation.$site."/", $temp, false);
+        if (is_file ($medialocation.$site."/".$temp)) $delete_1 = deletefile ($medialocation.$site."/", $temp, false);
+
         // cloud storage
         if (function_exists ("deletecloudobject")) $delete_2 = deletecloudobject ($site, $medialocation.$site."/", $temp, $user);
         else $delete_2 = false;
+
         // remote client
         remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $temp, "");
-        // break if no more page is available
+
+        // break if no more file is available
         if (empty ($delete_1) && empty ($delete_2)) break;
       }
     }
@@ -4860,7 +4869,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
       }
 
       // local media file or symbolic link to media file (due to import/export)
-      $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, false);
+      if (is_file ($medialocation_orig.$site."/".$mediafile)) $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, false);
 
       // remove symbolic link of exported media file (deprecated since version 7.0.7)
       // if ($deletefile && is_link ($medialocation.$site."/".$mediafile)) unlink ($medialocation.$site."/".$mediafile);
@@ -4878,20 +4887,26 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     if ($delete_json_image == true)
     {
       $mediafile_json = substr ($mediafile, 0, strrpos ($mediafile, ".")).".json";
+
       // local media file
-      deletefile ($medialocation.$site."/", $mediafile_json, 0);
+      if (is_file ($medialocation.$site."/".$mediafile_json)) deletefile ($medialocation.$site."/", $mediafile_json, 0);
+
       // cloud storage
       if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_json, $user);
+
       // remote client
       remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_json, "");
     }
 
     // image thumbnail file
     $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb.jpg";
+
     // local media file
-    deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_thumb)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
+
     // remote client
     remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
 
@@ -4902,8 +4917,10 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     if (is_rawimage ($mediafile))
     {
       $mediafile_raw = substr ($mediafile, 0, strrpos ($mediafile, ".")).".jpg";
+
       // local media file
-      deletefile ($medialocation.$site."/", $mediafile_raw, 0);
+      if (is_file ($medialocation.$site."/".$mediafile_raw)) deletefile ($medialocation.$site."/", $mediafile_raw, 0);
+
       // cloud storage
       if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_raw, $user);
     }
@@ -4917,10 +4934,13 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
         {
           // document thumbnail file
           $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$docoptions_ext;
+
           // local media file
-          deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_thumb)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
+
           // remote client
           remoteclient ("delete", "abs_path_media", $site, $medialocation.$site."/", "", $mediafile_thumb, "");
         }
@@ -4937,7 +4957,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           // original thumbnail video file
           $mediafile_orig = substr ($mediafile, 0, strrpos ($mediafile, ".")).".orig".$mediaoptions_ext;
           // local media file
-          deletefile ($medialocation.$site."/", $mediafile_orig, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_orig)) deletefile ($medialocation.$site."/", $mediafile_orig, 0);
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_orig, $user);
           // remote client
@@ -4946,7 +4966,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           // video thumbnail files
           $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$mediaoptions_ext;
           // local media file
-          deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_thumb)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
           // remote client
@@ -4955,7 +4975,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           // video individual files
           $mediafile_video = substr ($mediafile, 0, strrpos ($mediafile, ".")).".media".$mediaoptions_ext;
           // local media file
-          deletefile ($medialocation.$site."/", $mediafile_video, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_video)) deletefile ($medialocation.$site."/", $mediafile_video, 0);
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_video, $user);
           // remote client
@@ -4964,7 +4984,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           // media player config file
           $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config".$mediaoptions_ext;
           // local media file
-          deletefile ($medialocation.$site."/", $mediafile_config, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
           // remote client
@@ -4982,7 +5002,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     // delete original media player config
     $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.orig";
     // local media file
-    deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
     // remote client
@@ -4991,7 +5011,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     // delete general audio player config
     $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.audio";
     // local media file
-    deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
     // remote client
@@ -5000,7 +5020,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     // delete general video player config
     $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.video";
     // local media file
-    deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
     // remote client
@@ -6879,7 +6899,8 @@ function deleteinstance ($instance_name, $user="sys")
     // delete main config of instance
     if ($show == "")
     {
-      $result = deletefile ($mgmt_config['instances'], $instance_name.".inc.php", false);
+      if (is_file ($mgmt_config['instances'].$instance_name.".inc.php")) $result = deletefile ($mgmt_config['instances'], $instance_name.".inc.php", false);
+      else $result = false;
 
       if ($result == false)
       {
@@ -7673,7 +7694,7 @@ function editpublication ($site_name, $setting, $user="sys")
     }
     else
     {
-      deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", false);
+      if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".google_cloud_key.json")) deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".google_cloud_key.json", false);
       $gs_access_json_file_new = "";
     }
 
@@ -8514,13 +8535,13 @@ function deletepublication ($site_name, $user="sys")
         }
 
         // usergroup
-        deletefile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php", 0);
+        if (is_file ($mgmt_config['abs_path_data']."user/".$site_name.".usergroup.xml.php")) deletefile ($mgmt_config['abs_path_data']."user/", $site_name.".usergroup.xml.php", 0);
 
         // media 
-        deletefile ($mgmt_config['abs_path_data']."media/", $site_name.".media.tpl.dat", 0);
+        if (is_file ($mgmt_config['abs_path_data']."media/".$site_name.".media.tpl.dat")) deletefile ($mgmt_config['abs_path_data']."media/", $site_name.".media.tpl.dat", 0);
 
         // link
-        deletefile ($mgmt_config['abs_path_data']."link/", $site_name.".link.dat", 0);
+        if (is_file ($mgmt_config['abs_path_data']."link/".$site_name.".link.dat")) deletefile ($mgmt_config['abs_path_data']."link/", $site_name.".link.dat", 0);
  
         // templates
         deletefile ($mgmt_config['abs_path_data']."template/", $site_name, 1);
@@ -8537,7 +8558,7 @@ function deletepublication ($site_name, $user="sys")
           {
             if (is_file ($dir_temp.$entry) && preg_match ("/^".$site_name."./", $entry))
             {
-              deletefile ($dir_temp, $entry, 0);
+              if (is_file ($dir_temp.$entry)) deletefile ($dir_temp, $entry, 0);
             }
           }
         }
@@ -8546,9 +8567,9 @@ function deletepublication ($site_name, $user="sys")
         deletefile ($mgmt_config['abs_path_data']."customer/", $site_name, 1);
  
         // config files
-        deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", 0);
-        deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", 0);
-        deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", 0);
+        if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".conf.php")) deletefile ($mgmt_config['abs_path_data']."config/", $site_name.".conf.php", 0);
+        if (is_file ($mgmt_config['abs_path_rep']."config/".$site_name.".ini")) deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".ini", 0);
+        if (is_file ($mgmt_config['abs_path_rep']."config/".$site_name.".properties")) deletefile ($mgmt_config['abs_path_rep']."config/", $site_name.".properties", 0);
 
         // media to meta data mapping file
         if (is_file ($mgmt_config['abs_path_data']."config/".$site_name.".media.map.php"))
@@ -8835,7 +8856,11 @@ function deletepersonalization ($site, $pers_name, $cat)
 
     if (is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
     {
-      $test = deletefile ($mgmt_config['abs_path_data']."customer/".$site."/", $persfile, false);
+      if (is_file ($mgmt_config['abs_path_data']."customer/".$site."/".$persfile))
+      {
+        $test = deletefile ($mgmt_config['abs_path_data']."customer/".$site."/", $persfile, false);
+      }
+      else $test = false;
 
       if ($test == true)
       {
@@ -9231,7 +9256,7 @@ function deletetemplate ($site, $template, $cat)
       {
         foreach ($scandir as $entry)
         {
-          if ($entry == $template || substr_count ($entry, $template.".v_") == 1)
+          if (($entry == $template || substr_count ($entry, $template.".v_") == 1) && is_file ($mgmt_config['abs_path_template'].$site."/".$entry))
           {
             $test = deletefile ($mgmt_config['abs_path_template'].$site."/", $entry, false);
           }
@@ -9614,7 +9639,10 @@ function deleteportal ($site, $template)
   {
     if (is_file ($mgmt_config['abs_path_template'].$site."/".$template))
     {
+      // templates
       $test1 = deletefile ($mgmt_config['abs_path_template'].$site."/", $template, false);
+
+      // portal templates
       $test2 = deletefile ($mgmt_config['abs_path_rep']."portal/".$site."/", $tpl_name, true);
 
       // error
@@ -10069,7 +10097,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
           }
 
           // delete temp file for the password reset after login
-          deletefile ($mgmt_config['abs_path_temp'], $login.".resetpassword.dat");
+          if (is_file ($mgmt_config['abs_path_temp'].$login.".resetpassword.dat")) deletefile ($mgmt_config['abs_path_temp'], $login.".resetpassword.dat", false);
 
           if ($password_saved[0] != $password)
           {
@@ -12154,7 +12182,7 @@ function deletefrommediacat ($site, $mediafile)
       // remove media file
       if ($test != false) 
       {
-        $test = deletefile ($mediadir, $mediafile, false);
+        if (is_file ($mediadir.$mediafile)) deletefile ($mediadir, $mediafile, false);
 
         // remote client
         remoteclient ("delete", "abs_path_media", $site, $mediadir, "", $mediafile, "");
@@ -14488,7 +14516,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                 }
 
                 // delete temporary directory
-                deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
+                if (is_dir (getlocation ($temp_dir).getobject ($temp_dir))) deletefile (getlocation ($temp_dir), getobject ($temp_dir), 1);
               }
             }
           }
@@ -16032,7 +16060,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
       // --------------------------------- update content container status ------------------------------
       // if an object is copied and pasted leave the container as it is
-      if (($method != "copy" || $method != "linkcopy") && $contentfile_self != "")
+      if (($method != "copy" || $method != "linkcopy") && !empty ($contentfile_self))
       {
         // load content container from repository
         $result = getcontainername ($contentfile_self);
@@ -16167,7 +16195,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             }
  
             // delete workflow
-            if (is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile_self))
+            if (!empty ($contentfile_self) && is_file ($mgmt_config['abs_path_data']."workflow/".$site."/".$contentfile_self))
             {
               deletefile ($mgmt_config['abs_path_data']."workflow/".$site."/", $contentfile_self, 0);
             }
@@ -16228,7 +16256,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                 {
                   foreach ($scandir as $entry)
                   {
-                    if ($entry != "." && $entry != ".." && $contentfile_self != "" && (substr_count ($entry, $contentfile_self.".v_") == 1 || substr_count ($entry, "_hcm".$contentfile_id) == 1))
+                    if ($entry != "." && $entry != ".." && !empty ($contentfile_self) && (substr_count ($entry, $contentfile_self.".v_") == 1 || substr_count ($entry, "_hcm".$contentfile_id) == 1))
                     {
                       // container version
                       deletefile ($dir_version, $entry, 0);
@@ -16237,7 +16265,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                       if (!empty ($mediafile_self) && !empty ($medialocation))
                       {
                         // media file version
-                        deletefile ($medialocation.$site."/", $entry, 0);
+                        if (is_file ($medialocation.$site."/".$entry)) deletefile ($medialocation.$site."/", $entry, 0);
  
                         // cloud storage
                         if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $entry, $user);
@@ -16246,7 +16274,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                         $entry_info = getfileinfo ($site, $entry, $cat);
                         $entry_thumb = $entry_info['filename'].".thumb.jpg".strtolower (strrchr ($entry, "."));
 
-                        deletefile ($medialocation.$site."/", $entry_thumb, 0);
+                        if (is_file ($medialocation.$site."/".$entry_thumb)) deletefile ($medialocation.$site."/", $entry_thumb, 0);
 
                         // cloud storage
                         if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $entry_thumb, $user);
@@ -19224,6 +19252,11 @@ function processobjects ($action, $site, $location, $file, $published_only=false
           {
             processobjects ($action, $site, $location.$file."/", ".folder", $published_only, $user);
           }
+          // fallback if .folder file is missing for action "delete"
+          elseif (is_dir ($location.$file) && $action == "delete") 
+          {
+            deletefolder ($site, $location, $file, $user);
+          }
 
           return true;
         }
@@ -19263,7 +19296,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
           else
           {
             $errcode = "20420";
-            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing ($action) failed for ".$location_esc.$file;
+            $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed for ".$location_esc.$file;
 
             // save log
             savelog (@$error);
@@ -19274,7 +19307,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       else
       {
         $errcode = "20421";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing ($action) failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
 
         // save log
         savelog (@$error);
@@ -19284,7 +19317,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
     else
     {
       $errcode = "20422";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing ($action) failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
 
       // save log
       savelog (@$error);
@@ -19429,15 +19462,27 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
   }
 
   // get object pathes from the session if it is not set
-  if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject_'.$process_id]) && is_array ($_SESSION['clipboard_multiobject_'.$process_id]))) $objectpath_array = $_SESSION['clipboard_multiobject_'.$process_id];
+  if (!is_array ($objectpath_array) && (isset ($_SESSION['clipboard_multiobject_'.$process_id]) && is_array ($_SESSION['clipboard_multiobject_'.$process_id])))
+  {
+    $objectpath_array = $_SESSION['clipboard_multiobject_'.$process_id];
+  }
 
-  if ((!isset ($rootpathdelete_array) || !is_array ($rootpathdelete_array)) && (isset ($_SESSION['clipboard_rootpathdelete_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathdelete_'.$process_id]))) $rootpathdelete_array = $_SESSION['clipboard_rootpathdelete_'.$process_id];
+  if ((!isset ($rootpathdelete_array) || !is_array ($rootpathdelete_array)) && (isset ($_SESSION['clipboard_rootpathdelete_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathdelete_'.$process_id])))
+  {
+    $rootpathdelete_array = $_SESSION['clipboard_rootpathdelete_'.$process_id];
+  }
   else $rootpathdelete_array = Null;
 
-  if ((!isset ($rootpathold_array) || !is_array ($rootpathold_array)) && (isset ($_SESSION['clipboard_rootpathold_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathold_'.$process_id]))) $rootpathold_array = $_SESSION['clipboard_rootpathold_'.$process_id];
+  if ((!isset ($rootpathold_array) || !is_array ($rootpathold_array)) && (isset ($_SESSION['clipboard_rootpathold_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathold_'.$process_id])))
+  {
+    $rootpathold_array = $_SESSION['clipboard_rootpathold_'.$process_id];
+  }
   else $rootpathold_array = Null;
 
-  if ((!isset ($rootpathnew_array) || !is_array ($rootpathnew_array)) && (isset ($_SESSION['clipboard_rootpathnew_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathnew_'.$process_id]))) $rootpathnew_array = $_SESSION['clipboard_rootpathnew_'.$process_id];
+  if ((!isset ($rootpathnew_array) || !is_array ($rootpathnew_array)) && (isset ($_SESSION['clipboard_rootpathnew_'.$process_id]) && is_array ($_SESSION['clipboard_rootpathnew_'.$process_id])))
+  {
+    $rootpathnew_array = $_SESSION['clipboard_rootpathnew_'.$process_id];
+  }
   else $rootpathnew_array = Null;
 
   if (is_array ($objectpath_array) && valid_objectname ($user) && $action != "")
@@ -19849,15 +19894,15 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           $result['working'] = true;
         }
         // finished
-        else 
+        elseif (is_file ($mgmt_config['abs_path_temp'].$tempfile)) 
         {
-          deletefile ($mgmt_config['abs_path_temp'], $tempfile, 1); 
+          deletefile ($mgmt_config['abs_path_temp'], $tempfile, false); 
         }
       }
       // finished
-      else
+      elseif (is_file ($mgmt_config['abs_path_temp'].$tempfile)) 
       { 
-        deletefile ($mgmt_config['abs_path_temp'], $tempfile, 1);
+        deletefile ($mgmt_config['abs_path_temp'], $tempfile, false);
       }
     }
     // finished, no items were found (could also mean directory without files!)
@@ -19891,7 +19936,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               // eventsystem
               if (isset ($eventsystem['ondeletefolder_pre']) && $eventsystem['ondeletefolder_pre'] == 1 && empty ($eventsystem['hide'])) 
                 ondeletefolder_pre ($site, $cat, $location, $folder, $user);
-    
+
               // remove all objects in the root folder
               $test['result'] = deletefile ($location, $folder, true);
 
@@ -21150,13 +21195,15 @@ function updateuploadlog ($location_esc, $user)
         }
         else
         {
-          return deletefile ($mgmt_config['abs_path_temp'], $filename);
+          if (is_file ($mgmt_config['abs_path_temp'].$filename)) return deletefile ($mgmt_config['abs_path_temp'], $filename, false);
+          else return false;
         }
       }
       // invalid log data
       else
       {
-        return deletefile ($mgmt_config['abs_path_temp'], $filename);
+        if (is_file ($mgmt_config['abs_path_temp'].$filename)) return deletefile ($mgmt_config['abs_path_temp'], $filename, false);
+        else return false;
       }
     }
   }
@@ -21185,7 +21232,7 @@ function loaduploadlog ($location_esc, $return_type="array")
       // remove outdated log file (older than 8 hours)
       if ((filemtime ($mgmt_config['abs_path_temp'].$filename) + 28800) < time())
       {
-        deletefile ($mgmt_config['abs_path_temp'], $filename);
+        if (is_file ($mgmt_config['abs_path_temp'].$filename)) deletefile ($mgmt_config['abs_path_temp'], $filename, false);
         
         return false;
       }

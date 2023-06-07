@@ -78,7 +78,7 @@ function tpl_getobjectview ($script, $parameter="", $viewstore="", $type="php")
     }
 
     // delete temp file
-    if ($viewstore != "") deletefile ($mgmt_config['abs_path_view'], $script, 0);
+    if (!empty ($viewstore) && is_file ($mgmt_config['abs_path_view'].$script)) deletefile ($mgmt_config['abs_path_view'], $script, 0);
 
     return $view;
   }

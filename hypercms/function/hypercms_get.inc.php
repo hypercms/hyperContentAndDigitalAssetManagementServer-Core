@@ -2921,8 +2921,8 @@ function getlocationname ($site, $location, $cat, $source="path")
 
   if (valid_locationname ($location))
   {
-    // use publication nameas fallback
-    if (empty ($siteaccess)) $siteaccess[$site] = $site;
+    // use publication name as fallback
+    if (empty ($siteaccess)) $siteaccess = array($site => $site);
 
     // publication management config
     if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['abs_path_page']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
