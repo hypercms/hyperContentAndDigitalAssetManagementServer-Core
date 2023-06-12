@@ -3612,7 +3612,7 @@ Release 09/2019
 - Implementation of the new object browser in order to support the browsing of the large previews
 - Implementation of default dimensions in explorer_objectview in order to create temporary images of standard sizes
 - Modifications in JS function hcms_sortTable in main.js in order to save sorted objects
-- Modifications in explorer_objectview, frameset_content, and framset_objectlist in order to support image browsing
+- Modifications in explorer_objectview, frameset_content, and frameset_objectlist in order to support image browsing
 - Implementation of the new JS functions hcms_getLocation and hcms_getObject in main.js
 - Implementation of the new JS function hcms_collectObjectpath in contextmenu.js in order to initialize the hcms_objectpath JS array
 - Modifications in explorer_objectlist, search_objectlist, log_list, queue_objectlist, and message_objectlist in order to implement the new local JS function initialize and collect all object paths (only for asset or page objects)
@@ -3658,7 +3658,7 @@ Release 10/2019
 - Modifications in control_content in order to relocate the minimize/maximize buttons
 - Modifications in explorer_objectview in order to define offset parameter and to display the object name
 - Implementation of the main configuration setting $mgmt_config['object_newwindow'] in order to enable and disable new windows for objects
-- Modifications in framset_main and frameset_mobile in order to support the new object window parameter
+- Modifications in frameset_main and frameset_mobile in order to support the new object window parameter
 - Implementation of JS function initialize in explorer_objectview in order to enable previous and next buttons if no object array is available
 - Modifications in JS function hcms_createContextmenuItem in contextmenu.js in order to open objects and messages in new or main window
 - Implementation of new JS function setwindows in frameset_main and frameset_mobile in order to set the new window parameters for object, message and user forms
@@ -4023,7 +4023,7 @@ Release 04/2020
 - Modifications in control_objectlist_menu in order to support the new upload design
 - Modifications in function showcompexplorer in UI API in order to support the new upload design
 - Added and partially replaced CSS style overflow to iframe scrolling attribute in explorer_objectview, frameset_edit_component, frameset_content, frameset_edit_link, frameset_edit_media, frameset_group_access, frameset_group, 
-  frameset_licensenotification, frameset_log, frameset_main, framset_media, frameset_message, frameset_mobile, frameset_objectlist, frameset_pers, frameset_portal, frameset_queue, frameset_site_edit, frameset_site, 
+  frameset_licensenotification, frameset_log, frameset_main, frameset_media, frameset_message, frameset_mobile, frameset_objectlist, frameset_pers, frameset_portal, frameset_queue, frameset_site_edit, frameset_site, 
   frameset_template_change, frameset_template_edit, frameset_template, frameset_user, media_playerconfig, page_info_ip, plugin_showpage, popup_upload_html, search_objectlist
 - Added and partially replaced CSS style overflow to iframe scrolling attribute in news home box
 - Added and partially replaced CSS style overflow to iframe scrolling attribute in the Connector modules frameset_imexport, frameset_instance
@@ -4086,7 +4086,7 @@ Release 04/2020
 - Modifications in function showeditor and showinlineeditor in UI API in order to support the new function getscaytlang
 - Implementation of the new JS function hcms_dragLayer in main.js for dragging a single element
 - Modifications in JS function hcms_ajaxService in main.js in order to log errors in browser console
-- Modifications in frameset_edit_component, framset_group_access, frameset_edit_link, frameset_edit_media, media_frameset, and frameset_workflow_folder in order to support animations for the min/max of the navigation layer
+- Modifications in frameset_edit_component, frameset_group_access, frameset_edit_link, frameset_edit_media, media_frameset, and frameset_workflow_folder in order to support animations for the min/max of the navigation layer
 - Modifications in function load_csv in Main API in order to support character encoding and remove exsiting UTF-8 BOM
 - Modifications in function create_csv in Main API in order to support MS Excel by optionally adding an UTF-8 BOM to the file and to support character encoding
 - Modifications in control_objectlist_menu, control_template_menu in order to support the new input parameter of the function create_csv
@@ -4127,7 +4127,7 @@ Release 06/2020
 - Design modifications in task_list of the Task Management module
 - Modifications in page_view in order to delete/reset the existing workflow of the object (workflow edit permission required)
 - Modifications in control_workflow_menu in the Workflow Management module in order to disable "Apply workflow to page folders" if the publication is configured as DAM solution
-- Design modifications in framset_imexport_folder of the Im/Export Connector module
+- Design modifications in frameset_imexport_folder of the Im/Export Connector module
 - Modifications in the function gettaxonomy_childs in the Get API in order to optionally return the full taxonomy ID path instead of the ID
 - Implementation of the new function rdbms_gettaxonomy in DB Connect in order to retrieve the taxonomy data of a specific container
 - Implementation of the new function showtaxonomytree in the UI API in order to display the taxonomy tree or a branch including checkboxes for the keywords
@@ -4187,7 +4187,7 @@ Release 06/2020
 - Modifications in function rdbms_setcontent in DB Connect
 - Modifications in function userlogin in Security API in order to provide the result array as input and use the result array by onlogon_post event
 - Modifications in function onlogon_post of the event system in order to return the result array
-- Modifications in explorer in order to preload framseset_objectlist if it has not been loaded
+- Modifications in explorer in order to preload frameseset_objectlist if it has not been loaded
 - Modifications in function buildbarchart in template engine in order to support onclick events (links) for the chart bars (use 'onclick' as key name)
 - Modifications in function rdbms_getobjects in DB Connect in order to support multiple values separated by | as input for the container ID
 - Modifications in up- and download statistics home screen box in order to support links in the chart bars which will lead to a list of all the daily viewed, downloaded, and uploaded objects (search by container ID)
@@ -4853,7 +4853,7 @@ Release 02/2021
 - Modifications in function hcms_encrypt and hcms_decrypt in Security API in order to use OpenSSL AES 128bit encryption as the Standard method with fallback to Mcrypt
 - Modifications in function createobject in Main API in order to unlock contentcount.dat after the time limit of function loadlockfile
 - Modifications in function getbrowserinfo in Get API in order to set "msedge" as browser name for MS Edge
-- Modifications in home box server_load, framset_main, function showmedia in UI API and function buildview in the template engine in order to disable face recognition if MS IE is used as browser
+- Modifications in home box server_load, frameset_main, function showmedia in UI API and function buildview in the template engine in order to disable face recognition if MS IE is used as browser
 - Modifications in annotate.js in order to verify the JS face detection and recognition functions since they will not be available for MS IE
 - Modifications in annotate.js and function buildview in template engine in order to resize the face markers if the zoom of the annotation image has been changed
 - Implementation of the new JS function resizeFaces in template engine in order to resize face and object markers according to the zoom level
@@ -6053,7 +6053,7 @@ Release 06/2022
 - Bug fix: Service sendmail starts with an array key of 0 for the user arrays and user_sendlink failed to include the array element 0 due to the verification of the array key
 - Bug fix: control_queue_menu did verify the queue_id for action "delete" which was not provided when using the key shortcut for deleting objects in the queue
 - Bug fix: Function showmedia in UI API did not apply the provided width and height if the video configuration didn't provide the video dimension
-- Bug fix: framset_main used a wrong width for the viewport
+- Bug fix: frameset_main used a wrong width for the viewport
 - Bug fix: Function showmedia did not initialize the mediaratio variable
 - Bug fix: Function manipulateallobjects in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
 - Bug fix: Function manipulateallobject in Main API used the provided global category if one has been supplied and did not extract the category from the provided location of the objects
@@ -6906,7 +6906,7 @@ Release 05/2023
 - Bug fix: Media version file names have been too long with a max length file name value of 236 characters
 - Bug fix: Windows has a limitation of 260 characters for the path length (MAX_PATH). This causes objects/files to disappear in Windows Explorer if the path is longer than the limit. This misbehavior can't be fixed without causing issues due to shortened file names.
 - Bug fix: link_edit_pageand frameset_edit_link did not set the linktarget and linktext in case the content was empty
-- Bug fix: media_edit_page and framset_edit_media did not set mediaalttext, mediaalign, mediawidth, and mediaheight in case the content was empty
+- Bug fix: media_edit_page and frameset_edit_media did not set mediaalttext, mediaalign, mediawidth, and mediaheight in case the content was empty
 - Bug fix: The template engine did not provide the *Null* values based on the template definitions to link_edit_page and media_edit_page
 - Bug fix: The Arabic language file used a wrong character for the line ending of the last language entry
 - Bug fix: Function edittask in the Task Management API did not verify the input parameters and their *Leave* value correctly
@@ -6999,7 +6999,7 @@ Release 09/2023
 - Modifications in function correctpath in Main API in order to set the default path separator in case it is empty
 - Modifications in control_objectlist_menu in order to support folders that are not managed by the system (include special characters and have no .folder object)
 - Modifications in control_objectlist_menu in order implement the local JS function openInMainFrame
-- Modifications in framset_main in order to support a location input parameter for the passthrough and open framset_objectlist
+- Modifications in frameset_main in order to support a location input parameter for the passthrough and open frameset_objectlist
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
