@@ -1520,7 +1520,7 @@ function getmetadata ($location, $object, $container="", $separator="\r\n", $tem
   }
 
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, false);
 
 	if ((valid_locationname ($location) && valid_objectname ($object)) || $container != "")
   {
@@ -2210,7 +2210,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
     if (valid_publicationname ($site) && valid_locationname ($location))
     {
       // convert special characters
-      $location = specialchr_encode ($location);
+      $location = specialchr_encode ($location, false);
 
       // get category
       $cat = getcategory ($site, $location);
@@ -2663,7 +2663,7 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
   // if object includes special characters
   if (specialchr ($object, ".-_~") == true)
   {
-    $object = specialchr_encode ($object, "no");
+    $object = specialchr_encode ($object, false);
   }
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($user) && ($type == "work" || $type == "published"))
@@ -2914,6 +2914,9 @@ function getcontainername ($container)
 // function: getlocationname()
 // input: publication name [string], location path (as absolute path or converted path) [string], category [page,comp], source for name [path,name]
 // output: location with readable names instead of directory and file names / false on error
+
+// description:
+// This functions create a readable path for the display in the user interface. The created path should not be used as input for any other API functions.
 
 function getlocationname ($site, $location, $cat, $source="path")
 {
@@ -4302,7 +4305,7 @@ function getobjectinfo ($site, $location, $object, $user="sys", $container_versi
   $location = deconvertpath ($location, "file"); 
 
   // if object includes special characters
-  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, "no");
+  if (specialchr ($object, ".-_~") == true) $object = specialchr_encode ($object, false);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object))
   {

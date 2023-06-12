@@ -483,9 +483,6 @@ a.hcmsNavigator
 {
   display: inline-block;
   z-index: 1000;
-  min-width: 320px;
-  height: 400px;
-  margin: 10px 0px 0px 10px;
   padding: 5px;
   overflow: auto;
   filter: alpha(opacity=95); -moz-opacity: 0.95; opacity: 0.95;

@@ -6940,9 +6940,9 @@ Release 09/2023
 - Modifications in group_edit_form in order to implement a new user interface with floating permission boxes and greyed-out sub permissions if the main permission is disabled
 - Modifications in function manipulateobject in Main API in order to set value of variable to_email if no e-mail address will be extracted form the user directory
 - Modifications in function loadfile_header in Main API in order to remove a duplicate condition
-- Modifications in function getobjectlist in Get API in order to calculate the count of both search results provied by function rdbms_searchcontent
+- Modifications in function getobjectlist in Get API in order to calculate the count of both search results provided by function rdbms_searchcontent
 - Modifications in control_user_menu and user_objectlist in order to use the array key (user name) instead of the array value of the result provided by function getusersonline
-- Modifications in function getusersonline in Get API in order to return the reasl user nameor e-mail in the result
+- Modifications in function getusersonline in Get API in order to return the real user name or e-mail in the result
 - Display of the username plus the real name or e-mail address of the users in the select box of the chat window
 - Modifications in the chat service in order to use the users real name or e-mail address for the reference in the messages
 - Modifications in function sendmessage, notifyusers, and sendlicensenotification in Main API in order to use the users real name instead of the user name for the message title
@@ -6958,7 +6958,7 @@ Release 09/2023
 - Modifications in function rootpermission in Security API in order to initialize the rootpermission variable as array in case it is not an array
 - Modifications in function getobjectlist in Get API in order to initialize the search variable as array in case it is not an array
 - Modifications in function getlabel in Get API in order to verify the label record
-- Modifications in function createviewlink in Main API in order to support altenative media files in case the requested media file does not exist
+- Modifications in function createviewlink in Main API in order to support alternative media files in case the requested media file does not exist
 - Modifications in service mediawrapper in order to support alternative media files in case the requested media file does not exist
 - Modifications in explorer_objectlist and search_objectlist in order to implement the new version of function createviewlink and remove the verification of the media file (increases performance significantly if the storage access is slow since the file access will only be performed by service mediawrapper)
 - Modifications in function showcompexplorer in UI API in order to implement the new version of function createviewlink and remove the verification of the media file (increases performance significantly if the storage access is slow since the file access will only be performed by service mediawrapper)
@@ -6971,7 +6971,7 @@ Release 09/2023
 - Modifications in explorer_objectlist, link_edit_explorer, and text_link_explorer in order filter objects by function is_hiddenfile
 - Modifications in function showcompexplorer in UI API in order filter objects by function is_hiddenfile
 - Modifications in function rdbms_setdeletedobjects in DB Connect in order to permanently remove objects that have been deleted but still exist in the file system
-- Modifications in function showshorttext in UI API in order to optimze line breaks and text ending
+- Modifications in function showshorttext in UI API in order to optimize line breaks and text ending
 - Modifications in popup_status in order to delete objects instead of using the recycle bin for the system user (even if the recycle bin is enabled)
 - Modifications in function manipulateobject in Main API in order to verify that a value for variable contentfile_self exists
 - Modifications in control_objectlist_menu in order to implement the recycle bin buttons for "empty recycle bin" and "restore" to the edit selector
@@ -6988,11 +6988,25 @@ Release 09/2023
 - Modifications in function exportxmlfiles in Import/Export API of the Connector module in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
 - Modifications in the Youtube Connector of the Connector module in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
 - Modifications in template_edit in order to display a warning before the editor will be closed
+- Modifications in standard Event System in order to verify the searchpublications setting used to define publications/websites that use an indenpent search index 
+- Modifications in daily job in order to not remove the object in the database in the fallback process if the object in the recycle bin could not be deleted
+- Modifications in the hyperCMS API in order to support folders and files that are not based on the naming convention of the system. This requires the special characters used in a path or file name not to be encoded.
+- Modifications in function correctfile in Main API in order to support a new input parameter for the encoding of special characters by function createfilename 
+- Modifications in function download, publish, and unpublish in the REST API of the Connector module in order to call function deconvertpath with encoding of special characters
+- Modifications in function executeREST in the REST API of the Connector module in order to call function specialchr_encode for the encoding of special characters in object paths
+- Modifications in function correctpath in Main API in order to support a new input parameter for the encoding of special characters by function specialchr_encode
+- Modifications in function convertpath in Main API in order to support a new input parameter for the decoding of special characters by function specialchr_decode
+- Modifications in function correctpath in Main API in order to set the default path separator in case it is empty
+- Modifications in control_objectlist_menu in order to support folders that are not managed by the system (include special characters and have no .folder object)
+- Modifications in control_objectlist_menu in order implement the local JS function openInMainFrame
+- Modifications in framset_main in order to support a location input parameter for the passthrough and open framset_objectlist
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
 - Bug fix: Service recognizefaces used a wrong condition syntax
 - Bug fix: Function updateuploadlog in Main API did not set the value of variable updated correctly
-- Bug fix: version_template did not exclude the tabel column head for "owner" if the main configuration setting $mgmt_config['version_owner'] has been disabled
+- Bug fix: version_template did not exclude the table column head for "owner" if the main configuration setting $mgmt_config['version_owner'] has been disabled
 - Bug fix: Function exportobjects and importobjects in the Import/Export API of the Connector module used PHP function time instead of date
 - Bug fix: Function createnavigation in UI API did not initialize the child arrays for the navigation
+- Bug fix: Function manipulateallobjects did not define the category of the source object used in event log entries
+- Bug fix: Function downloadfile in Main API did not properly define the start byte if the range started with an '-'

@@ -373,28 +373,30 @@ function specialchr ($expression, $accept="")
 
 // ------------------------- specialchr_encode -----------------------------
 // function: specialchr_encode()
-// input: expression [string], remove all special characters [yes,no]
+// input: expression [string], remove all special characters [bollean] (optional)
 // output: expression without special characters (for file names)
 
 // description:
 // Renames all special characters for file names according to a set of rules
 
-function specialchr_encode ($expression, $remove="no")
+function specialchr_encode ($expression, $remove=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
-  if (is_string ($expression))
+  if (is_string ($expression) && $expression != "")
   {
+    // initialize
     $expression_parts = array();
     $result_parts = array();
 
-    // check if expression holds a path
+    // check if expression is a path
     if (substr_count ($expression, "/") > 0)
     {
       $expression_parts = explode ("/", $expression);
     }
     else $expression_parts[0] = $expression;
 
+    // encode each part of the path
     foreach ($expression_parts as $expression)
     {
       // verify conditions before encoding
@@ -404,16 +406,15 @@ function specialchr_encode ($expression, $remove="no")
         if (!is_utf8 ($expression)) $expression = utf8_encode (trim ($expression));
 
         // replace invalid file name characters (symbols)
-        $strip = array ("&quot;", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;", "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", "&lt;", "&gt;", 
-                        "'", "\\", "|", ";", ":", "\"", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", ",", "<", ">", "?");
+        $strip = array ("&quot;", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;", "Ã¢â‚¬â€", "Ã¢â‚¬â€œ", "&lt;", "&gt;", "~", "'", "\\", "|", ";", ":", "\"", "%", "`", "!", "@", "#", "$", "^", "&", "*", "=", ",", "<", ">", "?");
  
         $expression = str_replace ($strip, "", strip_tags ($expression));
 
         // replace multiple spaces
         $expression = preg_replace ('/\s+/', " ", $expression);
 
-        // replace all special characters
-        if ($remove == "yes") $expression = preg_replace ("/[^a-zA-Z0-9_\\-]/", "", $expression);
+        // replace all special characters (support of yes and no besides bollean)
+        if ($remove != "no" && ($remove == "yes" || $remove == true)) $expression = preg_replace ("/[^a-zA-Z0-9_\\-]/", "", $expression);
 
         // url encoding for file name transformation (replace all special characters according to RFC 1738)
         $expression = rawurlencode ($expression);
@@ -438,7 +439,7 @@ function specialchr_encode ($expression, $remove="no")
 // output: expression with special characters (for file names)
 
 // description:
-// This is the decode function for function specialchr_encode
+// This is the decode function for function specialchr_encode.
 
 function specialchr_decode ($expression)
 {
@@ -639,13 +640,10 @@ function object_exists ($path)
     $file = getobject ($path);
 
     // transform special characters
-    if (strpos ($path, "~") < 0)
+    if (specialchr ($path, ".-_~%") == true && (substr ($location, 0, 7) == "%page%/" || substr ($location, 0, 7) == "%comp%/"))
     {
-      if (substr ($location, 0, 7) == "%page%/" || substr ($location, 0, 7) == "%comp%/")
-      {
-        $location = specialchr_encode ($location, "no");
-        $file = specialchr_encode ($file, "no");
-      }
+      $location = specialchr_encode ($location, false);
+      $file = specialchr_encode ($file, false);
     }
 
     // absolute path
@@ -1736,9 +1734,9 @@ function is_longfilename ($filename)
     if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
     // check if filename includes special characters
-    if (specialchr ($filename_new, ".-_") == true)
+    if (specialchr ($filename_new, ".-_~") == true)
     {
-      $filename_new = specialchr_encode ($filename_new, "no");
+      $filename_new = specialchr_encode ($filename_new, false);
     }
 
     // check length of file name (compare function createfilename)
@@ -1783,7 +1781,7 @@ function createfilename ($filename, $shorten=false)
     // check if filename includes special characters
     if (specialchr ($filename_new, ".-_") == true)
     {
-      $filename_new = specialchr_encode ($filename_new, "no");
+      $filename_new = specialchr_encode ($filename_new, false);
     }
 
     // escaped or input file name is too long (plus 11 digits for the hcms media object identifier or the file extension identifiers like .off and .recycle)
@@ -1856,10 +1854,10 @@ function createlockname ($user)
 
 // ---------------------- correctfile -----------------------------
 // function: correctfile()
-// input: path to file or directory [string], file or directory name [string], user name [string] (optional)
+// input: path to file or directory [string], file or directory name [string], user name [string] (optional), encode special characters in file name with function createfilename [boolean] (optional)
 // output: correct filename/false
 
-function correctfile ($abs_path, $filename, $user="")
+function correctfile ($abs_path, $filename, $user="", $specialchr_encode=false)
 {
   global $mgmt_config, $hcms_lang, $lang;
 
@@ -1867,7 +1865,7 @@ function correctfile ($abs_path, $filename, $user="")
   $lock = createlockname ($user);
 
   // create valid file name
-  $filename = createfilename ($filename, false);
+  if ($specialchr_encode == true) $filename = createfilename ($filename, false);
 
   if (valid_locationname ($abs_path) && valid_objectname ($filename))
   {
@@ -1915,14 +1913,20 @@ function correctfile ($abs_path, $filename, $user="")
 
 // ---------------------------------- correctpath -------------------------------------------
 // function: correctpath()
-// input: path to folder [string], directory seperator [string] (optional)
+// input: path to folder [string], directory separator [string] (optional), encode special characters [boolean] (optional)
 // output: corrected path / false
 
 // description:
-// This function should not be used for a path that includes a file
+// This function adds as slash at the end if it is missing. It should not be used for a path that includes a file.
+// The path can also be encoded in order to replace special characters.
 
-function correctpath ($path, $slash="/")
+function correctpath ($path, $slash="/", $specialchr_encode=false)
 {
+  global $mgmt_config;
+
+  // set default if empty
+  if (trim ($slash) == "") $slash = "/";
+
   if ($path != "" && $slash != "")
   {
     // correct all backslashes
@@ -1933,6 +1937,9 @@ function correctpath ($path, $slash="/")
 
     // get file extension
     $file_ext = strrchr ($object, ".");
+
+    // encode special characters
+    if ($specialchr_encode == true) $path = specialchr_encode ($path, false);
 
     // append $slash at the end of the path if it seems to be a directory
     if (substr ($path, -7) != ".folder" && (empty ($file_ext) || is_dir (realpath ($path))) && substr ($path, -1) != $slash) $path .= $slash; 
@@ -1945,13 +1952,13 @@ function correctpath ($path, $slash="/")
 
 // ---------------------------------- convertpath -------------------------------------------
 // function: convertpath()
-// input: publication name [string], content management path to folder or object [string], object category [page,comp]
+// input: publication name [string], content management path to folder or object [string], object category [page,comp] (optional), decode special characters in path [boolean] (optional)
 // output: converted path or URL / false on error
 
 // description:
 // This function replaces object pathes of the content management config with %page% and %comp% path variables
 
-function convertpath ($site, $path, $cat="")
+function convertpath ($site, $path, $cat="", $specialchr_decode=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
@@ -1966,6 +1973,12 @@ function convertpath ($site, $path, $cat="")
     {
       $path = $path."/";
       $remove_slash = true;
+    }
+
+    // encode special characters
+    if ($specialchr_decode == true)
+    {
+      $path = specialchr_decode ($path);
     }
 
     if (substr_count ($path, "%page%") == 0 && substr_count ($path, "%comp%") == 0)
@@ -2173,16 +2186,16 @@ function convertlink ($site, $path, $cat)
 
 // ---------------------------------- deconvertpath -------------------------------------------
 // function: deconvertpath ()
-// input: string including path to folder or object [string], convert to file system path or URL [file,url] (optional), transform special characters using specialchr_encode [boolean] (optional)
+// input: string including path to folder or object [string], convert to file system path or URL [file,url] (optional), encode special characters using specialchr_encode [boolean] (optional)
 // output: deconverted path/false
 
 // description:
 // This function replaces all %page% and %comp% path variables with the path of the content management config.
 // It converts the path only on content management side not for the publication target.
-// It optionally transform special characters as well.
-// BE AWARE: The input path must not provide template data since valid_publicationname might return false.
+// It optionally encodes special characters in case a readable path has been provided as input.
+// BE AWARE: The input path must not be template code including pathes since valid_publicationname might return false.
 
-function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
+function deconvertpath ($objectpath, $type="file", $specialchr_encode=false)
 {
   global $user, $mgmt_config, $hcms_lang, $lang;
 
@@ -2210,10 +2223,10 @@ function deconvertpath ($objectpath, $type="file", $specialchr_transform=true)
 
         if ($root_var != false)
         {
-          // test if path includes special characters
-          if ($specialchr_transform == true && specialchr ($path, ".-_~%") == true)
+          // encode special characters
+          if ($specialchr_encode == true)
           {
-            $path = specialchr_encode ($path, "no");
+            $path = specialchr_encode ($path, false);
           }
 
           // extract publication from the converted path for page locations (first found path entry only!)
@@ -2483,8 +2496,10 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
-    // if object includes special characters
-    $object = createfilename ($object, false);
+    // correct file name
+    $object = trim ($object);
+    $object = trim ($object, "/");
+    $object = correctfile ($location, $object, $user, false);
 
     // check if object is folder or page/component
     if ($site != "" && $location != "" && $object != "")
@@ -2570,10 +2585,10 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
-    // if object includes special characters
+    // correct file name
     $object = trim ($object);
     $object = trim ($object, "/");
-    $object = createfilename ($object, false);
+    $object = correctfile ($location, $object, $user, false);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2654,6 +2669,8 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
 
   // initialize
   $error = array();
+  $objectpath = false;
+  $object_hash = false;
 
   if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
   {
@@ -2672,10 +2689,10 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
-    // if object includes special characters
+    // correct file name
     $object = trim ($object);
     $object = trim ($object, "/");
-    $object = createfilename ($object, false);
+    $object = correctfile ($location, $object, $user, false);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2766,6 +2783,8 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
 
   // initialize
   $error = array();
+  $objectpath = false;
+  $object_hash = false;
 
   if (isset ($mgmt_config) && !empty ($mgmt_config['db_connect_rdbms']))
   {
@@ -2784,10 +2803,10 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
-    // if object includes special characters
+    // correct file name
     $object = trim ($object);
     $object = trim ($object, "/");
-    $object = createfilename ($object, false);
+    $object = correctfile ($location, $object, $user, false);
 
     // check if object is folder or page/component
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && $cat != "")
@@ -2832,12 +2851,12 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
     }
 
     // object has been marked as deleted
-    if ($object_hash == "hcms:deleted") 
+    if (!empty ($object_hash) && $object_hash == "hcms:deleted") 
     {
       return false;
     }
     // object download link
-    elseif ($object_hash != false)
+    elseif (!empty ($object_hash))
     {
       // add media type and configuration without verification of the values (see main config for conversion settings)
       if ($type != "" || $mediaconfig != "")
@@ -3302,8 +3321,8 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   // add slash if not present at the end of the location string
   $location = correctpath ($location);
 
-  // create valid file name
-  $page = createfilename ($page, false);
+  // correct file name
+  $page = correctfile ($location, $page, $user, false);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && valid_objectname ($container_version) && strpos ($container_version, ".v_") > 0)
   {
@@ -3752,7 +3771,7 @@ function loadfile_header ($abs_path, $filename)
     }
 
     // check and correct file
-    $filename = correctfile ($abs_path, $filename, $user);
+    $filename = correctfile ($abs_path, $filename, $user, false);
 
     // get file size
     $filesize = filesize ($abs_path.$filename);
@@ -3763,7 +3782,7 @@ function loadfile_header ($abs_path, $filename)
     // load header
     if (!empty ($filename) && is_file ($abs_path.$filename))
     {
-      $filehandle = fopen ($abs_path.$filename, "rb");
+      $filehandle = @fopen ($abs_path.$filename, "rb");
 
       if ($filehandle != false)
       {
@@ -3825,12 +3844,12 @@ function loadfile_fast ($abs_path, $filename)
     }
 
     // check and correct file
-    $filename = correctfile ($abs_path, $filename, $user);
+    $filename = correctfile ($abs_path, $filename, $user, false);
 
     // load file
     if (!empty ($filename) && is_file ($abs_path.$filename))
     { 
-      $filehandle = fopen ($abs_path.$filename, "rb");
+      $filehandle = @fopen ($abs_path.$filename, "rb");
 
       if ($filehandle != false)
       {
@@ -3896,12 +3915,12 @@ function loadfile ($abs_path, $filename)
 
     // check and correct file
     $filename_unlocked = $filename;
-    $filename = correctfile ($abs_path, $filename, $user);
+    $filename = correctfile ($abs_path, $filename, $user, false);
 
     // load file
     if (!empty ($filename) && is_file ($abs_path.$filename))
     {
-      $filehandle = fopen ($abs_path.$filename, "rb");
+      $filehandle = @fopen ($abs_path.$filename, "rb");
 
       if ($filehandle != false)
       {
@@ -3925,11 +3944,11 @@ function loadfile ($abs_path, $filename)
       while (time() <= $end)
       {
         $filename = $filename_unlocked;
-        $filename = correctfile ($abs_path, $filename, $user);
+        $filename = correctfile ($abs_path, $filename, $user, false);
 
         if (!empty ($filename) && is_file ($abs_path.$filename))
         {
-          $filehandle = fopen ($abs_path.$filename, "rb");
+          $filehandle = @fopen ($abs_path.$filename, "rb");
 
           if ($filehandle != false)
           {
@@ -4029,7 +4048,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
       // if file is locked
       if ($locked == true && !empty ($filename) && is_file ($abs_path.$filename))
       {
-        $filehandle = fopen ($abs_path.$filename, "rb");
+        $filehandle = @fopen ($abs_path.$filename, "rb");
 
         // read file data
         if ($filehandle != false)
@@ -4083,7 +4102,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
           // if file is locked
           if ($locked == true && !empty ($filename) && is_file ($abs_path.$filename))
           {
-            $filehandle = fopen ($abs_path.$filename, "rb");
+            $filehandle = @fopen ($abs_path.$filename, "rb");
 
             // file can be loaded 
             if ($filehandle != false)
@@ -4200,7 +4219,7 @@ function savefile ($abs_path, $filename, $filedata)
     // save file
     if (!empty ($filename))
     {
-      $filehandle = fopen ($abs_path.$filename, "wb");
+      $filehandle = @fopen ($abs_path.$filename, "wb");
 
       if ($filehandle != false)
       {
@@ -4275,7 +4294,7 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
     // save locked file
     if (!empty ($filename) && is_file ($abs_path.$filename) && !is_file ($abs_path.$filename_unlocked))
     {
-      $filehandle = fopen ($abs_path.$filename, "wb");
+      $filehandle = @fopen ($abs_path.$filename, "wb");
 
       if ($filehandle != false)
       {
@@ -4294,7 +4313,7 @@ function savelockfile ($user, $abs_path, $filename, $filedata)
     // if file is unlocked or does not exist (same user might access the same file using different processes)    
     elseif (!empty ($filename_unlocked))
     {
-      $filehandle = fopen ($abs_path.$filename_unlocked, "wb");
+      $filehandle = @fopen ($abs_path.$filename_unlocked, "wb");
 
       if ($filehandle != false)
       {
@@ -4356,9 +4375,9 @@ function appendfile ($abs_path, $filename, $filedata, $savefile=false)
     }
  
     // if file does not exist and should be saved
-    if (!correctfile ($abs_path, $filename, $user) && $savefile == true)
+    if (!correctfile ($abs_path, $filename, $user, false) && $savefile == true)
     {
-      $filehandle = fopen ($abs_path.$filename, "wb");
+      $filehandle = @fopen ($abs_path.$filename, "wb");
 
       if ($filehandle != false)
       {
@@ -4380,11 +4399,11 @@ function appendfile ($abs_path, $filename, $filedata, $savefile=false)
       while (time() <= $end)
       {
         // correct file name
-        $filename_correct = correctfile ($abs_path, $filename, $user);
+        $filename_correct = correctfile ($abs_path, $filename, $user, false);
 
         if (!empty ($filename_correct) && is_file ($abs_path.$filename_correct))
         { 
-          $filehandle = fopen ($abs_path.$filename_correct, "a");
+          $filehandle = @fopen ($abs_path.$filename_correct, "a");
 
           if ($filehandle != false)
           {
@@ -5101,8 +5120,8 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
   // add slash if not present at the end of the location string
   $location = correctpath ($location);
 
-  // if object includes special characters
-  $object = createfilename ($object, false);
+  // correct file name
+  $object = correctfile ($location, $object, $user, false);
 
   if (valid_locationname ($location) && valid_objectname ($object) && is_file ($location.$object))
   {
@@ -5150,10 +5169,7 @@ function downloadobject ($location, $object, $container="", $lang="en", $user=""
       $container_id = getcontentcontainerid ($container);
  
       // write stats
-      if ($user == "sys") $user_stats = getuserip();
-      else $user_stats = $user;
-
-      if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", intval($container_id), $user_stats, false);
+      if (is_numeric ($container_id) && $container_id > 0) rdbms_insertdailystat ("download", intval($container_id), $user, false);
 
       // echo content
       echo $content;
@@ -5254,7 +5270,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     {
       // --------------------------------- open stream --------------------------------------
 
-      if (!($stream = fopen ($filepath, 'rb')))
+      if (!($stream = @fopen ($filepath, 'rb')))
       {
         // can't read the file
         header ("HTTP/1.1 404 Not Found", true, 404);
@@ -5272,7 +5288,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       // get file start and end bytes
       $start = 0;
       $size = filesize ($filepath);
-      $end = $size - 1;
+      $end = intval ($size) - 1;
 
       // ------------------------- define proper header -------------------------
       // force download of file
@@ -5321,8 +5337,10 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         $c_start = $start;
         $c_end = $end;
 
+        // extract the range string
         list ($rest, $range) = explode ('=', $_SERVER['HTTP_RANGE'], 2);
 
+        // make sure the client hasn't sent us a multibyte range
         if (strpos ($range, ',') !== false)
         {
           header ("HTTP/1.1 416 Requested Range Not Satisfiable");
@@ -5330,20 +5348,24 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
           exit;
         }
 
-        if ($range == '-')
+        // start from the beginning, if the range starts with an '-'
+        if (substr ($range, 0, 1) == '-')
         {
-          $c_start = $size - substr ($range, 1);
+          $c_start = $size - intval (substr ($range, 1));
         }
+        // if not, forward the file pointer and make sure to get the end byte if specified
         else
         {
           $range = explode ('-', $range);
-          $c_start = $range[0];
+          $c_start = intval ($range[0]);
  
-          $c_end = (isset ($range[1]) && is_numeric ($range[1])) ? $range[1] : $c_end;
+          $c_end = (isset ($range[1]) && is_numeric ($range[1])) ? intval ($range[1]) : intval ($c_end);
         }
 
+        // end bytes can not be larger than $end.
         $c_end = ($c_end > $end) ? $end : $c_end;
 
+        // validate the requested range and return an error if it is not correct
         if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size)
         {
           header ("HTTP/1.1 416 Requested Range Not Satisfiable");
@@ -5370,19 +5392,22 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       }
 
       // ----------------- perform the streaming of the calculated range --------------------
-      $i = $start;
+      $i = intval ($start);
       set_time_limit (0);
 
+      // start buffered download
       while (!feof ($stream) && $i <= $end)
       {
         $bytesToRead = $buffer;
 
+        // when outputting a file chunk, don't read past the length
         if (($i + $bytesToRead) > $end) $bytesToRead = $end - $i + 1;
 
         if ($bytesToRead > 0)
         {
-          $data = fread ($stream, $bytesToRead);
-          echo $data;
+          echo fread ($stream, $bytesToRead);
+
+          // free up memory, otherwise large files will trigger PHP's memory limit
           flush ();
         }
 
@@ -5397,9 +5422,6 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     // write stats for partial file download (range has been provided) only if start of file or end of file has been requested 
     if (!is_thumbnail ($location.$media) && substr ($user, 0, 4) != "sys:" && (($range && ($start == 0 || $end == ($size - 1))) || !$range))
     {
-      if ($user == "sys") $user_stats = getuserip();
-      else $user_stats = $user;
-
       // get temp file for statistics of ZIP file contents
       if (is_file ($mgmt_config['abs_path_temp'].$media.".dat")) $container_id = file ($mgmt_config['abs_path_temp'].$media.".dat");
       // get container ID from file name
@@ -5409,8 +5431,8 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       if (!empty ($container_id))
       {
         // if container is a folder all included objects will receive a new download hit
-        if ($force == "download") rdbms_insertdailystat ("download", $container_id, $user_stats, true);
-        else rdbms_insertdailystat ("view", $container_id, $user_stats, false);
+        if ($force == "download") rdbms_insertdailystat ("download", $container_id, $user, true);
+        else rdbms_insertdailystat ("view", $container_id, $user, false);
       }
     }
 
@@ -6466,27 +6488,27 @@ function createinstance ($instance_name, $settings, $user="sys")
     // correct and define path variables
     if (isset ($settings['url_path_rep']))
     {
-      $url_path_rep = correctpath ($settings['url_path_rep'], "/");
+      $url_path_rep = correctpath ($settings['url_path_rep']);
       $url_path_rep = substr ($url_path_rep, strpos ($url_path_rep, "://")+3);
     }
     else $url_path_rep = "";
 
     if (isset ($settings['abs_path_rep']))
     {
-      $abs_path_rep = correctpath ($settings['abs_path_rep'], "/");
+      $abs_path_rep = correctpath ($settings['abs_path_rep']);
     }
     else $abs_path_rep = "";
 
     if (isset ($settings['url_path_data']))
     {
-      $url_path_data = correctpath ($settings['url_path_data'], "/");
+      $url_path_data = correctpath ($settings['url_path_data']);
       $url_path_data = substr ($url_path_data, strpos ($url_path_data, "://")+3);
     }
     else $url_path_data = "";
 
     if (isset ($settings['abs_path_data']))
     {
-      $abs_path_data = correctpath ($settings['abs_path_data'], "/");
+      $abs_path_data = correctpath ($settings['abs_path_data']);
     }
     else $abs_path_data = "";
 
@@ -7614,10 +7636,10 @@ function editpublication ($site_name, $setting, $user="sys")
     else $watermark_video_new = trim ($setting['watermark_video']);
  
     // correct path for excluded folders
-    if (array_key_exists ('url_path_page', $setting)) $url_path_page_new = correctpath ($setting['url_path_page'], "/");
+    if (array_key_exists ('url_path_page', $setting)) $url_path_page_new = correctpath ($setting['url_path_page']);
     else $url_path_page_new = "";
 
-    if (array_key_exists ('abs_path_page', $setting)) $abs_path_page_new = correctpath ($setting['abs_path_page'], "/");
+    if (array_key_exists ('abs_path_page', $setting)) $abs_path_page_new = correctpath ($setting['abs_path_page']);
     else $abs_path_page_new = "";
 
     if (array_key_exists('exclude_folders', $setting) && $setting['exclude_folders'] != "")
@@ -7628,7 +7650,7 @@ function editpublication ($site_name, $setting, $user="sys")
       {
         if (substr_count ($folder, "\\") > 0)
         {
-          $folder = correctpath ($folder, "/");
+          $folder = correctpath ($folder);
         }
 
         if ($folder != "") $exclude_folders_new .= $folder.";";
@@ -8035,19 +8057,19 @@ function editpublication ($site_name, $setting, $user="sys")
 ?>";
 
     // set path values
-    if (isset ($setting['url_publ_page'])) $url_publ_page_new = correctpath ($setting['url_publ_page'], "/");
+    if (isset ($setting['url_publ_page'])) $url_publ_page_new = correctpath ($setting['url_publ_page']);
     else $url_publ_page_new = "";
 
-    if (isset ($setting['abs_publ_page'])) $abs_publ_page_new = correctpath ($setting['abs_publ_page'], "/");
+    if (isset ($setting['abs_publ_page'])) $abs_publ_page_new = correctpath ($setting['abs_publ_page']);
     else $abs_publ_page_new = "";
 
-    if (isset ($setting['url_publ_rep'])) $url_publ_rep_new = correctpath ($setting['url_publ_rep'], "/");
+    if (isset ($setting['url_publ_rep'])) $url_publ_rep_new = correctpath ($setting['url_publ_rep']);
     else $url_publ_rep_new = "";
 
-    if (isset ($setting['abs_publ_rep'])) $abs_publ_rep_new = correctpath ($setting['abs_publ_rep'], "/");
+    if (isset ($setting['abs_publ_rep'])) $abs_publ_rep_new = correctpath ($setting['abs_publ_rep']);
     else $abs_publ_rep_new = "";
 
-    if (isset ($setting['abs_publ_app'])) $abs_publ_app_new = correctpath ($setting['abs_publ_app'], "/");
+    if (isset ($setting['abs_publ_app'])) $abs_publ_app_new = correctpath ($setting['abs_publ_app']);
     else $abs_publ_app_new = "";
 
     // config file of publication system
@@ -12680,7 +12702,6 @@ function deletefolder ($site, $location, $folder, $user)
 
   // folder name
   $folder = trim ($folder);
-  $folder = createfilename ($folder, false);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && $user != "")
   {
@@ -12834,8 +12855,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
 
   $foldernew_orig = $foldernew;
 
-  // test if folder name includes special characters
-  $folder = createfilename ($folder, false);
+  // if folder name includes special characters
   $foldernew = createfilename ($foldernew, true);
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && valid_objectname ($foldernew) && strlen ($foldernew) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
@@ -13501,7 +13521,7 @@ function createobject ($site, $location, $page, $template, $user)
               $workflow_name = getattribute ($workflow_array[0], "name");
               $workflow_file = $site.".".$workflow_name.".xml";
 
-              if ($workflow_name != "" && fopen ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file, "r+"))
+              if ($workflow_name != "" && @fopen ($mgmt_config['abs_path_data']."workflow_master/".$workflow_file, "r+"))
               { 
                 // load workflow 
                 $workflow = loadfile ($mgmt_config['abs_path_data']."workflow_master/", $workflow_file);
@@ -14612,10 +14632,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               // write stats for upload
               if ($container_id != "" && !is_thumbnail ($media_update, false))
               {
-                if ($user == "sys") $user_stats = getuserip();
-                else $user_stats = $user;
-
-                rdbms_insertdailystat ("upload", $container_id, $user_stats, false);
+                rdbms_insertdailystat ("upload", $container_id, $user, false);
               }
 
               // get media size
@@ -14831,6 +14848,7 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
   // initialize
   $error = array();
   $result = array();
+  $result['message'] = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "" && !is_tempfile ($file))
   {
@@ -15434,7 +15452,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     if ($action != "page_paste" && valid_objectname ($page))
     {
       // correct object file name
-      $page = correctfile ($location, $page, $user);
+      $page = correctfile ($location, $page, $user, false);
 
       // redefine location and object if page is a directory 
       if ($page !== false && $page != ".folder" && is_dir ($location.$page) && is_file ($location.$page."/.folder"))
@@ -15509,7 +15527,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             $location_source = deconvertpath ($location_source_esc, "file");
 
             // correct object file name
-            $page = correctfile ($location_source, $page, $user);
+            $page = correctfile ($location_source, $page, $user, false);
 
             // redefine location and object if page is a directory 
             if ($page !== false && $page != ".folder" && is_dir ($location_source.$page) && is_file ($location_source.$page."/.folder"))
@@ -15645,9 +15663,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           $page_orig = $page;
           $pagenew_orig = $pagenew;
 
-          // create valid file names for
           // existing object name
-          $page = createfilename ($page, false);
+          $page = correctfile ($location, $page, $user, false);
+
           // new object name
           $pagenew = createfilename ($pagenew, true);
 
@@ -16170,7 +16188,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           // delete page file
           $test = deletefile ($location, $page, false); 
 
-          if ($test != false)
+          if ($test == true)
           {
             // relational DB connectivity
             if (!empty ($mgmt_config['db_connect_rdbms']))
@@ -16306,14 +16324,14 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         }
         elseif ($filetype != "Page" && $filetype != "Component")
         {
+          // delete file
+          $test = deletefile ($location, $page, 0);
+
           // relational DB connectivity
-          if (!empty ($mgmt_config['db_connect_rdbms']))
+          if ($test == true && !empty ($mgmt_config['db_connect_rdbms']))
           {
             rdbms_deleteobject (convertpath ($site, $location.$page, $cat)); 
-          } 
-
-          // delete file
-          deletefile ($location, $page, 0);
+          }
 
           // remote client
           remoteclient ("delete", "abs_path_".$cat, $site, $location, "", $page, ""); 
@@ -17403,7 +17421,7 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
       oncutobject_pre ($site, $cat, $location, $page, $user);
 
     // correct file or folder
-    $page = correctfile ($location, $page, $user);
+    $page = correctfile ($location, $page, $user, false);
 
     if ($page !== false)
     {
@@ -17449,7 +17467,9 @@ function cutobject ($site, $location, $page, $user, $clipboard_add=false, $clipb
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
-  $result['location'] = $location_esc;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
   $result['object'] = $page;
   $result['objecttype'] = $filetype;
   $result['clipboard'] = $clipboard; 
@@ -17530,7 +17550,7 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
         oncopyobject_pre ($site, $cat, $location, $page, $user);
 
       // correct file or folder
-      $page = correctfile ($location, $page, $user);
+      $page = correctfile ($location, $page, $user, false);
 
       if ($page !== false)
       {
@@ -17577,7 +17597,9 @@ function copyobject ($site, $location, $page, $user, $clipboard_add=false, $clip
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
-  $result['location'] = $location_esc;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
   $result['object'] = $page;
   $result['objecttype'] = $filetype; 
   $result['clipboard'] = $clipboard;
@@ -17659,7 +17681,7 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
     {
       // correct file or folder
-      $page = correctfile ($location, $page, $user);
+      $page = correctfile ($location, $page, $user, false);
 
       if ($page !== false)
       {
@@ -17707,7 +17729,9 @@ function copyconnectedobject ($site, $location, $page, $user, $clipboard_add=fal
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
-  $result['location'] = $location_esc;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
   $result['object'] = $page;
   $result['objecttype'] = $filetype;
   $result['clipboard'] = $clipboard; 
@@ -17825,6 +17849,9 @@ function lockobject ($site, $location, $page, $user)
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
+    // convert location
+    $location_esc = convertpath ($site, $location, $cat);
+
     // define object file name
     if (is_dir ($location.$page))
     {
@@ -17836,7 +17863,7 @@ function lockobject ($site, $location, $page, $user)
     }
     else
     {
-      $page = correctfile ($location, $page, $user);
+      $page = correctfile ($location, $page, $user, false);
       $fileinfo = getfileinfo ($site, $location.$page, $cat);
       $filetype = $fileinfo['type']; 
       $pagename = specialchr_decode ($fileinfo['name']); 
@@ -17927,6 +17954,9 @@ function lockobject ($site, $location, $page, $user)
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
   $result['object'] = $page;
   $result['name'] = $pagename;
   $result['usedby'] = $usedby;
@@ -17980,6 +18010,9 @@ function unlockobject ($site, $location, $page, $user)
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
+    // convert location
+    $location_esc = convertpath ($site, $location, $cat);
+
     // define object file name
     if (is_dir ($location.$page))
     {
@@ -17991,7 +18024,7 @@ function unlockobject ($site, $location, $page, $user)
     }
     else
     {
-      $page = correctfile ($location, $page, $user);
+      $page = correctfile ($location, $page, $user, false);
       $fileinfo = getfileinfo ($site, $location.$page, $cat);
       $filetype = $fileinfo['type']; 
       $pagename = specialchr_decode ($fileinfo['name']); 
@@ -18074,6 +18107,9 @@ function unlockobject ($site, $location, $page, $user)
   $result['result'] = $success;
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
+  $result['publication'] = $site;
+  $result['location'] = $location;
+  $result['location_esc'] = $location_esc;
   $result['object'] = $page;
   $result['name'] = $pagename;
   $result['usedby'] = $usedby;
@@ -18114,9 +18150,6 @@ function publishobject ($site, $location, $page, $user)
   // set default language
   if (empty ($lang)) $lang = "en";
 
-  // create file name
-  $page = createfilename ($page, false);
-
   // exclude objects in the recycle bin
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && strpos ($location.$page."/", ".recycle/") < 1 && valid_objectname ($user))
   {
@@ -18145,7 +18178,7 @@ function publishobject ($site, $location, $page, $user)
     if (substr_count ($location, $mgmt_config['abs_path_rep']) == 0 || substr_count ($location, $mgmt_config['abs_path_comp'].$site."/") > 0)
     {
       // define object file name
-      $page = correctfile ($location, $page, $user);
+      $page = correctfile ($location, $page, $user, false);
 
       // buffer input variables
       $buffer_site = $site;
@@ -18229,7 +18262,7 @@ function publishobject ($site, $location, $page, $user)
               $location = $object['location'];
               $cat = $object['category']; 
               $page = $object['object'];
-              $page = correctfile ($location, $page, $user);
+              $page = correctfile ($location, $page, $user, false);
 
               // check permissions
               if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
@@ -18788,8 +18821,8 @@ function unpublishobject ($site, $location, $page, $user)
   // set default language
   if (empty ($lang)) $lang = "en";
 
-  // create file name
-  $page = createfilename ($page, false);
+  // correct object file name
+  $page = correctfile ($location, $page, $user, false);
 
   // exclude objects in the recycle bin
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && strpos ($location.$page."/", ".recycle/") < 1 && valid_objectname ($user))
@@ -18932,7 +18965,7 @@ function unpublishobject ($site, $location, $page, $user)
               $location_esc = convertpath ($site, $location, $cat);
               $cat = $object['category']; 
               $page = $object['object'];
-              $page = correctfile ($location, $page, $user);
+              $page = correctfile ($location, $page, $user, false);
 
               // if object file exists
               if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
@@ -19226,7 +19259,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
 
     // define object file name
     $file_orig = $file;
-    $file = correctfile ($location, $file, $user);
+    $file = correctfile ($location, $file, $user, false);
 
     // -------------------------- process objects -------------------------------
     if (!empty ($location) && !empty ($file))
@@ -19586,7 +19619,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
 
           $object = getobject ($location); // could be a file or a folder
           $location = getlocation ($location); // location without object
-          $object = correctfile ($location, $object, $user); 
+          $object = correctfile ($location, $object, $user, false); 
  
           if (valid_publicationname ($site) && valid_locationname ($location) && $object !== false)
           {
@@ -19756,6 +19789,10 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           list ($root_id, $site_source, $location_source_esc, $object_source) = explode ("|", $collection[$i]); 
           $location_source = deconvertpath ($location_source_esc, "file");
 
+          // get category
+          $cat_source = getcategory ($site_source, $location_source);
+          $location_source_esc = convertpath ($site_source, $location_source, $cat_source);
+
           // execute actions for files
           if ($location_source != "" && $object_source != "" && is_file ($location_source.$object_source))
           {
@@ -19767,14 +19804,14 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               unset ($collection[$i]);
 
               // on error
-              if (empty ($test['result'])) 
+              if (empty ($test['result']))
               {
                 $errcode = "20108";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|publishobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|publishobject failed for ".$location_source_esc.$object_source;
                 // deprecated: break;
                 // avoid break of process
                 $test['result'] = true;
-                $result['report'][] = $test['message']." Error: publishobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
+                $result['report'][] = $test['message']." Error: publishobject failed for ".$location_source_esc.$object_source;
               } 
             }
             elseif ($action == "unpublish")
@@ -19785,14 +19822,14 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               unset ($collection[$i]);
 
               // on error
-              if (empty ($test['result'])) 
+              if (empty ($test['result']))
               {
                 $errcode = "20109";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|unpublishobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|unpublishobject failed for ".$location_source_esc.$object_source;
                 // deprecated: break;
                 // avoid break of process
                 $test['result'] = true;
-                $result['report'][] = $test['message']." Error: unpublishobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
+                $result['report'][] = $test['message']." Error: unpublishobject failed for ".$location_source_esc.$object_source;
               }
             } 
             elseif ($action == "delete")
@@ -19803,14 +19840,14 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
               unset ($collection[$i]);
 
               // on error
-              if (empty ($test['result'])) 
+              if (empty ($test['result']))
               {
                 $errcode = "20107";
-                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|deleteobject failed for ".$location_source_esc.$object_source;
                 // deprecated: break;
                 // avoid break of process
                 $test['result'] = true;
-                $result['report'][] = $test['message']." Error: deleteobject failed for ".convertpath ($site_source, $location_source, $cat).$object_source;
+                $result['report'][] = $test['message']." Error: deleteobject failed for ".$location_source_esc.$object_source;
               }
             }
             elseif ($action == "paste")
@@ -20189,7 +20226,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
           {
             $encoding = "multipart/form-data";
 
-            $handle = fopen ($location.$page, "rb");
+            $handle = @fopen ($location.$page, "rb");
 
             if ($handle != false)
             {
@@ -20208,7 +20245,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
       // define data for transport
       $data['action'] = $action;
       $data['root'] = $root;
-      $data['site'] = $site;
+      $result['publication'] = $data['site'] = $site;
       $data['location'] = str_replace ($root_path, "", $location);
       $data['locationnew'] = str_replace ($root_path, "", $locationnew);
       $data['page'] = $page;
@@ -21273,8 +21310,8 @@ function notifyusers ($site, $location, $object, $event, $from_user)
   if (empty ($lang)) $lang = "en";
   $to_lang = "en";
 
-  // create file name
-  $object = createfilename ($object, false);
+  // correct object file name
+  $object = correctfile ($location, $object, $user, false);
 
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
@@ -22226,7 +22263,7 @@ function load_csv ($file, $delimiter=";", $enclosure='"', $charset_from="utf-8",
     $row = 0;
     $header = false;
 
-    if (($handle = fopen ($file, "r")) !== false)
+    if (($handle = @fopen ($file, "r")) !== false)
     {
       // analyze CSV file
       if ($delimiter == "" || $enclosure == "")
@@ -22387,7 +22424,7 @@ function create_csv ($assoc_array, $filename="export.csv", $filepath="php://outp
       $filepath .= $filename;
     }
 
-    $fp = fopen ($filepath, 'w');
+    $fp = @fopen ($filepath, 'w');
 
     if ($fp)
     {

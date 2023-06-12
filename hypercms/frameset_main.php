@@ -19,6 +19,10 @@ require ("function/servertime.class.php");
 require ("version.inc.php");
 
 
+// input parameters (used to open framset_objectlist)
+$location = url_encode (getrequest ("location", "url"));
+$virtual = url_encode (getrequest ("virtual", "numeric"));
+
 // layer size definitions
 $width_top = 36;
 $width_navigation = 300;
@@ -527,7 +531,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
   <!-- workplace -->
   <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:<?php echo ($width_top + $width_navigation); ?>px; margin:0; padding:0;">
-    <iframe id="workplFrame" name="workplFrame" src="home.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+    <iframe id="workplFrame" name="workplFrame" src="<?php if (!empty ($location)) echo "frameset_objectlist.php?location=".$location."&virtual=".$virtual; else echo "home.php"; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 
 <?php } ?>

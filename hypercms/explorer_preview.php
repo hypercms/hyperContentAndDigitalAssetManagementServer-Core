@@ -53,7 +53,7 @@ $charset = $hcms_lang_codepage[$lang];
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
-if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
+if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
 {
   // ------------------------------ permission section --------------------------------
 
@@ -76,7 +76,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   // --------------------------------- logic section ----------------------------------
   
   // write and close session (non-blocking other frames)
-suspendsession ();
+  suspendsession ();
 
   $file_info = getfileinfo ($site, $location.$page, $cat);
   $object_info = getobjectinfo ($site, $location, $page, $user);

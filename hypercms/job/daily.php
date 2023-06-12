@@ -134,7 +134,7 @@ if (is_file ("../config/config.inc.php"))
           {
             if ($file != "." && $file != ".." && is_file ($location.$file))
             {
-              if (is_file ($locationl.$file) && filemtime ($location.$file) + $timespan < time())
+              if (is_file ($location.$file) && filemtime ($location.$file) + $timespan < time())
               {
                 deletefile ($location, $file, false);
               }
@@ -195,8 +195,8 @@ if (is_file ("../config/config.inc.php"))
                 // delete object
                 $temp = deleteobject (getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), $objectpath['user']);
 
-                // delete database entry in case deleteobject failed
-                if (empty ($temp['result'])) rdbms_deleteobject ($temp_location, "");
+                // deprecated since version 10.1.2: delete database entry in case deleteobject failed
+                // if (empty ($temp['result'])) rdbms_deleteobject ($temp_location, "");
               }
             }
           }

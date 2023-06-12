@@ -284,11 +284,11 @@ if (!empty ($contentfile))
 }
 
 // get file info
-if (!empty ($page)) 
+if (empty ($folder) && !empty ($page)) 
 {
   // correct object file name
-  $page = correctfile ($location_ACCESS, $page, $user);      
-  // get file info
+  $page = correctfile ($location_ACCESS, $page, $user);
+
   $file_info = getfileinfo ($site, $location_ACCESS.$page, $cat);
   $filetype = $file_info['type'];
 }
@@ -402,6 +402,15 @@ function submitToPopup (url, action, id)
 
     var result = window.top.openPopup('empty.php', id);
     if (result) form.submit();
+  }
+  else alert ('<?php echo getescapedtext ($hcms_lang['error-occured'][$lang]); ?>');
+}
+
+function openInMainFrame (url, action)
+{
+  if (typeof parent.openMainView == 'function')
+  {
+    parent.openMainView(url);
   }
   else alert ('<?php echo getescapedtext ($hcms_lang['error-occured'][$lang]); ?>');
 }
@@ -1070,8 +1079,8 @@ else
       }
       else
       {
-        if ($page != ".folder") $openlink = "submitToMainFrame('frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', ''); ";
-        else $openlink = "submitToMainFrame('frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=".url_encode($page)."', ''); ";
+        if ($page != ".folder") $openlink = "openInMainFrame('frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."', ''); ";
+        else $openlink = "openInMainFrame('frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=".url_encode($page)."', ''); ";
       }
 
       echo "

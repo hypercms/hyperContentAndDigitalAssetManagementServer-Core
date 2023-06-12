@@ -1952,7 +1952,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if ($path != "")
         {
           // convert special characters
-          $path = specialchr_encode ($path);
+          $path = specialchr_encode ($path, false);
 
           // escape characters depending on dbtype
           $path = $db->rdbms_escape_string ($path);
@@ -1987,7 +1987,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         if ($path != "")
         {
           // convert special characters
-          $path = specialchr_encode ($path);
+          $path = specialchr_encode ($path, false);
 
           // explicitly exclude folders from result
           if ($path == "/.folder")
@@ -2983,7 +2983,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
     if ($user != "") $user = $db->rdbms_escape_string ($user);
  
     // convert special characters
-    $folderpath = specialchr_encode ($folderpath);
+    $folderpath = specialchr_encode ($folderpath, false);
 
     // replace %
     $folderpath = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $folderpath);
@@ -5951,7 +5951,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
 {
   global $mgmt_config;
 
-  if ($activity != "" && (is_array ($container_id) || intval ($container_id) > 0))
+  if ($activity != "" && (is_array ($container_id) || intval ($container_id) > 0) && $user != "sys")
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 

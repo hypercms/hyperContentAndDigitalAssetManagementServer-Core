@@ -5623,11 +5623,8 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
                 // add container ID to result 
                 if (!empty ($container_id) && !is_thumbnail ($mediafile, false))
                 {
-                  // write stats
-                  if ($user == "sys") $user_stats = getuserip();
-                  else $user_stats = $user;
-                  
-                  if ($activity == "download") rdbms_insertdailystat ($activity, intval($container_id), $user_stats, false);
+                  // write stats                  
+                  if ($activity == "download") rdbms_insertdailystat ($activity, intval($container_id), $user, false);
                   
                   $result[] = $container_id;
                 }

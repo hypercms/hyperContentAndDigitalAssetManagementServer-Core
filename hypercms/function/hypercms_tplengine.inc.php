@@ -1403,7 +1403,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   $abs_publ_media = $publ_config['abs_publ_media'];
   $url_publ_tplmedia = $publ_config['url_publ_tplmedia'];
   $abs_publ_tplmedia = $publ_config['abs_publ_tplmedia'];
-
+  
   if (in_array ($buildview, array ("formedit", "formmeta", "formlock", "cmsview", "inlineview", "publish", "unpublish", "preview")))
   {
     // collect object info and get associated template and content

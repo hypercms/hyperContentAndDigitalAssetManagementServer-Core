@@ -70,7 +70,7 @@ $eventsystem['ondeletegroup_post'] = 0;
 
 // ======================= for search engine ======================
 
-// Define publications to create search index for
+// Define publications/websites to create search index for
 $eventsystem['searchpublications'] = array("MyHomepage");
 
 // Define character set for publications which are not using UTF-8
@@ -267,7 +267,7 @@ function onrenamefolder_post ($site, $cat, $location, $folder, $foldernew, $user
   $eventsystem['hide'] = 0; 
 
   // insert your program code here
-  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
+  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && !empty ($eventsystem['searchpublications']) && is_array ($eventsystem['searchpublications']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
@@ -338,7 +338,7 @@ function onfileupload_post ($site, $cat, $location, $object, $mediafile, $contai
   // get the file extension of the file
   $mediafile_ext = strtolower (strrchr ($mediafile, "."));
 
-  if (valid_publicationname ($site) && $cat == "comp" && $container != "" && $mediafile_ext == ".pdf" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
+  if (valid_publicationname ($site) && $cat == "comp" && $container != "" && $mediafile_ext == ".pdf" && empty ($mgmt_config[$site]['dam']) && !empty ($eventsystem['searchpublications']) && is_array ($eventsystem['searchpublications']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
@@ -473,7 +473,7 @@ function onrenameobject_post ($site, $cat, $location, $object, $objectnew, $user
   $eventsystem['hide'] = 0; 
   
   // insert your program code here
-  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
+  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && !empty ($eventsystem['searchpublications']) && is_array ($eventsystem['searchpublications']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
@@ -501,7 +501,7 @@ function ondeleteobject_pre ($site, $cat, $location, $object, $user)
   
   // insert your program code here 
 
-  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
+  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['dam']) && !empty ($eventsystem['searchpublications']) && is_array ($eventsystem['searchpublications']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
@@ -669,7 +669,7 @@ function onpasteobject_post ($site, $cat, $location, $locationnew, $object, $use
   $eventsystem['hide'] = 0; 
   
   // insert your program code here
-  if (valid_publicationname ($site) && $cat == "page" && !file_exists ($location.$object) && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
+  if (valid_publicationname ($site) && $cat == "page" && !file_exists ($location.$object) && !empty ($eventsystem['searchpublications']) && is_array ($eventsystem['searchpublications']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
     $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");  
@@ -750,7 +750,7 @@ function onpublishobject_pre ($site, $cat, $location, $object, $container_name, 
   $eventsystem['hide'] = 0; 
 
   // insert your program code here  
-  if (valid_publicationname ($site) && $cat == "comp" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
+  if (valid_publicationname ($site) && $cat == "comp" && empty ($mgmt_config[$site]['dam']) && !empty ($eventsystem['searchpublications']) && is_array ($eventsystem['searchpublications']) && in_array ($site, $eventsystem['searchpublications']))
   {
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
 
@@ -807,7 +807,7 @@ function onpublishobject_post ($site, $cat, $location, $object, $container_name,
   $eventsystem['hide'] = 0; 
 
   // insert your program code here
-  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
+  if (valid_publicationname ($site) && $cat == "page" && empty ($mgmt_config[$site]['dam']) && !empty ($eventsystem['searchpublications']) && is_array ($eventsystem['searchpublications']) && in_array ($site, $eventsystem['searchpublications']))
   {
     // Search API
     include_once ($mgmt_config['abs_path_rep']."search/search_api.inc.php");
@@ -879,7 +879,7 @@ function onunpublishobject_pre ($site, $cat, $location, $object, $user)
   $eventsystem['hide'] = 0; 
 
   // insert your program code here  
-  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['dam']) && in_array ($site, $eventsystem['searchpublications']))
+  if (valid_publicationname ($site) && empty ($mgmt_config[$site]['dam']) && !empty ($eventsystem['searchpublications']) && is_array ($eventsystem['searchpublications']) && in_array ($site, $eventsystem['searchpublications']))
   {
     if ($cat == "comp")
     {
