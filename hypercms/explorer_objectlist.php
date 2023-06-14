@@ -160,7 +160,7 @@ if (valid_locationname ($location))
     {
       foreach ($scandir as $file) 
       {
-        if ($location.$file != "" && $file != "." && $file != ".." && (!is_hiddenfile ($file) || $user == "sys")) 
+        if ($location.$file != "" && $file != "." && $file != ".." && (!is_hiddenfile ($file) || ($user == "sys" && getsession ("hcms_temp_sys_recyclebin") == "1"))) 
         {
           // if linking is not used or object is in linking scope
           if (linking_inscope ($site, $location, $file, $cat) == true)

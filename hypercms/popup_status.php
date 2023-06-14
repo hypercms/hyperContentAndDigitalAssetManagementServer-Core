@@ -235,7 +235,10 @@ if ($authorized == true || $force == "stop")
     // process objects:
     // method is used for action = paste -> methods: cut, copy, linkcopy
     // $source_root and $source_folder are passed as global variables to the functions and are needed if action = paste.
-    if ($from_page != "recyclebin" && $user != "sys" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
+    if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
+
+    // reset action for system user
+    if ($user == "sys" && getsession ("hcms_temp_sys_recyclebin") == "1") $action = "delete";
 
     $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $process);
     

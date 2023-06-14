@@ -37,6 +37,7 @@ $validdateto = getrequest_esc ("validdateto");
 $usergroup = getrequest_esc ("usergroup");
 $usersite = getrequest_esc ("usersite");
 $homeboxes = getrequest ("homeboxes");
+$sys_recyclebin = getrequest ("sys_recyclebin");
 $token = getrequest ("token");
 
 // define field width
@@ -174,6 +175,9 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
 
   // set home boxes of user
   if (!empty ($homeboxes)) setuserboxes ($homeboxes, $login);
+
+  // set temporary sys recycle bin view
+  if ($user == "sys") setsession ("hcms_temp_sys_recyclebin", $sys_recyclebin);
 
   $show = $result['message'];
 
@@ -899,6 +903,14 @@ if (!empty ($login))
     <div class="hcmsFormRowContent" style="padding-top:10px;"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['sign-in'][$lang]); ?></span> </div>
     <div class="hcmsFormRowContent">
       <label><input type="checkbox" name="nologon" value="1" <?php if ($nologon == "1") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['user-for-access-links'][$lang]); ?></label>
+    </div>
+    <?php } ?>
+
+    <?php if ($login_cat == "home" && $user == "sys") { ?>
+    <!-- recycle bin access in objectlist -->
+    <div class="hcmsFormRowContent" style="padding-top:10px;"><span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['recycle-bin'][$lang]); ?></span> </div>
+    <div class="hcmsFormRowContent">
+      <label><input type="checkbox" name="sys_recyclebin" value="1" <?php if (getsession ("hcms_temp_sys_recyclebin") == "1") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['view'][$lang]." &amp; ".$hcms_lang['delete'][$lang]); ?></label>
     </div>
     <?php } ?>
 

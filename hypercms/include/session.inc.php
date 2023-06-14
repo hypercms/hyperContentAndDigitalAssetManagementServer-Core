@@ -87,6 +87,9 @@ $temp_save = getsession ("hcms_temp_save", "yes");
 // security token
 $temp_token = getsession ("hcms_temp_token");
 
+// recycle bin view for system user
+$temp_sys_recyclebin = getsession ("hcms_temp_sys_recyclebin");
+
 // hyperCMS theme
 $hcms_themename = getsession ("hcms_themename");
 $hcms_themelocation = getsession ("hcms_themelocation");

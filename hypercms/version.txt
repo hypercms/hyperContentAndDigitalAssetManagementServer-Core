@@ -7000,6 +7000,9 @@ Release 09/2023
 - Modifications in control_objectlist_menu in order to support folders that are not managed by the system (include special characters and have no .folder object)
 - Modifications in control_objectlist_menu in order implement the local JS function openInMainFrame
 - Modifications in frameset_main in order to support a location input parameter for the passthrough and open frameset_objectlist
+- Modifications in user_edit in order to implement the new recylce bin view setting for the system user
+- Modifications in session.inc in order to include the new session parameter for the recylce bin view setting
+- Modifications in explorer_objectlist and popup_status in order to support the new recylce bin view setting for the system user
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
