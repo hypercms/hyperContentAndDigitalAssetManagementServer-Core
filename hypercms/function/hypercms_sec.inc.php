@@ -2999,7 +2999,10 @@ function checkpassword ($password, $user="")
   require ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
 
   // set default
-  if (!isset ($mgmt_config['passwordminlength'])) $mgmt_config['passwordminlength'] = 10;
+  if (empty ($mgmt_config['passwordminlength']) || intval ($mgmt_config['passwordminlength']) < 4 || intval ($mgmt_config['passwordminlength']) > 100)
+  {
+    $mgmt_config['passwordminlength'] = 10;
+  }
 
   if ($password != "")
   {
@@ -3019,7 +3022,9 @@ function checkpassword ($password, $user="")
     // password blacklist
     if (!empty ($mgmt_config['passwordblacklist']))
     {
-      if (strpos ("_,".$mgmt_config['passwordblacklist'].",", ",".$password.",") > 0) $error[] = $hcms_lang['password-insufficient'][$lang];
+      $passwordblacklist = splitstring ($mgmt_config['passwordblacklist']);
+
+      if (is_array ($passwordblacklist) && in_array ($password, $passwordblacklist)) $error[] = $hcms_lang['password-insufficient'][$lang];
     }
 
     // password history
@@ -3419,7 +3424,7 @@ function valid_locationname ($variable)
       $variable_name = specialchr_decode ($variable);
       
       // encode special characters in location (string might be longer after encoding)
-      $variable = specialchr_encode ($variable, "no");
+      $variable = specialchr_encode ($variable, false);
 
       // remove component path since it is not used for display (in browser and WebDAV client)
       if (!empty ($mgmt_config['abs_path_comp']) && strpos ("_".$variable_name, $mgmt_config['abs_path_comp']) == 1) $variable_name = str_replace ($mgmt_config['abs_path_comp'], "/", $variable_name);

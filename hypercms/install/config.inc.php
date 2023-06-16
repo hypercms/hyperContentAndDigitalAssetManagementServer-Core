@@ -251,10 +251,10 @@ $mgmt_config['facerecognition'] = false;
 // Use SSL for the service if your installation uses SSL. Do not mix HTTP and HTTPS since the browsers will block mixed content.
 $mgmt_config['facerecognition_service_url'] = "";
 
-// Run the face recognition service on the clients of the defined users (use ";" as separator for the user names) in the background or leave empty for all user clients.
+// Run the face recognition service on the clients of the defined users (use "," as separator for the user names) in the background or leave empty for all user clients.
 $mgmt_config['facerecognition_service_users'] = "";
 
-// Exclude assets of publications from the face recognition service (use ";" as separator for the publication names) or leave empty for all publications.
+// Exclude assets of publications from the face recognition service (use "," as separator for the publication names) or leave empty for all publications.
 $mgmt_config['facerecognition_service_exclude'] = "";
 
 // Define standard mail link type ("access" = access-link; "download" = download-link)
@@ -273,9 +273,9 @@ $mgmt_config['wallpaper'] = "";
 // Show (true) or hide (false) information boxes to provide additional information to the user.
 $mgmt_config['showinfobox'] = true;
 
-// Define home boxes to show for each user if no individual selection has been made (use ";" as separator).
+// Define home boxes to show for each user if no individual selection has been made (use "," as separator).
 // Home boxes are located in directory hypercms/box/.
-$mgmt_config['homeboxes'] = "search;news;tasks;recent_objects;up_and_downloads;recent_downloads;recent_uploads";
+$mgmt_config['homeboxes'] = "search,news,tasks,recent_objects,up_and_downloads,recent_downloads,recent_uploads";
 
 // Define URL to show in welcome/news home box.
 $mgmt_config['homebox_welcome'] = "https://cloud.hypercms.net/home/update_info_en.xhtml";
@@ -656,10 +656,10 @@ $mgmt_config['search_max_results'] = 300;
 $mgmt_config['strongpassword'] = true;
 
 // Define the minimum password length
-// The maximum password length is 100 characters and cannot be changed.
+// The allowed minimum length is 4 and the maximum password length is 100 characters.
 $mgmt_config['passwordminlength'] = 10;
 
-// Password dictionary of passwords that must not be used (blacklist), use "," as delimiter. 
+// Password dictionary of passwords that must not be used (blacklist), use "," as delimiter (the passwords must not include "," or ";"). 
 $mgmt_config['passwordblacklist'] = "";
 
 // Number of passwords in the history that cannot be reused again.
@@ -702,10 +702,11 @@ $mgmt_config['publication_log'] = false;
 $mgmt_config['user_log'] = false;
 
 // User e-mail notification on system errors or warnings
-// Provide a list of users by thier user names (use "," or ";" as separator) for automated notification, or leave empty.
+// Provide a list of users by their user names (use "," as separator) for automated notification, or leave empty.
 $mgmt_config['eventlog_notify'] = "";
 
-// Define users by their user name (use ";" as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API).
+// Define users by their user name (use "," as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API).
+// Usually the events of the system user "sys" should be excluded.
 $mgmt_config['notify_exclude_users'] = "sys";
 
 // Encryption

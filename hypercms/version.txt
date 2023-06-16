@@ -6989,7 +6989,6 @@ Release 09/2023
 - Modifications in the Youtube Connector of the Connector module in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
 - Modifications in template_edit in order to display a warning before the editor will be closed
 - Modifications in standard Event System in order to verify the searchpublications setting used to define publications/websites that use an indenpent search index 
-- Modifications in daily job in order to not remove the object in the database in the fallback process if the object in the recycle bin could not be deleted
 - Modifications in the hyperCMS API in order to support folders and files that are not based on the naming convention of the system. This requires the special characters used in a path or file name not to be encoded.
 - Modifications in function correctfile in Main API in order to support a new input parameter for the encoding of special characters by function createfilename 
 - Modifications in function download, publish, and unpublish in the REST API of the Connector module in order to call function deconvertpath with encoding of special characters
@@ -7003,6 +7002,14 @@ Release 09/2023
 - Modifications in user_edit in order to implement the new recylce bin view setting for the system user
 - Modifications in session.inc in order to include the new session parameter for the recylce bin view setting
 - Modifications in explorer_objectlist and popup_status in order to support the new recylce bin view setting for the system user
+- Modifications in function deletefile in Main API in order to remove a condition to anunassigned variable for the error log entry 10111
+- Modifications in function notifyusers in Main API in order to support , and ; as delimiter by using function splitstring for the main configuration setting $mgmt_config['notify_exclude_users']
+- Modifications in function savelog in Main API in order to exclude the events of the system user in case "sys" in included in the main configuration setting $mgmt_config['notify_exclude_users']
+- Modifications in function checkpassword in Security API in order to use function splitstring for the main configuration setting $mgmt_config['passwordblacklist']
+- Modifications in function checkpassword in Security API in order to define the min. length of 4 characters for a password
+- Modifications in service recognizefaces in order to use function splitstring for the main configuration setting $mgmt_config['facerecognition_service_exclude']
+- Modifications in function is_facerecognition in Main API in order to use function splitstring for the main configuration setting $mgmt_config['facerecognition_service_users']
+- Modifications in the mai configuration file in the install directory in order to define only "," as separator for multiple values of a coniguration setting
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components

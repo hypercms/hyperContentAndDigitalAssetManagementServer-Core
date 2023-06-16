@@ -1561,10 +1561,16 @@ function is_facerecognition ($user)
       }
     }
     // verify standard user
-    elseif (empty ($mgmt_config['facerecognition_service_users']) || strpos ("_;".$mgmt_config['facerecognition_service_users'].";", ";".$user.";") > 0)
+    else
     {
+      if (!empty ($mgmt_config['facerecognition_service_users']))
+      {
+        $facerecognition_service_users = splitstring ($mgmt_config['facerecognition_service_users']);
+      }
+      else $facerecognition_service_users = array();
+
       // verify that user is logged in
-      if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat"))
+      if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && !empty ($facerecognition_service_users) && in_array ($user, $facerecognition_service_users))
       {
         return true;
       }
@@ -4596,7 +4602,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
       if ($result == false)
       {
         $errcode = "10111";
-        if ($i == 3) $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not delete file ".$abs_path.$filename;
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not delete file ".$abs_path.$filename;
       }
     }
     // directory
@@ -20845,6 +20851,16 @@ function savelog ($error, $logfile="event")
   // archive log file when it reached a certain file size in MB
   $archive_size = 100;
 
+  // prepare main configuration setting
+  if (!empty ($mgmt_config['notify_exclude_users']))
+  {
+    $notify_exclude_users = splitstring ($mgmt_config['notify_exclude_users']);
+  }
+  else $notify_exclude_users = array();
+
+  // do not log events of the system user
+  if (!empty ($user) && $user == "sys" && !empty ($notify_exclude_users) && in_array ("sys", $notify_exclude_users)) return true;
+
   // verify event logging based on log level
   if (empty ($mgmt_config['loglevel']) || strtolower ($mgmt_config['loglevel']) == "all")  $log_event = true;
   elseif (strtolower ($mgmt_config['loglevel']) == "warning" && strpos ($log, "|error|") > 0 || strpos ($log, "|warning|") > 0) $log_event = true;
@@ -21313,10 +21329,17 @@ function notifyusers ($site, $location, $object, $event, $from_user)
   // correct object file name
   $object = correctfile ($location, $object, $user, false);
 
+  // prepare main configuration setting
+  if (!empty ($mgmt_config['notify_exclude_users']))
+  {
+    $notify_exclude_users = splitstring ($mgmt_config['notify_exclude_users']);
+  }
+  else $notify_exclude_users = array();
+
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
 
-  if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($from_user) && (empty ($mgmt_config['notify_exclude_users']) || strpos ("_;".$mgmt_config['notify_exclude_users'].";", ";".$from_user.";") < 1))
+  if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($from_user) && (empty ($notify_exclude_users) || in_array ($from_user, $notify_exclude_users)))
   {
     $mail_sent = false;
 
