@@ -180,7 +180,7 @@ function link_db_restore ($site="")
       }
 
       // save log
-      savelog (@$error); 
+      savelog ($error); 
 
       return true;
     }
@@ -240,7 +240,7 @@ function link_db_load ($site, $user)
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     return $link_db;
   }
@@ -310,7 +310,7 @@ function link_db_read ($site)
       }
 
       // save log
-      savelog (@$error);
+      savelog ($error);
 
       return $link_db;
     }
@@ -677,7 +677,7 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
       $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not insert new container in link management database since the container '".$contentfile."' exists already";
 
       // save log
-      savelog (@$error);
+      savelog ($error);
 
       return false;
     }
@@ -688,7 +688,7 @@ function link_db_insert ($site, $link_db, $contentfile, $cat, $object="")
       $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not insert new container in link management database for container '".$contentfile."' and object '".$object."'";
 
       // save log
-      savelog (@$error);
+      savelog ($error);
 
       return false;
     }
@@ -967,7 +967,7 @@ function getlinkedobject ($site, $location, $page, $cat)
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     // return result
     if (isset ($result) && is_array ($result) && sizeof ($result) > 0) return $result;
@@ -1063,7 +1063,7 @@ function getconnectedobject ($container, $type="work")
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
   }
 
   // return result

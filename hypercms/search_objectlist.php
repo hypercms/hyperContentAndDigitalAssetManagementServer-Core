@@ -948,7 +948,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             else $class_image = "class=\"hcmsIconList\"";
 
             // listview - view option for locked objects
-            if ($usedby != "")
+            if (!empty ($usedby))
             {
               $file_info['icon'] = "file_lock.png";
             }
@@ -1034,7 +1034,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
                          </tr>";  
 
             // if there is a thumb file, display the thumb
-            if ($mediafile != false && empty ($usedby))
+            if (!empty ($mediafile) && empty ($usedby))
             {
               // try to create thumbnail if not available
               if (!empty ($mgmt_config['recreate_preview']))
@@ -1071,7 +1071,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             // if linking is used display download buttons, display edit button for mobile edition
             $linking_buttons = "";
 
-            if ($mediafile != false && linking_valid() == true && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
+            if (!empty ($mediafile) && linking_valid() == true && $setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)
             {
               // check download of original file
               if (empty ($downloadformats) || (is_document ($mediafile) && !empty ($downloadformats['document']['original'])) || (is_image ($mediafile) && !empty ($downloadformats['image']['original'])))
@@ -1083,7 +1083,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
             }
 
             // if mobile edition is used display edit button
-            if ($is_mobile && (($mediafile == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || ($mediafile != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
+            if ($is_mobile && ((empty ($mediafile) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1) || (!empty ($mediafile) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)))
             {   
               $linking_buttons .= "
               <button class=\"hcmsButtonDownload\" style=\"width:94%;\" onClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($item_site)."&cat=".url_encode($item_cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."&token=".$token."', '".$container_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">".getescapedtext ($hcms_lang['edit'][$lang])."</button>";

@@ -3404,6 +3404,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
 {
   global $eventsystem, $mgmt_config, $hcms_ext;
 
+  // initalize
   $error = array();
   
   if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
@@ -4534,7 +4535,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return content container on success
   if (!empty ($containerdata)) return $containerdata;

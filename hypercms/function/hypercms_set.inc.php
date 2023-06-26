@@ -142,12 +142,11 @@ function settemplate ($site, $location, $object, $template, $recursive=false)
           // save file
           return savefile ($location, $object, $objectdata);
         }
-        else return false;
       }
-      else return false;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ========================================== CONTENT ===========================================
@@ -164,13 +163,13 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy=array())
 {
   global $mgmt_config;
 
+  // initialize
+  $result = array();
+  $langcount = array();
+  $text_id_array = array();
+
   if (valid_publicationname ($site) && intval ($container_id) > 0 && is_array ($mgmt_config))
   {
-    // initialize
-    $result = array();
-    $langcount = array();
-    $text_id_array = array();
-
     // load publication management config
     if (!isset ($mgmt_config[$site]['taxonomy']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
     {
@@ -301,13 +300,11 @@ function settaxonomy ($site, $container_id, $langcode="", $taxonomy=array())
         }
 
         if (is_array ($result) && sizeof ($result) > 0) return $result;
-        else return false;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------------------------ setcontentupdate ------------------------------------------
@@ -358,14 +355,14 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
 {
   global $mgmt_config;
 
+  // initialize
+  if (!is_array ($arttitle)) $arttitle = array();
+  if (!is_array ($artstatus)) $artstatus = array();
+  if (!is_array ($artdatefrom)) $artdatefrom = array();
+  if (!is_array ($artdateto)) $artdateto = array();
+
   if ($contentdata != "" && is_array ($artstatus) && valid_objectname ($user) && is_array ($mgmt_config))
   {
-    // initialize
-    if (!is_array ($arttitle)) $arttitle = array();
-    if (!is_array ($artstatus)) $artstatus = array();
-    if (!is_array ($artdatefrom)) $artdatefrom = array();
-    if (!is_array ($artdateto)) $artdateto = array();
-
     // if article user is not an array
     if (!is_array ($artuser))
     {
@@ -414,9 +411,9 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
 
     // return container
     if ($contentdatanew != false) return $contentdatanew;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------------- settext -----------------------------------------------
@@ -432,15 +429,15 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
 {
   global $mgmt_config, $publ_config;
 
+  // initialize
+  $error = array();
+  $updated = false;
+  $update_data = "";
+  $link_db_updated = false;
+  $continued = false;
+
   if (valid_publicationname ($site) && valid_objectname ($contentfile) && $contentdata != "" && is_array ($text) && (is_array ($type) || $type != "") && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
-    // initialize
-    $error = array();
-    $updated = false;
-    $update_data = "";
-    $link_db_updated = false;
-    $continued = false;
-
     if (!is_array ($type))
     {
       $typebuffer = $type;
@@ -812,7 +809,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     // return container
     if (!empty ($contentdatanew))
@@ -836,9 +833,9 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
     {
       return $contentdata;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------------- setmedia -----------------------------------------------
@@ -1113,21 +1110,20 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
 {
   global $mgmt_config;
 
+  // initialize
+  $error = array();
+  $updated = false;
+  $update_data = "";
+  if (!is_array ($linktarget)) $linktarget = array();
+  if (!is_array ($linktext)) $linktext = array();
+  if (!is_array ($linkuser))
+  {
+    $userbuffer = $linkuser;
+    $linkuser = Null;
+  }
+
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($linkhref) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
-    // initialize
-    $error = array();
-    $updated = false;
-    $update_data = "";
-    if (!is_array ($linktarget)) $linktarget = array();
-    if (!is_array ($linktext)) $linktext = array();
-
-    if (!is_array ($linkuser))
-    {
-      $userbuffer = $linkuser;
-      $linkuser = Null;
-    }
-
     $container_id = getcontentcontainerid ($contentfile); 
 
     // load xml schema
@@ -1289,7 +1285,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
     }
 
     // save log
-    savelog (@$error); 
+    savelog ($error); 
 
     // return container
     if (!empty ($contentdatanew))
@@ -1320,9 +1316,9 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
     {
       return $contentdata;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // -------------------------------------------- setcomplink -----------------------------------------------
@@ -1338,26 +1334,26 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
 {
   global $mgmt_config;
 
+  // initialize
+  $error = array();
+  $updated = false;
+  $update_data = "";
+  if (!is_array ($condition)) $condition = array();
+
+  if (!is_array ($art))
+  {
+    $artbuffer = $art;
+    $art = Null;
+  }
+
+  if (!is_array ($compuser))
+  {
+    $userbuffer = $compuser;
+    $compuser = Null;
+  }
+
   if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($component) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
-    // initialize
-    $error = array();
-    $updated = false;
-    $update_data = "";
-    if (!is_array ($condition)) $condition = array();
-
-    if (!is_array ($art))
-    {
-      $artbuffer = $art;
-      $art = Null;
-    }
-
-    if (!is_array ($compuser))
-    {
-      $userbuffer = $compuser;
-      $compuser = Null;
-    }
-
     $container_id = getcontentcontainerid ($contentfile);
 
     // load xml schema
@@ -1497,7 +1493,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     // return container
     if (!empty ($contentdatanew))
@@ -1658,11 +1654,11 @@ function setrelation ($site, $location_1="", $object_1="", $id_1="Related", $loc
 {
   global $mgmt_config;
 
+  // initialize
+  $error = array();
+
   if (valid_publicationname ($site) && valid_locationname ($location_1) && valid_objectname ($object_1) && valid_locationname ($location_2) && valid_objectname ($object_2))
   {
-    // initialize
-    $error = array();
-
     // convert locations and get object IDs
     $location_1 = deconvertpath ($location_1, "file");
     $location_esc_1 = convertpath ($site, $location_1, "comp");
@@ -1747,12 +1743,12 @@ function setrelation ($site, $location_1="", $object_1="", $id_1="Related", $loc
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     if (!empty ($save_1) && !empty ($save_2)) return true;
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ===================================== FILEPOINTER =======================================
@@ -1820,7 +1816,8 @@ function setfilename ($filedata, $tagname, $value)
       return $filedata; 
     }
   }
-  else return false;
+  
+  return false;
 }
 
 // ================================== USER GUI SETTINGS =====================================
@@ -1884,7 +1881,8 @@ function setuserboxes ($name_array, $user)
     // save file
     return savefile ($dir, $file, $data);
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- setguiview -------------------------------------------
@@ -1909,7 +1907,8 @@ function setguiview ($objectview, $explorerview, $sidebar, $user)
     // save file
     return savefile ($dir, $file, $view);
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- settoolbarfunctions -------------------------------------------
@@ -1948,6 +1947,7 @@ function settoolbarfunctions ($toolbar, $user)
     // save file
     return savefile ($dir, $file, $settings);
   }
-  else return false;
+
+  return false;
 }
 ?>

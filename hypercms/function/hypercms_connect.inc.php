@@ -21,6 +21,7 @@ function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   if ($server != "" && $user != "" && $passwd != "")
@@ -53,7 +54,7 @@ function ftp_userlogon ($server, $user, $passwd, $ssl=false)
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     return $conn_id;
   }
@@ -92,6 +93,7 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   if ($conn_id != "" && $local_file != "" && $remote_file != "" && ($passive == true || $passive == false))
@@ -108,7 +110,7 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
     if (!$download) $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|error|20201|FTP: download of ".$remote_file." to ".$local_file." has failed";
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     return $download;
   }
@@ -127,6 +129,7 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   if ($conn_id != "" && $local_file != "" && $remote_file != "" && ($passive == true || $passive == false))
@@ -147,7 +150,7 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
     else $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|error|20105|FTP: local file ".$local_file." does not exist";
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     return $upload;
   }
@@ -166,6 +169,7 @@ function ftp_deletefile ($conn_id, $remote_file, $passive=true)
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   if ($conn_id != "" && $remote_file != "" && ($passive == true || $passive == false))
@@ -182,7 +186,7 @@ function ftp_deletefile ($conn_id, $remote_file, $passive=true)
     if (!$delete) $error[] = date('Y-m-d H:i')."|hypercms_connect.inc.php|error|20103|FTP: delete of ".$remote_file." has failed";
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     return $delete;
   }

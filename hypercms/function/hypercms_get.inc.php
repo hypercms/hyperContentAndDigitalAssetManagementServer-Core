@@ -2731,6 +2731,9 @@ function getwallpaper ($theme="", $version="")
 {
   global $mgmt_config, $is_mobile;
 
+  // initalize
+  $error = array();
+  
   // 1. get system wallpaper
   if (!empty ($mgmt_config['wallpaper']))
   {
@@ -2800,7 +2803,7 @@ function getwallpaper ($theme="", $version="")
       $errcode = "00820";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|Wallpaper service not available";
 
-      savelog (@$error);
+      savelog ($error);
 
       // define wallpaper (based on day number)
       $day = date ("z") + 1;

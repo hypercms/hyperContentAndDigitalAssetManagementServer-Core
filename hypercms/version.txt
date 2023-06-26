@@ -7009,7 +7009,10 @@ Release 09/2023
 - Modifications in function checkpassword in Security API in order to define the min. length of 4 characters for a password
 - Modifications in service recognizefaces in order to use function splitstring for the main configuration setting $mgmt_config['facerecognition_service_exclude']
 - Modifications in function is_facerecognition in Main API in order to use function splitstring for the main configuration setting $mgmt_config['facerecognition_service_users']
-- Modifications in the mai configuration file in the install directory in order to define only "," as separator for multiple values of a coniguration setting
+- Modifications in the main configuration file in the install directory in order to define only "," as separator for multiple values of a coniguration setting
+- Modifications in framset_content in order to add the CSS class hcmsWorkplaceObjectlist to the body
+- Modifications in function showgallery in UI API in order to implement the new version of function createviewlink and remove the verification of the media file
+- Modifications in various functions of the hyperCMS API in order to not suppress errors reagrding the error log array 
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components

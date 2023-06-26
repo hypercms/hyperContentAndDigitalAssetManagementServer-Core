@@ -1827,7 +1827,7 @@ function createfilename ($filename, $shorten=false)
       $errcode = "00911";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Object name '".specialchr_decode ($filename)."' has been truncated to '".specialchr_decode ($filename_new)."'";
 
-      savelog (@$error);
+      savelog ($error);
 
       if (strlen ($filename_new) > 0) return $filename_new;
       else return "noname";
@@ -2550,7 +2550,7 @@ function createaccesslink ($site, $location="", $object="", $cat="", $object_id=
       $errcode = "40911";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createaccesslink failed due to missing object id for ".$objectpath." (input: ".$site.", ".$location.", ".$object.", ".$cat.", ".$object_id.", ".$login.", ".$type.", ".$lifetime.", ".$formats.")";
 
-      savelog (@$error);
+      savelog ($error);
     }
   }
 
@@ -2653,7 +2653,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
       $errcode = "40912";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createobjectaccesslink failed due to missing object id for object ".$location.$object." (input: ".$site.", ".$location.", ".$object.", ".$cat.", ".$object_id.", ".$container_id."), object ID: ".$object_id.", container ID: ".$container_id;
 
-      savelog (@$error);
+      savelog ($error);
     }
   }
 
@@ -2767,7 +2767,7 @@ function createwrapperlink ($site="", $location="", $object="", $cat="", $object
       $errcode = "40913";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createwrapperlink failed due to missing object id for object ".$location.$object."  (input: ".$site.", ".$location.", ".$object.", ".$cat.", ".$object_id.", ".$container_id.", ".$type.", ".$mediaconfig."), object ID: ".$object_id.", container ID: ".$container_id;
 
-      savelog (@$error);
+      savelog ($error);
     }
   }
 
@@ -2883,7 +2883,7 @@ function createdownloadlink ($site="", $location="", $object="", $cat="", $objec
       $errcode = "40914";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."createdownloadlink failed due to missing object id for object ".$objectpath." (input: ".$site.", ".$location.", ".$object.", ".$cat.", ".$object_id.", ".$container_id.", ".$type.", ".$mediaconfig."), object ID: ".$object_id.", container ID: ".$container_id;
 
-      savelog (@$error);
+      savelog ($error);
     }
   }
 
@@ -2953,7 +2953,7 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
         $errcode = "20914";
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmultiaccesslink failed to create access link for hash=".$hash.", multiobject=".implode("|", $multiobject).", type=".$type.", login=".$login.", lifetime=".$lifetime.", formats=".$formats;
   
-        savelog (@$error);
+        savelog ($error);
       }
     }
     else
@@ -2961,7 +2961,7 @@ function createmultiaccesslink ($multiobject, $login, $type="al", $lifetime=0, $
       $errcode = "40915";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmultiaccesslink failed due to missing input: $multiobject";
 
-      savelog (@$error);
+      savelog ($error);
     }
   }
 
@@ -3567,7 +3567,7 @@ function rollbackversion ($site, $location, $page, $container_version, $user="sy
   }
 
   // write log
-  savelog (@$error);
+  savelog ($error);
 
   // return result
   if (empty ($show)) $result['result'] = true;
@@ -4638,7 +4638,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
   }
 
   return $result;
@@ -4726,7 +4726,7 @@ function restoremediafile ($site, $mediafile)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   $result['result'] = $success;
   $result['restored'] = $restored;
@@ -5248,7 +5248,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."downloadfile could not find ".$filepath."";
 
       // write log
-      savelog (@$error);
+      savelog ($error);
 
       return false;
     }
@@ -5285,7 +5285,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
         $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."downloadfile could not open ".$filepath."";
 
         // write log
-        savelog (@$error);
+        savelog ($error);
         exit;
       }
 
@@ -5447,7 +5447,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       onfiledownload_post ($site, $location, $media, $name, $user);
 
     // write log
-    savelog (@$error);
+    savelog ($error);
 
     // return result
     if ($force == "noheader" && !empty ($filedata)) return $filedata;
@@ -5552,7 +5552,7 @@ function loadcontainer ($container, $type="work", $user="")
           $errcode = "10198";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Working container ".$container." could not be restored";
 
-          savelog (@$error);
+          savelog ($error);
         }
         else
         {
@@ -5571,7 +5571,7 @@ function loadcontainer ($container, $type="work", $user="")
           $errcode = "10199";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Published container ".$container." could not be restored";
 
-          savelog (@$error);
+          savelog ($error);
         }
         else
         {
@@ -6159,7 +6159,7 @@ function inherit_db_load ($user)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   return $inherit_db;
 }
@@ -6219,7 +6219,7 @@ function inherit_db_read ()
   }
 
   // save log
-  savelog (@$error); 
+  savelog ($error); 
 
   return $inherit_db;
 }
@@ -6733,7 +6733,7 @@ function createinstance ($instance_name, $settings, $user="sys")
 
   // save log
   include ($mgmt_config['abs_path_cms']."config.inc.php");
-  savelog (@$error);
+  savelog ($error);
 
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
@@ -6805,7 +6805,7 @@ function editinstance ($instance_name, $content, $user="sys")
 
   // save log
   include ($mgmt_config['abs_path_cms']."config.inc.php");
-  savelog (@$error);
+  savelog ($error);
 
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
@@ -6955,7 +6955,7 @@ function deleteinstance ($instance_name, $user="sys")
 
   // save log
   include ($mgmt_config['abs_path_cms']."config.inc.php");
-  savelog (@$error);
+  savelog ($error);
 
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
@@ -7361,7 +7361,7 @@ function createpublication ($site_name, $user="sys")
   inherit_db_close ($user);
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
@@ -8725,7 +8725,7 @@ function deletepublication ($site_name, $user="sys")
   inherit_db_close ($user);
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   $result['result'] = $result_ok;
   $result['add_onload'] = $add_onload;
@@ -9947,7 +9947,7 @@ function createuser ($site, $login, $password, $confirm_password, $nologon=0, $u
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -10521,7 +10521,7 @@ function edituser ($site="*Null*", $login="", $old_password="", $password="", $c
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -10691,7 +10691,7 @@ function deleteuser ($site, $login, $user="sys")
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -10839,7 +10839,7 @@ function creategroup ($site, $groupname, $user="sys")
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -11205,7 +11205,7 @@ function editgroup ($site, $groupname, $pageaccess, $compaccess, $permission, $p
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -11366,7 +11366,7 @@ function deletegroup ($site, $groupname, $user)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -11447,7 +11447,7 @@ function renamegroupfolder ($site, $cat, $folder_curr, $folder_new, $user)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
   
   if (!empty ($result)) return $result;
   else return false;
@@ -11528,7 +11528,7 @@ function deletegroupfolder ($site, $cat, $folderpath, $user)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
   
   if (!empty ($result)) return $result;
   else return false;
@@ -11602,7 +11602,7 @@ function renameworkflowfolder ($site, $cat, $folder_curr, $folder_new, $user)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   if (!empty ($result)) return $result;
   else return false;
@@ -11694,7 +11694,7 @@ function deleteworkflowfolder ($site, $cat, $folderpath, $user)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   if (!empty ($result)) return $result;
   else return false;
@@ -12434,7 +12434,7 @@ function createfolder ($site, $location, $folder, $user)
   } 
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -12812,7 +12812,7 @@ function deletefolder ($site, $location, $folder, $user)
   }
 
   // save log
-  savelog (@$error); 
+  savelog ($error); 
  
   // return results
   if (!empty ($success)) $folder = "";
@@ -13114,7 +13114,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -13804,7 +13804,7 @@ function createobject ($site, $location, $page, $template, $user)
   } 
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   $result['result'] = $success;
@@ -13911,7 +13911,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false, $webd
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   return $result;
 }
@@ -13980,7 +13980,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."New file upload '".$file_name_orig."' has been started by user '".$user."' to '".$location_esc.$page."'";
  
     // write log
-    savelog (@$error);
+    savelog ($error);
 
     // result
     $result['publication'] = $site;
@@ -13997,7 +13997,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Missing permissions for user '".$user."' to upload the file to '".$location_esc."'";
 
       // write log
-      savelog (@$error);
+      savelog ($error);
 
       $result['header'] = "HTTP/1.1 403 Forbidden";
       $result['message'] = strip_tags ($hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang]);
@@ -14044,7 +14044,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The file to upload could not be obtained from the source '".$temp_file."'";
 
           // write log
-          savelog (@$error);
+          savelog ($error);
 
           $result['header'] = "HTTP/1.1 500 Internal Server Error";
           $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
@@ -14072,7 +14072,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $error[] = date ('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The file to upload could not be obtained from the source '".$temp_file."'";
 
           // write log
-          savelog (@$error);
+          savelog ($error);
 
           $result['header'] = "HTTP/1.1 500 Internal Server Error";
           $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
@@ -14124,11 +14124,11 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         }
         else
         {
-          $errcode = "10503";
+          $errcode = "10523";
           $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The file to upload could not be obtained from the source '".$temp_file."'";
 
           // write log
-          savelog (@$error);
+          savelog ($error);
 
           $result['header'] = "HTTP/1.1 500 Internal Server Error";
           $result['message'] = strip_tags ($hcms_lang['file-could-not-be-downloaded'][$lang]);
@@ -14149,7 +14149,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The file '".$location_esc.$global_files['Filedata']['name']."' could not be saved or only partialy-saved. Please check upload_max_filesize in your php.ini. Upload input details: temp-name:".$global_files['Filedata']['tmp_name']. ", file-name:".$global_files['Filedata']['name'].", file-size:".$global_files['Filedata']['size'].", file-type:".$global_files['Filedata']['type'];
 
       // write log
-      savelog (@$error);
+      savelog ($error);
 
       $result['header'] = "HTTP/1.1 500 Internal Server Error";
       $result['message'] = strip_tags ($hcms_lang['file-could-not-be-saved-or-only-partialy-saved'][$lang]);
@@ -14164,7 +14164,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."No file has been selected for the upload";
 
       // write log
-      savelog (@$error);
+      savelog ($error);
 
       $result['header'] = "HTTP/1.1 400 Bad Request";
       $result['message'] = strip_tags ($hcms_lang['no-file-selected-to-upload'][$lang]);
@@ -14182,7 +14182,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The uploaded file name '".$location_esc.$global_files['Filedata']['name']."' has too many digits";
 
       // write log
-      savelog (@$error);
+      savelog ($error);
 
       $result['header'] = "HTTP/1.1 400 Bad Request";
       $result['message'] = str_replace ("%maxdigits%", $mgmt_config['max_digits_filename'], strip_tags ($hcms_lang['the-file-name-has-more-than-maxdigits-digits'][$lang]));
@@ -14227,7 +14227,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The uploaded file '".$location_esc.$global_files['Filedata']['name']."' is too big (max. ".$mgmt_config['maxfilesize'].")";
 
         // write log
-        savelog (@$error);
+        savelog ($error);
 
         $result['header'] = "HTTP/1.1 400 Bad Request";
         $result['message'] = strip_tags ($hcms_lang['the-file-you-are-trying-to-upload-is-too-big'][$lang]);
@@ -14336,7 +14336,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The uploaded file '".$global_files['Filedata']['name']."' could not be copied to the server";
 
           // write log
-          savelog (@$error);
+          savelog ($error);
         }
       }
 
@@ -14378,7 +14378,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
             $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Execution of ZIP (code:".$errorCode.", command:".$cmd.") failed for '".$filename."' \t".$error_message;
 
             // save log
-            savelog (@$error);
+            savelog ($error);
           }
           // create multimedia object for ZIP file
           else
@@ -14424,7 +14424,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
         $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The page file '".$global_files['Filedata']['name']."' could not be uploaded to the server";
 
         // write log
-        savelog (@$error);
+        savelog ($error);
 
         $show = $result_createobject['message'];
       }
@@ -14461,7 +14461,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
           $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The uploaded file '".$global_files['Filedata']['name']."' could not be created by createmediaobject (".strip_tags ($result_createobject['message']).")";
 
           // write log
-          savelog (@$error);
+          savelog ($error);
 
           $show = $result_createobject['message'];
         }
@@ -14538,7 +14538,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                   $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
         
                   // write log
-                  savelog (@$error);
+                  savelog ($error);
                 }
 
                 // delete temporary directory
@@ -14616,7 +14616,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                 $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
       
                 // write log
-                savelog (@$error);
+                savelog ($error);
               }
             }
 
@@ -14796,7 +14796,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (is_file ($temp_file)) unlink ($temp_file);
  
     // write log
-    savelog (@$error);
+    savelog ($error);
     
     // restart session (that has been previously closed for non-blocking procedure)
     revokesession ("", "", $session_id);
@@ -14922,7 +14922,9 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           {
             // move uploaded multimedia file to content media repository
             $temp = uploadhandler ($path_source_file, $medialocation.$mediafile, false);
-            $result_move = @$temp['result'];
+
+            if (!empty ($temp['result'])) $result_move = true;
+            else $result_move = false;
           }
           // keep source file (copy file)
           else
@@ -15047,10 +15049,14 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
     }
   }
   // input is missing
-  else $result['result'] = false;
+  else
+  {
+    $result['result'] = false;
+    $result['message'] ="<span class=\"hcmsHeadline\">".$hcms_lang['required-input-is-missing'][$lang]."</span>\n";
+  }
 
   // error log
-  savelog (@$error);
+  savelog ($error);
 
   return $result;
 }
@@ -15074,8 +15080,6 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
 
   if (valid_publicationname ($site) && $location_source != "" && valid_locationname ($location_destination))
   {
-    $result = array();
-
     if (!valid_objectname ($user)) $user = "sys";
 
     // publication management config
@@ -15186,7 +15190,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
     }
 
     // error log
-    savelog (@$error);
+    savelog ($error);
 
     return $result;
   }
@@ -16829,7 +16833,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               // copy thumbnail images (always in media repository)
               if (is_file (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb))
               {
-                @copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
+                copy (getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/".$mediafile_self_thumb, getmedialocation ($site, $mediafile_new_thumb, "abs_path_media").$site."/".$mediafile_new_thumb);
 
                 // remote client
                 remoteclient ("copy", "abs_path_media", $site, getmedialocation ($site, $mediafile_self_thumb, "abs_path_media").$site."/", "", $mediafile_self_thumb, $mediafile_new_thumb);
@@ -16966,7 +16970,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     // eventsystem for paste
     if ($action == "page_paste" && $eventsystem['onpasteobject_post'] == 1 && empty ($eventsystem['hide']) && !empty ($success)) 
@@ -17065,7 +17069,7 @@ function deletemarkobject ($site, $location, $page, $user)
   }
 
   // save log
-  savelog (@$error); 
+  savelog ($error); 
 
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -17132,7 +17136,7 @@ function deleteunmarkobject ($site, $location, $page, $user)
   }
 
   // save log
-  savelog (@$error); 
+  savelog ($error); 
 
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -18703,7 +18707,7 @@ function publishobject ($site, $location, $page, $user)
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   // return results
   // result array has been defined before, do not reset here
@@ -19153,7 +19157,7 @@ function unpublishobject ($site, $location, $page, $user)
   }
   
   // save log
-  savelog (@$error);
+  savelog ($error);
  
   // return results 
   return $result;
@@ -19205,7 +19209,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|information|".$errcode."|Processing (".$action.") was successful for mail file '".$file."'";
 
       // save log
-      savelog (@$error); 
+      savelog ($error); 
 
       return true;
     }
@@ -19216,7 +19220,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|Processing (".$action.") was successful for mail file '".$file."' with warning '".implode (", ", $result['general'])."'";
 
       // save log
-      savelog (@$error); 
+      savelog ($error); 
 
       return true;
     }
@@ -19227,7 +19231,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed for mail file '".$file."' with mail error '".implode (", ", $result['error'])."' and general error '".implode (", ", $result['general'])."'";
 
       // save log
-      savelog (@$error); 
+      savelog ($error); 
 
       return false;
     }
@@ -19238,7 +19242,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed for mail file '".$file."' since the sendmail service was not available (missing response)";
 
       // save log
-      savelog (@$error); 
+      savelog ($error); 
 
       return false;
     }
@@ -19338,7 +19342,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
             $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed for ".$location_esc.$file;
 
             // save log
-            savelog (@$error);
+            savelog ($error);
           }
         }
       }
@@ -19349,7 +19353,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
 
         // save log
-        savelog (@$error);
+        savelog ($error);
       }
     }
     // if provided location or object does not exist
@@ -19359,7 +19363,7 @@ function processobjects ($action, $site, $location, $file, $published_only=false
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Processing (".$action.") failed since location '".$location_esc."' or object '".$file_orig."' does not exist";
 
       // save log
-      savelog (@$error);
+      savelog ($error);
     }
   }
 
@@ -19580,7 +19584,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       }
 
       // save log
-      savelog (@$error);
+      savelog ($error);
 
       return $result;
     }
@@ -19916,7 +19920,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
 
           // ========================================== error log =============================================
           // save log
-          savelog (@$error); 
+          savelog ($error); 
         }
         else $test['result'] = true;
       }
@@ -20055,7 +20059,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
   }
 
   return $result;
@@ -20269,7 +20273,7 @@ function remoteclient ($action, $root, $site, $location, $locationnew, $page, $p
         $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|remoteclient failed for '".$action."' on ".$location.$page;
 
         // save log
-        savelog (@$error); 
+        savelog ($error); 
       }
 
       return $result;
@@ -20470,7 +20474,7 @@ function HTTP_Post ($URL, $data, $contenttype="application/x-www-form-urlencoded
       $errcode = "10821";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not send POST request to ".$URL;
 
-      savelog (@$error);
+      savelog ($error);
     }
   }
 
@@ -20602,7 +20606,7 @@ function HTTP_Get_contents ($URL, $response_type="body", $insecure=true)
       $errcode = "10261";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Could not send GET request to ".$URL;
 
-      savelog (@$error);
+      savelog ($error);
     }
   }
   // read file
@@ -20668,7 +20672,7 @@ function HTTP_Proxy ($URL, $enable_file=false)
           $errcode = "10991";
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Uploaded file ".$_FILES['Filedata']['name']." could not be saved in temp directory";
 
-          savelog (@$error);
+          savelog ($error);
         }
       }
     }
@@ -20718,7 +20722,7 @@ function HTTP_Proxy ($URL, $enable_file=false)
       $errcode = "20921";
       $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|HTTP_Proxy failed with error (".$error_no.") ".$error_message;
 
-      savelog (@$error);
+      savelog ($error);
     }
 
     // define http header
@@ -21063,7 +21067,7 @@ function deletelog ($logname="")
   }
 
   // save log
-  savelog (@$error);
+  savelog ($error);
 
   $result['add_onload'] = $add_onload;
   $result['message'] = $show;
@@ -21500,7 +21504,7 @@ function notifyusers ($site, $location, $object, $event, $from_user)
         }
 
         // save log
-        savelog (@$error);
+        savelog ($error);
 
         return $mail_sent;
       }
@@ -21634,7 +21638,7 @@ function sendlicensenotification ($site, $cat, $folderpath, $text_id, $date_begi
       }
 
       // save log
-      savelog (@$error); 
+      savelog ($error); 
 
       return $mail_sent;
     }
@@ -21749,7 +21753,7 @@ function licensenotification ()
     $error[] = $mgmt_config['today']."|hypercms_main.php|error|".$errcode."|License notification can not be executed. Config directory is missing.";
 
     // save log
-    savelog (@$error); 
+    savelog ($error); 
 
     return false;
   }
@@ -21850,7 +21854,7 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
     // save log
     $errcode = "00750";
     $error[] = $mgmt_config['today']."|hypercms_main.php|information|".$errcode."|A new password has been sent to user '".$login."'";
-    savelog (@$error); 
+    savelog ($error); 
 
     if ($mail == false) return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]." ".$email[0];
     else return $hcms_lang['e-mail-was-sent-successfully-to-'][$lang]." ".$email[0];
@@ -22644,7 +22648,7 @@ function sendmessage ($from_user="", $to_user="", $title="", $message="", $objec
       }
 
       // save log
-      savelog (@$error);
+      savelog ($error);
     }
 
     return $result;

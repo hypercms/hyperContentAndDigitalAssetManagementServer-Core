@@ -88,12 +88,11 @@ function ocr_extractcontent ($site, $location, $file, $user)
 
   // initialize
   $error = array();
+  $usedby = "";
+  $file_content = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && !empty ($mgmt_parser) && is_array ($mgmt_parser) && is_supported ($mgmt_parser, $file))
   {
-    $usedby = "";
-    $file_content = "";
-
     // load tesseract language mapping
     if (empty ($tesseract_lang) || !is_array ($tesseract_lang)) require ($mgmt_config['abs_path_cms']."include/tesseract_lang.inc.php");
 
@@ -308,7 +307,7 @@ function ocr_extractcontent ($site, $location, $file, $user)
     if (!empty ($temp_name) && is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", false);
     
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     if (!empty ($file_content)) return $file_content;
   }
@@ -330,12 +329,12 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
 
+  // initalize
   $error = array();
+  $usedby = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && valid_objectname ($user))
   {
-    $usedby = "";
-
     // load file extensions
     if (empty ($hcms_ext) || !is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");
 
@@ -834,7 +833,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           }
 
           // save log
-          savelog (@$error);
+          savelog ($error);
 
           // save container
           if ($container_contentnew != false)
@@ -986,6 +985,7 @@ function reindexcontent ($site, $container_id_array="")
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   if (valid_publicationname ($site) && !empty ($mgmt_config['abs_path_media']))
@@ -1044,7 +1044,7 @@ function reindexcontent ($site, $container_id_array="")
             }
 
             // save log
-            savelog (@$error);
+            savelog ($error);
           }
         }
       }
@@ -1182,7 +1182,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
             $error[] = $mgmt_config['today']."|hypercms_media.php|error|".$errcode."|Execution of EXIFTOOL (code:".$errorCode.", command:".$cmd.") failed to extract thumbnail from INDD file '".$file."' \t".implode("\t", $output);
   
             // save log
-            savelog (@$error);
+            savelog ($error);
 
             return false;
           }
@@ -1193,7 +1193,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
             $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|createthumbnail_indesign failed to convert file (result is not a valid JPEG): ".$location_dest.$newfile; 
    
             // save log
-            savelog (@$error);
+            savelog ($error);
 
             unlink ($location_dest.$newfile);
           }
@@ -1295,7 +1295,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
             $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|createthumbnail_indesign failed to convert file (result is not a valid JPEG): ".$location_dest.$newfile; 
    
             // save log
-            savelog (@$error);
+            savelog ($error);
 
             unlink ($location_dest.$newfile);
 
@@ -1319,7 +1319,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
           $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|createthumbnail_indesign failed to save file: ".$location_dest.$newfile; 
  
           // save log
-          savelog (@$error);
+          savelog ($error);
         } 
       }
       else
@@ -1328,7 +1328,7 @@ function createthumbnail_indesign ($site, $location_source, $location_dest, $fil
         $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|createthumbnail_indesign failed for file: ".$location_source.$file; 
  
         // save log
-        savelog (@$error);
+        savelog ($error);
       } 
     }
   }
@@ -1564,7 +1564,7 @@ function createthumbnail_video ($site, $location_source, $location_dest, $file, 
         $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Video thumbnail image and execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' and frame ".$frame." \t".implode ("\t", $output);
 
         // save log
-        savelog (@$error);
+        savelog ($error);
 
         return false;
       } 
@@ -1720,18 +1720,16 @@ function createimages_video ($site, $location_source, $location_dest, $file, $na
         $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Video preview images and execution of ffmpeg (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
 
         // save log
-        savelog (@$error);
-
-        return false;
+        savelog ($error);
       } 
       else
       {
         return true;
       }
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- createmedia -----------------------------
@@ -3969,16 +3967,16 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     // restart session (that has been previously closed for non-blocking procedure)
     revokesession ("", "", $session_id);
 
     // return result
     if ($converted == true && !empty ($newfile)) return $newfile;
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- splitmedia -----------------------------
@@ -3993,6 +3991,9 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $format="", $force_no_encrypt=false)
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $user;
+
+  // initalize
+  $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && $sec > 0)
   {
@@ -4144,7 +4145,7 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
   }
 
   // write log
-  savelog (@$error);
+  savelog ($error);
 
   if (sizeof ($result) > 0) return $result;
   else return false;
@@ -4164,6 +4165,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $mgmt_compress, $hcms_ext;
 
+  // initalize
   $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($mediafile) && $format != "")
@@ -4318,7 +4320,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     return $result_conv;
   }
@@ -5135,6 +5137,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 {
   global $mgmt_config, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_ext, $hcms_lang, $lang, $user;
 
+  // initalize
   $error = array();
  
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
@@ -5311,7 +5314,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                     $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of libreoffice/unoconv (code:".$errorCode.", command:".$cmd.") to '".$format."' failed for file '".$location_source.$file."' \t".implode("\t", $output);
 
                     // save log
-                    savelog (@$error);
+                    savelog ($error);
                   } 
                   else
                   {
@@ -5324,7 +5327,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
                       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Rename failed in createdocument for file: ".$location_source.$file_name.".".$docformat;
 
                       // save log
-                      savelog (@$error);
+                      savelog ($error);
                     }
                     else 
                     {
@@ -5408,6 +5411,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions;
 
+  // initialize
   $error = array();
 
   if ($mgmt_uncompress['.zip'] != "" && valid_publicationname ($site) && $zipfilepath != "" && valid_locationname ($location) && valid_objectname ($filename) && ($cat == "page" || $cat == "comp") && valid_objectname ($user))
@@ -5467,7 +5471,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
             $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$filename."' \t".$error_message;
 
             // save log
-            savelog (@$error); 
+            savelog ($error); 
           }
 
           // collect extracted files
@@ -5509,7 +5513,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
               $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$filename."' \t". $error_message;
 
               // save log
-              savelog (@$error); 
+              savelog ($error); 
             }
 
             // check if files were extracted
@@ -5555,6 +5559,7 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
 
   if (is_array ($mgmt_config) && $source != "" && $destination != "")
   {
+    // initialize
     $result = array();
 
     $destDir = $destination."/".specialchr_decode (getobject ($source));
@@ -5653,6 +5658,7 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
 {
  global $mgmt_config, $mgmt_compress;
 
+ // initialize
  $error = array();
  
  if (!empty ($mgmt_compress['.zip']) && is_dir ($source) && is_dir ($destination) && valid_objectname ($zipfilename))
@@ -5684,7 +5690,7 @@ function zipfiles_helper ($source, $destination, $zipfilename, $remove=false)
       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of zip (code:".$errorCode.", command".$cmd.") failed for '".$filename."' \t".$error_message;
 
       // save log
-      savelog (@$error);
+      savelog ($error);
 
       return false; 
     }
@@ -5961,7 +5967,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of zip (code:".$errorCode.", command".$cmd.") failed for '".$filename."' \t".$error_message;
 
       // save log
-      savelog (@$error);
+      savelog ($error);
 
       return false; 
     }
@@ -6160,6 +6166,7 @@ function html2pdf ($source, $dest, $cover="", $toc=false, $page_orientation="Por
 {
   global $mgmt_config;
 
+  // initialize
   $error = array();
 
   // correct source
@@ -6287,7 +6294,7 @@ function html2pdf ($source, $dest, $cover="", $toc=false, $page_orientation="Por
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     if (!is_file ($dest) || $errorCode) return false;
     else return true;
@@ -6328,7 +6335,7 @@ function mergepdf ($source, $dest)
       $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of pdftk failed to merge PDF files (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
 
       // save log
-      savelog (@$error);
+      savelog ($error);
     }
 
     if (!is_file ($dest) || $errorCode) return false;

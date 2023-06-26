@@ -6501,66 +6501,23 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
         $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";
       }
 
+      $fileinfo = getfileinfo ($site, $location_esc.$page, $cat);
+
       // media asset
       if (!empty ($objectinfo['media']))
       {
-        $mediafile = $objectinfo['media'];
-        $mediainfo = getfileinfo ($site, $mediafile, "comp");
+        $mediainfo = getfileinfo ($site, $objectinfo['media'], "comp");
         $thumbnail = $mediainfo['filename'].".thumb.jpg";
 
-        // thumbnail file is always in repository
-        $mediadir = getmedialocation ($site, ".hcms.".$mediafile, "abs_path_media").$site."/";
-
-        // thumbnails preview
-        if (is_file ($mediadir.$thumbnail))
-        {
-          /* deprecated since version 8.1.3 due to performance issues when reading all thumbnail files in order to collect their dimensions
-          $imgsize = getimagesize ($mediadir.$thumbnail);
-
-          // calculate image ratio to define CSS for image container div-tag
-          if (is_array ($imgsize))
-          {
-        		$imgwidth = $imgsize[0];
-        		$imgheight = $imgsize[1];
-            $imgratio = $imgwidth / $imgheight;
-
-            // if thumbnail is smaller than defined thumbnail size
-            if ($imgwidth < $thumbsize && $imgheight < $thumbsize)
-            {
-              $style_size = "width:".$imgwidth."px; height:".$imgheight."px;";
-            }
-            else
-            {
-              // image width >= height
-              if ($imgratio >= 1) $style_size = "width:".$thumbsize."px; height:".round(($imgheight / $imgratio), 0)."px;";
-              // image width < height
-              else $style_size = "width:".round(($imgwidth * $imgratio), 0)."px; height:".$thumbsize."px;";
-            }
-          }
-          // default value
-          else
-          {
-            $style_size = "width:".$thumbsize."px;";
-          }
-          */
-
-          $galleryview .= "
-          <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img data-src=\"".createviewlink ($site, $thumbnail, $objectinfo['name'])."\" class=\"lazyload hcmsImageItem\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
-        }
-        // no thumbnail available
-        else
-        { 
-          $galleryview .= "
-          <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$mediainfo['icon']."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
-        }
+        // thumbnail preview
+        $galleryview .= "
+        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img data-src=\"".cleandomain (createviewlink ($site, $thumbnail, $objectinfo['name'], false, "wrapper", $fileinfo['icon']))."\" class=\"lazyload hcmsImageItem\" alt=\"".$objectinfo['name']."\" style=\"border:0; max-width:".$thumbsize."px; max-height:".$thumbsize."px;\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
       }
       // object or folder
       else
       {
-        $fileinfo = getfileinfo ($site, $location_esc.$page, $cat);
-
         $galleryview .= "
-        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".getthemelocation()."img/".$fileinfo['icon']."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
+        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".cleandomain (getthemelocation()."img/".$fileinfo['icon'])."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
       }
     }
 

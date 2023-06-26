@@ -10862,7 +10862,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       }
 
       // save log
-      savelog (@$error);
+      savelog ($error);
     }
     // if view is not allowed due to workflow
     else

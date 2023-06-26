@@ -238,7 +238,7 @@ function update_tasks_v584 ()
         }
 
         // save log
-        savelog (@$error);
+        savelog ($error);
 
         return true;
       }
@@ -375,7 +375,7 @@ function update_database_v586 ()
 
     // save log
     savelog ($db->rdbms_geterror());
-    savelog (@$error);
+    savelog ($error);
 
     $db->rdbms_close();
 
@@ -725,7 +725,7 @@ function update_database_v6115 ()
 
     // save log
     savelog ($db->rdbms_geterror());
-    savelog (@$error);
+    savelog ($error);
 
     $db->rdbms_close();
 
@@ -844,7 +844,7 @@ function update_container_v6118 ()
 
     // save log
     savelog ($db->rdbms_geterror());
-    savelog (@$error);
+    savelog ($error);
 
     $db->rdbms_close();
 
@@ -1322,7 +1322,7 @@ function update_users_804 ()
     }
 
     // save log
-    savelog (@$error);
+    savelog ($error);
 
     // update users
     $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
@@ -2287,6 +2287,7 @@ function update_database_v10073 ()
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   if (!checksoftwareversion ("10.0.7.3"))
@@ -2309,7 +2310,7 @@ function update_database_v10073 ()
 
     // save log
     savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($error);
     $db->rdbms_close();
 
     return true;
@@ -2329,6 +2330,7 @@ function update_database_v10074 ()
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   if (!checksoftwareversion ("10.0.7.4"))
@@ -2346,7 +2348,7 @@ function update_database_v10074 ()
 
     // save log
     savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($error);
     $db->rdbms_close();
 
     return true;
@@ -2366,6 +2368,7 @@ function update_database_v1008 ()
 {
   global $mgmt_config;
 
+  // initalize
   $error = array();
 
   if (!checksoftwareversion ("10.0.8"))
@@ -2418,7 +2421,7 @@ function update_database_v1008 ()
 
     // save log
     savelog ($db->rdbms_geterror ());
-    savelog (@$error);
+    savelog ($error);
     $db->rdbms_close();
 
     return true;
@@ -2685,7 +2688,7 @@ function update_software ($type="update")
       $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Invalid JSON data (MD5: ".$download_json['md5'].", Link: ".$download_json['link'].") provided by update service '".$mgmt_config['update_url']."'";
 
       // save event log
-      savelog (@$error);
+      savelog ($error);
 
       return false;
     }
@@ -2719,7 +2722,7 @@ function update_software ($type="update")
             $error[] = $mgmt_config['today']."|hypercms_update.inc.php|error|".$errcode."|Execution of unzip of software update failed for '".$source."' with error code ".$errorCode.": ".implode (", ", $output);
 
             // save event log
-            savelog (@$error);
+            savelog ($error);
           }
           // on success
           else
@@ -2731,7 +2734,7 @@ function update_software ($type="update")
             $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|Installed new software update";
 
             // save event log
-            savelog (@$error);
+            savelog ($error);
 
             // save update log
             savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|md5|Installed software update with MD5 hash: ".$md5_hash), "update");
@@ -2748,7 +2751,7 @@ function update_software ($type="update")
       $error[] = $mgmt_config['today']."|hypercms_update.inc.php|information|".$errcode."|The update with MD5 hash '".$download_json['md5']."' is already installed";
 
       // save event log
-      savelog (@$error);
+      savelog ($error);
     }
   }
   
