@@ -915,7 +915,7 @@ function checkgroupaccess ($groupaccess, $usergroup_array)
 
 function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ignore_password=false, $locking=true, $portal="")
 {
-  global $mgmt_config, $eventsystem, $hcms_lang_codepage, $hcms_lang, $lang;
+  global $mgmt_config, $eventsystem, $hcms_lang_codepage, $hcms_lang, $lang, $is_webdav;
 
   // initialize
   $error = array();
@@ -1134,7 +1134,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         if ($update_result == false)
         {
           $errcode = "10318";
-          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|Update (UTF-8 encoding) of user management file failed";
+          $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Update (UTF-8 encoding) of user management file failed";
 
           // save log
           savelog (@$error);
@@ -1162,7 +1162,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
             {
               // warning
               $errcode = "00721";
-              $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|LDAP/AD authentication failed for user '".$user."' using LDAP servers: ".$mgmt_config['ldap_servers'].", base DN: ".$mgmt_config['ldap_base_dn'].", user domain: ".$mgmt_config['ldap_userdomain'];
+              $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|".($is_webdav ? "WebDAV: " : "")."LDAP/AD authentication failed for user '".$user."' using LDAP servers: ".$mgmt_config['ldap_servers'].", base DN: ".$mgmt_config['ldap_base_dn'].", user domain: ".$mgmt_config['ldap_userdomain'];
             }
           }
           // if LDAP/AD has been defined per publication
@@ -1210,7 +1210,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                   {
                     // warning
                     $errcode = "00722";
-                    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|LDAP/AD authentication failed for user '".$user."' using LDAP servers: ".$mgmt_config[$temp_site]['ldap_servers'].", base DN: ".$mgmt_config[$temp_site]['ldap_base_dn'].", user domain: ".$mgmt_config[$temp_site]['ldap_userdomain'];
+                    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|".($is_webdav ? "WebDAV: " : "")."LDAP/AD authentication failed for user '".$user."' using LDAP servers: ".$mgmt_config[$temp_site]['ldap_servers'].", base DN: ".$mgmt_config[$temp_site]['ldap_base_dn'].", user domain: ".$mgmt_config[$temp_site]['ldap_userdomain'];
                   }
                 }
               }
@@ -1233,15 +1233,23 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                 if (!empty ($temp[0]))
                 {
                   $hash = $temp[0];
+                  $user_ip = getuserip();
 
                   // log IP of user
-                  savelog (getuserip(), $user.".ip");
+                  if (!empty ($user_ip))
+                  {
+                    // load log
+                    if (is_file ($mgmt_config['abs_path_data']."log/".$user.".ip.log")) $log_ip = file_get_contents ($mgmt_config['abs_path_data']."log/".$user.".ip.log");
+
+                    // save log 
+                    if (!empty ($log_ip) && strpos ("_".$log_ip, $user_ip) < 1) savelog (array ($user_ip), $user.".ip");
+                  }
                 }
                 else
                 {
                   // warning
                   $errcode = "00723";
-                  $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|The user hash of user '".$user."' is empty";
+                  $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The user hash of user '".$user."' is empty";
                 }
               }
             }
@@ -1859,7 +1867,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   {
     // warning
     $errcode = "00333";
-    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|Authorization failed with results for user '".$user."': user-access-link=".$linking_auth.", user-credentials=".$auth.", valid-user-dates=".$validdate.", check.dat=".$checkresult." (all must have a value of 1) and user-nologon=".(!empty ($result['nologon']) ? $result['nologon'] : 0)." (must be 0)";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Authorization failed with results for user '".$user."': user-access-link=".$linking_auth.", user-credentials=".$auth.", valid-user-dates=".$validdate.", check.dat=".$checkresult." (all must have a value of 1) and user-nologon=".(!empty ($result['nologon']) ? $result['nologon'] : 0)." (must be 0)";
   }
 
   // --------------------------- security ----------------------------
@@ -1887,7 +1895,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
 
         // warning
         $errcode = "00101";
-        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|Client IP ".$client_ip." is banned due to 10 failed logon attempts";
+        $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Client IP ".$client_ip." is banned due to 10 failed logon attempts";
  
         // reset counter
         $_SESSION['temp_ip_counter'][$user] = 1;
@@ -2042,13 +2050,13 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
   { 
     // information
     $errcode = "00102";
-    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|User '".$user."' with client IP ".$client_ip." is logged in";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."User '".$user."' with client IP ".$client_ip." is logged in";
   }
   else
   {
     // information
     $errcode = "00103";
-    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|User '".$user."' with client IP ".$client_ip." failed to login";
+    $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."User '".$user."' with client IP ".$client_ip." failed to login";
   }
 
   // --------------------- chat --------------------- 

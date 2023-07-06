@@ -554,8 +554,8 @@ $mgmt_config['today'] = date ("Y-m-d H:i:s", time());
 // Define the unit for the duration (float value) of tasks, use "d" for days, "h" for hours.
 $mgmt_config['taskunit'] = "h";
 
-// Define the database tables to be used in reports, use ";" as delimiter.
-$mgmt_config['report_tables'] = "object;textnodes;dailystat;project;task;recipient;accesslink";
+// Define the database tables to be used in reports, use "," as delimiter.
+$mgmt_config['report_tables'] = "object,textnodes,dailystat,project,task,recipient,accesslink";
 
 // Supported Applications
 // Set value to true if your content management server supports rendering of objects
@@ -757,6 +757,9 @@ $mgmt_config['webdav_lock'] = true;
 // Enable (true) or disable (false) the WebDAV error and info logging in data/temp
 $mgmt_config['webdav_error_log'] = true;
 $mgmt_config['webdav_info_log'] = false;
+
+// Enable (true) or disable (false) the login request notification in case the user can't be verified due to an outpdated password when a WebDAV client and the LDAP/AD Connector is used
+$mgmt_config['webdav_sendlogin'] = true;
 
 // Support password
 // Set a support password for the support log file access

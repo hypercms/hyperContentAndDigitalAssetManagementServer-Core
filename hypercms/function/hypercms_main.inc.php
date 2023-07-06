@@ -2610,7 +2610,7 @@ function createobjectaccesslink ($site="", $location="", $object="", $cat="", $o
       // get object id
       $object_hash = rdbms_getobject_hash ($objectpath);
 
-      // recreate object entry in database
+      // try to recreate object entry in database
       if ($object_hash == false && $recreate_hash == true)
       {
         $object_info = getobjectinfo ($site, $location, $object, $user);
@@ -3795,6 +3795,7 @@ function loadfile_header ($abs_path, $filename)
         $filedata = @fread ($filehandle, 2048);
         @fclose ($filehandle);
 
+        // return file contents
         return $filedata;
       }
 
@@ -3867,6 +3868,7 @@ function loadfile_fast ($abs_path, $filename)
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
 
+        // return file contents
         return $filedata;
       }
 
@@ -3938,6 +3940,7 @@ function loadfile ($abs_path, $filename)
         @flock ($filehandle, LOCK_UN);
         @fclose ($filehandle);
 
+        // return file contents
         return $filedata;
       }
     }
@@ -3966,11 +3969,13 @@ function loadfile ($abs_path, $filename)
             @flock ($filehandle, LOCK_UN);
             @fclose ($filehandle);
 
+            // return file contents
             return $filedata;
           }
         }
+
         // sleep for 0 - 100 milliseconds, to avoid collision and CPU load
-        else usleep (round (rand (0, 100) * 1000));
+        usleep (round (rand (0, 100) * 1000));
       }
 
       $errcode = "00885";
@@ -4037,7 +4042,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
     // unlocked file name
     $filename_unlocked = $filename;
 
-    // if file exists
+    // if file exists and is unlocked or locked by the same user
     if (!empty ($filename_unlocked) && (is_file ($abs_path.$filename_unlocked) || is_file ($abs_path.$filename_unlocked.".@".$lock)))
     {
       // if file is not locked by the user
@@ -4076,7 +4081,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
         }
       }
     }
-    // if file is locked by the user
+    // if file is locked by another user or system, wait 3 seconds
     elseif ($filename_unlocked != ".folder")
     {
       // set default end time stamp for loading (now + X sec)
@@ -4121,9 +4126,10 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
               @flock ($filehandle, LOCK_UN);
               @fclose ($filehandle);
 
+              // return file contents
               return $filedata;
             }
-            // file can not be loaded
+            // file cannot be loaded
             else
             {
               // unlock file
@@ -4131,8 +4137,9 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
             }
           }
         }
+
         // sleep for 0 - 100 milliseconds to avoid collision and CPU load
-        else usleep (round (rand (0, 100) * 1000));
+        usleep (round (rand (0, 100) * 1000));
       }
 
       $errcode = "00888";
@@ -4163,6 +4170,7 @@ function loadlockfile ($user, $abs_path, $filename, $force_unlock=3)
             // lock and load file
             $filedata = loadlockfile ($user, $abs_path, $filename_unlocked);
 
+            // return file contents
             return $filedata; 
           }
         }
@@ -4396,7 +4404,7 @@ function appendfile ($abs_path, $filename, $filedata, $savefile=false)
       }
       else return false;
     }
-    // if file is locked by other user or system, wait 3 seconds
+    // if file is locked by another user or system, wait 3 seconds
     else
     {
       // set time stamp (now + 3 sec)
@@ -4421,8 +4429,9 @@ function appendfile ($abs_path, $filename, $filedata, $savefile=false)
             return true;
           }
         }
+
         // sleep for 0 - 100 milliseconds, to avoid colission and CPU load
-        else usleep (round (rand (0, 100) * 1000));
+        usleep (round (rand (0, 100) * 1000));
       }
     }
   }
@@ -21851,13 +21860,107 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
     // send mail
     $mail = sendmessage ("", $login, $hcms_lang['password'][$lang], $message);
 
-    // save log
-    $errcode = "00750";
-    $error[] = $mgmt_config['today']."|hypercms_main.php|information|".$errcode."|A new password has been sent to user '".$login."'";
-    savelog ($error); 
+    // on success
+    if ($mail == true)
+    {
+      // save log
+      $errcode = "00750";
+      $error[] = $mgmt_config['today']."|hypercms_main.php|information|".$errcode."|A new password has been sent to user '".$login."'";
+      savelog ($error);
 
-    if ($mail == false) return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]." ".$email[0];
-    else return $hcms_lang['e-mail-was-sent-successfully-to-'][$lang]." ".$email[0];
+      return $hcms_lang['e-mail-was-sent-successfully-to-'][$lang]." ".$email[0];
+    }
+    // on error
+    else
+    {
+      // save log
+      $errcode = "20750";
+      $error[] = $mgmt_config['today']."|hypercms_main.php|information|".$errcode."|The new password could not be sent to user '".$login."'";
+      savelog ($error);
+
+      return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]." ".$email[0];
+    }
+  }
+  // if e-mail is empty
+  else
+  {
+    return str_replace ("%user%", $login, $hcms_lang['e-mail-address-of-user-s-is-missing'][$lang]);
+  }
+}
+
+// --------------------------------------- sendloginrequest ------------------------------------------------
+// function: sendloginrequest()
+// input: user name [string], instance name [string] (optional)
+// output: message as string
+
+// description:
+// Send a login request to the users e-mail address.
+// This is used in case the LDAP/AD connector is used and users password is not valid anymore and can't be verified if a WebDAV client is used for the logon.
+
+function sendloginrequest ($login, $instance="")
+{
+  global $eventsystem, $mgmt_config, $hcms_lang, $lang;
+
+  // initialize
+  $error = array();
+  $message = "";
+
+  if (empty ($lang)) $lang = "en";
+
+  // verifications
+  if (empty ($mgmt_config['webdav_sendlogin'])) return $hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang];
+  if ($login == "") return $hcms_lang['a-user-name-is-required'][$lang];
+
+  // get e-mail and first publication of user
+  $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
+  $usernode = selectcontent ($userdata, "<user>", "<login>", $login);
+
+  // if user node does not exists
+  if (empty ($usernode[0]))
+  {
+    return $hcms_lang['the-user-information-cant-be-accessed'][$lang];
+  }
+  else
+  {
+    $email = getcontent ($usernode[0], "<email>");
+    $nologon = getcontent ($usernode[0], "<nologon>");
+  }
+
+  // no logon allowed
+  if (!empty ($nologon[0]))
+  {
+    return str_replace ("%user%", $login, $hcms_lang['you-dont-have-permissions-to-use-this-function'][$lang]);
+  }
+  // e-mail is available
+  elseif (!empty ($email[0]))
+  {
+    $message .= "<strong>Workplace Integration ".$hcms_lang['login-incorrect'][$lang]."</strong>\n\n";
+    $message .= $hcms_lang['please-sign-in'][$lang]." (".$hcms_lang['password']." Sync): <a href=\"".$mgmt_config['url_path_cms']."userlogin.php?instance=".url_encode($instance)."&sentuser=".url_encode($login)."\">".$hcms_lang['reset-password'][$lang]."</a>\n\n";
+    $message .= $hcms_lang['this-is-an-automatically-generated-mail-notification'][$lang];
+
+    // send mail
+    $mail = sendmessage ("", $login, "Workplace Integration ".$hcms_lang['login-incorrect'][$lang], $message);
+
+    // on success
+    if ($mail == true)
+    {
+      // save log
+      $errcode = "00752";
+      $error[] = $mgmt_config['today']."|hypercms_main.php|information|".$errcode."|A login request has been sent to user '".$login."' due to WebDAV login issues";
+      savelog ($error); 
+      
+      return $hcms_lang['e-mail-was-sent-successfully-to-'][$lang]." ".$email[0];
+    }
+    // on error
+    else
+    {
+      // save log
+      $errcode = "20752";
+      $error[] = $mgmt_config['today']."|hypercms_main.php|information|".$errcode."|The login request could not be sent to user '".$login."' due to WebDAV login issues";
+      savelog ($error); 
+      
+      return $hcms_lang['there-was-an-error-sending-the-e-mail-to-'][$lang]." ".$email[0];
+    }
   }
   // if e-mail is empty
   else

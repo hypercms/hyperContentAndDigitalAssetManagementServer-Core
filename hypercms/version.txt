@@ -7012,7 +7012,17 @@ Release 09/2023
 - Modifications in the main configuration file in the install directory in order to define only "," as separator for multiple values of a coniguration setting
 - Modifications in framset_content in order to add the CSS class hcmsWorkplaceObjectlist to the body
 - Modifications in function showgallery in UI API in order to implement the new version of function createviewlink and remove the verification of the media file
-- Modifications in various functions of the hyperCMS API in order to not suppress errors reagrding the error log array 
+- Modifications in various functions of the hyperCMS API in order to not suppress errors reagrding the error log array
+- Modifications in ldap_connect of the Connector module in order to create error log entries with additional information after the LDAP bind and when removing a bad user- Modifications in 
+- Modifications in public function writeSessionDataToFile of the Workplace Integration in order to set the global is_webdav variable
+- Modifications in function userlogin in Security API in order to access the global is_webdav variable and create the log entries with the additional WebDAV information
+- Modifications in function userlogin in Security API in order to save the users IP address in the log if the IP address does not exist in the log data
+- Modifications in function authconnect of the Connector module in order to access the global is_webdav variable and create the log entries with the additional WebDAV information 
+- Implementation of the new main configuration setting $mgmt_config['webdav_sendlogin'] in order to support the automatic login request e-mail notification if the LDAP/AD Connector is used and the password is outdated (user verification failed)
+- Implementation of the new function sendloginrequest in Main API in order to send a login request e-mail to the user (used if the LDAP/AD Connector is used and the password is outdated)
+- Modifications in function sendresetpassword in Main API in order to create an error log entry if the e-mail for the password reset could not be sent to the user
+- Modifications in public function authenticate in the Workplace Integration module in order to accept IP address entries if the user log file if they are not older than 100 days (only if SSO is used)
+- Modifications in function loadfile, loadlockfile, and appendfile in Main API in order to always use sleep to avoid collision and CPU load whenever waiting for the file to be unlocked again
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
@@ -7023,3 +7033,4 @@ Release 09/2023
 - Bug fix: Function createnavigation in UI API did not initialize the child arrays for the navigation
 - Bug fix: Function manipulateallobjects did not define the category of the source object used in event log entries
 - Bug fix: Function downloadfile in Main API did not properly define the start byte if the range started with an '-'
+- Bug fix: Function userlogin in Security API did not provide the user IP address as array to function savelog 
