@@ -195,8 +195,8 @@ if (is_file ("../config/config.inc.php"))
                 // delete object
                 $temp = deleteobject (getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), $objectpath['user']);
 
-                // deprecated since version 10.1.2: delete database entry in case deleteobject failed
-                // if (empty ($temp['result'])) rdbms_deleteobject ($temp_location, "");
+                // delete database entry in case deleteobject failed (object does not exist in the file system anymore)
+                if (empty ($temp['result'])) rdbms_deleteobject ($temp_location, "");
               }
             }
           }

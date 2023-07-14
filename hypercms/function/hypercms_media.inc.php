@@ -270,6 +270,9 @@ function ocr_extractcontent ($site, $location, $file, $user)
                 {
                   $file_content .= loadfile_fast ($temp_dir, $temp_name.".txt")." ";
                 }
+
+                // remove temp file
+                if (!empty ($temp_file) && is_file ($temp_dir.$temp_file)) deletefile ($temp_dir, $temp_file, false);
               }
               // no more temp files to scan
               else break;
@@ -302,8 +305,7 @@ function ocr_extractcontent ($site, $location, $file, $user)
       }
     }
 
-    // remove temp files
-    if (!empty ($temp_file) && is_file ($temp_dir.$temp_file)) deletefile ($temp_dir, $temp_file, false);
+    // remove temp file
     if (!empty ($temp_name) && is_file ($temp_dir.$temp_name.".txt")) deletefile ($temp_dir, $temp_name.".txt", false);
     
     // save log
@@ -1754,6 +1756,11 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
   $skip = false;
   $temp_file_delete = array();
   $session_id = "";
+  $imagecolor = array();
+  $imagecolor['red'] = "";
+  $imagecolor['green'] = "";
+  $imagecolor['blue'] = "";
+  $imagecolor['colorkey'] = "";
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
   {
@@ -3844,14 +3851,6 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     createimages_video ($site, $location_dest, $location_dest.$container_id."/", $newfile, "thumbnail", 0.2, "jpg", $thumb_width, $thumb_height);
                   }
                 }
-                else
-                {
-                  $imagecolor = array();
-                  $imagecolor['red'] = "";
-                  $imagecolor['green'] = "";
-                  $imagecolor['blue'] = "";
-                  $imagecolor['colorkey'] = "";
-                }
 
                 // set media width and height to empty string
                 if (empty ($videoinfo['width']) || $videoinfo['width'] < 1 || empty ($videoinfo['height']) || $videoinfo['height'] < 1)
@@ -3973,7 +3972,13 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     revokesession ("", "", $session_id);
 
     // return result
-    if ($converted == true && !empty ($newfile)) return $newfile;
+    if ($converted == true && !empty ($newfile))
+    {
+      // request to clear browser cache for thumbnails
+      if ($type == "thumbnail" || $type == "origthumb") setsession ("hcms_clearbrowsercache", true);
+
+      return $newfile;
+    }
   }
   
   return false;
@@ -5401,20 +5406,21 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 
 // ---------------------- unzipfile -----------------------------
 // function: unzipfile()
-// input: publication name [string], path to source zip file [string], path to destination location [string], category [page,comp], name of file for extraction [string], user name [string]
+// input: publication name [string], path to source zip file [string], path to destination location [string], category [page,comp], name of file for extraction [string], user name [string], 
+// create media files in the background [boolean] (optional), output report [boolean] (optional)
 // output: result array with all object paths / false
 
 // description:
 // Unpacks ZIP file and creates media files in destination location for components or unzips files directly for pages (not recommended due to the security risks by uploading files that can be executed).
 
-function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $user="")
+function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $user="", $createmedia_in_background=false, $report=false)
 {
-  global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions;
+  global $mgmt_config, $mgmt_uncompress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $hcms_lang, $lang;
 
   // initialize
   $error = array();
 
-  if ($mgmt_uncompress['.zip'] != "" && valid_publicationname ($site) && $zipfilepath != "" && valid_locationname ($location) && valid_objectname ($filename) && ($cat == "page" || $cat == "comp") && valid_objectname ($user))
+  if (!empty ($mgmt_uncompress['.zip']) && valid_publicationname ($site) && $zipfilepath != "" && valid_locationname ($location) && valid_objectname ($filename) && ($cat == "page" || $cat == "comp") && valid_objectname ($user))
   {
       // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -5479,6 +5485,8 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
 
           if (is_array ($object_array) && sizeof ($object_array) > 0)
           {
+            if (!empty ($report)) echo "<div class=\"messageLayer\"><span style=\"color:green;\"> ".getescapedtext ($hcms_lang['file-extracted-succesfully'][$lang])."</span></div>\n";
+
             $result = array();
 
             foreach ($object_array as $object_record)
@@ -5494,7 +5502,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
         elseif ($cat == "comp")
         {
           // create temporary directory for extraction
-          $result = @mkdir ($unzippath_temp, $mgmt_config['fspermission']);
+          $result = mkdir ($unzippath_temp, $mgmt_config['fspermission']);
 
           if ($result == true)
           {
@@ -5515,6 +5523,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
               // save log
               savelog ($error); 
             }
+            elseif (!empty ($report)) echo "<div class=\"messageLayer\"><span style=\"color:green;\"> ".getescapedtext ($hcms_lang['file-extracted-succesfully'][$lang])." ... ".getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang])."</span></div>\n";
 
             // check if files were extracted
             $scandir = scandir ($unzippath_temp);
@@ -5528,7 +5537,7 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
             else return false;
 
             // create media objects 
-            $result = createmediaobjects ($site, $unzippath_temp, $location, $user);
+            $result = createmediaobjects ($site, $unzippath_temp, $location, $user, $createmedia_in_background, $report);
 
             // delete unzipped temporary files in temporary directory
             if (is_file ($location_temp.$unzipname_temp)) deletefile ($location_temp, $unzipname_temp, 1);
@@ -5542,7 +5551,8 @@ function unzipfile ($site, $zipfilepath, $location, $filename, $cat="comp", $use
       }
     }
   }
-  else return false;
+  
+  return false;
 }
 
 // ---------------------- clonefolder -----------------------------
@@ -5579,7 +5589,7 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
         if (substr_compare ($file, ".", 0, 1) != 0 && ($user == "sys" || ($setlocalpermission['root'] == 1 && $setlocalpermission['download'] == 1)))
         {
           // recursive for folders
-          if (is_dir ($source."/".$file))
+          if (is_dir ($source."/".$file) && substr ($file, -8) != ".recycle")
           {
             $result_add = clonefolder ($site, $source."/".$file, $destDir, $user, $activity);
             if (is_array ($result_add)) $result = array_merge ($result, $result_add);
@@ -5612,7 +5622,7 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
                 $container_id = getmediacontainerid ($mediafile);
                 $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
 
-                // decrypt and save file if media file is encypted
+                // decrypt and save file if media file is encrypted
                 if (is_encryptedfile ($mediadir, $mediafile))
                 {
                   $data = decryptfile ($mediadir, $mediafile);

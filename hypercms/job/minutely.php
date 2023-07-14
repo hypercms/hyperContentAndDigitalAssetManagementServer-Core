@@ -3,8 +3,13 @@
  * This file is part of
  * hyper Content & Digital Management Server - http://www.hypercms.com
  * Copyright (c) by hyper CMS Content Management Solutions GmbH
+ * 
  */
  
+// limit max entries to process from the queue
+$max_queue = 100;
+
+
 // main configuration file must exist
 if (is_file ("../config/config.inc.php"))
 {
@@ -57,9 +62,11 @@ if (is_file ("../config/config.inc.php"))
         {
           $result = false;
 
+          $i = 0;
+
           foreach ($queue_array as $queue)
           {
-            if (!empty ($queue['queue_id']) && !empty ($queue['action']) && (!empty ($queue['object_id']) || !empty ($queue['objectpath'])) && !empty ($queue['user']))
+            if ($i <= $max_queue && !empty ($queue['queue_id']) && !empty ($queue['action']) && (!empty ($queue['object_id']) || !empty ($queue['objectpath'])) && !empty ($queue['user']))
             {
               // execute PHP command
               if ($queue['action'] == "execute" && !empty ($queue['cmd']))
@@ -136,8 +143,10 @@ if (is_file ("../config/config.inc.php"))
                 $error[] = $mgmt_config['today']."|minutely.php|error|".$errcode."|Processing of queue ID '".$queue_id."' with datetime ".$queue_date." failed, process will be restarted again in 10 minutes";
               }
 
+              $i++;
+
               // save log
-              savelog (@$error);       
+              savelog (@$error);     
             }
           }
         }

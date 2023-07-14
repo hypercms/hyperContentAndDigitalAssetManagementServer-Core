@@ -1716,7 +1716,61 @@ function includefooter ()
   else return false;
 }
 
-// ========================================== FILES AND LINKS =======================================
+// ========================================== CACHE =======================================
+
+// ---------------------- clearbrowsercache -----------------------------
+// function: clearbrowsercache()
+// input: clear browser cache [boolean] (optional)
+// output: true / false
+
+// description:
+// Clears the browser cache and resets the session variable for the browser cache
+
+function clearbrowsercache ($clear=false)
+{
+  if ($clear == true || getsession ("hcms_clearbrowsercache") == true)
+  {
+    header ("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header ("Cache-Control: post-check=0, pre-check=0", false);
+    header ("Pragma: no-cache");
+
+    setsession ("hcms_clearbrowsercache", false);
+
+    return true;
+  }
+  else return false;
+}
+
+// ---------------------- flushoutputbuffer -----------------------------
+// function: flushoutputbuffer()
+// input: %
+// output: true
+
+// description:
+// Flushes the webserver output buffer for immediate output to the client
+
+function flushoutputbuffer ()
+{
+  // turn off output buffering
+  ini_set ('output_buffering', 'off');
+
+  // flush (send) the output buffer and turn off output buffering
+  while (@ob_end_flush());
+
+  // implicitly flush the buffer(s)
+  ini_set ('implicit_flush', true);
+  ob_implicit_flush (true);
+
+  // produce output and flush buffer
+  // Some browser wait for a minimum number of characters to arrive from the server before starting the actual rendering
+  for ($i = 0; $i < 1000; $i++) echo " ";
+  if (ob_get_level() > 0) ob_flush();
+  flush();
+
+  return true;
+}
+
+// ====================================== FILES AND LINKS ===================================
 
 // ---------------------- is_longfilename -----------------------------
 // function: is_longfilename()
@@ -4624,11 +4678,14 @@ function deletefile ($abs_path, $filename, $recursive=false)
       {
         $dirfiles = scandir ($abs_path.$filename);
 
-        foreach ($dirfiles as $key => $dirfile)
+        if (is_array ($dirfiles))
         {
-          if ($dirfile != "." && $dirfile != "..")
+          foreach ($dirfiles as $key => $dirfile)
           {
-            $result = deletefile ($abs_path.$filename."/", $dirfile, $recursive);
+            if ($dirfile != "." && $dirfile != "..")
+            {
+              $result = deletefile ($abs_path.$filename."/", $dirfile, $recursive);
+            }
           }
         }
       }
@@ -12851,6 +12908,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
   // initialize
   $error = array();
   $result = array();
+  $usedby = "";
   $success = false;
   $add_onload = "";
   $show = "";
@@ -12893,8 +12951,15 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
     // convertpath location
     $location_esc = convertpath ($site, $location, $cat);
 
+    // verify that the container is not locked by another user
+    $objectdata = loadfile ($location.$folder, ".folder");
+    $contentfile = getfilename ($objectdata, "content");
+    $usedby_array = getcontainername ($contentfile);
+
+    if (is_array ($usedby_array) && !empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
+
     // check permissions
-    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && ($usedby == "" || $usedby != $user) && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 
@@ -13929,7 +13994,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false, $webd
 // function: uploadfile()
 // input: publication name [string], destination location [string], category [page,comp], uploaded file (array as defined by PHP autoglobale $_FILES) [array], unzip/zip [unzip,zip,NULL], object name (only for media file update of existing object) [string], 
 //        create only a new thumbnail from the uploaded image file [1,0] (optional), resize image [percentage,NULL] (optional), image resize percentage value [integer] (optional), user name [string] (optional), check for duplicates [boolean] (optional), 
-//        overwrite existing file [boolean] (optional), versioning of file [boolean] (optional), name of zip file [string] (optional), number of files to be compressed [integer] (optional), create media files in the background [boolean] (optional)
+//        overwrite existing file [boolean] (optional), versioning of file [boolean] (optional), name of zip file [string] (optional), number of files to be compressed [integer] (optional), create media files in the background [boolean] (optional), output report [boolean] (optional)
 // output: result array
 // requires: config.inc.php, $pageaccess, $compaccess, $hiddenfolder, $localpermission
  
@@ -13937,7 +14002,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false, $webd
 // This function manages all file uploads, like unzip files, zip a collection of files, create media objects and resize images.
 // The container name will be extracted from the media file name for updating an existing multimedia file.
 
-function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $overwrite=false, $versioning=false, $zipfilename="", $zipfilecount=0, $createmedia_in_background=false)
+function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="", $createthumbnail=0, $imageresize="", $imagepercentage="", $user="sys", $checkduplicates=true, $overwrite=false, $versioning=false, $zipfilename="", $zipfilecount=0, $createmedia_in_background=false, $report=false)
 {
   global $mgmt_config, $mgmt_uncompress, $mgmt_compress, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_parser, $eventsystem,
          $pageaccess, $compaccess, $hiddenfolder, $localpermission, $hcms_lang, $lang, $is_webdav;
@@ -14307,7 +14372,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     // compressed file that holds multimedia files
     if (!empty ($check_unzip))
     {
-      $result_unzip = unzipfile ($site, $global_files['Filedata']['tmp_name'], $location, $global_files['Filedata']['name'], $cat, $user);
+      $result_unzip = unzipfile ($site, $global_files['Filedata']['tmp_name'], $location, $global_files['Filedata']['name'], $cat, $user, true, false);
 
       if ($result_unzip == false)
       {
@@ -14822,10 +14887,15 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
       $result['result'] = true;
       $result['header'] = "HTTP/1.1 200 OK";
       $show = $hcms_lang['uploaded-file-successfully'][$lang];
+
+      if (!empty ($report)) echo "<div class=\"messageLayer\"><span style=\"color:green;\"> ".getescapedtext ($hcms_lang['the-object-was-created'][$lang]).": ".getlocationname ($site, $result['objectpath'], $cat)."</span></div>\n";
     }
+    // on error
     else
     {
       $result['header'] = "HTTP/1.1 400 Bad Request";
+
+      if (!empty ($report)) echo "<div class=\"messageLayer\"><span style=\"color:red;\"> ".getescapedtext ($hcms_lang['the-object-could-not-be-created'][$lang]).": ".getlocationname ($site, $result['objectpath'], $cat)."</span></div>\n";
     }
 
     // message and command
@@ -15072,14 +15142,14 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
 
 // ---------------------------------------- createmediaobjects --------------------------------------------
 // function: createmediaobjects()
-// input: publication name [string], source location [string], destination location [string], user name [string]
+// input: publication name [string], source location [string], destination location [string], user name [string], create media files in the background [boolean] (optional), output report [boolean] (optional)
 // output: result array with all objects created / false on error
 
 // description:
 // This function creates media objects by reading all media files from a given source location (used after unzipfile). 
 // The file name must not match any temp file pattern.
 
-function createmediaobjects ($site, $location_source, $location_destination, $user)
+function createmediaobjects ($site, $location_source, $location_destination, $user, $createmedia_in_background=false, $report=false)
 {
   global $mgmt_config, $mgmt_imageoptions, $eventsystem, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $hcms_lang, $lang;
 
@@ -15142,7 +15212,9 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             // create objects
             if (!empty ($createfolder['result']))
             {
-              $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user, 0, false, true, false);
+              if (!empty ($report)) echo "<div class=\"messageLayer\"><span style=\"color:green;\"> ".getescapedtext ($hcms_lang['the-folder-was-created'][$lang]).": ".getlocationname ($site, $location_destination.$folder_new, "comp")."</span></div>\n";
+
+              $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user, $createmedia_in_background, $report);
             }
             else
             {
@@ -15164,7 +15236,7 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
             $global_files['Filedata']['name'] = $objectname;
             $global_files['Filedata']['tmp_name'] = $location_source.$file;
 
-            $uploadfile = uploadfile ($site, $location_destination, "comp", $global_files, "", "", 0, "", "", $user, false, true, true);
+            $uploadfile = uploadfile ($site, $location_destination, "comp", $global_files, "", "", 0, "", "", $user, false, true, true, "", 0, $createmedia_in_background, $report);
 
             if (!empty ($uploadfile['result']) && !empty ($uploadfile['object']))
             {
@@ -17243,6 +17315,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
 
   // initialize
   $result = array();
+  $usedby = "";
 
   // trim object name
   $pagenew = trim ($pagenew);
@@ -17261,8 +17334,15 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
 
+    // verify that the container is not locked by another user
+    $objectdata = loadfile ($location.$folder, ".folder");
+    $contentfile = getfilename ($objectdata, "content");
+    $usedby_array = getcontainername ($contentfile);
+
+    if (is_array ($usedby_array) && !empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
+
     // check permissions
-    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && ($usedby == "" || $usedby != $user) && !empty ($mgmt_config['api_checkpermission']))
     {
       $cat = getcategory ($site, $location);
       $ownergroup = accesspermission ($site, $location, $cat);
@@ -22948,6 +23028,7 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
   $error = array();
   $result = array();
   $result['result'] = false;
+  $usedby = "";
   
   // set default language
   if (empty ($lang)) $lang = "en";
@@ -22979,8 +23060,15 @@ function savecontent ($site, $location, $page, $content, $charset="UTF-8", $user
       $page = ".folder";
     }
     
+    // verify that the container is not locked by another user
+    $objectdata = loadfile ($location.$folder, ".folder");
+    $contentfile = getfilename ($objectdata, "content");
+    $usedby_array = getcontainername ($contentfile);
+
+    if (is_array ($usedby_array) && !empty ($usedby_array['user'])) $usedby = $usedby_array['user'];
+
     // check permissions
-    if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
+    if ($user != "sys" && ($usedby == "" || $usedby != $user) && !empty ($mgmt_config['api_checkpermission']))
     {
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat); 

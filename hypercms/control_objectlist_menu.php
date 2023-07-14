@@ -1741,7 +1741,7 @@ else
     <div class="hcmsButtonFrame"> 
     <?php
     // reload button
-    if ($from_page == "") $refresh = "location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."'";
+    if ($from_page == "") $refresh = "location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&ts=".time()."'";
     else $refresh = "location.reload();";
       
     echo "

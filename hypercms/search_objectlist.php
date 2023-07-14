@@ -48,6 +48,9 @@ $search_execute = getrequest ("search_execute");
 
 // --------------------------------- logic section ----------------------------------
 
+// clear browser cache if requested
+clearbrowsercache (false);
+
 // initialize
 $error = array();
 $cat = "";

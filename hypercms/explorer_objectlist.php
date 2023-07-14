@@ -66,7 +66,10 @@ if (!valid_publicationname ($site) || !valid_locationname ($location) || !valid_
 checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
-  
+
+// clear browser cache if requested
+clearbrowsercache (false);
+
 // set filter
 setfilter ($filter);
 

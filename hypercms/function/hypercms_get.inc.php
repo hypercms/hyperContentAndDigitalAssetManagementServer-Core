@@ -6253,7 +6253,7 @@ function getuserboxes ($user)
     // default home boxes defined in main config
     elseif (!empty ($mgmt_config['homeboxes']))
     {
-      $name_array = explode (";", trim ($mgmt_config['homeboxes'], ";"));
+      $name_array = splitstring ($mgmt_config['homeboxes']);
 
       if (is_array ($name_array) && sizeof ($name_array) > 0)
       {

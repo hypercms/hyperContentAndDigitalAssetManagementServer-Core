@@ -3000,8 +3000,10 @@ function createmapping ($site, $mapping)
   if ($mapping != "")
   {
     $mapping_result = "";
+
     // unescape >
     $mapping = str_replace ("&gt;", ">", $mapping);
+    
     // create array
     $lines = explode ("\n", $mapping); 
 

@@ -6988,7 +6988,7 @@ Release 09/2023
 - Modifications in function exportxmlfiles in Import/Export API of the Connector module in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
 - Modifications in the Youtube Connector of the Connector module in order to verify that the media file version exists before calling function deletefile for improved performance due to the delay caused by function deletefile if a file does not exist
 - Modifications in template_edit in order to display a warning before the editor will be closed
-- Modifications in standard Event System in order to verify the searchpublications setting used to define publications/websites that use an indenpent search index 
+- Modifications in standard Event System in order to verify the searchpublications setting used to define publications/websites that use an independent search index 
 - Modifications in the hyperCMS API in order to support folders and files that are not based on the naming convention of the system. This requires the special characters used in a path or file name not to be encoded.
 - Modifications in function correctfile in Main API in order to support a new input parameter for the encoding of special characters by function createfilename 
 - Modifications in function download, publish, and unpublish in the REST API of the Connector module in order to call function deconvertpath with encoding of special characters
@@ -7002,7 +7002,7 @@ Release 09/2023
 - Modifications in user_edit in order to implement the new recylce bin view setting for the system user
 - Modifications in session.inc in order to include the new session parameter for the recylce bin view setting
 - Modifications in explorer_objectlist and popup_status in order to support the new recylce bin view setting for the system user
-- Modifications in function deletefile in Main API in order to remove a condition to anunassigned variable for the error log entry 10111
+- Modifications in function deletefile in Main API in order to remove a condition to an unassigned variable for the error log entry 10111
 - Modifications in function notifyusers in Main API in order to support , and ; as delimiter by using function splitstring for the main configuration setting $mgmt_config['notify_exclude_users']
 - Modifications in function savelog in Main API in order to exclude the events of the system user in case "sys" in included in the main configuration setting $mgmt_config['notify_exclude_users']
 - Modifications in function checkpassword in Security API in order to use function splitstring for the main configuration setting $mgmt_config['passwordblacklist']
@@ -7012,7 +7012,7 @@ Release 09/2023
 - Modifications in the main configuration file in the install directory in order to define only "," as separator for multiple values of a coniguration setting
 - Modifications in framset_content in order to add the CSS class hcmsWorkplaceObjectlist to the body
 - Modifications in function showgallery in UI API in order to implement the new version of function createviewlink and remove the verification of the media file
-- Modifications in various functions of the hyperCMS API in order to not suppress errors reagrding the error log array
+- Modifications in various functions of the hyperCMS API in order to not suppress errors regarding the error log array
 - Modifications in ldap_connect of the Connector module in order to create error log entries with additional information after the LDAP bind and when removing a bad user- Modifications in 
 - Modifications in public function writeSessionDataToFile of the Workplace Integration in order to set the global is_webdav variable
 - Modifications in function userlogin in Security API in order to access the global is_webdav variable and create the log entries with the additional WebDAV information
@@ -7023,6 +7023,32 @@ Release 09/2023
 - Modifications in function sendresetpassword in Main API in order to create an error log entry if the e-mail for the password reset could not be sent to the user
 - Modifications in public function authenticate in the Workplace Integration module in order to accept IP address entries if the user log file if they are not older than 100 days (only if SSO is used)
 - Modifications in function loadfile, loadlockfile, and appendfile in Main API in order to always use sleep to avoid collision and CPU load whenever waiting for the file to be unlocked again
+- Modifications in function getuserboxes in Main API in order to use function splitstring for the preparation of the users home boxes definition
+- Performance improvements when processing media files of an unpacked ZIP file by processing the media objects using the queue and the minutely job (previews and serach index entries are therefore delayed for these objects)  
+- Modifications in function createmediaobjects in Main API in order to support a new input parameter for creating the media files in the background 
+- Modifications in function unzipfile in Media API in order to support a new input parameter for creating the media files in the background
+- Modifications in popup_action in order to call function unzipfile with the new enabled parameter for processing the media files in the background
+- Modifications in function unzipfile in Media API in order to support a new input parameter for creating a report while processing the file
+- Modifications in function createmediaobjects in Main API in order to support a new input parameter for creating a report while processing the file
+- Modifications in function uploadfile in Main API in order to support a new input parameter for creating a report while processing the file
+- Modifications in popup_action in order to support the report output by calling function unzipfile withe the enabled report
+- Design modifications in popup_action
+- Modifications in function uploadfile in Main API in order to call function unzipfile with the new enabled parameter for processing the media files in the background
+- Modifications in minutely job in order to set a maximum number of entries to process from the queue
+- Modifications in function createmedia in Media API in order to always initialize the imagecolor array
+- Modifications in control_objectlist_menu in order to add a time stamp to the reload URL
+- Modifications in control_objectlist_menu in order to disable the rename feature for a folder or object that has been checked out by another user
+- Added the image file extensions .jpf and.jpx to the main configuration file in the install directory in order to support the conversion of these image formats
+- Modifications in function renamefolder, renameobject, and savecontent in Main API in order to verify that the container is not locked by another user
+- Modifications in queue_objectlist in order to display the command name with the action
+- Implementation of a browser cache control in order to display the thumbnail instead of the standard file icon after the thumbnail has been created for multimedia object
+- Implementation of the new function clearbrowsercache in Main API
+- Modifications in explorer_objectlist and search_objectlist in order to call function clearbrowsercache
+- Modifications in function createmedia in Media API in order to request to clear the browser cache if a new thumbnail has been created
+- Implementation of the new function flushoutputbuffer in Main API
+- Modifications in popup_action in order to call function flushoutputbuffer
+- Modifications in function deletefile in Main API ni order to verify the results of function scandir
+- Design modifications in function showgallery in UI API in order to move the title attribute from the img to the container div tag
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
@@ -7034,3 +7060,6 @@ Release 09/2023
 - Bug fix: Function manipulateallobjects did not define the category of the source object used in event log entries
 - Bug fix: Function downloadfile in Main API did not properly define the start byte if the range started with an '-'
 - Bug fix: Function userlogin in Security API did not provide the user IP address as array to function savelog 
+- Bug fix: Modifications in function ocr_extractcontent in Media API in order to remove all temporary images files
+- Bug fix: Function clonefolder also included folders in the recycle bin
+

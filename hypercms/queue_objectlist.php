@@ -75,11 +75,17 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
       $queue_id = $queue['queue_id'];
       $queue_action = $queue['action'];
       $queue_user = $queue['user'];
+
+      // extract function name from command
+      if (!empty ($queue['cmd']) && strpos ($queue['cmd'], "(") > 0) $queue_cmd = substr ($queue['cmd'], 0, strpos ($queue['cmd'], "("));
+      else $queue_cmd = "";
+
+      // convert date
       if (is_date ($queue['date'])) $queue_date = date ("Y-m-d H:i", strtotime($queue['date']));
       else $queue_date = "";
 
       // object
-      if ($queue['objectpath'] != "")
+      if (!empty ($queue['objectpath']))
       {
         $temp_site = getpublication ($queue['objectpath']);  
         $temp_location_esc = getlocation ($queue['objectpath']);
@@ -139,7 +145,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                   <td id=\"h".$items_id."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_site."\">".$temp_site."</span></td>
                   <td id=\"h".$items_id."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext." title=\"".$temp_location_name."\">".$temp_location_name."</span></td>
                   <td id=\"h".$items_id."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                  <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
+                  <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:140px;\"><span ".$hcms_setObjectcontext.">".$queue_action." ".$queue_cmd."</span></td>
                   <td id=\"h".$items_id."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";
                   
           $listview .= "
@@ -147,7 +153,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
         }
       }
       // mail message
-      elseif ($queue['object_id'] > 0 && $user == $queue_user)
+      elseif (!empty ($queue['object_id']) && intval ($queue['object_id']) > 0 && $user == $queue_user)
       {
         // count valid objects 
         $items_row++;
@@ -190,7 +196,7 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
                 <td id=\"h".$items_id."_1\" class=\"hcmsCol2 hcmsCell\" style=\"width:100px;\"><span ".$hcms_setObjectcontext."></span></td>
                 <td id=\"h".$items_id."_2\" class=\"hcmsCol3 hcmsCell\" style=\"width:200px;\"><span ".$hcms_setObjectcontext."></span></td>
                 <td id=\"h".$items_id."_3\" class=\"hcmsCol4 hcmsCell\" style=\"width:140px;\"><span style=\"display:none;\">".date ("YmdHi", strtotime ($queue_date))."</span><span ".$hcms_setObjectcontext.">".showdate ($queue_date, "Y-m-d H:i", $hcms_lang_date[$lang])."</span></td>
-                <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:80px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
+                <td id=\"h".$items_id."_4\" class=\"hcmsCol5 hcmsCell\" style=\"width:140px;\"><span ".$hcms_setObjectcontext.">".$queue_action."</span></td>
                 <td id=\"h".$items_id."_5\" class=\"hcmsCol6 hcmsCell\" style=\"\"><span ".$hcms_setObjectcontext.">".$queue_user."</span></td>";
                 
           $listview .= "
@@ -342,7 +348,7 @@ function initialize ()
       <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:140px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>&nbsp;
       </td>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead" style="width:80px;">
+      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead" style="width:140px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>&nbsp;
       </td>
       <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsHead">

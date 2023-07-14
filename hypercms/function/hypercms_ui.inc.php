@@ -6511,13 +6511,13 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
 
         // thumbnail preview
         $galleryview .= "
-        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img data-src=\"".cleandomain (createviewlink ($site, $thumbnail, $objectinfo['name'], false, "wrapper", $fileinfo['icon']))."\" class=\"lazyload hcmsImageItem\" alt=\"".$objectinfo['name']."\" style=\"border:0; max-width:".$thumbsize."px; max-height:".$thumbsize."px;\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
+        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject." title=\"".$location_name.$objectinfo['name']."\"><img data-src=\"".cleandomain (createviewlink ($site, $thumbnail, $objectinfo['name'], false, "wrapper", $fileinfo['icon']))."\" class=\"lazyload hcmsImageItem\" style=\"border:0; max-width:".$thumbsize."px; max-height:".$thumbsize."px;\" /></div>";
       }
       // object or folder
       else
       {
         $galleryview .= "
-        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject."><img src=\"".cleandomain (getthemelocation()."img/".$fileinfo['icon'])."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" alt=\"".$objectinfo['name']."\" title=\"".$location_name.$objectinfo['name']."\" /></div>";
+        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject." title=\"".$location_name.$objectinfo['name']."\"><img src=\"".cleandomain (getthemelocation()."img/".$fileinfo['icon'])."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" /></div>";
       }
     }
 

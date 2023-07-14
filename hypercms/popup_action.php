@@ -67,12 +67,29 @@ checkusersession ($user, false);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<style type="text/css">
+.messageLayer
+{
+  padding: 3px;
+  margin:3px 0px;
+  box-sizing: border-box;
+  vertical-align: middle;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  color: #222222;
+  background-color: #F3F3F3;
+}
+</style>
 </head>
 
-<body class="hcmsWorkplaceGeneric" style="overflow:hidden;">
+<body class="hcmsWorkplaceGeneric" style="overflow:auto;">
 
 <!-- load screen --> 
-<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline;"></div>
+<div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:inline; filter:alpha(opacity=40); -moz-opacity:0.4; opacity:0.4; padding:42px 0px;"></div>
 
 <!-- top bar -->
 <?php
@@ -93,6 +110,8 @@ elseif ($action == "unpublish") $headline = getescapedtext ($hcms_lang['unpublis
 echo showtopbar ($headline, $lang);
 ?>
 
+<div class="hcmsWorkplaceFrame">
+
 <?php
 // --------------------------------- logic section ----------------------------------
 
@@ -100,18 +119,7 @@ echo showtopbar ($headline, $lang);
 // do not use it for action "publish" since the output will interfere with the session_start used in the template engine
 if ($action != "publish")
 {
-  // flush (send) the output buffer and turn off output buffering
-  while (@ob_end_flush());
-
-  // implicitly flush the buffer(s)
-  ini_set ('implicit_flush', true);
-  ob_implicit_flush (true);
-
-  // produce output and flush buffer
-  // Some browser wait for a minimum number of characters to arrive from the server before starting the actual rendering
-  for ($i = 0; $i < 1000; $i++) echo " ";
-  if (ob_get_level() > 0) ob_flush();
-  flush();
+  flushoutputbuffer ();
 }
 
 // initialize
@@ -391,12 +399,12 @@ if ($action == "unzip" && $authorized == true)
   // unzip file in assets
   if ($cat == "comp" && $mediapath != "" && $mediafile != "" && $location != "")
   {
-    $result_unzip = unzipfile ($site, $mediapath.$site.'/'.$mediafile, $location, $media_info['name'], $cat, $user);
+    $result_unzip = unzipfile ($site, $mediapath.$site.'/'.$mediafile, $location, $media_info['name'], $cat, $user, true, true);
   }
   // unzip file in pages
   elseif ($cat == "page" && $location != "" && $page != "")
   {
-    $result_unzip = unzipfile ($site, $location.$page, $location, $media_info['name'], $cat, $user);
+    $result_unzip = unzipfile ($site, $location.$page, $location, $media_info['name'], $cat, $user, true, true);
   }
   else $result_unzip = false;
  
@@ -426,7 +434,7 @@ if ($show == "")
 ?>
 
 <!-- action -->
-<div class="hcmsWorkplaceFrame">
+
   <table class="hcmsTableNarrow" style="width:100%; height:140px;">
     <tr>
       <td style="text-align:center; vertical-align:middle;">
@@ -435,6 +443,7 @@ if ($show == "")
       </td>
     </tr>
   </table>
+
 </div>
 
 <script type="text/javascript">
