@@ -668,7 +668,7 @@ function object_exists ($path)
 // ------------------------- is_utf8 -----------------------------
 // function: is_utf8()
 // input: expression [string]
-// output: if string is utf-8 encoded true / false otherwise
+// output: true if string is utf-8 encoded / false
 
 // description:
 // This function is an alternative to mb_check_encoding (which requires an extra PHP module).
@@ -700,7 +700,7 @@ function is_utf8 ($str)
 // ------------------------- is_latin1 -----------------------------
 // function: is_latin1()
 // input: expression [string]
-// output: if string is latin 1 encoded true / false otherwise
+// output: true if string is latin 1 encoded / false
 
 // description:
 // This function is an alternative to mb_check_encoding (which requires the mbstring PHP extension).
@@ -779,7 +779,7 @@ function splitstring ($string)
 // ------------------------- is_folder -----------------------------
 // function: is_folder()
 // input: path to any object [string]
-// output: true / false
+// output: true if folder / false
 
 // description:
 // Checks if the provided path to an object is a folder
@@ -809,7 +809,7 @@ function is_folder ($path)
 // ------------------------- is_emptyfolder -----------------------------
 // function: is_emptyfolder()
 // input: path to folder [string]
-// output: true / false
+// output: true if empty folder / false
 
 // description:
 // Checks if a directory/folder is empty (has no published objects or other files)
@@ -845,7 +845,7 @@ function is_emptyfolder ($dir)
 // -------------------------------- is_supported --------------------------------
 // function: is_supported()
 // input: preview array holding the supported file extensions as key and references to executables as value [array], file name or file extension [string]
-// output: true / false
+// output: true if supported / false
 
 // description:
 // This function determines if a certain file type by its file extension is supported by the systems media conversion
@@ -873,7 +873,7 @@ function is_supported ($preview_array, $file)
 // -------------------------------- is_cloudstorage --------------------------------
 // function: is_cloudstorage()
 // input: publication name [string] (optional)
-// output: true / false
+// output: true if cloud storage / false
 
 // description:
 // This function determines if a cloud storage has been defined in the main configuration or for a specific publication
@@ -938,7 +938,7 @@ function is_cloudstorage ($site="")
 // ---------------------- is_cloudobject -----------------------------
 // function: is_cloudobject()
 // input: path to media file or media file name [string]
-// output: true / false
+// output: true if cloud object / false
 
 // description:
 // This function verifies if an object/file is available in the cloud storage
@@ -979,7 +979,7 @@ function is_cloudobject ($file)
 // -------------------------------- is_date --------------------------------
 // function: is_date()
 // input: date [string], date format [string] (optional)
-// output: true / false
+// output: true if valid date / false
 
 // description:
 // This function determines if a string represents a valid date format
@@ -1003,7 +1003,7 @@ function is_date ($date, $format="Y-m-d")
 // -------------------------------------- is_tempfile -------------------------------------------
 // function: is_tempfile()
 // input: file name or path [string]
-// output: if file is a temp file true / false on error
+// output:true if file is a temp file  / false
 
 // description:
 // This function checks if the provided file name is a temporary file that should not be uploaded in the system
@@ -1043,7 +1043,7 @@ function is_tempfile ($path)
 // -------------------------------------- is_hiddenfile -------------------------------------------
 // function: is_hiddenfile()
 // input: file name or path [string]
-// output: if file is a hidden file true / false on error
+// output: true if file is a hidden file / false
 
 // description:
 // This function checks if the provided file name is a hidden file that should not be displayed
@@ -1077,7 +1077,7 @@ function is_hiddenfile ($path)
 // -------------------------------------- is_keyword -------------------------------------------
 // function: is_keyword()
 // input: keyword [string]
-// output: if expression can be used as a keyword true / false on error
+// output: true if expression can be used as a keyword / false
 
 // description:
 // This function checks if the provided expression can be used as a keyword
@@ -1096,7 +1096,7 @@ function is_keyword ($keyword)
 // -------------------------------------- is_thumbnail -------------------------------------------
 // function: is_thumbnail()
 // input: file name or path [string], only thumbnail images should be considered as thumbnail [boolean]
-// output: if file is a thumbnail file true / false on error
+// output: true if file is a thumbnail file / false
 
 // description:
 // This function checks if the provided file name is a thumbnail file
@@ -1118,10 +1118,77 @@ function is_thumbnail ($media, $images_only=true)
   return false;
 }
 
+// ---------------------- is_newthumbnail -----------------------------
+// function: is_newthumbnail()
+// input: container ID [string], recreate thumbnail index [boolean] (optional)
+// output: thumbnail file time in seconds / false
+
+// description:
+// Verifies if a new thumbnail has been created for a specific container ID
+
+function is_newthumbnail ($container_id, $recreate_index=false)
+{
+  global $mgmt_config, $temp_thumbnails;
+
+  // define thumbnails cache timeout in seconds
+  $timeout = 60 * 60 * 24;
+
+  if (!empty ($container_id) && is_file ($mgmt_config['abs_path_temp']."thumbnails.dat"))
+  {
+    if (empty ($temp_thumbnails)) $temp_thumbnails = getsession ("temp_thumbnails");
+  
+    // read temporary thumbnails.dat file if ita has been updated
+    if ($recreate_index == true && empty ($temp_thumbnails) || (is_array ($temp_thumbnails) && filemtime ($mgmt_config['abs_path_temp']."thumbnails.dat") > (max ($temp_thumbnails) + 1)))
+    {
+      $thumbnail_array = file ($mgmt_config['abs_path_temp']."thumbnails.dat");
+
+      if (is_array ($thumbnail_array))
+      {
+        $temp_thumbnails = array();
+        $temp_data = array();
+
+        foreach ($thumbnail_array as $value)
+        {
+          if (strpos ($value, ":") > 0)
+          {
+            $value = trim ($value);
+            list ($temp_time, $temp_container_id) = explode (":", $value);
+
+            // set temporary thumbnails array
+            if ($temp_time > (time() - $timeout))
+            {
+              $temp_thumbnails[$temp_container_id] = $temp_time;
+              $temp_data[] = $value;
+            }
+          }
+        }
+
+        // if valid data
+        if (sizeof ($temp_thumbnails) > 0) 
+        {
+          // save reduced thumbnails.dat
+          savefile ($mgmt_config['abs_path_temp'], "thumbnails.dat", implode ("\n", $temp_data));
+
+          // reset time for last entry, required for the filemtime verification
+          $temp_thumbnails[$temp_container_id] = time();
+          setsession ("hcms_temp_thumbnails", $temp_thumbnails);
+        }
+        // removed outdated thumbnails.dat file
+        else deletefile ($mgmt_config['abs_path_temp'], "thumbnails.dat", false);
+      }
+    }
+
+    // if new thumbnail return time
+    if (!empty ($temp_thumbnails[$container_id])) return $temp_thumbnails[$container_id];
+  }
+
+  return false;
+}
+
 // -------------------------------------- is_preview -------------------------------------------
 // function: is_preview()
 // input: file name or path [string]
-// output: if file is a preview file true / false on error
+// output: true if file is a preview file  / false
 
 // description:
 // This function checks if the provided file name is a preview file
@@ -1144,7 +1211,7 @@ function is_preview ($media)
 // -------------------------------------- is_config -------------------------------------------
 // function: is_config()
 // input: file name or path [string]
-// output: if file is a config file true / false if not
+// output: true if file is a config file / false
 
 // description:
 // This function checks if the provided file name is a config file
@@ -1717,29 +1784,6 @@ function includefooter ()
 }
 
 // ========================================== CACHE =======================================
-
-// ---------------------- clearbrowsercache -----------------------------
-// function: clearbrowsercache()
-// input: clear browser cache [boolean] (optional)
-// output: true / false
-
-// description:
-// Clears the browser cache and resets the session variable for the browser cache
-
-function clearbrowsercache ($clear=false)
-{
-  if ($clear == true || getsession ("hcms_clearbrowsercache") == true)
-  {
-    header ("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-    header ("Cache-Control: post-check=0, pre-check=0", false);
-    header ("Pragma: no-cache");
-
-    setsession ("hcms_clearbrowsercache", false);
-
-    return true;
-  }
-  else return false;
-}
 
 // ---------------------- flushoutputbuffer -----------------------------
 // function: flushoutputbuffer()
@@ -2477,7 +2521,7 @@ function mediapublicaccess ($mediafile)
 
 function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type="wrapper", $altfile="")
 {
-  global $user, $mgmt_config;
+  global $mgmt_config;
 
   // if mediafile is provided as path, extract the media file name
   if (is_string ($mediafile) && substr_count ($mediafile, "/") > 0)
@@ -2493,7 +2537,20 @@ function createviewlink ($site, $mediafile, $name="", $force_reload=false, $type
   {
     $add = "";
 
+    // get container ID
+    $container_id = getmediacontainerid ($mediafile);
+
+    // if new thumbnail
+    if (!empty ($container_id))
+    {
+      $time = is_newthumbnail ($container_id, false);
+      if (intval ($time) > 0) $add .= "&th=".$time;
+    }
+
+    // add name
     if (is_string ($name) && trim ($name) != "") $add .= "&name=".urlencode($name);
+
+    // force reload
     if ($force_reload) $add .= "&ts=".time();
 
     if (strtolower ($type) == "download") $servicename = "mediadownload";

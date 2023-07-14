@@ -74,6 +74,7 @@ if (is_file ("../config/config.inc.php"))
                 $queue_id = $queue['queue_id'];
                 $queue_date = $queue['date'];
                 $cmd = $queue['cmd'];
+                $user = $queue['user'];
 
                 // set new execution date in order to prevent multiple executions
                 $new_date = date ('Y-m-d H:i:s', strtotime ($queue_date . ' +1 day'));

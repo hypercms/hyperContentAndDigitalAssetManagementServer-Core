@@ -3974,8 +3974,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     // return result
     if ($converted == true && !empty ($newfile))
     {
-      // request to clear browser cache for thumbnails
-      if ($type == "thumbnail" || $type == "origthumb") setsession ("hcms_clearbrowsercache", true);
+      // log created thumbnails
+      if ($type == "thumbnail" || $type == "origthumb")
+      {
+        if (!is_file ($mgmt_config['abs_path_temp']."thumbnails.dat")) savefile ($mgmt_config['abs_path_temp'], "thumbnails.dat", time().":".$container_id."\n");
+        else appendfile ($mgmt_config['abs_path_temp'], "thumbnails.dat", time().":".$container_id."\n");
+      }
 
       return $newfile;
     }

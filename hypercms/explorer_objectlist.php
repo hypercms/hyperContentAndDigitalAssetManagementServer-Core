@@ -67,9 +67,6 @@ checkusersession ($user, false);
 
 // --------------------------------- logic section ----------------------------------
 
-// clear browser cache if requested
-clearbrowsercache (false);
-
 // set filter
 setfilter ($filter);
 
@@ -93,6 +90,9 @@ if ((is_array ($column) || empty ($column)) && checktoken ($token, $user))
   // reset width of all columns
   $resetcols = true;
 }
+
+// important: call is_newthumbnail with dummy container ID before session will be suspended
+is_newthumbnail ("0000001", true);
 
 // write and close session (important for non-blocking of other frames)
 suspendsession ();

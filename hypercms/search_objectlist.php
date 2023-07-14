@@ -48,9 +48,6 @@ $search_execute = getrequest ("search_execute");
 
 // --------------------------------- logic section ----------------------------------
 
-// clear browser cache if requested
-clearbrowsercache (false);
-
 // initialize
 $error = array();
 $cat = "";
@@ -284,6 +281,9 @@ checkusersession ($user);
 
 // create secure token
 $token = createtoken ($user);
+
+// important: call is_newthumbnail with dummy container ID before session will be suspended
+is_newthumbnail ("0000001", true);
 
 // write and close session (non-blocking other frames)
 suspendsession ();

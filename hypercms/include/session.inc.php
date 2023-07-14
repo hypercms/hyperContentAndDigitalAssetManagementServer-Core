@@ -78,6 +78,7 @@ $temp_chatstate = getsession ("hcms_temp_chatstate");
 $temp_balancer_id = getsession ("hcms_temp_balancer_id");
 $temp_project_id = getsession ("hcms_temp_project_id");
 $temp_appendcontent = getsession ("hcms_temp_appendcontent");
+$temp_thumbnails = getsession ("hcms_temp_thumbnails");
 
 // the temporary storage is used to pass container content of files between functions
 // and to trigger saving of the file [yes/no]

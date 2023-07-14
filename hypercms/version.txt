@@ -7041,14 +7041,15 @@ Release 09/2023
 - Added the image file extensions .jpf and.jpx to the main configuration file in the install directory in order to support the conversion of these image formats
 - Modifications in function renamefolder, renameobject, and savecontent in Main API in order to verify that the container is not locked by another user
 - Modifications in queue_objectlist in order to display the command name with the action
-- Implementation of a browser cache control in order to display the thumbnail instead of the standard file icon after the thumbnail has been created for multimedia object
-- Implementation of the new function clearbrowsercache in Main API
-- Modifications in explorer_objectlist and search_objectlist in order to call function clearbrowsercache
-- Modifications in function createmedia in Media API in order to request to clear the browser cache if a new thumbnail has been created
 - Implementation of the new function flushoutputbuffer in Main API
 - Modifications in popup_action in order to call function flushoutputbuffer
 - Modifications in function deletefile in Main API ni order to verify the results of function scandir
 - Design modifications in function showgallery in UI API in order to move the title attribute from the img to the container div tag
+- Implementation of a control for the display of newly created thumbnail images instead of the standard file icon after the thumbnail has been created for a multimedia object
+- Implementation of the new function is_newthumbnail in Main API in order to provide the file time of a new thumbail based on the temporary file thumbnails.dat
+- Modifications in function createviewlink in Main API in order to force a reload of new thumbnails by using the provided time of function is_newthumbnail
+- Modifications in function createmedia in Media API in order to request to clear the browser cache if a new thumbnail has been created by creating a temporary file thumbnails.dat
+- Added the new session variable for the thumbnails in session.inc.php
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
