@@ -32,7 +32,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE html>
 <html>
@@ -145,7 +145,7 @@ if ($location == "" && $action == "" && linking_valid() == true) $action = "link
 if ($action == "base_search")
 {
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden;\"></iframe>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden; z-index:10;\"></iframe>\n";
   // object list
   echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"search_objectlist.php?action=".$action."&site=".$site."&search_dir=".$search_dir."&search_cat=".$search_cat."&search_expression=".$search_expression."&container_id=".$container_id."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
@@ -155,7 +155,7 @@ if ($action == "base_search")
 elseif ($action == "user_files")
 {
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden;\"></iframe>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden; z-index:10;\"></iframe>\n";
   // object list
   echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"search_objectlist.php?action=".$action."&site=".$site."&login=".$login."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
@@ -165,7 +165,7 @@ elseif ($action == "user_files")
 elseif ($action == "favorites" || $action == "checkedout" || $action == "clipboard" || $action == "recyclebin" || $action == "linking")
 {
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_objectlist_menu.php?virtual=1&from_page=".$action."\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden;\"></iframe></div>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_objectlist_menu.php?virtual=1&from_page=".$action."\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden; z-index:10;\"></iframe>\n";
   // object list
   echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"search_objectlist.php?action=".$action."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
@@ -177,7 +177,7 @@ elseif ($location != "")
   if (!isset ($virtual)) $virtual = 0;
 
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_objectlist_menu.php?location=".$location."&virtual=".$virtual."\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden;\"></iframe>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_objectlist_menu.php?location=".$location."&virtual=".$virtual."\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden; z-index:10;\"></iframe>\n";
   // object list
   echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"explorer_objectlist.php?location=".$location."&virtual=".$virtual."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar
@@ -187,7 +187,7 @@ elseif ($location != "")
 else
 {
   // control
-  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden;\"></iframe></div>\n";
+  echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden; z-index:10;\"></iframe>\n";
   // object list
   echo "  <div id=\"mainLayer\" style=\"position:fixed; top:100px; bottom:0; left:0; right:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"mainFrame\" name=\"mainFrame\" src=\"empty.php\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;\"></iframe></div>\n";
   // sidebar

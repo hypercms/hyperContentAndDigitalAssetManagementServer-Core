@@ -678,7 +678,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
           $errcode = "20136";
           $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of unzip (code:".$errorCode.", command".$cmd.") failed for '".$location.$file."' \t".implode ("\t", $output); 
         } 
-        else
+        elseif (is_dir ($temp_dir."ppt/slides/"))
         {
           $scandir = @scandir ($temp_dir."ppt/slides/");
 
@@ -1015,38 +1015,41 @@ function reindexcontent ($site, $container_id_array="")
     {
       $location = $mediadir.$site."/";
 
-      $scandir = scandir ($location);
-
-      foreach ($scandir as $file)
+      if (is_dir ($location))
       {
-        if (is_file ($location.$file) && !is_thumbnail ($file, false) && !is_config ($file) && !is_tempfile ($file))
+        $scandir = scandir ($location);
+
+        foreach ($scandir as $file)
         {
-          if (is_array ($container_id_array))
+          if (is_file ($location.$file) && !is_thumbnail ($file, false) && !is_config ($file) && !is_tempfile ($file))
           {
-            $id = getmediacontainerid ($file);
-
-            if (in_array (intval ($id), $container_id_array)) $found = true;
-            else $found = false;
-          }
-          else $found = true;
-
-          if ($found)
-          {
-            $result = indexcontent ($site, $location, $file, "", "", "sys");
-
-            if ($result)
+            if (is_array ($container_id_array))
             {
-              $errcode = "00501";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|".$errcode."|Reindex of content was successful for: ".$site."/".$file; 
-            }
-            else
-            {
-              $errcode = "20501";
-              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Reindex of content failed for: ".$site."/".$file; 
-            }
+              $id = getmediacontainerid ($file);
 
-            // save log
-            savelog ($error);
+              if (in_array (intval ($id), $container_id_array)) $found = true;
+              else $found = false;
+            }
+            else $found = true;
+
+            if ($found)
+            {
+              $result = indexcontent ($site, $location, $file, "", "", "sys");
+
+              if ($result)
+              {
+                $errcode = "00501";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|".$errcode."|Reindex of content was successful for: ".$site."/".$file; 
+              }
+              else
+              {
+                $errcode = "20501";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Reindex of content failed for: ".$site."/".$file; 
+              }
+
+              // save log
+              savelog ($error);
+            }
           }
         }
       }
@@ -5571,13 +5574,13 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
 {
   global $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission;
 
-  if (is_array ($mgmt_config) && $source != "" && $destination != "")
+  if (is_array ($mgmt_config) && $source != "" && is_dir ($source) && $destination != "" && is_dir ($destination))
   {
     // initialize
     $result = array();
 
     $destDir = $destination."/".specialchr_decode (getobject ($source));
-    @mkdir ($destDir, $mgmt_config['fspermission'], true);
+    mkdir ($destDir, $mgmt_config['fspermission'], true);
 
     if ($scandir = scandir ($source))
     {
@@ -5655,9 +5658,9 @@ function clonefolder ($site, $source, $destination, $user, $activity="")
 
       return $result;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- zipfiles_helper -----------------------------

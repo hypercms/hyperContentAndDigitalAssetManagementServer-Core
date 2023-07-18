@@ -1466,47 +1466,51 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
           // find the correct content container
           $versiondir = getcontentlocation ($container_id, 'abs_path_content');
-          $scandir = scandir ($versiondir);
-          $files_v = array();
 
-          if ($scandir)
+          if (is_dir ($versiondir))
           {
-            foreach ($scandir as $entry)
+            $scandir = scandir ($versiondir);
+            $files_v = array();
+
+            if ($scandir)
             {
-              if ($entry != "." && $entry != ".." && @!is_dir ($versiondir.$entry) && (@preg_match ("/".$contentfile.".v_/i", $entry) || @preg_match ("/_hcm".$container_id."/i", $entry)))
+              foreach ($scandir as $entry)
               {
-                $files_v[] = $entry;
+                if ($entry != "." && $entry != ".." && @!is_dir ($versiondir.$entry) && (@preg_match ("/".$contentfile.".v_/i", $entry) || @preg_match ("/_hcm".$container_id."/i", $entry)))
+                {
+                  $files_v[] = $entry;
+                }
               }
             }
-          }
 
-          if (is_array ($files_v) && sizeof ($files_v) > 0)
-          {
-            sort ($files_v);
-            reset ($files_v);
-
-            foreach ($files_v as $file_v)
+            if (is_array ($files_v) && sizeof ($files_v) > 0)
             {
-              $file_v_ext = substr (strrchr ($file_v, "."), 3);
-              $date_v = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
-              $date_v = str_replace ("-", "", $date_v);
+              sort ($files_v);
+              reset ($files_v);
 
-              if ($date_v > $date_content)
+              foreach ($files_v as $file_v)
               {
-                if ($file_v_buffer != "") $contentfile = $file_v_buffer;
-                else $contentfile = $file_v;
-                break;
+                $file_v_ext = substr (strrchr ($file_v, "."), 3);
+                $date_v = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
+                $date_v = str_replace ("-", "", $date_v);
+
+                if ($date_v > $date_content)
+                {
+                  if ($file_v_buffer != "") $contentfile = $file_v_buffer;
+                  else $contentfile = $file_v;
+                  break;
+                }
+
+                $file_v_buffer = $file_v;
               }
-
-              $file_v_buffer = $file_v;
             }
-          }
 
-          $files_v = null;
-          $file_v_buffer = null;
+            $files_v = null;
+            $file_v_buffer = null;
+          }
         }
 
-        if ($date_template != "")
+        if (!empty ($date_template))
         {
           $date_template = str_replace ("-", "", $date_template);
 
@@ -1534,44 +1538,47 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             }
           }
 
-          $files_v = array();
-          $scandir = scandir ($versiondir);
-
-          if ($scandir)
+          if (is_dir ($versiondir))
           {
-            foreach ($scandir as $entry)
+            $files_v = array();
+            $scandir = scandir ($versiondir);
+
+            if ($scandir)
             {
-              if ($entry != "." && $entry != ".." && @!is_dir ($versiondir.$entry) && @preg_match ("/".$templatefile.".v_/i", $entry))
+              foreach ($scandir as $entry)
               {
-                $files_v[] = $entry;
+                if ($entry != "." && $entry != ".." && @!is_dir ($versiondir.$entry) && @preg_match ("/".$templatefile.".v_/i", $entry))
+                {
+                  $files_v[] = $entry;
+                }
               }
             }
-          }
 
-          if (is_array ($files_v) && sizeof ($files_v) > 0)
-          {
-            sort ($files_v);
-            reset ($files_v);
-
-            foreach ($files_v as $file_v)
+            if (is_array ($files_v) && sizeof ($files_v) > 0)
             {
-              $file_v_ext = substr (strrchr ($file_v, "."), 3);
-              $date_v = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
-              $date_v = str_replace ("-", "", $date_v);
+              sort ($files_v);
+              reset ($files_v);
 
-              if ($date_v > $date_template)
+              foreach ($files_v as $file_v)
               {
-                if ($file_v_buffer != "") $templatefile = $file_v_buffer;
-                else $templatefile = $file_v;
-                break;
+                $file_v_ext = substr (strrchr ($file_v, "."), 3);
+                $date_v = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
+                $date_v = str_replace ("-", "", $date_v);
+
+                if ($date_v > $date_template)
+                {
+                  if ($file_v_buffer != "") $templatefile = $file_v_buffer;
+                  else $templatefile = $file_v;
+                  break;
+                }
+
+                $file_v_buffer = $file_v;
               }
-
-              $file_v_buffer = $file_v;
             }
-          }
 
-          $files_v = null;
-          $file_v_buffer = null;
+            $files_v = null;
+            $file_v_buffer = null;
+          }
         }
       }
     }
@@ -2619,35 +2626,38 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           <select id=\"".$hypertagname."\" name=\"".$hypertagname."\" style=\"width:250px;\" ".$disabled.">
                             <option value=\"\">".getescapedtext ($hcms_lang['select'][$lang], $charset, $lang)."</option>";
 
-                  $scandir = scandir ($mgmt_config['abs_path_data']."customer/".$site."/");
-
-                  $i = 0;
-
-                  if ($scandir)
+                  if (is_dir ($mgmt_config['abs_path_data']."customer/".$site."/"))
                   {
-                    foreach ($scandir as $entry)
+                    $scandir = scandir ($mgmt_config['abs_path_data']."customer/".$site."/");
+
+                    $i = 0;
+
+                    if ($scandir)
                     {
-                      if ($entry != "." && $entry != ".." && !is_dir ($entry))
+                      foreach ($scandir as $entry)
                       {
-                        if (strpos ($entry, ".track.dat") > 0)
+                        if ($entry != "." && $entry != ".." && !is_dir ($entry))
                         {
-                          $item_files[$i] = $entry;
+                          if (strpos ($entry, ".track.dat") > 0)
+                          {
+                            $item_files[$i] = $entry;
+                          }
+                          $i++;
                         }
-                        $i++;
                       }
-                    }
 
-                    if (sizeof ($item_files) >= 1)
-                    {
-                      sort ($item_files);
-                      reset ($item_files);
-
-                      foreach ($item_files as $persfile)
+                      if (sizeof ($item_files) >= 1)
                       {
-                        $pers_name = substr ($persfile, 0, strpos ($persfile, ".track.dat"));
+                        sort ($item_files);
+                        reset ($item_files);
 
-                        $formitem[$key] .= "
-                            <option value=\"".$pers_name."\" ".($pers_name == $contentbot ? "selected=\"selected\"" : "").">".$pers_name."</option>";
+                        foreach ($item_files as $persfile)
+                        {
+                          $pers_name = substr ($persfile, 0, strpos ($persfile, ".track.dat"));
+
+                          $formitem[$key] .= "
+                              <option value=\"".$pers_name."\" ".($pers_name == $contentbot ? "selected=\"selected\"" : "").">".$pers_name."</option>";
+                        }
                       }
                     }
                   }
@@ -6520,7 +6530,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                 $taglink = "";
 
                 // load customer profiles
-                if (!isset ($profile_array) && ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock"))
+                if (!isset ($profile_array) && is_dir ($mgmt_config['abs_path_data']."customer/".$site."/") && ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock"))
                 {
                   $scandir = scandir ($mgmt_config['abs_path_data']."customer/".$site."/");
 

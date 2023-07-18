@@ -1102,7 +1102,7 @@ else
     }
     
     // Rename Object Button
-    if ($multiobject_count <= 1 && $from_page != "recyclebin" && $page != "" && $page != ".folder" && $setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
+    if (($usedby == "" || $usedby == $user) && $multiobject_count <= 1 && $from_page != "recyclebin" && $page != "" && $page != ".folder" && $setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
     {
       echo "
       <img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onclick=\"hcms_showHideLayers(".
@@ -1114,7 +1114,7 @@ else
                                                       "'hcms_messageLayer','','hide'); document.getElementById('button_obj_edit').display='none';\" id=\"pic_obj_rename\" src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_rename.png\" alt=\"".getescapedtext ($hcms_lang['rename'][$lang])."\" title=\"".getescapedtext ($hcms_lang['rename'][$lang])."\" />";
     }
     // Rename Folder Button
-    elseif ($multiobject_count <= 1 && $from_page != "recyclebin" && $folder != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1)
+    elseif (($usedby == "" || $usedby == $user) && $multiobject_count <= 1 && $from_page != "recyclebin" && $folder != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1)
     {
       echo "
       <img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onclick=\"if (locklayer == false) hcms_showHideLayers(".
@@ -1203,7 +1203,7 @@ else
       {
         echo "
         <img onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'cut', 'cut".uniqid()."'); document.getElementById('button_obj_edit').display='none';\" ".
-          "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" id=\"pic_obj_cut\" src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_cut.png\" alt=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" title=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" /></a>";
+          "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" id=\"pic_obj_cut\" src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_cut.png\" alt=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" title=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" />";
       }
       else
       {
@@ -1215,7 +1215,7 @@ else
       {
         echo "
         <img onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'copy', 'copy".uniqid()."'); document.getElementById('button_obj_edit').display='none';\" ".
-          "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" id=\"pic_obj_copy\" src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_copy.png\" alt=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" /></a>";
+          "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" id=\"pic_obj_copy\" src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_file_copy.png\" alt=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" />";
       }
       else
       {

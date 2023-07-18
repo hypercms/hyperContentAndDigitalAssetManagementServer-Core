@@ -31,120 +31,123 @@ function link_db_restore ($site="")
     $loc = $mgmt_config['abs_path_data']."content/";
 
     // 1 st level (content container blocks)
-    $blockdir = scandir ($loc);
-
-    $i = 0;
-    $time_1 = time();
-    $link_db_entry = null;
-
-    // browse all containers in content repository
-    foreach ($blockdir as $block)
+    if (is_dir ($loc))
     {
-      if (is_dir ($loc.$block) && $block != "." && $block != ".." && is_numeric ($block))
+      $blockdir = scandir ($loc);
+
+      $i = 0;
+      $time_1 = time();
+      $link_db_entry = null;
+
+      // browse all containers in content repository
+      foreach ($blockdir as $block)
       {
-        // 2nd level (specific content container folder)
-        $contdir = scandir ($loc.$block);
-
-        foreach ($contdir as $container_id)
+        if (is_dir ($loc.$block) && $block != "." && $block != ".." && is_numeric ($block))
         {
-          if (is_dir ($loc.$block."/".$container_id))
+          // 2nd level (specific content container folder)
+          $contdir = scandir ($loc.$block);
+
+          foreach ($contdir as $container_id)
           {
-            // update page links
-            $contentdata = loadcontainer ($container_id, "work", "sys"); 
-
-            if ($contentdata != false) 
+            if (is_dir ($loc.$block."/".$container_id))
             {
-              $i++;
+              // update page links
+              $contentdata = loadcontainer ($container_id, "work", "sys"); 
 
-              // extract publication vom origin location of the object
-              $objorigin_array = getcontent ($contentdata, "<contentorigin>");
-              $objref_array = getcontent ($contentdata, "<contentobjects>");
-
-              $publication1 = getpublication ($objorigin_array[0]);
-              $publication2 = getpublication ($objref_array[0]);
-
-              if ($publication1 == $publication2) $publication = $publication1;
-              elseif ($publication2 != "") $publication = $publication2;
-              elseif ($publication1 != "") $publication = $publication1;
-              else $publication = "";
-
-              if ($publication != "" && ($site == "" || ($site != "" && $site == $publication)))
+              if ($contentdata != false) 
               {
-                if (!is_array ($publication_array)) $publication_array[] = $publication;
-                elseif (!in_array ($publication, $publication_array)) $publication_array[] = $publication;
+                $i++;
 
-                // container reference
-                $link_db_entry[$publication] .= "\n".$container_id.".xml:|";
+                // extract publication vom origin location of the object
+                $objorigin_array = getcontent ($contentdata, "<contentorigin>");
+                $objref_array = getcontent ($contentdata, "<contentobjects>");
 
-                // object references
-                $link_db_entry[$publication] .= $objref_array[0].":|";
+                $publication1 = getpublication ($objorigin_array[0]);
+                $publication2 = getpublication ($objref_array[0]);
 
-                // page references
-                $linkobj_array = getcontent ($contentdata, "<link>");
+                if ($publication1 == $publication2) $publication = $publication1;
+                elseif ($publication2 != "") $publication = $publication2;
+                elseif ($publication1 != "") $publication = $publication1;
+                else $publication = "";
 
-                if (is_array ($linkobj_array) && sizeof ($linkobj_array) > 0)
+                if ($publication != "" && ($site == "" || ($site != "" && $site == $publication)))
                 {
-                  foreach ($linkobj_array as $linkobj)
-                  {
-                    $link_href = getcontent ($linkobj, "<linkhref>");
+                  if (!is_array ($publication_array)) $publication_array[] = $publication;
+                  elseif (!in_array ($publication, $publication_array)) $publication_array[] = $publication;
 
-                    if (!empty ($link_href[0]))
+                  // container reference
+                  $link_db_entry[$publication] .= "\n".$container_id.".xml:|";
+
+                  // object references
+                  $link_db_entry[$publication] .= $objref_array[0].":|";
+
+                  // page references
+                  $linkobj_array = getcontent ($contentdata, "<link>");
+
+                  if (is_array ($linkobj_array) && sizeof ($linkobj_array) > 0)
+                  {
+                    foreach ($linkobj_array as $linkobj)
                     {
-                      $link_db_entry[$publication] .= $link_href[0]."|";
+                      $link_href = getcontent ($linkobj, "<linkhref>");
+
+                      if (!empty ($link_href[0]))
+                      {
+                        $link_db_entry[$publication] .= $link_href[0]."|";
+                      }
                     }
                   }
-                }
 
-                // component references 
-                $compobj_array = getcontent ($contentdata, "<component>"); 
+                  // component references 
+                  $compobj_array = getcontent ($contentdata, "<component>"); 
 
-                if (is_array ($compobj_array) && sizeof ($compobj_array) > 0)
-                {
-                  foreach ($compobj_array as $compobj)
+                  if (is_array ($compobj_array) && sizeof ($compobj_array) > 0)
                   {
-                    $component_files = getcontent ($compobj, "<componentfiles>");
-
-                    if (!empty ($component_files[0]))
+                    foreach ($compobj_array as $compobj)
                     {
-                      $component_files = trim ($component_files[0]);
+                      $component_files = getcontent ($compobj, "<componentfiles>");
 
-                      // if multi component
-                      if (@substr_count ($component_files, "|") >= 1)
+                      if (!empty ($component_files[0]))
                       {
-                        if ($component_files[strlen ($component_files)-1] == "|")
-                        { 
-                          $component_files = substr ($component_files, 0, strlen ($component_files)-1);
-                        }
-                      }
+                        $component_files = trim ($component_files[0]);
 
-                      if ($component_files != "") $link_db_entry[$publication] .= $component_files."|"; 
+                        // if multi component
+                        if (@substr_count ($component_files, "|") >= 1)
+                        {
+                          if ($component_files[strlen ($component_files)-1] == "|")
+                          { 
+                            $component_files = substr ($component_files, 0, strlen ($component_files)-1);
+                          }
+                        }
+
+                        if ($component_files != "") $link_db_entry[$publication] .= $component_files."|"; 
+                      }
                     }
                   }
-                }
 
-                // media references 
-                $mediaobj_array = getcontent ($contentdata, "<media>"); 
+                  // media references 
+                  $mediaobj_array = getcontent ($contentdata, "<media>"); 
 
-                if (is_array ($mediaobj_array) && sizeof ($mediaobj_array) > 0)
-                {
-                  foreach ($mediaobj_array as $mediaobj)
+                  if (is_array ($mediaobj_array) && sizeof ($mediaobj_array) > 0)
                   {
-                    $media_files = getcontent ($mediaobj, "<mediaobject>");
-
-                    if (!empty ($media_files[0]))
+                    foreach ($mediaobj_array as $mediaobj)
                     {
-                      $media_files = trim ($media_files[0]);
+                      $media_files = getcontent ($mediaobj, "<mediaobject>");
 
-                      // if multi component
-                      if (@substr_count ($component_files, "|") >= 1)
+                      if (!empty ($media_files[0]))
                       {
-                        if ($media_files[strlen ($media_files)-1] == "|")
-                        { 
-                          $media_files = substr ($media_files, 0, strlen ($media_files)-1);
-                        }
-                      }
+                        $media_files = trim ($media_files[0]);
 
-                      if ($media_files != "") $link_db_entry[$publication] .= $media_files."|"; 
+                        // if multi component
+                        if (@substr_count ($component_files, "|") >= 1)
+                        {
+                          if ($media_files[strlen ($media_files)-1] == "|")
+                          { 
+                            $media_files = substr ($media_files, 0, strlen ($media_files)-1);
+                          }
+                        }
+
+                        if ($media_files != "") $link_db_entry[$publication] .= $media_files."|"; 
+                      }
                     }
                   }
                 }
@@ -184,9 +187,9 @@ function link_db_restore ($site="")
 
       return true;
     }
-    else return false;
   }
-  else return false;
+  
+  return false;
 }
 
 // ----------------------------------------- link_db_load ---------------------------------------------

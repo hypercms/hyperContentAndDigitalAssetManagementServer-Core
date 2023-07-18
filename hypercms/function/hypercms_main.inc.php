@@ -546,13 +546,17 @@ function file_iexists ($path)
   // case-insensitive
 	$dirname = dirname ($path);
 	$filename = basename ($path);
-	$scandir = scandir ($dirname);
 
-  if ($scandir)
+  if (is_dir ($dirname))
   {
-    foreach ($scandir as $file)
+    $scandir = scandir ($dirname);
+
+    if ($scandir)
     {
-      if (strtolower ($file) == strtolower ($filename)) return true;
+      foreach ($scandir as $file)
+      {
+        if (strtolower ($file) == strtolower ($filename)) return true;
+      }
     }
   }
 
@@ -576,13 +580,17 @@ function is_ifile ($path)
   // case-insensitive
 	$dirname = dirname ($path);
 	$filename = basename ($path);
-	$scandir = scandir ($dirname);
 
-  if ($scandir)
+  if (is_dir ($dirname))
   {
-    foreach ($scandir as $file)
+    $scandir = scandir ($dirname);
+
+    if ($scandir)
     {
-      if (is_file ($dirname."/".$file) && strtolower ($file) == strtolower ($filename)) return true;
+      foreach ($scandir as $file)
+      {
+        if (is_file ($dirname."/".$file) && strtolower ($file) == strtolower ($filename)) return true;
+      }
     }
   }
 
@@ -606,13 +614,17 @@ function is_idir ($path)
   // case-insensitive
 	$dirname = dirname ($path);
 	$filename = basename ($path);
-	$scandir = scandir ($dirname);
 
-  if ($scandir)
+  if (is_dir ($dirname))
   {
-    foreach ($scandir as $file)
+    $scandir = scandir ($dirname);
+
+    if ($scandir)
     {
-      if (is_dir ($dirname."/".$file) && strtolower ($file) == strtolower ($filename)) return true;
+      foreach ($scandir as $file)
+      {
+        if (is_dir ($dirname."/".$file) && strtolower ($file) == strtolower ($filename)) return true;
+      }
     }
   }
 
@@ -1698,26 +1710,32 @@ function createfacerecognitionservice ($user)
 
 function copyrecursive ($src, $dst)
 {
+  // initialize
   $result = true;
 
-  // create directory
-  if (!is_dir ($dst)) @mkdir ($dst);
+  // create directory if it does not exist
+  if (!is_dir ($dst)) mkdir ($dst);
 
-  $scandir = scandir ($src);
-
-  if ($scandir)
+  // copy directories from source to destination
+  if (is_dir ($src) && is_dir ($dst))
   {
-    foreach ($scandir as $file)
-    {
-      if ($file != '.' && $file != '..')
-      {
-        if (is_dir ($src.$file)) $result = copyrecursive ($src.$file."/", $dst.$file."/");
-        else $result = copy ($src.$file, $dst.$file);
+    $scandir = scandir ($src);
 
-        if ($result == false) break;
+    if ($scandir)
+    {
+      foreach ($scandir as $file)
+      {
+        if ($file != '.' && $file != '..')
+        {
+          if (is_dir ($src.$file)) $result = copyrecursive ($src.$file."/", $dst.$file."/");
+          else $result = copy ($src.$file, $dst.$file);
+
+          if ($result == false) break;
+        }
       }
     }
   }
+  else $result = false;
 
   return $result;
 }
@@ -1938,6 +1956,45 @@ function createfilename ($filename, $shorten=false)
   }
 
   return false;
+}
+
+// ---------------------- createlocationname -----------------------------
+// function: createlocationname()
+// input: publication name [string], absolute or relative location path [string], category [comp,page], shorten file name automatically (required for new object or folder names) [optional]
+// output: new filename/false
+
+// description:
+// Creates a valid location path without special characters that does not exceed the maximum file name length.
+
+function createlocationname ($site, $location, $cat, $shorten=false)
+{
+  if (valid_publicationname ($site) && valid_locationname ($location) && ($cat == "comp" || $cat == "page"))
+  {
+    $location_esc = convertpath ($site, $location, $cat);
+    $location = deconvertpath ($location_esc, "file");
+
+    $location_parts = explode ("/", $location_esc);
+
+    if (is_array ($location_parts))
+    {
+      $parts = array();
+
+      foreach ($location_parts as $part)
+      {
+        if (trim ($part) != "") $parts[] = createfilename ($part, $shorten);
+      }
+
+      if (sizeof ($parts) > 0) $location_esc = implode ("/", $parts);
+    }
+
+    // deconvertpath location
+    $location = deconvertpath ($location_esc, "file");
+  }
+
+  // add slash if not present at the end of the location string
+  $location = correctpath ($location);
+
+  return $location;
 }
 
 // ---------------------- createlockname -----------------------------
@@ -3785,59 +3842,62 @@ function deleteversions ($type, $report, $user="sys")
   elseif ($type != "" && is_dir ($type)) $versiondir = $type;
   else return false; 
 
-  $scandir = scandir ($versiondir);
-
-  if ($scandir)
+  if (is_dir ($versiondir))
   {
-    foreach ($scandir as $entry)
+    $scandir = scandir ($versiondir);
+
+    if ($scandir)
     {
-      // content container directory
-      if ($entry != "." && $entry != ".." && is_dir ($versiondir.$entry))
+      foreach ($scandir as $entry)
       {
-        $report_str = deleteversions ($versiondir.$entry."/", $report, $user);
-      }
-      // suitable for templates and containers
-      elseif ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || preg_match ("/_hcm/i", $entry)))
-      {
-        // remove container and media file version
-        if (preg_match ("/_hcm/i", $entry))
+        // content container directory
+        if ($entry != "." && $entry != ".." && is_dir ($versiondir.$entry))
         {
-          $entrydata = loadfile ($versiondir, $entry);
-
-          if ($entrydata != "")
+          $report_str = deleteversions ($versiondir.$entry."/", $report, $user);
+        }
+        // suitable for templates and containers
+        elseif ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || preg_match ("/_hcm/i", $entry)))
+        {
+          // remove container and media file version
+          if (preg_match ("/_hcm/i", $entry))
           {
-            $contentobjects = getcontent ($entrydata, "<contentobjects>");
+            $entrydata = loadfile ($versiondir, $entry);
 
-            if (is_array ($contentobjects))
+            if ($entrydata != "")
             {
-              $site = getpublication ($contentobjects[0]);
+              $contentobjects = getcontent ($entrydata, "<contentobjects>");
 
-              if (valid_publicationname ($site))
+              if (is_array ($contentobjects))
               {
-                $test = deleteversion ($site, $entry, $user);
+                $site = getpublication ($contentobjects[0]);
+
+                if (valid_publicationname ($site))
+                {
+                  $test = deleteversion ($site, $entry, $user);
+                }
               }
             }
           }
-        }
-        // remove template or other version
-        else
-        {
-          if (is_file ($versiondir.$entry)) $test = deletefile ($versiondir, $entry, false);
-          else $test = false;
-        }
+          // remove template or other version
+          else
+          {
+            if (is_file ($versiondir.$entry)) $test = deletefile ($versiondir, $entry, false);
+            else $test = false;
+          }
 
-        // report
-        if (strtolower ($report) == "yes") 
-        {
-          if (empty ($test)) $report_str .= "Failed to delete ".$entry."<br />\n";
-          else $report_str .= "Deleted ".$entry." successfully<br />\n";
+          // report
+          if (strtolower ($report) == "yes") 
+          {
+            if (empty ($test)) $report_str .= "Failed to delete ".$entry."<br />\n";
+            else $report_str .= "Deleted ".$entry." successfully<br />\n";
+          }
         }
       }
+
+      if ($report_str != false && $report == "yes") return $report_str;
+      elseif ($report_str != false) return true;
+
     }
-
-    if ($report_str != false && $report == "yes") return $report_str;
-    elseif ($report_str != false) return true;
-
   }
 
   return false;
@@ -4731,7 +4791,7 @@ function deletefile ($abs_path, $filename, $recursive=false)
       $result = true;
 
       // delete all directories and files recursively
-      if (!empty ($recursive)) 
+      if (!empty ($recursive) && is_dir ($abs_path.$filename)) 
       {
         $dirfiles = scandir ($abs_path.$filename);
 
@@ -8701,15 +8761,19 @@ function deletepublication ($site_name, $user="sys")
         deletefile ($mgmt_config['abs_path_data']."workflow/", $site_name, 1); 
 
         $dir_temp = $mgmt_config['abs_path_data']."workflow_master/";
-        $scandir = scandir ($dir_temp);
 
-        if ($scandir)
+        if (is_dir ($dir_temp))
         {
-          foreach ($scandir as $entry)
+          $scandir = scandir ($dir_temp);
+
+          if ($scandir)
           {
-            if (is_file ($dir_temp.$entry) && preg_match ("/^".$site_name."./", $entry))
+            foreach ($scandir as $entry)
             {
-              if (is_file ($dir_temp.$entry)) deletefile ($dir_temp, $entry, 0);
+              if (is_file ($dir_temp.$entry) && preg_match ("/^".$site_name."./", $entry))
+              {
+                if (is_file ($dir_temp.$entry)) deletefile ($dir_temp, $entry, 0);
+              }
             }
           }
         }
@@ -12389,6 +12453,7 @@ function createfolder ($site, $location, $folder, $user)
   if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
   // initialize
+  $error = array();
   $result = array();
   $success = false;
   $add_onload = "";
@@ -12416,6 +12481,9 @@ function createfolder ($site, $location, $folder, $user)
   $folder_orig = $folder;
   $folder = createfilename ($folder, true);
 
+  // get category
+  $cat = getcategory ($site, $location);
+
   // the max chacracters for an objectpath is 16,000 (due to the database attribute objectpath)
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, "") && mb_strlen ($folder) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user) && !is_tempfile ($folder))
   {
@@ -12437,7 +12505,6 @@ function createfolder ($site, $location, $folder, $user)
     // check permissions
     if ($user != "sys" && !empty ($mgmt_config['api_checkpermission']))
     {
-      $cat = getcategory ($site, $location);
       $ownergroup = accesspermission ($site, $location, $cat);
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
       
@@ -12506,7 +12573,6 @@ function createfolder ($site, $location, $folder, $user)
 
           $container = $folderfile['container'];
           $site = $folderfile['publication'];
-          $location = $folderfile['location'];
           $cat = $folderfile['cat'];
           $contentfile = $folderfile['container'];
           $container_id = $folderfile['container_id'];
@@ -12590,12 +12656,25 @@ function createfolders ($site, $location, $folder, $user)
 
   // initialize
   $result = array();
-
-  // default max length
-  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
+  $result['result'] = false;
+  $result['publication'] = $site;
 
   // define category if undefined
   $cat = getcategory ($site, $location);
+  $result['cat'] = $cat;
+
+  // convert and deconvert location
+  $result['location_esc'] = $location_esc = convertpath ($site, $location, $cat);
+  $result['location'] = $location = deconvertpath ($location_esc, "file");
+
+  // converted folder name
+  $result['folder'] = createfilename ($folder);
+
+  // add slash if not present at the end of the location string
+  $location = $result['location'] = correctpath ($location);
+
+  // default max length
+  if (empty ($mgmt_config['max_digits_filename']) || intval ($mgmt_config['max_digits_filename']) < 1) $mgmt_config['max_digits_filename'] = 200;
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($folder) && accessgeneral ($site, $location, $cat) && strlen ($folder) <= $mgmt_config['max_digits_filename'] && valid_objectname ($user))
   {
@@ -12605,27 +12684,34 @@ function createfolders ($site, $location, $folder, $user)
       require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
     }
 
-    // deconvertpath location
-    $location = deconvertpath ($location, "file");
+    // folder exists already
+    if (is_dir ($location.createfilename ($folder)))
+    {
+      $result['result'] = true;
+    }
+    // folder does not exist
+    else 
+    {
+      // create folder (use readable folder name)
+      $result = createfolder ($site, $location, $folder, $user);
 
-    // add slash if not present at the end of the location string
-    $location = correctpath ($location);
+      // folder could not be created, try to create parent folder
+      if (empty ($result['result']))
+      {
+        $result_parent = createfolders ($site, getlocation ($location), getobject ($location), $user);
 
-    // folder exists
-    if (is_dir ($location.$folder)) return $result['result'] = true;
-
-    // folder can be created
-    $result = createfolder ($site, $location, $folder, $user);
-    
-    if (!empty ($result['result'])) return $result;
-
-    // folder cannot be created, create parent folder
-    $result = createfolders ($site, dirname ($location), getobject ($location), $user);
-
-    if (!empty ($result['result'])) $result = createfolder ($site, $location, $folder, $user);
-    if (!empty ($result['result'])) return $result;
+        // create folder (use parent location and folder)
+        $result = createfolder ($site, $result_parent['location'].$result_parent['folder']."/", $folder, $user);
+      }
+      // folder was created
+      else
+      {
+        $result['result'] = true;
+      }
+    }
   }
-  else return $result['result'] = false;
+
+  return $result;
 }
 
 // ---------------------------------------- collectfolders --------------------------------------------
@@ -12645,23 +12731,26 @@ function collectfolders ($site, $location, $folder)
     // set folder 
     $folder_array[] = $site."|".$location."|".$folder;
 
-    // find and create subfolders
-    $scandir = scandir ($location.$folder);
-
-    if ($scandir)
+    // find subfolders
+    if (is_dir ($location.$folder))
     {
-      foreach ($scandir as $subfolder)
-      {
-        if ($subfolder != "" && $subfolder != "." && $subfolder != ".." && is_dir ($location.$folder."/".$subfolder))
-        {
-          $folder_array_new = collectfolders ($site, $location.$folder."/", $subfolder);
+      $scandir = scandir ($location.$folder);
 
-          if ($folder_array_new == false) 
+      if ($scandir)
+      {
+        foreach ($scandir as $subfolder)
+        {
+          if ($subfolder != "" && $subfolder != "." && $subfolder != ".." && is_dir ($location.$folder."/".$subfolder))
           {
-            $folder_array = false;
-            break;
+            $folder_array_new = collectfolders ($site, $location.$folder."/", $subfolder);
+
+            if ($folder_array_new == false) 
+            {
+              $folder_array = false;
+              break;
+            }
+            else $folder_array = array_merge ($folder_array, $folder_array_new);
           }
-          else $folder_array = array_merge ($folder_array, $folder_array_new);
         }
       }
     }
@@ -12696,7 +12785,7 @@ function copyfolders ($site, $location, $locationnew, $folder, $user, $no_duplic
     $location = correctpath ($location);
     $locationnew = correctpath ($locationnew);
 
-    // define category if undefined
+    // get category
     $cat = getcategory ($site, $location);
  
     // collect folders to copy
@@ -15235,93 +15324,96 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
     $location_source = correctpath ($location_source);
     $location_destination = correctpath ($location_destination);
 
-    // open directory
-    $scandir = scandir ($location_source);
-
-    if ($scandir)
+    // scan directory
+    if (is_dir ($location_source))
     {
-      foreach ($scandir as $file)
+      $scandir = scandir ($location_source);
+
+      if ($scandir)
       {
-        // skip Mac OS files .DS_Store and ._whatever
-        if ($file != '.' && $file != '..' && !is_tempfile ($file))
+        foreach ($scandir as $file)
         {
-          // directory
-          if (is_dir ($location_source.$file))
+          // skip Mac OS files .DS_Store and ._whatever
+          if ($file != '.' && $file != '..' && !is_tempfile ($file))
           {
-            $folder = $folder_new = $file;
-
-            // correct file namens which were encoded by unzip to unicode escape characters
-            if (substr_count ($folder_new, "#U") > 0) $folder_new = convert_unicode2utf8 ($folder_new); 
-
-            // check if folder exists already 
-            if (!object_exists ($location_destination.createfilename ($folder_new, true)))
+            // directory
+            if (is_dir ($location_source.$file))
             {
-              // create folder
-              $createfolder = createfolder ($site, $location_destination, $folder_new, $user);
+              $folder = $folder_new = $file;
+
+              // correct file namens which were encoded by unzip to unicode escape characters
+              if (substr_count ($folder_new, "#U") > 0) $folder_new = convert_unicode2utf8 ($folder_new); 
+
+              // check if folder exists already 
+              if (!object_exists ($location_destination.createfilename ($folder_new, true)))
+              {
+                // create folder
+                $createfolder = createfolder ($site, $location_destination, $folder_new, $user);
+              }
+              else
+              {
+                // set folder values
+                $createfolder['result'] = true;
+                $createfolder['folder'] = createfilename ($folder_new, true);
+              }
+
+              // create objects
+              if (!empty ($createfolder['result']))
+              {
+                if (!empty ($report)) echo "<div class=\"messageLayer\"><span style=\"color:green;\"> ".getescapedtext ($hcms_lang['the-folder-was-created'][$lang]).": ".getlocationname ($site, $location_destination.$folder_new, "comp")."</span></div>\n";
+
+                $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user, $createmedia_in_background, $report);
+              }
+              else
+              {
+                $errcode = "10511";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createfolder failed to create '".convertpath ($site, $location_destination, "").$folder_new;
+              }
             }
-            else
+            // file
+            elseif (is_file ($location_source.$file))
             {
-              // set folder values
-              $createfolder['result'] = true;
-              $createfolder['folder'] = createfilename ($folder_new, true);
+              $objectname = $file;
+
+              // correct file namens which were decoded by unzip
+              if (substr_count ($objectname, "#U") > 0) $objectname = convert_unicode2utf8 ($objectname);
+
+              // upload local file
+              $global_files = array();
+              $global_files['Filedata'] = array();
+              $global_files['Filedata']['name'] = $objectname;
+              $global_files['Filedata']['tmp_name'] = $location_source.$file;
+
+              $uploadfile = uploadfile ($site, $location_destination, "comp", $global_files, "", "", 0, "", "", $user, false, true, true, "", 0, $createmedia_in_background, $report);
+
+              if (!empty ($uploadfile['result']) && !empty ($uploadfile['object']))
+              {
+                $result[] = $uploadfile['object'];
+              }
+              else
+              {
+                $errcode = "10512";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed to create '".convertpath ($site, $location_destination, "comp").$objectname;
+              }
+
+              /* deprecated since version 9.1.5
+              // remove existing object
+              if (object_exists ($location_destination.$objectname)) deleteobject ($site, $location_destination, $objectname, $user);
+
+              // create multimedia object
+              $createmediaobject = createmediaobject ($site, $location_destination, $objectname, $location_source.$file, $user);
+
+              if (!empty ($createmediaobject['result']))
+              {
+                $result[] = $createmediaobject['location_esc'].$createmediaobject['object'];
+              }
+              else
+              {
+                $errcode = "10512";
+                $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject failed to create '".convertpath ($site, $location_destination, "comp").$objectname;
+              }
+              */
             }
-
-            // create objects
-            if (!empty ($createfolder['result']))
-            {
-              if (!empty ($report)) echo "<div class=\"messageLayer\"><span style=\"color:green;\"> ".getescapedtext ($hcms_lang['the-folder-was-created'][$lang]).": ".getlocationname ($site, $location_destination.$folder_new, "comp")."</span></div>\n";
-
-              $result = createmediaobjects ($site, $location_source.$folder."/", $location_destination.$createfolder['folder']."/", $user, $createmedia_in_background, $report);
-            }
-            else
-            {
-              $errcode = "10511";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createfolder failed to create '".convertpath ($site, $location_destination, "").$folder_new;
-            }
-          }
-          // file
-          elseif (is_file ($location_source.$file))
-          {
-            $objectname = $file;
-
-            // correct file namens which were decoded by unzip
-            if (substr_count ($objectname, "#U") > 0) $objectname = convert_unicode2utf8 ($objectname);
-
-            // upload local file
-            $global_files = array();
-            $global_files['Filedata'] = array();
-            $global_files['Filedata']['name'] = $objectname;
-            $global_files['Filedata']['tmp_name'] = $location_source.$file;
-
-            $uploadfile = uploadfile ($site, $location_destination, "comp", $global_files, "", "", 0, "", "", $user, false, true, true, "", 0, $createmedia_in_background, $report);
-
-            if (!empty ($uploadfile['result']) && !empty ($uploadfile['object']))
-            {
-              $result[] = $uploadfile['object'];
-            }
-            else
-            {
-              $errcode = "10512";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|uploadfile failed to create '".convertpath ($site, $location_destination, "comp").$objectname;
-            }
-
-            /* deprecated since version 9.1.5
-            // remove existing object
-            if (object_exists ($location_destination.$objectname)) deleteobject ($site, $location_destination, $objectname, $user);
-
-            // create multimedia object
-            $createmediaobject = createmediaobject ($site, $location_destination, $objectname, $location_source.$file, $user);
-
-            if (!empty ($createmediaobject['result']))
-            {
-              $result[] = $createmediaobject['location_esc'].$createmediaobject['object'];
-            }
-            else
-            {
-              $errcode = "10512";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|createmediaobject failed to create '".convertpath ($site, $location_destination, "comp").$objectname;
-            }
-            */
           }
         }
       }
@@ -16414,7 +16506,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               // delete all content and media version files
               $dir_version = $contentlocation;
 
-              if ($dir_version != false)
+              if (!empty ($dir_version) && is_dir ($dir_version))
               {
                 $scandir = scandir ($dir_version);
            
@@ -21810,80 +21902,83 @@ function licensenotification ()
   $error = array();
 
   // license notification configuration file
-  $scandir = scandir ($mgmt_config['abs_path_data']."config/");
-
-  if ($scandir)
+  if (is_dir ($mgmt_config['abs_path_data']."config/"))
   {
-    foreach ($scandir as $file)
+    $scandir = scandir ($mgmt_config['abs_path_data']."config/");
+
+    if ($scandir)
     {
-      if (strpos ($file, ".msg.dat") > 0 && is_file ($mgmt_config['abs_path_data']."config/".$file))
+      foreach ($scandir as $file)
       {
-        // load config file
-        $config_array = file ($mgmt_config['abs_path_data']."config/".$file);
-
-        if (is_array ($config_array) && sizeof ($config_array) > 0)
+        if (strpos ($file, ".msg.dat") > 0 && is_file ($mgmt_config['abs_path_data']."config/".$file))
         {
-          sort ($config_array);
+          // load config file
+          $config_array = file ($mgmt_config['abs_path_data']."config/".$file);
 
-          foreach ($config_array as $config_folder)
+          if (is_array ($config_array) && sizeof ($config_array) > 0)
           {
-            $date_begin = "";
-            $date_end = "";
+            sort ($config_array);
 
-            list ($object_id, $text_id, $format, $period, $users) = explode ("|", $config_folder);
-
-            $location = rdbms_getobject ($object_id);
-
-            // define format string (international date format that is used for queries in the database)
-            $format_db = "Y-m-d";
-
-            if ($location != "" && $text_id != "" && $period != "" && $users != "")
+            foreach ($config_array as $config_folder)
             {
-              // for each first day of the month
-              if ($period == "monthly" && date ("d", time()) == "01") 
+              $date_begin = "";
+              $date_end = "";
+
+              list ($object_id, $text_id, $format, $period, $users) = explode ("|", $config_folder);
+
+              $location = rdbms_getobject ($object_id);
+
+              // define format string (international date format that is used for queries in the database)
+              $format_db = "Y-m-d";
+
+              if ($location != "" && $text_id != "" && $period != "" && $users != "")
               {
-                // current month plus 1 month
-                $month = intval (date ("m", time())) + 1;
-                // current year
-                $year = intval (date ("Y", time()));
-                // correct month and year
-                if ($month == 13)
+                // for each first day of the month
+                if ($period == "monthly" && date ("d", time()) == "01") 
                 {
-                  $month = 1;
-                  $year = $year + 1;
+                  // current month plus 1 month
+                  $month = intval (date ("m", time())) + 1;
+                  // current year
+                  $year = intval (date ("Y", time()));
+                  // correct month and year
+                  if ($month == 13)
+                  {
+                    $month = 1;
+                    $year = $year + 1;
+                  }
+                  // 1st day of month
+                  $date_begin = date ($format_db, mktime (0, 0, 0, $month, 1, $year));
+                  // one month later
+                  $date_end = date ($format_db, mktime (0, 0, 0, ($month + 1), 0, $year));
                 }
-                // 1st day of month
-                $date_begin = date ($format_db, mktime (0, 0, 0, $month, 1, $year));
-                // one month later
-                $date_end = date ($format_db, mktime (0, 0, 0, ($month + 1), 0, $year));
-              }
-              // for each sunday
-              elseif ($period == "weekly" && strtolower (date ("D", time())) == "sun") 
-              {
-                // one week later
-                $date_begin = date ($format_db, time() + (60*60*24*7));
-                // two weeks later
-                $date_end = date ($format_db, time() + (60*60*24*14));
-              }
-              // for each day
-              elseif ($period == "daily") 
-              {
-                // tomorrow
-                $date_end = $date_begin = date ($format_db, time() + (60*60*24));
-              }
+                // for each sunday
+                elseif ($period == "weekly" && strtolower (date ("D", time())) == "sun") 
+                {
+                  // one week later
+                  $date_begin = date ($format_db, time() + (60*60*24*7));
+                  // two weeks later
+                  $date_end = date ($format_db, time() + (60*60*24*14));
+                }
+                // for each day
+                elseif ($period == "daily") 
+                {
+                  // tomorrow
+                  $date_end = $date_begin = date ($format_db, time() + (60*60*24));
+                }
 
-              // split users into array
-              $user_array = splitstring ($users);
+                // split users into array
+                $user_array = splitstring ($users);
 
-              // send notifications tu users
-              if ($date_begin != "" && $date_end != "")
-              {
-                // .folder object must be removed!
-                $site = getpublication ($location);
-                $cat = getcategory ($site, $location);
-                $location = getlocation ($location);
+                // send notifications tu users
+                if ($date_begin != "" && $date_end != "")
+                {
+                  // .folder object must be removed!
+                  $site = getpublication ($location);
+                  $cat = getcategory ($site, $location);
+                  $location = getlocation ($location);
 
-                sendlicensenotification ($site, $cat, $location, $text_id, $date_begin, $date_end, $user_array, $format);
+                  sendlicensenotification ($site, $cat, $location, $text_id, $date_begin, $date_end, $user_array, $format);
+                }
               }
             }
           }

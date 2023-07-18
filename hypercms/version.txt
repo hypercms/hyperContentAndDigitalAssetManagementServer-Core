@@ -7050,6 +7050,28 @@ Release 09/2023
 - Modifications in function createviewlink in Main API in order to force a reload of new thumbnails by using the provided time of function is_newthumbnail
 - Modifications in function createmedia in Media API in order to request to clear the browser cache if a new thumbnail has been created by creating a temporary file thumbnails.dat
 - Added the new session variable for the thumbnails in session.inc.php
+- Implementation of the upload of directories
+- Implementation of the new function createlocationname in Main API in order to create a locationname with valid and encoded folder names by applying function createfilename on each folder name
+- Modifications in popup_upload_html in order to support the relative file path of the selected directories and getResponseAndBuildFileMessage
+- Implememtation of the new local JS function activateDirectoryUpload in popup_upload_html in order to support the file or folder selection (folder upload is not supported by the Opera browser)
+- Modifications in function createfolders in Main API in order to apply function createfilename to all folders of the provided location path and the folder name
+- Modifications in service uploadfile in order to support the relative path provided by the HTML5 file upload and to create the missing folders 
+- Modifications in function file_iexists, is_ifile, and is_idir in Main API in order to verify that the directory exists before scanning
+- Modifications in function copyrecursive in Main API in order to verify that the source and destination directory exists before scanning 
+- Modifications in function deleteversions, deletefile, deletepublication, collectfolders, createmediaobjects, manipulateobject, and licensenotification in Main API in order to verify that the directory exists before scanning
+- Modifications in function getthemes, getmediafileversion, getcontainerversions, getlocaltemplates, gettemplateversions, and getlockedfileinfo in Get API in order to verify that the directory exists before scanning 
+- Modifications in function link_db_restore in Link API in order to verify that the directory exists before scanning 
+- Modifications in function clonefolder, indexcontent, and reindexcontent in Media API in order to verify that the directory exists before scanning 
+- Modifications in function createtaxonomy in Meta API in order to verify that the directory exists before scanning 
+- Modifications in function plugin_parse in Plugin API in order to verify that the directory exists before scanning 
+- Modifications in function settemplate in Set API in order to verify that the directory exists before scanning 
+- Modifications in function buildview in template engine in order to verify that the directory exists before scanning 
+- Modifications in function showcompexplorer and createnavigation in UI API in order to verify that the directory exists before scanning 
+- Design modifications in the CSS class hcmsWorkplaceControl of the Transparent design theme
+- Design modifications in the CSS class hcmsButton and hcmsButtonTiny of various design themes
+- Modification sin function settext, setpagelink, setcomplink in Set API in order to return unchanged container if the input parameters failed the validation
+- Updates in the English and German language files
+- Updates in the Users Guide
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components
@@ -7063,4 +7085,6 @@ Release 09/2023
 - Bug fix: Function userlogin in Security API did not provide the user IP address as array to function savelog 
 - Bug fix: Modifications in function ocr_extractcontent in Media API in order to remove all temporary images files
 - Bug fix: Function clonefolder also included folders in the recycle bin
-
+- Bug fix: Function createfolder in Main API did not get the category before the category has been used in the code
+- Bug fix: Function createfolder in Main API did not initialize the error array
+- Bug fix: Function createfolder in Main API did return the location including the folder name since it used the location result of function creatobject (after creating the folder object)

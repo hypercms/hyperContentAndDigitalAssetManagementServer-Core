@@ -144,131 +144,135 @@ function plugin_parse ($oldData=array())
 {
   global $mgmt_config;
 
-  $scandir = scandir ($mgmt_config['abs_path_plugin']);
-
-  if ($scandir)
+  if (!empty ($mgmt_config['abs_path_plugin']) && is_dir ($mgmt_config['abs_path_plugin']))
   {
-    // We must have an array here
-    if (!is_array ($oldData)) $oldData = array();
+    $scandir = scandir ($mgmt_config['abs_path_plugin']);
 
-    $return = array();
-
-    foreach ($scandir as $file) 
+    if ($scandir)
     {
-      // We only parse plugin.xml if present
-      if ($file != '.' && $file != '..' && is_dir ($mgmt_config['abs_path_plugin'].$file) && is_file ($mgmt_config['abs_path_plugin'].$file.'/plugin.xml')) 
+      // We must have an array here
+      if (!is_array ($oldData)) $oldData = array();
+
+      $return = array();
+
+      foreach ($scandir as $file) 
       {
-        $tmp = getcontent (loadfile ($mgmt_config['abs_path_plugin'].$file.'/', 'plugin.xml'), '<plugin>');
-        $pluginData = $tmp[0];
-
-        // ---------------------------------------------------
-        // Reading the definition containing basic definitions for this plugin
-        // All basic informations are required so that the plugin is loaded
-        $tmp = getcontent ($pluginData, '<definition>');
-
-        // stop parsing if there is no definition
-        if (!is_array($tmp) || empty ($tmp[0])) continue;
-
-        $definition = trim ($tmp[0]);
-
-        // reading the name of the plugin
-        $tmp = getcontent ($definition, '<name>');
-
-        // stop parsing if there is no name
-        if (!is_array($tmp) || empty ($tmp[0])) continue;
-
-        $name = trim ($tmp[0]);
-
-        // reading the author of the plugin
-        $tmp = getcontent ($definition, '<author>');
-
-        // stop parsing if there is no name
-        if (!is_array ($tmp) || empty ($tmp[0]))  continue;
-
-        $author = trim ($tmp[0]);
-
-        // reading the version of the plugin
-        $tmp = getcontent ($definition, '<version>');
-
-        // stop parsing if there is no name
-        if (!is_array ($tmp) || empty ($tmp[0])) continue;
-
-        $version = trim ($tmp[0]);
-
-        // reading the description of the plugin
-        $tmp = getcontent ($definition, '<description>');
-
-        // stop parsing if there is no name
-        if (!is_array ($tmp) || empty ($tmp[0])) continue;
-
-        $description = trim ($tmp[0]);
-
-        // clean
-        unset ($definition);
-
-        // ---------------------------------------------------
-        // reading the menus for this plugin
-        $tmp = getcontent ($pluginData, "<menus>");
-
-        $mainmenu = array();
-        $publicationmenu = array();
-        $contextmenu = array();
-
-        if (is_array ($tmp) && !empty ($tmp[0]))
+        // We only parse plugin.xml if present
+        if ($file != '.' && $file != '..' && is_dir ($mgmt_config['abs_path_plugin'].$file) && is_file ($mgmt_config['abs_path_plugin'].$file.'/plugin.xml')) 
         {
-          $menu = trim ($tmp[0]);
+          $tmp = getcontent (loadfile ($mgmt_config['abs_path_plugin'].$file.'/', 'plugin.xml'), '<plugin>');
+          $pluginData = $tmp[0];
 
-          // reading the main menu for this plugin
-          $tmp = getcontent ($menu, "<main>");
+          // ---------------------------------------------------
+          // Reading the definition containing basic definitions for this plugin
+          // All basic informations are required so that the plugin is loaded
+          $tmp = getcontent ($pluginData, '<definition>');
 
-          if (!empty ($tmp[0]))
+          // stop parsing if there is no definition
+          if (!is_array($tmp) || empty ($tmp[0])) continue;
+
+          $definition = trim ($tmp[0]);
+
+          // reading the name of the plugin
+          $tmp = getcontent ($definition, '<name>');
+
+          // stop parsing if there is no name
+          if (!is_array($tmp) || empty ($tmp[0])) continue;
+
+          $name = trim ($tmp[0]);
+
+          // reading the author of the plugin
+          $tmp = getcontent ($definition, '<author>');
+
+          // stop parsing if there is no name
+          if (!is_array ($tmp) || empty ($tmp[0]))  continue;
+
+          $author = trim ($tmp[0]);
+
+          // reading the version of the plugin
+          $tmp = getcontent ($definition, '<version>');
+
+          // stop parsing if there is no name
+          if (!is_array ($tmp) || empty ($tmp[0])) continue;
+
+          $version = trim ($tmp[0]);
+
+          // reading the description of the plugin
+          $tmp = getcontent ($definition, '<description>');
+
+          // stop parsing if there is no name
+          if (!is_array ($tmp) || empty ($tmp[0])) continue;
+
+          $description = trim ($tmp[0]);
+
+          // clean
+          unset ($definition);
+
+          // ---------------------------------------------------
+          // reading the menus for this plugin
+          $tmp = getcontent ($pluginData, "<menus>");
+
+          $mainmenu = array();
+          $publicationmenu = array();
+          $contextmenu = array();
+
+          if (is_array ($tmp) && !empty ($tmp[0]))
           {
-            $mainmenu = plugin_readmenu (trim ($tmp[0]), $file);
+            $menu = trim ($tmp[0]);
+
+            // reading the main menu for this plugin
+            $tmp = getcontent ($menu, "<main>");
+
+            if (!empty ($tmp[0]))
+            {
+              $mainmenu = plugin_readmenu (trim ($tmp[0]), $file);
+            }
+
+            // reading the publication menu for this plugin
+            $tmp = getcontent ($menu, "<publication>");
+
+            if (!empty ($tmp[0]))
+            {
+              $publicationmenu = plugin_readmenu (trim ($tmp[0]), $file);
+            }
+
+            // reading the publication menu for this plugin
+            $tmp = getcontent ($menu, "<context>");
+
+            if (!empty ($tmp[0]))
+            {
+              $contextmenu = plugin_readmenu (trim ($tmp[0]), $file);
+            }
           }
 
-          // reading the publication menu for this plugin
-          $tmp = getcontent ($menu, "<publication>");
+          // default plugin configuration when no old data is present
+          if (!array_key_exists ($file, $oldData)) $oldData[$file] = plugin_getdefaultconf ();
 
-          if (!empty ($tmp[0]))
-          {
-            $publicationmenu = plugin_readmenu (trim ($tmp[0]), $file);
-          }
+          $return[$file]['name'] = $name;
+          $return[$file]['author'] = $author;
+          $return[$file]['version'] = $version;
+          $return[$file]['description'] = $description;
+          
+          // active is always taken from old data
+          $return[$file]['active'] = $oldData[$file]['active'];
+          $return[$file]['folder'] = $mgmt_config['abs_path_plugin'].$file."/";
+          $return[$file]['menu'] = array();
 
-          // reading the publication menu for this plugin
-          $tmp = getcontent ($menu, "<context>");
+          // navigation tree
+          if (!empty ($mainmenu)) $return[$file]['menu']['main'] = $mainmenu;
+          if (!empty ($publicationmenu)) $return[$file]['menu']['publication'] = $publicationmenu;
 
-          if (!empty ($tmp[0]))
-          {
-            $contextmenu = plugin_readmenu (trim ($tmp[0]), $file);
-          }
+          // context menu entry
+          if (!empty ($contextmenu)) $return[$file]['menu']['context'] = $contextmenu;
         }
-
-        // default plugin configuration when no old data is present
-        if (!array_key_exists ($file, $oldData)) $oldData[$file] = plugin_getdefaultconf ();
-
-        $return[$file]['name'] = $name;
-        $return[$file]['author'] = $author;
-        $return[$file]['version'] = $version;
-        $return[$file]['description'] = $description;
-        
-        // active is always taken from old data
-        $return[$file]['active'] = $oldData[$file]['active'];
-        $return[$file]['folder'] = $mgmt_config['abs_path_plugin'].$file."/";
-        $return[$file]['menu'] = array();
-
-        // navigation tree
-        if (!empty ($mainmenu)) $return[$file]['menu']['main'] = $mainmenu;
-        if (!empty ($publicationmenu)) $return[$file]['menu']['publication'] = $publicationmenu;
-
-        // context menu entry
-        if (!empty ($contextmenu)) $return[$file]['menu']['context'] = $contextmenu;
       }
-    }
 
-    ksort ($return);
-    return $return;
+      ksort ($return);
+      return $return;
+    }
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- plugin_generatedefinition -------------------------------------------

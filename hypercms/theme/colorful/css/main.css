@@ -569,13 +569,10 @@ a.hcmsNavigator
 
 .hcmsButton:hover, .hcmsButtonActive
 {
-  padding: 1px;
-  margin: 0;
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
 	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
 	background-color: #FFC477;
-  border: 1px solid #FF8411;
 }
 
 .hcmsButtonOff
@@ -599,9 +596,6 @@ a.hcmsNavigator
 
 .hcmsButtonTiny:hover
 {
-  padding: 0;
-  margin: 0;
-  border: 0;
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
 	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');

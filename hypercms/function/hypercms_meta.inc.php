@@ -891,133 +891,136 @@ function createtaxonomy ($site_name="", $recreate=false)
   $file_array = array();
   $site_memory = array();
 
-  $scandir = scandir ($dir);
-
-  if ($scandir)
+  if (is_dir ($dir))
   {
-    foreach ($scandir as $file)
+    $scandir = scandir ($dir);
+
+    if ($scandir)
     {
-      // only taxonomy definition files
-      if ($file != "." && $file != ".." && is_file ($dir.$file) && strpos ($file, ".taxonomy.csv") > 0)
+      foreach ($scandir as $file)
       {
-        list ($site, $rest) = explode (".", $file);
-
-        if (empty ($site_name) || $site == $site_name)
+        // only taxonomy definition files
+        if ($file != "." && $file != ".." && is_file ($dir.$file) && strpos ($file, ".taxonomy.csv") > 0)
         {
-          // if definition file is younger than generated PHP file
-          if (!is_file ($dir.$site.".taxonomy.inc.php") || (is_file ($dir.$site.".taxonomy.inc.php") && filemtime ($dir.$file) > filemtime ($dir.$site.".taxonomy.inc.php")))
-          {
-            $recreate = true;
-          }
+          list ($site, $rest) = explode (".", $file);
 
-          // define file
-          $file_array[$site]= $dir.$file;
-          $site_memory[] = $site;
+          if (empty ($site_name) || $site == $site_name)
+          {
+            // if definition file is younger than generated PHP file
+            if (!is_file ($dir.$site.".taxonomy.inc.php") || (is_file ($dir.$site.".taxonomy.inc.php") && filemtime ($dir.$file) > filemtime ($dir.$site.".taxonomy.inc.php")))
+            {
+              $recreate = true;
+            }
+
+            // define file
+            $file_array[$site]= $dir.$file;
+            $site_memory[] = $site;
+          }
         }
       }
     }
-  }
 
-	// create taxonomy
-  if (is_array ($file_array) && sizeof ($file_array) > 0)
-  {
-    foreach ($file_array as $site => $file)
+    // create taxonomy
+    if (is_array ($file_array) && sizeof ($file_array) > 0)
     {
-      $result = array();
-
-      if (valid_publicationname ($site) && is_file ($file))
+      foreach ($file_array as $site => $file)
       {
-        // load CSV file
-        $data = load_csv ($file, ";", '"', "utf-8", "utf-8");
+        $result = array();
 
-        if (is_array ($data) && sizeof ($data) > 0)
+        if (valid_publicationname ($site) && is_file ($file))
         {
-          // taxonomy ID of each taxonomy element must be unique
-          $id = 1;
+          // load CSV file
+          $data = load_csv ($file, ";", '"', "utf-8", "utf-8");
 
-          // rows
-          foreach ($data as $row => $temp_array)
+          if (is_array ($data) && sizeof ($data) > 0)
           {
-            // columns
-            foreach ($temp_array as $lang => $label)
+            // taxonomy ID of each taxonomy element must be unique
+            $id = 1;
+
+            // rows
+            foreach ($data as $row => $temp_array)
             {
-              // hierarchy level of the keyword item
-              if ($lang == "level")
+              // columns
+              foreach ($temp_array as $lang => $label)
               {
-                $level = $label;
+                // hierarchy level of the keyword item
+                if ($lang == "level")
+                {
+                  $level = $label;
 
-                // define parent ID based on level comparison
-                if ($level == 1)
-                {
-                  $path = "";
-                }
-                // next level
-                elseif ($level > $level_prev)
-                {
-                  $path = $path."/".$id_prev;
-                }
-                // previous level
-                elseif ($level < $level_prev)
-                {
-                  $diff = $level_prev - $level;
-                  for ($i=1; $i<=$diff; $i++) $path = substr ($path, 0, strrpos ($path, "/"));
-                }
+                  // define parent ID based on level comparison
+                  if ($level == 1)
+                  {
+                    $path = "";
+                  }
+                  // next level
+                  elseif ($level > $level_prev)
+                  {
+                    $path = $path."/".$id_prev;
+                  }
+                  // previous level
+                  elseif ($level < $level_prev)
+                  {
+                    $diff = $level_prev - $level;
+                    for ($i=1; $i<=$diff; $i++) $path = substr ($path, 0, strrpos ($path, "/"));
+                  }
 
-                // set previous memory
-                $level_prev = $level;
-                $id_prev = $id;
+                  // set previous memory
+                  $level_prev = $level;
+                  $id_prev = $id;
+                }
+                // keyword for a specfic entry for a language
+                else
+                {
+                  // clean text
+                  $label = str_replace (array("\""), array(""), $label);
+
+                  // escape commas
+                  $label = str_replace (",", "¸", $label);
+
+                  // create array element
+                  $result[] = "\$taxonomy['".$lang."']['".$path."/".$id."/'] = \"".trim ($label)."\";";
+                }
               }
-              // keyword for a specfic entry for a language
+
+              // id of next row
+              $id++;
+            }
+
+            // save result for publication
+            if (sizeof ($result) > 0)
+            {
+              $resultdata = "<?php\n\$taxonomy = array();\n".implode ("\n", $result)."\n?>";
+
+              $savefile = savefile ($dir, $site.".taxonomy.inc.php", $resultdata);
+
+              if (!empty ($recreate) && $savefile == true)
+              {
+                // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
+                $session_id = suspendsession ("createtaxonomy.".$site, $user);
+
+                // remove and recreate the taxonomy for all objects of the publication
+                if (in_array ("default", $site_memory) && empty ($done_setpublicationtaxonomy))
+                {
+                  rdbms_setpublicationtaxonomy ("", true);
+                  $done_setpublicationtaxonomy = true;
+                }
+                elseif ($site != "default")
+                {
+                  rdbms_setpublicationtaxonomy ($site, true);
+                }
+
+                $errcode = "00209";
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|".$errcode."|Taxonomy of publication '".$site."' has been created";
+
+                // restart session (that has been previously closed for non-blocking procedure)
+                revokesession ("createtaxonomy.".$site, $user, $session_id);
+              }
               else
               {
-                // clean text
-                $label = str_replace (array("\""), array(""), $label);
-
-                // escape commas
-                $label = str_replace (",", "¸", $label);
-
-                // create array element
-                $result[] = "\$taxonomy['".$lang."']['".$path."/".$id."/'] = \"".trim ($label)."\";";
+                $errcode = "10209";
+                $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Taxonomy of publication '".$site."' could not be created";
               }
-            }
-
-            // id of next row
-            $id++;
-          }
-
-          // save result for publication
-          if (sizeof ($result) > 0)
-          {
-            $resultdata = "<?php\n\$taxonomy = array();\n".implode ("\n", $result)."\n?>";
-
-            $savefile = savefile ($dir, $site.".taxonomy.inc.php", $resultdata);
-
-            if (!empty ($recreate) && $savefile == true)
-            {
-              // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
-              $session_id = suspendsession ("createtaxonomy.".$site, $user);
-
-              // remove and recreate the taxonomy for all objects of the publication
-              if (in_array ("default", $site_memory) && empty ($done_setpublicationtaxonomy))
-              {
-                rdbms_setpublicationtaxonomy ("", true);
-                $done_setpublicationtaxonomy = true;
-              }
-              elseif ($site != "default")
-              {
-                rdbms_setpublicationtaxonomy ($site, true);
-              }
-
-              $errcode = "00209";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|information|".$errcode."|Taxonomy of publication '".$site."' has been created";
-
-              // restart session (that has been previously closed for non-blocking procedure)
-              revokesession ("createtaxonomy.".$site, $user, $session_id);
-            }
-            else
-            {
-              $errcode = "10209";
-              $error[] = $mgmt_config['today']."|hypercms_meta.inc.php|error|".$errcode."|Taxonomy of publication '".$site."' could not be created";
             }
           }
         }

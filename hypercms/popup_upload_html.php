@@ -53,6 +53,9 @@ $media = getfilename ($objectdata, "media");
 // get file info
 $file_info = getfileinfo ($site, $location.$object, $cat);
 
+// verify browser
+$user_client = getbrowserinfo ();
+
 // create secure token
 $token = createtoken ($user);
 
@@ -80,7 +83,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
   elseif  (!empty ($mgmt_config['storagefactor'])) $factor = $mgmt_config['storagefactor'];
   else $factor = 1.2;
 
-  if (($filesize['filesize'] * $factor) > ($mgmt_config[$site]['storage_limit'] * 1024))
+  if ((intval ($filesize['filesize']) * $factor) > ($mgmt_config[$site]['storage_limit'] * 1024))
   {
     echo showinfopage ($hcms_lang['storage-limit-exceeded'][$lang], $lang);
 
@@ -386,8 +389,11 @@ $(document).ready(function ()
     // Empty the div before
     div.empty();
                
-     // Name field
+    // Name field
     var name = getFileNameSpan(file.name);
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
         
     // Size field
     var size = $('<div></div>');
@@ -407,6 +413,7 @@ $(document).ready(function ()
     
     // Main Div                
     div.append(name)
+       .append(path)
        .append(size)
        .append(progress)
        .append(buttons)
@@ -436,7 +443,7 @@ $(document).ready(function ()
       var found = false;
 
       // if the file is already in the queue
-      $('#selectedFiles .file_name').each(function (index, element) {
+      $('#selectedFiles.file_name').each(function (index, element) {
         element = $(element);
         // use the title because there is always the full name stored
         if (element.prop('title') == data.files[0].name)
@@ -1491,6 +1498,27 @@ function activateOptions ()
 {
   hcms_slideDownLayer('optionsLayer', '0');
 }
+
+function activateDirectoryUpload (active)
+{
+  var fileinput = document.getElementById('inputSelectFile');
+
+  if (fileinput)
+  {
+    <?php if ($uploadmode == "multi") { ?>
+    if (active == 0)
+    {
+      fileinput.removeAttribute('webkitdirectory');
+    }
+    else
+    {
+      fileinput.setAttribute('webkitdirectory', 'webkitdirectory');
+    }
+    <?php } ?>
+
+    fileinput.click();
+  }
+}
 </script>
 </head>
 
@@ -1540,15 +1568,17 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><div style=\"width:90%;
       
       <!-- buttons -->
       <div style="display:block; margin-top:8px; padding:0; clear:both;">
-        <button type="button" for="inputSelectFile" id="btnSelectFile" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span><input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple"; ?> /></button>
+        <input id="inputSelectFile" type="file" name="Filedata" <?php if ($uploadmode == "multi") echo "multiple "; ?> style="position:absolute; visibility:hidden;" />
+        <button type="button" onclick="activateDirectoryUpload(0);" id="btnSelectFile" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></span></button>
+        <?php if ($uploadmode == "multi" && empty ($user_client['msie']) && empty ($user_client['opera'])) { ?><button type="button" onclick="activateDirectoryUpload(1);" id="btnSelectFolder" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['select-folder'][$lang]); ?></span></button><?php } ?>
         <?php if (!empty ($mgmt_config['dropbox_appkey']) && !empty ($mgmt_config['publicdownload'])) { ?>
         <button type="button" id="btnDropboxChoose" class="button hcmsButtonGreen"><span id="txtSelectFile"><?php echo getescapedtext ($hcms_lang['dropbox'][$lang]); ?></span></button>
         <?php } ?>
         <?php if (!empty ($mgmt_config['ftp_download'])) { ?>
         <button type="button" id="btnFTP" class="button hcmsButtonGreen" onclick="hcms_openWindow('popup_ftp.php?site=<?php echo url_encode($site); ?>&multi=<?php if ($uploadmode == "multi") echo "true"; else echo "false"; ?>', 'ftp', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes', 600, 400);"><?php echo getescapedtext ($hcms_lang['ftp'][$lang]); ?></button>
         <?php } ?>
-        <button type="button" id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['upload-files'][$lang]); ?></button>
-        <button type="button" id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel-all-uploads'][$lang]); ?></button>
+        <button type="button" id="btnUpload" class="button hcmsButtonBlue" ><?php echo getescapedtext ($hcms_lang['upload'][$lang]); ?></button>
+        <button type="button" id="btnCancel" class="button hcmsButtonOrange" ><?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?></button>
       </div>
 
       <!-- options -->

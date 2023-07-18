@@ -574,10 +574,7 @@ a.hcmsNavigator
 
 .hcmsButton:hover, .hcmsButtonActive
 {
-  padding: 1px;
-  margin: 0;
   background-color: #FF8411;
-  border: 1px solid #C26003;
 }
 
 .hcmsButtonOff
@@ -601,9 +598,6 @@ a.hcmsNavigator
 
 .hcmsButtonTiny:hover
 {
-  padding: 0;
-  margin: 0;
-  border: 0;
   background-color: #FF8411;
 }
 

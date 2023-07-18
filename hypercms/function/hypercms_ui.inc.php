@@ -3726,7 +3726,7 @@ $(document).ready(function()
       }
     }
     // -------------------------------- file explorer -------------------------------- 
-    elseif ($dir != "")
+    elseif (!empty ($dir) && is_dir ($dir))
     {
       // get all files in dir
       $scandir = scandir ($dir);
@@ -6040,98 +6040,101 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
     $currentobject = correctpath ($currentobject);
 
     // collect navigation data
-    $scandir = scandir ($docroot);
-
-    if ($scandir)
+    if (is_dir ($docroot))
     {
-      $i = 0;
-      $fileitem = array(); 
-      $navitem = array();
+      $scandir = scandir ($docroot);
 
-      foreach ($scandir as $file)
+      if ($scandir)
       {
-        if ($file != "." && $file != ".." && substr ($file, -4) != ".off" && substr ($file, -8) != ".recycle") $fileitem[] = $file;
-      }
+        $i = 0;
+        $fileitem = array(); 
+        $navitem = array();
 
-      if (sizeof ($fileitem) > 0)
-      {
-        natcasesort ($fileitem);
-        reset ($fileitem);
-
-        foreach ($fileitem as $object)
+        foreach ($scandir as $file)
         {
-          // PAGE OBJECT -> standard navigation item
-          if (is_file ($docroot.$object) && $object != ".folder" && (empty ($navi_config['index_file']) || $object == $navi_config['index_file']))
+          if ($file != "." && $file != ".." && substr ($file, -4) != ".off" && substr ($file, -8) != ".recycle") $fileitem[] = $file;
+        }
+
+        if (sizeof ($fileitem) > 0)
+        {
+          natcasesort ($fileitem);
+          reset ($fileitem);
+
+          foreach ($fileitem as $object)
           {
-            $navi = readnavigation ($site, $docroot, $object, $view, "sys");
-
-            if ($navi != false && $navi['hide'] == false)
+            // PAGE OBJECT -> standard navigation item
+            if (is_file ($docroot.$object) && $object != ".folder" && (empty ($navi_config['index_file']) || $object == $navi_config['index_file']))
             {
-              // navigation display
-              if (substr_count ($currentobject, $docroot.$object) == 1) $add_css = $navi_config['attr_li_active'];
-              else $add_css = ""; 
+              $navi = readnavigation ($site, $docroot, $object, $view, "sys");
 
-              if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
-              $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$navi['link']."|".str_replace("|", "&#124;", $navi['title']);
-              $navitem[$navi['order'].'.'.$i]['sub'] = "";
-
-              $i++;
-            }
-          }
-          // FOLDER -> next navigation level
-          elseif ($recursive && is_dir ($docroot.$object) && !is_emptyfolder ($docroot.$object))
-          {
-            $navi = readnavigation ($site, $docroot, $object, $view, "sys");
-
-            if (is_array ($navi) && empty ($navi['hide']))
-            {
-              // use folder object data
-              if (empty ($navi_config['use_1st_folderitem']))
+              if ($navi != false && $navi['hide'] == false)
               {
-                // "X" means undefined sort order
-                if ($navi['order'] == "X") $navi['order'] = $i;
+                // navigation display
+                if (substr_count ($currentobject, $docroot.$object) == 1) $add_css = $navi_config['attr_li_active'];
+                else $add_css = ""; 
 
-                // create main item for sub navigation
                 if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
-                $navitem[$navi['order'].'.'.$i]['item'] = $navi_config['attr_li_dropdown']."|#|".$navi['title'];
+                $navitem[$navi['order'].'.'.$i]['item'] = $add_css."|".$navi['link']."|".str_replace("|", "&#124;", $navi['title']);
                 $navitem[$navi['order'].'.'.$i]['sub'] = "";
+
+                $i++;
               }
+            }
+            // FOLDER -> next navigation level
+            elseif ($recursive && is_dir ($docroot.$object) && !is_emptyfolder ($docroot.$object))
+            {
+              $navi = readnavigation ($site, $docroot, $object, $view, "sys");
 
-              // create sub navigation
-              $subnav = createnavigation ($site, $docroot.$object."/", $urlroot.$object."/", $view, $currentobject);
-
-              if (is_array ($subnav))
+              if (is_array ($navi) && empty ($navi['hide']))
               {
-                ksort ($subnav, SORT_NUMERIC);
-                reset ($subnav);
-                $j = 1;
-
-                foreach ($subnav as $key => $value)
+                // use folder object data
+                if (empty ($navi_config['use_1st_folderitem']))
                 {
-                  // use page object data
-                  if (!empty ($navi_config['use_1st_folderitem']) && $j == 1)
-                  {
-                    // "X" means undefined sort order
-                    if ($navi['order'] == "X") $navi['order'] = $key;
+                  // "X" means undefined sort order
+                  if ($navi['order'] == "X") $navi['order'] = $i;
 
-                    // create main item for sub navigation
-                    if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
-                    $navitem[$navi['order'].'.'.$i]['item'] = $value['item'];
-                    $navitem[$navi['order'].'.'.$i]['sub'] = "";
-                  }
-                  else
-                  {
-                    // sub navigation
-                    if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
-                    if (empty ($navitem[$navi['order'].'.'.$i]['sub'])) $navitem[$navi['order'].'.'.$i]['sub'] = array();
-                    $navitem[$navi['order'].'.'.$i]['sub'][$key] = $value;
-                  }
-
-                  $j++;
+                  // create main item for sub navigation
+                  if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
+                  $navitem[$navi['order'].'.'.$i]['item'] = $navi_config['attr_li_dropdown']."|#|".$navi['title'];
+                  $navitem[$navi['order'].'.'.$i]['sub'] = "";
                 }
-              }
 
-              $i++;
+                // create sub navigation
+                $subnav = createnavigation ($site, $docroot.$object."/", $urlroot.$object."/", $view, $currentobject);
+
+                if (is_array ($subnav))
+                {
+                  ksort ($subnav, SORT_NUMERIC);
+                  reset ($subnav);
+                  $j = 1;
+
+                  foreach ($subnav as $key => $value)
+                  {
+                    // use page object data
+                    if (!empty ($navi_config['use_1st_folderitem']) && $j == 1)
+                    {
+                      // "X" means undefined sort order
+                      if ($navi['order'] == "X") $navi['order'] = $key;
+
+                      // create main item for sub navigation
+                      if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
+                      $navitem[$navi['order'].'.'.$i]['item'] = $value['item'];
+                      $navitem[$navi['order'].'.'.$i]['sub'] = "";
+                    }
+                    else
+                    {
+                      // sub navigation
+                      if (empty ($navitem[$navi['order'].'.'.$i])) $navitem[$navi['order'].'.'.$i] = array();
+                      if (empty ($navitem[$navi['order'].'.'.$i]['sub'])) $navitem[$navi['order'].'.'.$i]['sub'] = array();
+                      $navitem[$navi['order'].'.'.$i]['sub'][$key] = $value;
+                    }
+
+                    $j++;
+                  }
+                }
+
+                $i++;
+              }
             }
           }
         }
@@ -6139,9 +6142,9 @@ function createnavigation ($site, $docroot, $urlroot, $view="publish", $currento
     }
 
     if (isset ($navitem) && is_array ($navitem) && sizeof ($navitem) > 0) return $navitem;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- shownavigation -----------------------------

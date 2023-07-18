@@ -28,6 +28,8 @@ $overwrite = getrequest ("overwrite");
 $versioning = getrequest ("versioning");
 $deletedate = getrequest ("deletedate");
 $token = getrequest ("token");
+// relative file path array
+$filepath = getrequest ("filepath", "array");
 // unzip and zip files
 $unzip = getrequest ("unzip");
 $zipname = getrequest ("zipname");
@@ -168,6 +170,34 @@ if ($token != "" && checktoken ($token, $user))
     // if the file has been uploaded or all file chunks have been uploaded
     if (empty ($filechunkinfo) || !empty ($filechunks_finished))
     {
+      // verify or create folders based on the provided relative path
+      $filename = $_FILES['Filedata']['name'];
+
+      if (!empty ($filepath[$filename]) && strpos ($filepath[$filename], "/") > 0)
+      {
+        $relpath = dirname ($filepath[$filename]);
+
+        if (trim ($relpath) != "")
+        {
+          if (strpos ($relpath, "/") > 0)
+          {
+            $folder = basename ($relpath);
+            $relpath = substr ($relpath, 0, strrpos ($relpath, "/") + 1);
+            $location = $location.$relpath;
+          }
+          else $folder = $relpath;
+
+          // create missing folders
+          $createfolders = createfolders ($site, $location, $folder, $user);
+
+          // set the new location path based on the resuls (do not verify the result array key since it might be false if the folder exists already)
+          if (!empty ($createfolders['location']) && !empty ($createfolders['folder']))
+          {
+            $location = $createfolders['location'].$createfolders['folder']."/";
+          }
+        }
+      }
+
       $result = uploadfile ($site, $location, $cat, $_FILES, $page, $unzip, $createthumbnail, $imageresize, $imagepercentage, $user, $checkduplicates, $overwrite, $versioning, $zipname, $zipcount);
 
       // remove temp directory used for uploaded file chunks

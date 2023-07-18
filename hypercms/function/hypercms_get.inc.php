@@ -3021,54 +3021,62 @@ function getthemes ($site_array=array())
 
   // system themes
   $theme_dir = $mgmt_config['abs_path_cms']."theme/";
-  $scandir = scandir ($theme_dir);
 
-  if ($scandir)
+  if (is_dir ($theme_dir))
   {
-    foreach ($scandir as $entry)
+    $scandir = scandir ($theme_dir);
+
+    if ($scandir)
     {
-      if (strtolower($entry) != "mobile" && $entry != "." && $entry != ".." && is_dir ($theme_dir.$entry) && is_dir ($theme_dir.$entry."/img") && is_dir ($theme_dir.$entry."/css"))
-      { 
-        $theme_array[$entry] = ucfirst ($entry);
+      foreach ($scandir as $entry)
+      {
+        if (strtolower($entry) != "mobile" && $entry != "." && $entry != ".." && is_dir ($theme_dir.$entry) && is_dir ($theme_dir.$entry."/img") && is_dir ($theme_dir.$entry."/css"))
+        { 
+          $theme_array[$entry] = ucfirst ($entry);
+        }
       }
     }
-  }
 
-  // portal design themes of the publication
-  if (!is_array ($site_array) && valid_publicationname ($site_array))
-  {
-    $site_array = array($site_array);
-  }
-
-  if (is_array ($site_array) && sizeof ($site_array) > 0)
-  {
-    foreach ($site_array as $site)
+    // portal design themes of the publication
+    if (!is_array ($site_array) && valid_publicationname ($site_array))
     {
-      if (valid_publicationname ($site) && is_dir ($mgmt_config['abs_path_rep']."portal/".$site."/"))
-      {
-        $theme_dir = $mgmt_config['abs_path_rep']."portal/".$site."/";
-        $scandir = scandir ($theme_dir);
+      $site_array = array($site_array);
+    }
 
-        if ($scandir)
+    if (is_array ($site_array) && sizeof ($site_array) > 0)
+    {
+      foreach ($site_array as $site)
+      {
+        if (valid_publicationname ($site) && is_dir ($mgmt_config['abs_path_rep']."portal/".$site."/"))
         {
-          foreach ($scandir as $entry)
+          $theme_dir = $mgmt_config['abs_path_rep']."portal/".$site."/";
+
+          if (is_dir ($theme_dir))
           {
-            if ($entry != "." && $entry != ".." && is_dir ($theme_dir.$entry) && is_dir ($theme_dir.$entry."/img") && is_dir ($theme_dir.$entry."/css"))
+            $scandir = scandir ($theme_dir);
+
+            if ($scandir)
             {
-              $theme_array[$site."/".$entry] = $site."/".$entry;
+              foreach ($scandir as $entry)
+              {
+                if ($entry != "." && $entry != ".." && is_dir ($theme_dir.$entry) && is_dir ($theme_dir.$entry."/img") && is_dir ($theme_dir.$entry."/css"))
+                {
+                  $theme_array[$site."/".$entry] = $site."/".$entry;
+                }
+              }
             }
           }
         }
       }
     }
-  }
 
-  // prepare output
-  if (is_array ($theme_array) && sizeof ($theme_array) > 0)
-  {
-    natcasesort ($theme_array);
-    reset ($theme_array);
-    return $theme_array;
+    // prepare output
+    if (is_array ($theme_array) && sizeof ($theme_array) > 0)
+    {
+      natcasesort ($theme_array);
+      reset ($theme_array);
+      return $theme_array;
+    }
   }
   
   return false;
@@ -3443,46 +3451,49 @@ function getmediafileversion ($container)
         $version_dir = getcontentlocation ($container_id, 'abs_path_content');
 
         // select all content version files in directory
-        $scandir = scandir ($version_dir);
-
-        $version_container = array();
-
-        if ($scandir)
+        if (is_dir ($version_dir))
         {
-          foreach ($scandir as $entry)
+          $scandir = scandir ($version_dir);
+
+          $version_container = array();
+
+          if ($scandir)
           {
-            // only select versions when media file has been changed
-            if ($entry != "." && $entry != ".." && is_file ($version_dir.$entry) && preg_match ("/_hcm".$container_id."./i", $entry))
+            foreach ($scandir as $entry)
             {
-              // get file extension of container version
-              $version_ext = substr ($entry, strrpos ($entry, "."));
+              // only select versions when media file has been changed
+              if ($entry != "." && $entry != ".." && is_file ($version_dir.$entry) && preg_match ("/_hcm".$container_id."./i", $entry))
+              {
+                // get file extension of container version
+                $version_ext = substr ($entry, strrpos ($entry, "."));
 
-              // time stamp of version (YYYYMMDDHHMMSS)
-              $version_timestamp = str_replace (array(".v_", "-", "_"), array("", "", ""), $version_ext);
+                // time stamp of version (YYYYMMDDHHMMSS)
+                $version_timestamp = str_replace (array(".v_", "-", "_"), array("", "", ""), $version_ext);
 
-              $version_container[$version_timestamp] = $entry;
+                $version_container[$version_timestamp] = $entry;
+              }
             }
           }
-        }
 
-        // get media file
-        if (sizeof ($version_container) > 0)
-        {
-          ksort ($version_container);
-          $version_container = array_reverse ($version_container, true);
-          reset ($version_container);
-
-          $temp_mediafile = "";
-
-          foreach ($version_container as $version_timestamp => $version_mediafile)
+          // get media file
+          if (sizeof ($version_container) > 0)
           {
-            if ($reference_timestamp >= $version_timestamp) break;
+            ksort ($version_container);
+            $version_container = array_reverse ($version_container, true);
+            reset ($version_container);
 
-            $mediafile = $version_mediafile;
+            $temp_mediafile = "";
+
+            foreach ($version_container as $version_timestamp => $version_mediafile)
+            {
+              if ($reference_timestamp >= $version_timestamp) break;
+
+              $mediafile = $version_mediafile;
+            }
           }
-        }
 
-        if (!empty ($mediafile)) return $mediafile;
+          if (!empty ($mediafile)) return $mediafile;
+        }
       }
     }
   }
@@ -3669,30 +3680,33 @@ function getcontainerversions ($container)
     $versiondir = getcontentlocation ($container_id, 'abs_path_content');
 
     // select all content version files in directory
-    $scandir = scandir ($versiondir);
-
-    if ($scandir)
+    if (is_dir ($versiondir))
     {
-      foreach ($scandir as $entry)
-      {
-        if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/".$container_id.".xml.v_/i", $entry) || preg_match ("/_hcm".$container_id."./i", $entry)))
-        {
-          // extract date and time from file extension
-          $file_v_ext = substr (strrchr ($entry, "."), 3);
-          $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
-          $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
-          $time = str_replace ("-", ":", $time);
-          $date_v = $date." ".$time;
+      $scandir = scandir ($versiondir);
 
-          $result[$date_v] = $entry;
+      if ($scandir)
+      {
+        foreach ($scandir as $entry)
+        {
+          if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/".$container_id.".xml.v_/i", $entry) || preg_match ("/_hcm".$container_id."./i", $entry)))
+          {
+            // extract date and time from file extension
+            $file_v_ext = substr (strrchr ($entry, "."), 3);
+            $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
+            $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
+            $time = str_replace ("-", ":", $time);
+            $date_v = $date." ".$time;
+
+            $result[$date_v] = $entry;
+          }
         }
       }
-    }
 
-    if (sizeof ($result) > 0)
-    {
-      ksort ($result);
-      return $result;
+      if (sizeof ($result) > 0)
+      {
+        ksort ($result);
+        return $result;
+      }
     }
   }
   
@@ -3711,7 +3725,7 @@ function getlocaltemplates ($site, $cat="all")
 {
   global $mgmt_config;
 
-  if (valid_publicationname ($site))
+  if (valid_publicationname ($site) && is_dir ($mgmt_config['abs_path_template'].$site."/"))
   {
     $scandir = scandir ($mgmt_config['abs_path_template'].$site."/");
 
@@ -3880,30 +3894,33 @@ function gettemplateversions ($site, $template)
     $versiondir = $mgmt_config['abs_path_template'].$site."/";
 
     // select all template version files in directory
-    $scandir = scandir ($versiondir);
-
-    if ($scandir)
+    if (is_dir ($versiondir))
     {
-      foreach ($scandir as $entry)
-      {
-        if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && preg_match ("/".$template.".v_/i", $entry))
-        {
-          // extract date and time from file extension
-          $file_v_ext = substr (strrchr ($entry, "."), 3);
-          $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
-          $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
-          $time = str_replace ("-", ":", $time);
-          $date_v = $date." ".$time;
+      $scandir = scandir ($versiondir);
 
-          $result[$date_v] = $entry;
+      if ($scandir)
+      {
+        foreach ($scandir as $entry)
+        {
+          if ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && preg_match ("/".$template.".v_/i", $entry))
+          {
+            // extract date and time from file extension
+            $file_v_ext = substr (strrchr ($entry, "."), 3);
+            $date = substr ($file_v_ext, 0, strpos ($file_v_ext, "_"));
+            $time = substr ($file_v_ext, strpos ($file_v_ext, "_") + 1);
+            $time = str_replace ("-", ":", $time);
+            $date_v = $date." ".$time;
+
+            $result[$date_v] = $entry;
+          }
         }
       }
-    }
 
-    if (sizeof ($result) > 0)
-    {
-      ksort ($result);
-      return $result;
+      if (sizeof ($result) > 0)
+      {
+        ksort ($result);
+        return $result;
+      }
     }
   }
   
@@ -5849,7 +5866,7 @@ function getlockedfileinfo ($location, $file)
   if (valid_locationname ($location) && valid_objectname ($file) && is_dir ($location))
   {
     // file is locked
-    if (!is_file ($location.$file))
+    if (!is_file ($location.$file) && is_dir ($location))
     {
       $scandir = scandir ($location);
 

@@ -90,7 +90,7 @@ function settemplate ($site, $location, $object, $template, $recursive=false)
     if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1) return false;
 
     // set template recursive (only for folder)
-    if ($recursive == true && $object == ".folder")
+    if ($recursive == true && $object == ".folder" && is_dir ($location))
     {
       $scandir = scandir ($location);
 
@@ -409,11 +409,12 @@ function setarticle ($site, $contentdata, $contentfile, $arttitle=array(), $arts
       }
     }
 
-    // return container
-    if ($contentdatanew != false) return $contentdatanew;
+    // return container data
+    return $contentdatanew;
   }
 
-  return false;
+  // return input
+  return $contentdata;
 }
 
 // -------------------------------------------- settext -----------------------------------------------
@@ -833,9 +834,12 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
     {
       return $contentdata;
     }
+    // on error
+    else return false;
   }
 
-  return false;
+  // return input
+  return $contentdata;
 }
 
 // -------------------------------------------- setmedia -----------------------------------------------
@@ -1092,9 +1096,12 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
     {
       return $contentdata;
     }
+    // on error
     else return false;
   }
-  else return false;
+
+  // return input
+  return $contentdata;
 }
 
 // -------------------------------------------- setpagelink -----------------------------------------------
@@ -1316,9 +1323,12 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
     {
       return $contentdata;
     }
+    // on error
+    else return false;
   }
 
-  return false;
+  // return input
+  return $contentdata;
 }
 
 // -------------------------------------------- setcomplink -----------------------------------------------
@@ -1546,9 +1556,12 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
     {
       return $contentdata;
     }
+    // on errpr
     else return false;
   }
-  else return false;
+
+  // return input
+  return $contentdata;
 }
 
 // ------------------------------------------- sethead -------------------------------------------
@@ -1557,7 +1570,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
 // output: updated content container (XML), false on error
 
 // description:
-// Only used for content in general head information of container.
+// Set content content in container head.
 
 function sethead ($site, $contentdata, $contentfile, $headcontent=array(), $user="sys", $charset="")
 {
@@ -1636,9 +1649,12 @@ function sethead ($site, $contentdata, $contentfile, $headcontent=array(), $user
 
       return $contentdata;
     }
+    // on error
     else return false;
   }
-  else return false; 
+
+  // return input
+  return $contentdata;
 }
 
 // ---------------------------------------- setrelation --------------------------------------------
