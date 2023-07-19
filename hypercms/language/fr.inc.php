@@ -1432,4 +1432,6 @@ $hcms_lang['search-wildcard-asterisk']['fr'] = "* … L'astérisque sert d'opér
 $hcms_lang['search-wildcard-doublequote']['fr'] = "\" … Une phrase entourée de guillemets doubles doit être présente comme la phrase littéralement, telle qu'elle a été tapée";
 $hcms_lang['content-modified-by-user']['fr'] = "Le contenu a été modifié par l'utilisateur '%user%'. Voulez-vous recharger le contenu?";
 $hcms_lang['dependencies']['fr'] = "Dépendances";
+$hcms_lang['info-plus-icon']['fr'] = "Créer un nouveau dossier ou objet, importer des données CSV";
+$hcms_lang['info-action-icon']['fr'] = "Ouvrir le sous-menu avec d'autres actions des objets sélectionnés";
 ?>

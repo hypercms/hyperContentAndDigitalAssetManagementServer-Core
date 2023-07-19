@@ -1432,4 +1432,6 @@ $hcms_lang['search-wildcard-asterisk']['he'] = "* … הכוכבית משמשת 
 $hcms_lang['search-wildcard-doublequote']['he'] = "\" … ביטוי המוקף בתוך תווי מרכאות כפולות חייב להיות נוכח כביטוי פשוטו כמשמעו, כפי שהוקלד";
 $hcms_lang['content-modified-by-user']['he'] = "התוכן השתנה על ידי המשתמש '%user%'. האם ברצונך לטעון מחדש את התוכן?";
 $hcms_lang['dependencies']['he'] = "תלות";
+$hcms_lang['info-plus-icon']['he'] = "צור תיקייה או אובייקט חדש, ייבא נתוני CSV";
+$hcms_lang['info-action-icon']['he'] = "פתח תפריט משנה עם פעולות נוספות של האובייקטים שנבחרו";
 ?>

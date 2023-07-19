@@ -51,6 +51,8 @@ suspendsession ();
 <script type="text/javascript" src="javascript/click.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery.min.js" type="text/javascript"></script>
+<!-- chat -->
+<script type="text/javascript" src="javascript/chat.min.js"></script>
 
 <?php if (is_facerecognition ("sys")) { ?>
 <!-- face recognition -->
@@ -405,6 +407,21 @@ function setGlobals ()
   }
 }
 
+// start chat
+var chat =  new Chat();
+
+function sendtochat (text)
+{
+  if (text != "")
+  {
+    var username = '<?php echo $user; ?>';
+    // strip tags
+    username = username.replace(/(<([^>]+)>)/ig,"");
+    chat.send(text, username);
+  }
+}
+
+// init
 $(document).ready(function()
 {
   setviewport();

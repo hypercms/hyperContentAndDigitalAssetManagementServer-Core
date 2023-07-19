@@ -1432,4 +1432,6 @@ $hcms_lang['search-wildcard-asterisk']['zh-s'] = "* ...星号用作截断（或�
 $hcms_lang['search-wildcard-doublequote']['zh-s'] = "\" ... 括在双引号字符中的短语必须按字面意思作为短语出现，因为它是键入的";
 $hcms_lang['content-modified-by-user']['zh-s'] = "内容已被用户 '%user%' 修改。是否要重新加载内容？";
 $hcms_lang['dependencies']['zh-s'] = "依赖关系";
+$hcms_lang['info-plus-icon']['en'] = "创建新文件夹或对象，导入 CSV 数据";
+$hcms_lang['info-action-icon']['en'] = "打开子菜单，其中包含所选对象的进一步操作";
 ?>

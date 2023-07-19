@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['ms'] = "* … Asterisk berfungsi sebagai
 $hcms_lang['search-wildcard-doublequote']['ms'] = "\" … Frasa yang disertakan dalam aksara petikan berganda mesti hadir sebagai frasa secara literal, seperti yang ditaip";
 $hcms_lang['content-modified-by-user']['ms'] = "Kandungan telah diubah suai oleh pengguna '%user%'. Adakah anda mahu memuatkan semula kandungan?";
 $hcms_lang['dependencies']['ms'] = "Kebergantungan";
+$hcms_lang['info-plus-icon']['ms'] = "Buat folder atau objek baharu, Import data CSV";
+$hcms_lang['info-action-icon']['ms'] = "Buka submenu dengan tindakan lanjut objek yang dipilih";
 ?>

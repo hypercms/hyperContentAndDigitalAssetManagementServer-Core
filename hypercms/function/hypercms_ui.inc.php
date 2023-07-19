@@ -635,14 +635,17 @@ function showinfopage ($show, $lang="en", $onload="")
 // Returns the infobox as long as it has not been closed. Saves the close event in localstorage of browser.
 // The infobox does not have a specific size by default compared to the message box.
 
-function showinfobox ($show, $lang="en", $style="", $id="hcms_infoboxLayer")
+function showinfobox ($show, $lang="en", $style="", $id="")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
 
-  if (!empty ($mgmt_config['showinfobox']) && $show != "" && strlen ($show) < 2400 && $lang != "" && $id != "")
+  if (!empty ($mgmt_config['showinfobox']) && $show != "" && strlen ($show) < 2400 && $lang != "")
   {
     // define unique name for close button
     $close_id = uniqid();
+
+    // define unique id for the infobox
+    if (trim ($id) == "") $id = "hcms_infoboxLayer_".$close_id;
 
     // do not use the CSS setting table-layout:fixed since the div does not provide a size
     return "

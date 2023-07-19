@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['cs'] = "* … Hvězdička slouží jako 
 $hcms_lang['search-wildcard-doublequote']['cs'] = "\" … Fráze, která je uzavřena mezi znaky dvojitých uvozovek, musí být přítomna jako fráze doslova, tak jak byla napsána";
 $hcms_lang['content-modified-by-user']['cs'] = "Obsah byl změněn uživatelem '%user%'. Chcete obsah znovu načíst?";
 $hcms_lang['dependencies']['cs'] = "Závislosti";
+$hcms_lang['info-plus-icon']['cs'] = "Vytvořte novou složku nebo objekt, importujte data CSV";
+$hcms_lang['info-action-icon']['cs'] = "Otevřete podnabídku s dalšími akcemi vybraných objektů";
 ?>

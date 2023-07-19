@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['pl'] = "* … Gwiazdka służy jako oper
 $hcms_lang['search-wildcard-doublequote']['pl'] = "\" … Fraza ujęta w cudzysłów musi występować jako fraza dosłownie, tak jak została wpisana";
 $hcms_lang['content-modified-by-user']['pl'] = "Zawartość została zmodyfikowana przez użytkownika '%user%'. Czy chcesz przeładować zawartość?";
 $hcms_lang['dependencies']['pl'] = "Zależności";
+$hcms_lang['info-plus-icon']['pl'] = "Utwórz nowy folder lub obiekt, Importuj dane CSV";
+$hcms_lang['info-action-icon']['pl'] = "Otwórz podmenu z dalszymi działaniami wybranych obiektów";
 ?>

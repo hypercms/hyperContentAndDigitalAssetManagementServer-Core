@@ -6485,7 +6485,7 @@ Release 01/2023
 - Bug fix: Function getobjectpathlevel in Get API did not return the correct level if the folder object in the location has been missing
 - Bug fix: Function rdbms_searchcontent in DB Connect did not use the correct folder path level if objects of the same folder path level have been requested
 
-Version 10.1.0 (former 10.0.9)
+Version 10.1.0 (former Development Version 10.0.9)
 Release 03/2023
 - Modifications in function getobjectlist in Get API in order to clean the filter values for the format search
 - Modifications in function getobjectlist in Get API in order to exclude the folders a user has access to if the search format does not request folders
@@ -6923,7 +6923,7 @@ Release 05/2023
 - Bug fix: Public function extractFileFromFileName in class Sabre_hyperCMS_Functions of the Workplace Integration module provided an empty file name since the slash has not been trimmed from the path string
 - Bug fix: Public function getChildsForLocation in class Sabre_hyperCMS_Functions of the Workplace Integration module did provide the same folder name in case the users folder access permissions are used and the folder names have been the same
 
-Version 10.1.2
+Version 10.2.0 (former Development Version 10.1.2)
 Release 09/2023
 - Implementation of the new main configuration parameter $mgmt_config['tplengine_localexecute'] in order to support the local execution of template code without a HTTP request
 - Implementation of the new function tpl_getobjectview in the template engine in order to execute the template code
@@ -7046,7 +7046,7 @@ Release 09/2023
 - Modifications in function deletefile in Main API ni order to verify the results of function scandir
 - Design modifications in function showgallery in UI API in order to move the title attribute from the img to the container div tag
 - Implementation of a control for the display of newly created thumbnail images instead of the standard file icon after the thumbnail has been created for a multimedia object
-- Implementation of the new function is_newthumbnail in Main API in order to provide the file time of a new thumbail based on the temporary file thumbnails.dat
+- Implementation of the new function is_newthumbnail in Main API in order to provide the file time of a new thumbnail based on the temporary file thumbnails.dat
 - Modifications in function createviewlink in Main API in order to force a reload of new thumbnails by using the provided time of function is_newthumbnail
 - Modifications in function createmedia in Media API in order to request to clear the browser cache if a new thumbnail has been created by creating a temporary file thumbnails.dat
 - Added the new session variable for the thumbnails in session.inc.php
@@ -7069,8 +7069,16 @@ Release 09/2023
 - Modifications in function showcompexplorer and createnavigation in UI API in order to verify that the directory exists before scanning 
 - Design modifications in the CSS class hcmsWorkplaceControl of the Transparent design theme
 - Design modifications in the CSS class hcmsButton and hcmsButtonTiny of various design themes
-- Modification sin function settext, setpagelink, setcomplink in Set API in order to return unchanged container if the input parameters failed the validation
-- Updates in the English and German language files
+- Design modifications in Standard design theme
+- Modifications in function settext, setmedia, setpagelink, setcomplink, sethead in Set API in order to return unchanged container if the input parameters failed the validation
+- Modifications in control_objectlist_menu in order to implement a reduced toolbar with a new submenu
+- Modifications in control_objectlist_menu in order to implement a new infobox for the new create and menu buttons (plus and 3 dots symbol)
+- Implementation of the new local JS function openMenu and closeMenu in frameset_objectlist to be used by the Mobile Edition
+- Removed deprecated function settoolbarfunctions from Set API
+- Modifications in frameset_main in order to implement the chat library and the local JS function sendtochat
+- Modifications in control_content_menu, control_objectlist_menu, explorer_objectlist, and search_objectlist in order to call the JS function sendtochat from frameset_main
+- Modifications in function showinfobox in UI API in order to create a unique id for the infobox if none has been provided
+- Updates in various language files
 - Updates in the Users Guide
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
@@ -7088,3 +7096,4 @@ Release 09/2023
 - Bug fix: Function createfolder in Main API did not get the category before the category has been used in the code
 - Bug fix: Function createfolder in Main API did not initialize the error array
 - Bug fix: Function createfolder in Main API did return the location including the folder name since it used the location result of function creatobject (after creating the folder object)
+- Bug fix: The local JS function sendtochat in control_objectlist_menu could not be executed due to the missing JQuery library

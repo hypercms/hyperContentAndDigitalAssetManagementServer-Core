@@ -1430,4 +1430,6 @@ $hcms_lang['search-wildcard-asterisk']['ar'] = "* … تعمل العلامة ا
 $hcms_lang['search-wildcard-doublequote']['ar'] = "\" … يجب أن تكون العبارة المحاطة بأحرف اقتباس مزدوجة موجودة كالعبارة حرفياً ، كما تمت كتابتها";
 $hcms_lang['content-modified-by-user']['ar'] = "تم تعديل المحتوى بواسطة المستخدم '٪user٪'. هل تريد إعادة تحميل المحتوى؟";
 $hcms_lang['dependencies']['ar'] = "التبعيات";
+$hcms_lang['info-plus-icon']['ar'] = "إنشاء مجلد أو عنصر جديد ، واستيراد بيانات CSV";
+$hcms_lang['info-action-icon']['ar'] = "افتح القائمة الفرعية مع إجراءات أخرى للكائنات المحددة";
 ?>

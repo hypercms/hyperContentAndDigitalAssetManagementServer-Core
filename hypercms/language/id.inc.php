@@ -1432,4 +1432,6 @@ $hcms_lang['search-wildcard-asterisk']['id'] = "* … Tanda bintang berfungsi se
 $hcms_lang['search-wildcard-doublequote']['id'] = "\" … Frasa yang diapit oleh tanda kutip ganda harus ada sebagai frasa secara harfiah, seperti saat diketik";
 $hcms_lang['content-modified-by-user']['id'] = "Konten telah diubah oleh pengguna '%user%'. Apakah Anda ingin memuat ulang konten?";
 $hcms_lang['dependencies']['id'] = "Ketergantungan";
+$hcms_lang['info-plus-icon']['id'] = "Buat folder atau objek baru, Impor data CSV";
+$hcms_lang['info-action-icon']['id'] = "Buka submenu dengan tindakan lebih lanjut dari objek yang dipilih";
 ?>

@@ -452,7 +452,7 @@ function openPopup (link)
 
 <body class="hcmsWorkplaceControl">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;", "hcms_infobox_mouseover"); ?>
 
 <?php if (!$is_mobile) { ?>
 <div style="position:absolute; right:40px; top:0; margin:0; padding:0;">

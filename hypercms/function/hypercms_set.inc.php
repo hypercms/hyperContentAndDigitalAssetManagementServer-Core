@@ -1926,44 +1926,4 @@ function setguiview ($objectview, $explorerview, $sidebar, $user)
 
   return false;
 }
-
-// --------------------------------------- settoolbarfunctions -------------------------------------------
-// function: settoolbarfunctions ()
-// input: toolbar functions [array], user name [string]
-// output: true / false
-
-function settoolbarfunctions ($toolbar, $user)
-{
-  global $mgmt_config;
-
-  if (is_array ($toolbar) && valid_objectname ($user))
-  {
-    $dir = $mgmt_config['abs_path_data']."checkout/";
-    $file = $user.".toolbar.json";
-
-    // if toolbar personalization is enabled
-    if (!empty ($mgmt_config['toolbar_functions']))
-    {
-      // JSON encode array
-      $settings = json_encode ($toolbar);
-    }
-    // remove settings
-    else
-    {
-      $toolbar = NULL;
-      $settings = "";
-    }
-
-    // set in session
-    if ($user == getsession ("hcms_user"))
-    {
-      setsession ("hcms_toolbarfunctions", $toolbar, true);
-    }
-
-    // save file
-    return savefile ($dir, $file, $settings);
-  }
-
-  return false;
-}
 ?>

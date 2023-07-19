@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['sv'] = "* … Asterisken fungerar som tr
 $hcms_lang['search-wildcard-doublequote']['sv'] = "\" … En fras som är omgiven av dubbla citattecken måste vara närvarande som frasen bokstavligen, när den skrevs";
 $hcms_lang['content-modified-by-user']['sv'] = "Innehållet har ändrats av användaren '%user%'. Vill du ladda om innehållet?";
 $hcms_lang['dependencies']['sv'] = "Beroenden";
+$hcms_lang['info-plus-icon']['sv'] = "Skapa ny mapp eller objekt, importera CSV-data";
+$hcms_lang['info-action-icon']['sv'] = "Öppna undermenyn med ytterligare åtgärder för de markerade objekten";
 ?>

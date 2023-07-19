@@ -1135,7 +1135,6 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 <script type="text/javascript" src="javascript/contextmenu.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="javascript/jquery/plugins/colResizable.min.js"></script>
-<script type="text/javascript" src="javascript/chat.min.js"></script>
 <script type="text/javascript" src="javascript/lazysizes/lazysizes.min.js" async=""></script>
 <style type="text/css">
 #objectlist
@@ -1377,18 +1376,10 @@ function openObjectView (location, object, view)
   else return false;
 }
 
-// start chat
-var chat =  new Chat();
-
+// send to chat
 function sendtochat (text)
 {
-  if (text != "")
-  {
-    var username = '<?php echo getescapedtext ($user); ?>';
-    // strip tags
-    username = username.replace(/(<([^>]+)>)/ig,"");
-    chat.send(text, username);
-  }
+  top.sendtochat (text);
 }
 
 function resizecols ()
@@ -1440,7 +1431,7 @@ parent.frames['controlFrame'].location = 'control_objectlist_menu.php?virtual=1&
 <div id="selectarea" class="hcmsSelectArea"></div>
 
 <!-- contextual help --> 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang]."<br/>".$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infoboxKeys"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['hold-ctrl-key-select-objects-by-click'][$lang]."<br/>".$hcms_lang['hold-shift-key-select-a-group-of-objects-by-2-clicks'][$lang]."<br/>".$hcms_lang['press-alt-key-switch-to-download-links-to-copy-paste-into-e-mails'][$lang]."<br/>".$hcms_lang['drag-and-drop-press-ctrl-key-for-copy-and-alt-key-for-connected-copy'][$lang], $lang, "position:fixed; top:30px; right:30px;", "hcms_infobox_keyshortcuts"); ?>
 
 <!-- memory (for drop event) -->
 <form name="memory" action="" method="post" target="popup_explorer" style="position:absolute; width:0; height:0; z-index:-1; left:0; top:0; visibility:hidden;">

@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['fi'] = "* … Tähti toimii katkaisuoper
 $hcms_lang['search-wildcard-doublequote']['fi'] = "\" … Lainausmerkkien sisällä olevan lauseen on oltava kirjaimellisesti, sellaisena kuin se kirjoitettiin";
 $hcms_lang['content-modified-by-user']['fi'] = "Käyttäjä '%user%' on muokannut sisältöä. Haluatko ladata sisällön uudelleen?";
 $hcms_lang['dependencies']['fi'] = "Riippuvuudet";
+$hcms_lang['info-plus-icon']['fi'] = "Luo uusi kansio tai objekti, tuo CSV-tiedot";
+$hcms_lang['info-action-icon']['fi'] = "Avaa alivalikko valittujen objektien lisätoiminnoilla";
 ?>

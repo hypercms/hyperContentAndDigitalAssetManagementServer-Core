@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['no'] = "* … Stjernen fungerer som trun
 $hcms_lang['search-wildcard-doublequote']['no'] = "\" … En setning som er omsluttet av doble anførselstegn må være til stede som setningen bokstavelig, slik den ble skrevet inn";
 $hcms_lang['content-modified-by-user']['no'] = "Innholdet har blitt endret av brukeren '%user%'. Vil du laste innholdet på nytt?";
 $hcms_lang['dependencies']['no'] = "Avhengigheter";
+$hcms_lang['info-plus-icon']['no'] = "Opprett ny mappe eller objekt, importer CSV-data";
+$hcms_lang['info-action-icon']['no'] = "Åpne undermenyen med ytterligere handlinger for de valgte objektene";
 ?>

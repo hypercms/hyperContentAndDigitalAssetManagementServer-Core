@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['hu'] = "* … A csillag csonkító (vagy
 $hcms_lang['search-wildcard-doublequote']['hu'] = "\" … A dupla idézőjelek közé zárt kifejezésnek szó szerint kell szerepelnie, ahogyan begépelték";
 $hcms_lang['content-modified-by-user']['hu'] = "A tartalmat '%user%' felhasználó módosította. Szeretné újra betölteni a tartalmat?";
 $hcms_lang['dependencies']['hu'] = "Függőségek";
+$hcms_lang['info-plus-icon']['hu'] = "Hozzon létre új mappát vagy objektumot, importálja a CSV-adatokat";
+$hcms_lang['info-action-icon']['hu'] = "Nyissa meg az almenüt a kiválasztott objektumok további műveleteivel";
 ?>

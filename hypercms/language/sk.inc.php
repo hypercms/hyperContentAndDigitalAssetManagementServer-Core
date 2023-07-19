@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['sk'] = "* … Hviezdička slúži ako op
 $hcms_lang['search-wildcard-doublequote']['sk'] = "\" … Fráza, ktorá je uzavretá medzi dvojitými úvodzovkami, musí byť prítomná ako fráza doslova, tak ako bola napísaná";
 $hcms_lang['content-modified-by-user']['sk'] = "Obsah bol upravený používateľom '%user%'. Chcete obsah znova načítať?";
 $hcms_lang['dependencies']['sk'] = "Závislosti";
+$hcms_lang['info-plus-icon']['sk'] = "Vytvorte nový priečinok alebo objekt, importujte údaje CSV";
+$hcms_lang['info-action-icon']['sk'] = "Otvorte podmenu s ďalšími akciami vybratých objektov";
 ?>

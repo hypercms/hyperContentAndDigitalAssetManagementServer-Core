@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['pt'] = "* … O asterisco serve como ope
 $hcms_lang['search-wildcard-doublequote']['pt'] = "\" … Uma frase que está entre aspas duplas deve estar presente como a frase literalmente, como foi digitada";
 $hcms_lang['content-modified-by-user']['pt'] = "O conteúdo foi modificado pelo usuário '%user%'. Deseja recarregar o conteúdo?";
 $hcms_lang['dependencies']['pt'] = "Dependências";
+$hcms_lang['info-plus-icon']['pt'] = "Crie uma nova pasta ou objeto, importe dados CSV";
+$hcms_lang['info-action-icon']['pt'] = "Abra o submenu com outras ações dos objetos selecionados";
 ?>

@@ -1432,4 +1432,6 @@ $hcms_lang['search-wildcard-asterisk']['en'] = "* … The asterisk serves as the
 $hcms_lang['search-wildcard-doublequote']['en'] = "\" … A phrase that is enclosed within double quote characters must be present as the phrase literally, as it was typed";
 $hcms_lang['content-modified-by-user']['en'] = "The content has been modified by user '%user%'. Do you want to reload the content?";
 $hcms_lang['dependencies']['en'] = "Dependencies";
+$hcms_lang['info-plus-icon']['en'] = "Create new folder or object, Import CSV data";
+$hcms_lang['info-action-icon']['en'] = "Open submenu with further actions of the selected objects";
 ?>

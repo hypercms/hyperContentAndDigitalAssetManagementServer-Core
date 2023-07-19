@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['nl'] = "* … De asterisk dient als de t
 $hcms_lang['search-wildcard-doublequote']['nl'] = "\" … Een zin die tussen dubbele aanhalingstekens staat, moet letterlijk aanwezig zijn als de zin, zoals deze werd getypt";
 $hcms_lang['content-modified-by-user']['nl'] = "De inhoud is gewijzigd door gebruiker '%user%'. Wilt u de inhoud opnieuw laden?";
 $hcms_lang['dependencies']['nl'] = "Afhankelijkheden";
+$hcms_lang['info-plus-icon']['nl'] = "Nieuwe map of object maken, CSV-gegevens importeren";
+$hcms_lang['info-action-icon']['nl'] = "Submenu openen met verdere acties van de geselecteerde objecten";
 ?>

@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['it'] = "* … L'asterisco funge da opera
 $hcms_lang['search-wildcard-doublequote']['it'] = "\" … Una frase racchiusa tra virgolette doppie deve essere presente come frase letteralmente, come è stata digitata";
 $hcms_lang['content-modified-by-user']['it'] = "Il contenuto è stato modificato dall'utente '%user%'. Vuoi ricaricare il contenuto?";
 $hcms_lang['dependencies']['it'] = "Dipendenze";
+$hcms_lang['info-plus-icon']['it'] = "Crea nuova cartella o oggetto, Importa dati CSV";
+$hcms_lang['info-action-icon']['it'] = "Apre il sottomenu con ulteriori azioni degli oggetti selezionati";
 ?>

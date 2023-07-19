@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['ur'] = "* … ستارہ ٹرنکیشن 
 $hcms_lang['search-wildcard-doublequote']['ur'] = "\" … ایک جملہ جو دوہرے اقتباس کے حروف میں بند ہو، لفظی طور پر فقرے کے طور پر موجود ہونا چاہیے، جیسا کہ اسے ٹائپ کیا گیا تھا";
 $hcms_lang['content-modified-by-user']['ur'] = "مواد کو صارف '%user%' نے تبدیل کیا ہے۔ کیا آپ مواد کو دوبارہ لوڈ کرنا چاہتے ہیں؟";
 $hcms_lang['dependencies']['ur'] = "انحصار";
+$hcms_lang['info-plus-icon']['ur'] = "نیا فولڈر یا آبجیکٹ بنائیں، CSV ڈیٹا درآمد کریں۔";
+$hcms_lang['info-action-icon']['ur'] = "منتخب اشیاء کی مزید کارروائیوں کے ساتھ ذیلی مینیو کھولیں۔";
 ?>

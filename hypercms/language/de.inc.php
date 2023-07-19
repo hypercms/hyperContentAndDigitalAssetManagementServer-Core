@@ -1433,4 +1433,6 @@ $hcms_lang['search-wildcard-asterisk']['de'] = "* … Der Stern dient als Platzh
 $hcms_lang['search-wildcard-doublequote']['de'] = "\" … Eine Phrase, die in doppelte Anführungszeichen eingeschlossen ist, muss als Phrase im Wortsinn vorhanden sein, wie sie eingegeben wurde";
 $hcms_lang['content-modified-by-user']['de'] = "Der Inhalte wurde vom Benutzer '%user%' geändert. Wollen Sie den Inhalt neu laden?";
 $hcms_lang['dependencies']['de'] = "Abhängigkeiten";
+$hcms_lang['info-plus-icon']['de'] = "Neuen Ordner oder Objekt erstellen, CSV-Daten importieren";
+$hcms_lang['info-action-icon']['de'] = "Untermenü mit weiteren Aktionen der gewählten Objekte öffnen";
 ?>

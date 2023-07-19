@@ -1431,4 +1431,6 @@ $hcms_lang['search-wildcard-asterisk']['tr'] = "* … Yıldız işareti, kesme (
 $hcms_lang['search-wildcard-doublequote']['tr'] = "\" … Çift tırnak içine alınmış bir ifade, yazıldığı gibi, kelimenin tam anlamıyla ifade olarak mevcut olmalıdır";
 $hcms_lang['content-modified-by-user']['tr'] = "İçerik '%user%' kullanıcısı tarafından değiştirildi. İçeriği yeniden yüklemek istiyor musunuz?";
 $hcms_lang['dependencies']['tr'] = "Bağımlılıklar";
+$hcms_lang['info-plus-icon']['tr'] = "Yeni klasör veya nesne oluşturun, CSV verilerini içe aktarın";
+$hcms_lang['info-action-icon']['tr'] = "Seçilen nesnelerin diğer işlemlerini içeren alt menüyü aç";
 ?>

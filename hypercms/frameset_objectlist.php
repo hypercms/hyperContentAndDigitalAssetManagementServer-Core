@@ -102,6 +102,60 @@ function setSearchLocation (location, name)
 {
   parent.setSearchLocation (location, name);
 }
+
+function openMenu ()
+{
+  <?php if ($is_mobile) { ?>
+  if (document.getElementById('controlFrame'))
+  {
+    var height = 172;
+    
+    if (hcms_transitioneffect == true) document.getElementById('controlFrame').style.transition = "0.3s";
+    document.getElementById('controlFrame').style.height = height + 'px';
+
+    if (document.getElementById('mainLayer'))
+    {
+      if (hcms_transitioneffect == true) document.getElementById('mainLayer').style.transition = "0.3s";
+      document.getElementById('mainLayer').style.top = height + 'px';
+    }
+
+    if (document.getElementById('sidebarLayer'))
+    {
+      if (hcms_transitioneffect == true) document.getElementById('sidebarLayer').style.transition = "0.3s";
+      document.getElementById('sidebarLayer').style.top = height + 'px';
+    }
+  }
+  <?php } ?>
+}
+
+function closeMenu ()
+{
+  <?php if ($is_mobile) { ?>
+  if (document.getElementById('controlFrame'))
+  {
+    var ratio = window.devicePixelRatio || 1;
+    var width = screen.width * ratio;
+    var height = 60;
+
+    if (width < 360) var height = 100;
+    
+    if (hcms_transitioneffect == true) document.getElementById('controlFrame').style.transition = "0.3s";
+    document.getElementById('controlFrame').style.height = height + 'px';
+
+    if (document.getElementById('mainLayer'))
+    {
+      if (hcms_transitioneffect == true) document.getElementById('mainLayer').style.transition = "0.3s";
+      document.getElementById('mainLayer').style.top = height + 'px';
+    }
+
+    if (document.getElementById('sidebarLayer'))
+    {
+      if (hcms_transitioneffect == true) document.getElementById('sidebarLayer').style.transition = "0.3s";
+      document.getElementById('sidebarLayer').style.top = height + 'px';
+    }
+  }
+  <?php } ?>
+}
 </script>
 </head>
 
