@@ -88,15 +88,24 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<style type="text/css">
 <?php
-// invert colors
+// inverted main colors
 if (!empty ($hcms_themeinvertcolors))
 {
-  echo "<style>";
-  echo invertcolorCSS ($hcms_themeinvertcolors);
-  echo "</style>";
+  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
+  else $invertonhover = true;
+
+  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
+}
+// inverted hover colors
+elseif (!empty ($hcms_hoverinvertcolors))
+{
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
 }
 ?>
+</style>
 <script type="text/javascript">
 
 function startSearch ()
@@ -151,7 +160,7 @@ function submitTo (url, action, target, features, width, height)
 
 <body class="hcmsWorkplaceControl" onLoad="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:15px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:15px;", "hcms_infobox_mouseover"); ?>
 
 <?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
@@ -208,12 +217,14 @@ function submitTo (url, action, target, features, width, height)
     if ($multiobject_count <= 1 && $message_id != "" && !empty ($mgmt_config['db_connect_rdbms']))
     {
       echo "
-      <img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ";
-      
-      if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', 600, 900);\" ";
-      else echo "onClick=\"parent.openPopup('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."');\" ";
-      
-      echo "id=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ";
+        
+        if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', 600, 900);\" ";
+        else echo "onClick=\"parent.openPopup('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."');\" ";
+        
+        echo "id=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />
+      </div>";
     }  
     else
     {
@@ -226,10 +237,12 @@ function submitTo (url, action, target, features, width, height)
     if ($message_id != "" && $messageuser != "" && checkrootpermission ('desktop'))
     {
       echo "
-      <img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".
-      "onClick=\"if (warning_delete()==true) ".
-      "submitTo('control_message_menu.php', 'delete', 'controlFrame'); \" ".
-      "id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ".
+        "onclick=\"if (warning_delete()==true) ".
+        "submitTo('control_message_menu.php', 'delete', 'controlFrame'); \" ".
+        "id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />
+      </div>";
     }    
     else
     {
@@ -242,7 +255,9 @@ function submitTo (url, action, target, features, width, height)
   <div class="hcmsToolbarBlock">
     <?php
     echo "
-    <img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" id=\"pic_obj_refresh\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />";
+    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+      <img class=\"hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location.reload();\" id=\"pic_obj_refresh\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />
+    </div>";
     ?>
   </div>
   
@@ -256,7 +271,7 @@ function submitTo (url, action, target, features, width, height)
   </div>
 
   <div class="hcmsToolbarBlock">
-    <?php echo showhelpbutton ("usersguide", checkrootpermission ('user'), $lang, "", "hcmsHoverColor"); ?>     
+    <?php echo showhelpbutton ("usersguide", checkrootpermission ('user'), $lang, "", "hcmsHoverColor hcmsInvertColor"); ?>   
   </div>
 </div>
 

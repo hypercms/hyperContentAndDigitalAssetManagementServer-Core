@@ -70,15 +70,25 @@ elseif ($action == "group_delete" && checkglobalpermission ($site, 'group') && c
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<style type="text/css">
 <?php
-// invert colors
+// inverted main colors
 if (!empty ($hcms_themeinvertcolors))
 {
-  echo "<style>";
-  echo invertcolorCSS ($hcms_themeinvertcolors);
-  echo "</style>";
+  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
+  else $invertonhover = true;
+
+  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
+  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertPrimaryColor", true, false);
+}
+// inverted hover colors
+elseif (!empty ($hcms_hoverinvertcolors))
+{
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
 }
 ?>
+</style>
 <script type="text/javascript">
 
 function selectgroup (selObj)
@@ -162,7 +172,7 @@ function checkForm ()
 
 <body class="hcmsWorkplaceControl" onload="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:15px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:15px;", "hcms_infobox_mouseover"); ?>
 
 <?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px; "); ?>
 
@@ -182,13 +192,15 @@ function checkForm ()
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar" style="width:<?php if ($is_mobile) echo "380px;"; else echo "620px;"; ?>">
+<div class="hcmsToolbar">
   <div class="hcmsToolbarBlock" style="padding:2px;">
     <form name="group_delete" action="control_group_menu.php" method="post">
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
       <input type="hidden" name="action" value="group_delete" />
       
-      <span class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['group'][$lang]); ?></span>
+      <span class="hcmsInvertPrimaryColor">
+        <span class=""><?php echo getescapedtext ($hcms_lang['group'][$lang]); ?></span>
+      </span>
       <select name="group_name" onChange="selectgroup(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
@@ -220,19 +232,33 @@ function checkForm ()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupcreate'))
-    {echo "<img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('creategroupLayer','','show','hcms_messageLayer','','hide');\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\">";}
+    {
+      echo "
+    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+      <img class=\"hcmsButtonSizeSquare\" onclick=\"hcms_showHideLayers('creategroupLayer','','show','hcms_messageLayer','','hide');\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\">
+    </div>";
+    }
     else
-    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
+    {
+      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";
+    }
     ?>
     <?php
     if (checkglobalpermission ($site, 'group') && checkglobalpermission ($site, 'groupdelete'))
-    {echo "<img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onClick=\"deletegroup();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\">";}
+    {
+      echo "
+    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+      <img class=\"hcmsButtonSizeSquare\" onclick=\"deletegroup();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\">
+    </div>";
+    }
     else
-    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";}
+    {
+      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";
+    }
     ?> 
   </div>
   <div class="hcmsToolbarBlock">
-    <?php echo showhelpbutton ("adminguide", checkglobalpermission ($site, 'group'), $lang, "", "hcmsHoverColor"); ?>
+    <?php echo showhelpbutton ("adminguide", checkglobalpermission ($site, 'group'), $lang, "", "hcmsHoverColor hcmsInvertColor"); ?>
   </div>
 </div>
 

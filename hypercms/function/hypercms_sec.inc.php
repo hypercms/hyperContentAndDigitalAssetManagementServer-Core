@@ -1393,42 +1393,11 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
         }
 
         // get design theme and primary color if a portal theme is used
-        if (!empty ($result['themename']) && strpos ($result['themename'], "/") > 0)
-        {
-          // load portal template if not loaded
-          if (empty ($portal_template['content']))
-          {
-            list ($portal_site, $portal_theme) = explode ("/", $result['themename']);
+        $result_inverted_themes = getinvertcolortheme ($result['themename']);
+        $result = array_merge ($result, $result_inverted_themes);
 
-            if (valid_objectname ($portal_theme))
-            {
-              $portal_template = $portal_theme.".portal.tpl";
-              $portal_template = loadtemplate ($portal_site, $portal_template);
-            }
-          }
-          
-          // get design theme and primary color
-          if (!empty ($portal_template['content']))
-          {
-            $temp_portaltheme = getcontent ($portal_template['content'], "<designtheme>");
-            $temp_portalcolor = getcontent ($portal_template['content'], "<primarycolor>");
-            $temp_hovercolor = getcontent ($portal_template['content'], "<hovercolor>");
-
-            if (!empty ($temp_portaltheme[0]) && !empty ($temp_portalcolor[0]))
-            {
-              list ($portalsite, $portaltheme) = explode ("/", $temp_portaltheme[0]);
-              $brightness_portalcolor = getbrightness ($temp_portalcolor[0]);
-              $brightness_hovercolor = getbrightness ($temp_hovercolor[0]);
-
-              if ($portaltheme == "day" && $brightness_portalcolor < 130) $result['themeinvertcolors'] = "night";
-              elseif ($portaltheme == "night" && $brightness_portalcolor >= 130) $result['themeinvertcolors'] = "day";
-
-              if ($portaltheme == "day" && $brightness_hovercolor < 130) $result['hoverinvertcolors'] = "night";
-              elseif ($portaltheme == "night" && $brightness_hovercolor >= 130) $result['hoverinvertcolors'] = "day";
-            }
-          }
-        }
-
+        // -------------- publication and group memberships --------------
+        
         $memberofnode = getcontent ($usernode[0], "<memberof>");
       }
 

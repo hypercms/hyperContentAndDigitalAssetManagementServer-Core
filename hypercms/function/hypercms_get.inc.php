@@ -2801,7 +2801,7 @@ function getwallpaper ($theme="", $version="")
     else
     { 
       $errcode = "00820";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|Wallpaper service not available";
+      $error[] = $mgmt_config['today']."|hypercms_get.inc.php|warning|".$errcode."|Wallpaper service not available";
 
       savelog ($error);
 
@@ -3011,7 +3011,7 @@ function getlocationname ($site, $location, $cat, $source="path")
 // output: all design theme names as array / false
 
 // description:
-// Returns all design theme names as values and the techical names (path) as key of the result array.
+// Returns all design theme names as values and the technical names (path) as key of the result array.
 
 function getthemes ($site_array=array())
 {

@@ -17484,7 +17484,7 @@ function renameobject ($site, $location, $page, $pagenew, $user)
     $location = correctpath ($location);
 
     // verify that the container is not locked by another user
-    $objectdata = loadfile ($location.$folder, ".folder");
+    $objectdata = loadfile ($location, $page);
     $contentfile = getfilename ($objectdata, "content");
     $usedby_array = getcontainername ($contentfile);
 

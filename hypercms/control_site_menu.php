@@ -64,15 +64,25 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
+<style type="text/css">
 <?php
-// invert colors
+// inverted main colors
 if (!empty ($hcms_themeinvertcolors))
 {
-  echo "<style>";
-  echo invertcolorCSS ($hcms_themeinvertcolors);
-  echo "</style>";
+  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
+  else $invertonhover = true;
+
+  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
+  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertPrimaryColor", true, false);
+}
+// inverted hover colors
+elseif (!empty ($hcms_hoverinvertcolors))
+{
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
 }
 ?>
+</style>
 <script type="text/javascript">
 
 function selectpublication (selObj)
@@ -160,7 +170,7 @@ function checkForm ()
 
 <body class="hcmsWorkplaceControl" onLoad="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;", "hcms_infobox_mouseover"); ?>
 
 <?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
@@ -180,13 +190,15 @@ function checkForm ()
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar" style="<?php if ($is_mobile) echo "380px;"; else echo "620px;"; ?>;">
+<div class="hcmsToolbar">
   <div class="hcmsToolbarBlock" style="padding:2px;">
     <form name="site_delete" action="" method="post">
       <input type="hidden" name="action" value="site_delete" />
       <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
 
-      <span class="hcmsInvertColor"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></span>
+      <span class="hcmsInvertPrimaryColor">
+        <span class=""><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></span>
+      </span>
       <select name="site_name" onChange="selectpublication(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
@@ -223,19 +235,35 @@ function checkForm ()
   <div class="hcmsToolbarBlock">
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitecreate'))
-    {echo "<img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show');\" id=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />";}
+    {
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show');\" id=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
+      </div>";
+    }
     else
-    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
+    {
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    }
     ?>
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitedelete'))
-    {echo "<img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onClick=\"deletepublication();\" id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />";}
+    {
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" onClick=\"deletepublication();\" id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+      </div>";
+    }
     else
-    {echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";}
+    {
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    }
     ?>
   </div>
   <div class="hcmsToolbarBlock">
-    <?php echo showhelpbutton ("adminguide", checkrootpermission ('site'), $lang, "", "hcmsHoverColor"); ?>
+    <?php echo showhelpbutton ("adminguide", checkrootpermission ('site'), $lang, "", "hcmsHoverColor hcmsInvertColor"); ?>
   </div>
 </div>
 

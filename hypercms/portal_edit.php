@@ -216,10 +216,18 @@ if ($templatename != "")
 // invert colors
 if (!empty ($designtheme) && !empty ($primarycolor))
 {
-  $brightness = getbrightness ($primarycolor);
+  $brightness_primarycolor = getbrightness ($primarycolor);
 
-  if ($designtheme == "day" && $brightness < 130) $hcms_themeinvertcolors = "night";
-  elseif ($designtheme == "night" && $brightness >= 130) $hcms_themeinvertcolors = "day";
+  if ($designtheme == "day" && $brightness_primarycolor < 130) $hcms_themeinvertcolors = "night";
+  elseif ($designtheme == "night" && $brightness_primarycolor >= 130) $hcms_themeinvertcolors = "day";
+}
+
+if (!empty ($designtheme) && !empty ($hovercolor))
+{
+  $brightness_hovercolor = getbrightness ($hovercolor);
+
+  if ($designtheme == "day" && $brightness_hovercolor < 130) $hcms_hoverinvertcolors = "night";
+  elseif ($designtheme == "night" && $brightness_hovercolor >= 130) $hcms_hoverinvertcolors = "day";
 }
 
 // create secure token
@@ -234,12 +242,21 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/jscolor/jscolor.min.js"></script>
-<style>
+<style type="text/css">
 <?php
-// invert colors
+// inverted main colors
 if (!empty ($hcms_themeinvertcolors))
 {
-  echo invertcolorCSS ($hcms_themeinvertcolors);
+  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
+  else $invertonhover = true;
+
+  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
+}
+// inverted hover colors
+elseif (!empty ($hcms_hoverinvertcolors))
+{
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
 }
 ?>
 
@@ -649,10 +666,18 @@ function settransparent ()
         <tr>
           <td class="hcmsWorkplaceTop" style="width:36px !important;">
             <!-- navigation items -->
-            <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
-            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsHoverColor hcmsButtonSizeSquare" style="padding:2px;" />
-            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsHoverColor hcmsButtonSizeSquare" style="padding:2px;" />
-            <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonTiny hcmsHoverColor hcmsButtonSizeSquare" style="padding:2px;" />
+            <div class="hcmsButtonTinyBlank  hcmsButtonSizeSquare">
+              <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
+            </div>
+            <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
+              <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare" />
+            </div>
+            <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
+              <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare" />
+            </div>
+            <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
+              <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare" />
+            </div>
           </td>
           <td class="hcmsWorkplaceExplorer" style="width:260px !important;">
             <!-- explorer items -->

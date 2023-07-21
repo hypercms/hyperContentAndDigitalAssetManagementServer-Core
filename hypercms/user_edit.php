@@ -126,39 +126,12 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
     // change theme in session if user changed it
     if (!empty ($theme) && $theme != $hcms_themename)
     {
-      $themeinvertcolors = false;
-
-      // get design theme and primary color if a portal theme is used
-      if (strpos ($theme, "/") > 0)
-      {
-        // load portal template if not loaded
-        list ($portal_site, $portal_theme) = explode ("/", $theme);
-
-        if (valid_objectname ($portal_theme))
-        {
-          $portal_template = $portal_theme.".portal.tpl";
-          $portal_template = loadtemplate ($portal_site, $portal_template);
-        }
-
-        // get design theme and primary color
-        if (!empty ($portal_template['content']))
-        {
-          $temp_portaltheme = getcontent ($portal_template['content'], "<designtheme>");
-          $temp_portalcolor = getcontent ($portal_template['content'], "<primarycolor>");
-
-          if (!empty ($temp_portaltheme[0]) && !empty ($temp_portalcolor[0]))
-          {
-            list ($portalsite, $portaltheme) = explode ("/", $temp_portaltheme[0]);
-            $brightness = getbrightness ($temp_portalcolor[0]);
-
-            if ($portaltheme == "day" && $brightness < 130) $themeinvertcolors = "night";
-            elseif ($portaltheme == "night" && $brightness >= 130) $themeinvertcolors = "day";
-          }
-        }
-      }
+      $result_inverted_themes = getinvertcolortheme ($theme);
 
       setsession ('hcms_themename', $theme, true);
-      setsession ('hcms_themeinvertcolors', $themeinvertcolors, true);
+      setsession ('hcms_themeinvertcolors', $result_inverted_themes['themeinvertcolors'], true);
+      setsession ('hcms_hoverinvertcolors', $result_inverted_themes['hoverinvertcolors'], true);
+      
       $add_onload = "setTimeout (function(){ top.location.reload(true); }, 1000);";
     }
   }
@@ -622,7 +595,7 @@ if (!empty ($login))
         <select name="theme" style="width:<?php echo $width_field; ?>px;">
         <?php
         // get themes of user
-        if ($superadmin == "1") $theme_array = getthemes ($siteaccess);
+        if ($superadmin == "1") $theme_array = getthemes (array_keys ($siteaccess));
         elseif (!empty ($usersitearray)) $theme_array = getthemes ($usersitearray);
         else $theme_array = getthemes ();
 
@@ -833,7 +806,7 @@ if (!empty ($login))
             $list4_array = array();
   
             // get home boxes for selection
-            if ($login_cat == "home" && $login == $user) $homebox_array = gethomeboxes ($siteaccess);
+            if ($login_cat == "home" && $login == $user) $homebox_array = gethomeboxes (array_keys ($siteaccess));
             elseif (!empty ($usersitearray)) $homebox_array = gethomeboxes ($usersitearray);
             else $homebox_array = gethomeboxes ();
   

@@ -172,16 +172,24 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/tag-it/tag-it.min.js"></script>
 <link rel="stylesheet" type="text/css" href="javascript/tag-it/jquery.tagit.css" />
 <link rel="stylesheet" type="text/css" href="javascript/tag-it/tagit.ui-zendesk.css" />
+<style type="text/css">
 <?php
-// invert colors
+// inverted main colors
 if (!empty ($hcms_themeinvertcolors))
 {
-  echo "<style>";
-  echo invertcolorCSS ($hcms_themeinvertcolors);
-  echo "</style>";
+  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
+  else $invertonhover = true;
+
+  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
+}
+// inverted hover colors
+elseif (!empty ($hcms_hoverinvertcolors))
+{
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
+  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
 }
 ?>
-<style>
+
 ul.tagit
 {
   width: 280px;
@@ -348,7 +356,7 @@ function goToURL()
 
 <body class="hcmsWorkplaceControl" onload="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;", "hcms_infobox_mouseover"); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -391,46 +399,55 @@ function goToURL()
     <?php
     if ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('usercreate')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'usercreate')))
     {
-      echo "<img ".
-             "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".
-             "onclick=\"hcms_showHideLayers('createuserLayer','','show','registrationLayer','','hide','hcms_messageLayer','','hide');\" ".
-             "name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_new.png\" alt=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" />\n";
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ".
+        "onclick=\"hcms_showHideLayers('createuserLayer','','show','registrationLayer','','hide','hcms_messageLayer','','hide');\" ".
+        "name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_new.png\" alt=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" />
+      </div>";
     }
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?>
     <?php
     // DELETE BUTTON
     if (($login != "" || $multiobject != "") && ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'userdelete'))))
     {
-      echo "<img ".
-        "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ".
         "onclick=\"if (warning_delete()==true) ".
         "submitTo('control_user_menu.php', 'delete', 'controlFrame'); \" ".
-        "name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" />\n";
+        "name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" />
+      </div>";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?>
     <?php
     // USER EDIT
     if ($login != "" && (!$multiobject || $multiobject_count <= 1) && ((!valid_publicationname ($site)  && checkrootpermission ('user')  && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'useredit'))))
     {
-      echo "<img ".
-             "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ";
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ";
 
-             if (!empty ($mgmt_config['user_newwindow'])) echo "onclick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes', 560, 880);\" ";
-             else echo "onclick=\"parent.openPopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."');\" ";
- 
-      echo "name=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />\n";
+        if (!empty ($mgmt_config['user_newwindow'])) echo "onclick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes', 560, 880);\" ";
+        else echo "onclick=\"parent.openPopup('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($login)."');\" ";
+
+        echo "name=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-user'][$lang])."\" />
+      </div>";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?>
   </div>
@@ -439,14 +456,17 @@ function goToURL()
     // RESET PASSWORD
     if ((!$multiobject || $multiobject_count <= 1) && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
-      echo "<img ".
-             "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".
-             "onclick=\"resetPassword();\" ".
-             "src=\"".getthemelocation($hcms_themeinvertcolors)."img/workflow_permission.png\" alt=\"".getescapedtext ($hcms_lang['reset-password'][$lang])."\" title=\"".getescapedtext ($hcms_lang['reset-password'][$lang])."\" />\n";
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ".
+        "onclick=\"resetPassword();\" ".
+        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/workflow_permission.png\" alt=\"".getescapedtext ($hcms_lang['reset-password'][$lang])."\" title=\"".getescapedtext ($hcms_lang['reset-password'][$lang])."\" />
+      </div>";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/workflow_permission.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/workflow_permission.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?>
     <?php
@@ -456,28 +476,34 @@ function goToURL()
 
     if ((!$multiobject || $multiobject_count <= 1) && $login != "" && is_array ($user_online_array) && array_key_exists ($login, $user_online_array) && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
-      echo "<img ".
-             "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".
-             "onclick=\"killSession();\" ".
-             "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_logout.png\" alt=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" title=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" />\n";
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ".
+        "onclick=\"killSession();\" ".
+        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_logout.png\" alt=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" title=\"".getescapedtext ($hcms_lang['logout'][$lang])."\" />
+      </div>";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_logout.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_logout.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?>
     <?php
     // USER FILES
     if ((!$multiobject || $multiobject_count <= 1) && $mgmt_config['db_connect_rdbms'] != "" && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
-      echo "<img ".
-             "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".
-             "onclick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\" ".
-             "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_files.png\" alt=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" />\n";
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ".
+        "onclick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\" ".
+        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_files.png\" alt=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."\" />
+      </div>";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_files.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_files.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?>
   </div>
@@ -486,21 +512,24 @@ function goToURL()
     // REGISTRATION (only per publication)
     if (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))
     {
-      echo "<img ".
-             "class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" ".
-             "onclick=\"hcms_showHideLayers('createuserLayer','','hide','registrationLayer','','show','hcms_messageLayer','','hide');\" ".
-             "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_sessionreg.png\" alt=\"".getescapedtext ($hcms_lang['registration-of-new-users'][$lang])."\" title=\"".getescapedtext ($hcms_lang['registration-of-new-users'][$lang])."\" />\n";
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img class=\"hcmsButtonSizeSquare\" ".
+        "onclick=\"hcms_showHideLayers('createuserLayer','','hide','registrationLayer','','show','hcms_messageLayer','','hide');\" ".
+        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_sessionreg.png\" alt=\"".getescapedtext ($hcms_lang['registration-of-new-users'][$lang])."\" title=\"".getescapedtext ($hcms_lang['registration-of-new-users'][$lang])."\" />
+      </div>";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_sessionreg.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_sessionreg.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
     }
     ?>
   </div>
   <div class="hcmsToolbarBlock">
-    <?php
-    echo "<img class=\"hcmsButton hcmsHoverColor hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" id=\"pic_obj_refresh\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />\n";
-    ?> 
+    <div class="hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare">
+      <?php echo "<img class=\"hcmsButtonSizeSquare\" onClick=\"parent.frames['mainFrame'].location.reload();\" id=\"pic_obj_refresh\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />"; ?> 
+    </div>
   </div>
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
@@ -592,7 +621,7 @@ function goToURL()
     </div>
   </div>
   <div class="hcmsToolbarBlock">
-    <?php echo showhelpbutton ("adminguide", true, $lang, "", "hcmsHoverColor"); ?>
+    <?php echo showhelpbutton ("adminguide", true, $lang, "", "hcmsHoverColor hcmsInvertColor"); ?>
   </div>
 </div>
 

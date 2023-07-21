@@ -228,16 +228,70 @@ function objectfilter ($file)
   else return false;
 }
 
+// --------------------------------------- getinvertcolortheme -------------------------------------------
+// function: getinvertcolortheme ()
+// input: design theme name for CSS class hcmsToolbarBlock [string]
+// output: result array with inverted themes names or empty names if an inversion is not required based on the brightness of the background color.
+
+// description:
+// Used for portals in order to get the inverted theme names of the primary and hover colors based on the brightness of the primary and hover background color.
+
+function getinvertcolortheme ($themename)
+{
+  global $mgmt_config;
+
+  // initialize
+  $result = array();
+  $result['themeinvertcolors'] = "";
+  $result['hoverinvertcolors'] = "";
+
+  // get design theme and primary color if a portal theme is used
+  if (!empty ($themename) && strpos ($themename, "/") > 0)
+  {
+    list ($portal_site, $portal_theme) = explode ("/", $themename);
+
+    if (valid_objectname ($portal_theme))
+    {
+      $portal_template = $portal_theme.".portal.tpl";
+      $portal_template = loadtemplate ($portal_site, $portal_template);
+    }
+    
+    // get design theme and primary color
+    if (!empty ($portal_template['content']))
+    {
+      $temp_portaltheme = getcontent ($portal_template['content'], "<designtheme>");
+      $temp_portalcolor = getcontent ($portal_template['content'], "<primarycolor>");
+      $temp_hovercolor = getcontent ($portal_template['content'], "<hovercolor>");
+
+      if (!empty ($temp_portaltheme[0]) && !empty ($temp_portalcolor[0]))
+      {
+        list ($portalsite, $portaltheme) = explode ("/", $temp_portaltheme[0]);
+        $brightness_portalcolor = getbrightness ($temp_portalcolor[0]);
+        $brightness_hovercolor = getbrightness ($temp_hovercolor[0]);
+
+        if ($portaltheme == "day" && $brightness_portalcolor < 130) $result['themeinvertcolors'] = "night";
+        elseif ($portaltheme == "night" && $brightness_portalcolor >= 130) $result['themeinvertcolors'] = "day";
+
+        if ($portaltheme == "day" && $brightness_hovercolor < 130) $result['hoverinvertcolors'] = "night";
+        elseif ($portaltheme == "night" && $brightness_hovercolor >= 130) $result['hoverinvertcolors'] = "day";
+      }
+    }
+  }
+
+  return $result;
+}
+
 // --------------------------------------- invertcolorCSS -------------------------------------------
 // function: invertcolorCSS ()
-// input: design theme name for CSS class hcmsToolbarBlock [string] (optional), CSS selector for elements [string] (optional), percentage value [integer] (optional)
+// input: design theme name for CSS class hcmsToolbarBlock [string] (optional), CSS selector for elements [string] (optional), 
+//        use class when no event is triggered [boolean] (optional), use class for hover event [boolean] (optional), invert percentage value [integer] (optional)
 // output: CSS style code / false on error
 
 // description:
 // Used for portals in order to invert the color of elements.
 // MS IE does not support invert, MS Edge does.
 
-function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $percentage=100)
+function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $default=true, $hover=false, $percentage=100)
 {
   global $mgmt_config;
 
@@ -246,8 +300,12 @@ function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $percentag
   // invert colors
   if ($css_selector != "" && intval ($percentage) >= 0)
   {
-    $result .= "
-  ".$css_selector."
+    if ($default == true) $invertpercentage = 100 - intval ($percentage);
+    else $invertpercentage = $percentage;
+
+    // invert
+    if ($default == true) $result .= "
+  ".$css_selector." > span
   {
     -webkit-filter: invert(".intval ($percentage)."%);
     -o-filter: invert(".intval ($percentage)."%);
@@ -255,19 +313,41 @@ function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $percentag
     -ms-filter: invert(".intval ($percentage)."%);
     filter: invert(".intval ($percentage)."%);
   }";
+  
+  // invert on hover
+  if ($hover == true) $result .= "
+
+  ".$css_selector.":hover > img
+  {
+    -webkit-filter: invert(".intval ($percentage)."%);
+    -o-filter: invert(".intval ($percentage)."%);
+    -moz-filter: invert(".intval ($percentage)."%);
+    -ms-filter: invert(".intval ($percentage)."%);
+    filter: invert(".intval ($percentage)."%);
+  }
+  
+  ".$css_selector.":hover > span
+  {
+    -webkit-filter: invert(".intval ($invertpercentage)."%);
+    -o-filter: invert(".intval ($invertpercentage)."%);
+    -moz-filter: invert(".intval ($invertpercentage)."%);
+    -ms-filter: invert(".intval ($invertpercentage)."%);
+    filter: invert(".intval ($invertpercentage)."%);
+  }";
   }
 
   // set color for border for standard CSS class
-  if ($css_selector == ".hcmsInvertColor")
+  if ($css_selector == ".hcmsInvertColor" && $default == true)
   {
     if ($theme == "day") $color = "#000000";
     elseif ($theme == "night") $color = "#FFFFFF";
 
     if (!empty ($color)) $result .= "
-    .hcmsToolbarBlock
-    {
-      border-color: ".$color."; 
-    }";
+
+  .hcmsToolbarBlock
+  {
+    border-color: ".$color."; 
+  }";
   }
 
   return $result;
@@ -697,7 +777,11 @@ function showhelpbutton ($pdf_name, $enabled=true, $lang="en", $id="hcms_helpBut
   {
     $viewer = $pdfjs_path.urlencode($help);
 
-    return "<img id=\"".$id."\" onClick=\"hcms_openWindow('".$viewer."', 'help', 'location=no,menubar=no,toolbar=no,titlebar=no,location=no,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButton ".$css_class." hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />";
+    return "
+    <div class=\"hcmsButton hcmsHoverColor ".$css_class." hcmsButtonSizeSquare\">
+      <img id=\"".$id."\" onClick=\"hcms_openWindow('".$viewer."', 'help', 'location=no,menubar=no,toolbar=no,titlebar=no,location=no,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\" ".
+      "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_help.png\" class=\"hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['help'][$lang])."\" title=\"".getescapedtext ($hcms_lang['help'][$lang])."\" />
+    </div>";
   }
   // disabled button
   else
