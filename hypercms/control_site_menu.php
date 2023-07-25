@@ -101,6 +101,18 @@ function selectpublication (selObj)
   }
 }
 
+function createpublication ()
+{
+  hcms_showHideLayers('createsiteLayer','','show');
+  if (typeof parent.hcms_openSubMenu == "function") parent.hcms_openSubMenu(78);
+}
+
+function closepublication ()
+{
+  hcms_showHideLayers('createsiteLayer','','hide');
+  if (typeof parent.hcms_closeSubMenu == "function") parent.hcms_closeSubMenu();
+}
+
 function deletepublication ()
 {
   var form = document.forms['site_delete'];
@@ -165,6 +177,9 @@ function checkForm ()
   form.submit();
   return true;
 }
+
+// init
+parent.hcms_closeSubMenu();
 </script>
 </head>
 
@@ -190,7 +205,7 @@ function checkForm ()
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar">
+<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
   <div class="hcmsToolbarBlock" style="padding:2px;">
     <form name="site_delete" action="" method="post">
       <input type="hidden" name="action" value="site_delete" />
@@ -199,7 +214,7 @@ function checkForm ()
       <span class="hcmsInvertPrimaryColor">
         <span class=""><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></span>
       </span>
-      <select name="site_name" onChange="selectpublication(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
+      <select name="site_name" onChange="selectpublication(this);" style="width:<?php if ($is_mobile) echo "120px"; else echo "180px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
         $inherit_db = inherit_db_read ();
@@ -238,7 +253,7 @@ function checkForm ()
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createsiteLayer','','show');\" id=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
+        <img class=\"hcmsButtonSizeSquare\" onClick=\"createpublication();\" id=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
       </div>";
     }
     else
@@ -268,22 +283,22 @@ function checkForm ()
 </div>
 
 <!-- create publication -->
-<div id="createsiteLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden;">
+<div id="createsiteLayer" class="hcmsMessage" style="position:absolute; left:5px; top:5px; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
   <form name="site_create" action="" method="post" onsubmit="return checkForm();">
     <input type="hidden" name="action" value="site_create" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
+    <table class="hcmsTableNarrow" style="width:100%; min-height:40px;">
       <tr>
         <td>
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
           <span style="white-space:nowrap;">
-            <input type="text" name="site_name" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>" />
+            <input type="text" name="site_name" maxlength="100" style="width:<?php if ($is_mobile) echo "180px"; else echo "220px"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['publication-name'][$lang]); ?>" />
             <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
           </span>
         </td>
         <td style="width:38px; text-align:right; vertical-align:top;">
-          <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createsiteLayer','','hide');" />
+          <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closepublication();" />
         </td>        
       </tr>
     </table>

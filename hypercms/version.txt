@@ -7078,15 +7078,19 @@ Release 09/2023
 - Modifications in frameset_main in order to implement the chat library and the local JS function sendtochat
 - Modifications in control_content_menu, control_objectlist_menu, explorer_objectlist, and search_objectlist in order to call the JS function sendtochat from frameset_main
 - Modifications in function showinfobox in UI API in order to create a unique id for the infobox if none has been provided
-- Modifications in all controls in order to add the the new input parameter value for the ID of the infobox (function showinfobox)
+- Modifications in all controls in order to add the new input parameter value for the ID of the infobox (function showinfobox)
 - Removed the large thumbnail view option from control_objectlist_menu in the Mobile Edition
-- Modifications in control_objectlist_menu in order to chnage the download selctor to a download submenu
+- Modifications in control_objectlist_menu in order to change the download selector to a download submenu
 - Implementation of the new function getinvertcolortheme in UI API in order to get the inverted theme names of the primary and hover colors based on the brightness of the primary and hover background color of a portal theme
 - Modifications in function userlogin in Security API in order the replace code by function getinvertcolortheme
 - Modifications in user_edit API in order the replace code by function getinvertcolortheme
 - Modifications in portal_edit in order to implement the support of the hover color CSS classes
 - Modifications in frameset_main in order to implement the support of the new hover color CSS classes
 - Modifications in all controls in order to implement the support of the new hover color CSS classes
+- Implementation of the new JS function hcms_openSubMenu and hcms_closeSubMenu in main.js
+- Modifications in all controls in order to implement the resizing of the control layer by using the JS functions hcms_openSubMenu and hcms_closeSubMenu
+- Design modifications in all controls in order to reposition the message boxes and resizing the input and select fields
+- Design modifications in explorer in order to set a min. width for the navigation tree and search form
 - Updates in various language files
 - Update of all Guides due to the new version number
 - Updates in the Users Guide
@@ -7108,3 +7112,4 @@ Release 09/2023
 - Bug fix: Function createfolder in Main API did return the location including the folder name since it used the location result of function creatobject (after creating the folder object)
 - Bug fix: The local JS function sendtochat in control_objectlist_menu could not be executed due to the missing JQuery library
 - Bug fix: user_edit provided the siteaccess array and not the array keys for superadmin users as input to function getthemes which resulted in missing entries if the technical publication and display name were not the same 
+- Bug fix: Function showprojectrecord in the Project Management API used a wrong variable name in the link of an onclick event

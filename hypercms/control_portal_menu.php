@@ -109,6 +109,18 @@ function selectportal (selObj)
   }
 }
 
+function createportal ()
+{
+  hcms_showHideLayers('createtplLayer','','show', 'hcms_messageLayer','','hide');
+  if (typeof parent.hcms_openSubMenu == "function") parent.hcms_openSubMenu(78);
+}
+
+function closeportal ()
+{
+  hcms_showHideLayers('createtplLayer','','hide');
+  if (typeof parent.hcms_closeSubMenu == "function") parent.hcms_closeSubMenu();
+}
+
 function deleteportal ()
 {
   var form = document.forms['tpl_delete'];
@@ -173,6 +185,9 @@ function checkForm_tpl_create()
   form.submit();
   return true; 
 }
+
+// init
+parent.hcms_closeSubMenu();
 </script>
 </head>
 
@@ -180,7 +195,7 @@ function checkForm_tpl_create()
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;", "hcms_infobox_mouseover"); ?>
 
-<?php echo showmessage ($show, 670, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
+<?php echo showmessage ($show, 670, 65, $lang, "position:fixed; left:5px; top:5px; "); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -198,7 +213,7 @@ function checkForm_tpl_create()
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar">
+<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
   <div class="hcmsToolbarBlock" style="padding:2px;">
     <form name="tpl_delete" action="" method="post">
       <input type="hidden" name="action" value="tpl_delete" />
@@ -208,7 +223,7 @@ function checkForm_tpl_create()
       <span class="hcmsInvertPrimaryColor">
         <span class=""><?php echo $hcms_lang['portal-template'][$lang]; ?></span>
       </span>
-      <select name="template" onChange="selectportal(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
+      <select name="template" onchange="selectportal(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
       <?php
       $template_option_edit = array();  
@@ -234,7 +249,7 @@ function checkForm_tpl_create()
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onClick=\"hcms_showHideLayers('createtplLayer','','show', 'hcms_messageLayer','','hide');\" id=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
+        <img class=\"hcmsButtonSizeSquare\" onclick=\"createportal();\" id=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
       </div>";
     }
     else
@@ -248,7 +263,7 @@ function checkForm_tpl_create()
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onClick=\"deleteportal();\" id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+        <img class=\"hcmsButtonSizeSquare\" onclick=\"deleteportal();\" id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_tpl_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
       </div>";
     }
     else
@@ -264,23 +279,23 @@ function checkForm_tpl_create()
 </div>
 
 <!-- create portal -->
-<div id="createtplLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden;">
+<div id="createtplLayer" class="hcmsMessage" style="position:absolute; left:5px; top:5px; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
   <form name="tpl_create" action="" method="post" onsubmit="return checkForm_tpl_create();">
     <input type="hidden" name="action" value="tpl_create" />
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
+    <table class="hcmsTableNarrow" style="width:100%; min-height:40px;">
       <tr>
         <td>
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span> <span class="hcmsTextSmall">(<?php echo getescapedtext ($hcms_lang['name-without-ext'][$lang]); ?>)</span><br />
           <span style="white-space:nowrap;">
-            <input type="text" name="template" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"/>
+            <input type="text" name="template" maxlength="100" style="width:<?php if ($is_mobile) echo "180px"; else echo "220px"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"/>
             <img name="Button1" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm_tpl_create();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button1','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
           </span>
         </td>
         <td style="width:38px; text-align:right; vertical-align:top;">
-          <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createtplLayer','','hide');" />
+          <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeportal();" />
         </td>        
       </tr>  
     </table>

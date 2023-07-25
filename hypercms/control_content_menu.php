@@ -252,6 +252,7 @@ if (!empty ($hcms_themeinvertcolors))
   else $invertonhover = true;
 
   echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
+  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertPrimaryColor", true, false);
 }
 // inverted hover colors
 elseif (!empty ($hcms_hoverinvertcolors))
@@ -260,6 +261,27 @@ elseif (!empty ($hcms_hoverinvertcolors))
   echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
 }
 ?>
+
+.hcmsMenuItem
+{
+  padding: 2px 2px 1px 2px;
+  min-width: 190px;
+  width: 10%;
+  float: left;
+}
+
+.hcmsMenu
+{
+  width: 100%;
+}
+
+@media screen and (min-width: 1201px)
+{
+  .hcmsMenu
+  {
+    width: 1200px;
+  }
+}
 </style>
 <script type="text/javascript">
 var locklayer = false;
@@ -536,7 +558,7 @@ else
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar">
+<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
 
   <div class="hcmsToolbarBlock">
     <?php
@@ -818,8 +840,11 @@ else
   </div>
 
   <div class="hcmsMenu">
+    <div class="hcmsInvertPrimaryColor hcmsMenuItem">
+      <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download'][$lang]); ?></span>
+      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_arrow_right.png" class="hcmsIconList" />
+    </div>
     <?php
-
     if (!empty ($page) && !empty ($media) && $perm_rendering && $lock_rendering && ($doc_rendering || $img_rendering || $dropbox_rendering))
     {    
       // original file
@@ -925,7 +950,7 @@ else
 
 
 <?php
-echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px; ");
+echo showmessage ($show, 660, 75, $lang, "position:fixed; left:5px; top:5px; ");
 ?>
 
 
@@ -977,7 +1002,7 @@ if ($page != "")
 </form>
 
 <!-- create object -->
-<div id="objcreateLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "95%"; else echo "700px"; ?>; height:80px; left:10px; top:10px; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
+<div id="objcreateLayer" class="hcmsMessage" style="position:absolute; left:5px; top:5px; width:<?php if ($is_mobile) echo "95%"; else echo "700px"; ?>; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
   <form name="page_create" action="" method="post" onsubmit="return checkForm_page_create();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -988,7 +1013,7 @@ if ($page != "")
     <input type="hidden" name="action" value="page_create" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>">
     
-    <table class="hcmsTableNarrow" style="width:100%;">
+    <table class="hcmsTableNarrow" style="width:100%; min-height:70px;">
       <tr>
         <td style="width:30%;">
           <?php
@@ -1034,7 +1059,7 @@ if ($page != "")
 </div>
 
 <!-- download -->
-<div id="downloadLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
+<div id="downloadLayer" class="hcmsMessage" style="position:absolute; left:5px; top:5px; width:<?php if ($is_mobile) echo "80%"; else echo "650px"; ?>; visibility:<?php echo ($action == 'download' ? 'visible' : 'hidden'); ?>;" >
   <form name="download" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
     <input type="hidden" name="action" value="download" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
@@ -1043,7 +1068,7 @@ if ($page != "")
     <input type="hidden" name="convert_type" value="" />
     <input type="hidden" name="convert_cfg" value="" />
 
-    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
+    <table class="hcmsTableNarrow" style="width:100%; min-height:40px;">
       <tr>
         <td>
           <div style="overflow:auto;">

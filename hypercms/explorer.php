@@ -2273,14 +2273,14 @@ else
   </div>
 
     <!-- navigator -->
-    <div id="menu" style="position:absolute; top:4px; left:0px; display:none;">
+    <div id="menu" style="position:absolute; top:4px; left:0px; min-width:200px; display:none;">
       <ul id="menupointlist">
         <?php echo $maintree.$tree; ?>
       </ul>
     </div>
 
     <!-- search form -->
-    <div id="search" style="position:absolute; top:8px; left:4px; right:4px; text-align:top; display:none;">
+    <div id="search" style="position:absolute; top:8px; left:4px; right:4px; text-align:top; min-width:420px; display:none;">
       <form name="searchform_advanced" method="post" action="search_objectlist.php" target="mainFrame" autocomplete="off">
         <input type="hidden" name="action" value="base_search" />
         <input type="hidden" name="search_dir" value="" />

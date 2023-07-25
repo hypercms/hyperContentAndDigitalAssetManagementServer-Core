@@ -306,6 +306,24 @@ function checkForm()
   return true;
 }
 
+function createuser ()
+{
+  hcms_showHideLayers('createuserLayer','','show','registrationLayer','','hide','hcms_messageLayer','','hide');
+  if (typeof parent.hcms_openSubMenu == "function") parent.hcms_openSubMenu(108);
+}
+
+function registeruser ()
+{
+  hcms_showHideLayers('createuserLayer','','hide','registrationLayer','','show','hcms_messageLayer','','hide');
+  if (typeof parent.hcms_openSubMenu == "function") parent.hcms_openSubMenu(108);
+}
+
+function closeuser (id)
+{
+  hcms_showHideLayers(id,'','hide');
+  if (typeof parent.hcms_closeSubMenu == "function") parent.hcms_closeSubMenu(undefined, 580);
+}
+
 function resetPassword ()
 {
   var form = document.forms['actionform'];
@@ -351,12 +369,19 @@ function goToURL()
   var i, args=goToURL.arguments; document.returnValue = false;
   for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
 }
+
+// init
+parent.hcms_closeSubMenu(undefined, 580);
 </script>
 </head>
 
 <body class="hcmsWorkplaceControl" onload="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;", "hcms_infobox_mouseover"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;", "hcms_infobox_mouseover"); ?>
+
+<?php
+echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
+?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -394,15 +419,16 @@ function goToURL()
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar">
+<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
   <div class="hcmsToolbarBlock">
     <?php
+    // create user
     if ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('usercreate')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'usercreate')))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
         <img class=\"hcmsButtonSizeSquare\" ".
-        "onclick=\"hcms_showHideLayers('createuserLayer','','show','registrationLayer','','hide','hcms_messageLayer','','hide');\" ".
+        "onclick=\"createuser();\" ".
         "name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_new.png\" alt=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-new-user'][$lang])."\" />
       </div>";
     }
@@ -413,14 +439,13 @@ function goToURL()
     }
     ?>
     <?php
-    // DELETE BUTTON
+    // delete user
     if (($login != "" || $multiobject != "") && ((!valid_publicationname ($site)  && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'userdelete'))))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
         <img class=\"hcmsButtonSizeSquare\" ".
-        "onclick=\"if (warning_delete()==true) ".
-        "submitTo('control_user_menu.php', 'delete', 'controlFrame'); \" ".
+        "onclick=\"if (warning_delete()==true) submitTo('control_user_menu.php', 'delete', 'controlFrame'); \" ".
         "name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-user'][$lang])."\" />
       </div>";
     }    
@@ -431,7 +456,7 @@ function goToURL()
     }
     ?>
     <?php
-    // USER EDIT
+    // edit user
     if ($login != "" && (!$multiobject || $multiobject_count <= 1) && ((!valid_publicationname ($site)  && checkrootpermission ('user')  && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user')  && checkglobalpermission ($site, 'useredit'))))
     {
       echo "
@@ -453,7 +478,7 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    // RESET PASSWORD
+    //  reset password
     if ((!$multiobject || $multiobject_count <= 1) && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
       echo "
@@ -470,7 +495,7 @@ function goToURL()
     }
     ?>
     <?php
-    // KILL USER SESSION
+    // kill user session
     // get online users
     $user_online_array = getusersonline ();
 
@@ -490,7 +515,7 @@ function goToURL()
     }
     ?>
     <?php
-    // USER FILES
+    // get user files
     if ((!$multiobject || $multiobject_count <= 1) && $mgmt_config['db_connect_rdbms'] != "" && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
       echo "
@@ -509,13 +534,13 @@ function goToURL()
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    // REGISTRATION (only per publication)
+    // user registration (only per publication)
     if (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
         <img class=\"hcmsButtonSizeSquare\" ".
-        "onclick=\"hcms_showHideLayers('createuserLayer','','hide','registrationLayer','','show','hcms_messageLayer','','hide');\" ".
+        "onclick=\"registeruser();\" ".
         "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_sessionreg.png\" alt=\"".getescapedtext ($hcms_lang['registration-of-new-users'][$lang])."\" title=\"".getescapedtext ($hcms_lang['registration-of-new-users'][$lang])."\" />
       </div>";
     }    
@@ -534,7 +559,7 @@ function goToURL()
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
-      <select name="group" id="groupfilter" onchange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>" style="width:<?php if ($is_mobile) echo "130px"; else echo "180px"; ?>;">
+      <select name="group" id="groupfilter" onchange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>" style="width:<?php if ($is_mobile) echo "120px"; else echo "180px"; ?>;">
         <?php
         // select users by group membership
         if (valid_publicationname ($site))
@@ -625,19 +650,15 @@ function goToURL()
   </div>
 </div>
 
-<?php
-echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;");
-?>
-
 <!-- create user -->
-<div id="createuserLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:92px; left:10px; top:4px; visibility:hidden;">
+<div id="createuserLayer" class="hcmsMessage" style="position:absolute; left:5px; top:3px; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
   <form name="userform" action="" method="post" onsubmit="return checkForm();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="group" value="<?php echo $group; ?>" />
     <input type="hidden" name="action" value="create" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
     
-    <table class="hcmsTableStandard" style="width:100%;">
+    <table class="hcmsTableStandard" style="width:100%; min-height:40px;">
       <tr>
         <td>
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-new-user'][$lang]); ?></span><br/>
@@ -653,7 +674,7 @@ echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;")
           </table>
         </td>
         <td style="width:38px; text-align:right; vertical-align:top;">
-          <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('createuserLayer','','hide');" />
+          <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeuser('createuserLayer');" />
         </td>        
       </tr>
     </table>
@@ -661,14 +682,14 @@ echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;")
 </div>
 
 <!-- registration (overwrite z-index for tagit selectbox) -->
-<div id="registrationLayer" class="hcmsMessage" style="position:absolute; z-index:99; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:92px; left:10px; top:4px; visibility:hidden;">
+<div id="registrationLayer" class="hcmsMessage" style="position:absolute; left:5px; top:3px; z-index:99; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
   <form name="registrationform" action="" method="post">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="group" value="<?php echo $group; ?>" />
     <input type="hidden" name="action" value="registration" />
     <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
 
-    <table class="hcmsTableStandard" style="width:100%;">
+    <table class="hcmsTableStandard" style="width:100%; min-height:40px;">
       <tr>
         <td>
           <label><input type="checkbox" name="registration" value="true" tabindex="1" <?php if (!empty ($mgmt_config[$site]['registration'])) echo "checked"; ?> /> <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['registration-of-new-users'][$lang]); ?></span></label>
@@ -676,12 +697,12 @@ echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;")
           <table class="hcmsTableNarrow">
             <tr>
               <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['notify-users'][$lang])."&nbsp;</td>"; ?>
-              <td style="width:280px; white-space:nowrap;"><input id="users" name="registration_notify" value="<?php if (!empty ($mgmt_config[$site]['registration_notify'])) echo $mgmt_config[$site]['registration_notify']; ?>" style="width:280px;" tabindex="2" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]); ?>" /></td>
+              <td style="width:220px; white-space:nowrap; vertical-align:middle;"><input id="users" name="registration_notify" value="<?php if (!empty ($mgmt_config[$site]['registration_notify'])) echo $mgmt_config[$site]['registration_notify']; ?>" style="width:100%;" tabindex="2" placeholder="<?php echo getescapedtext ($hcms_lang['notify-users'][$lang]); ?>" /></td>
               <td></td>
             </tr>
             <tr>
               <?php if (!$is_mobile) echo "<td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['assign-registered-users-to-group'][$lang])."&nbsp;</td>"; ?>
-              <td style="white-space:nowrap;">
+              <td style="white-space:nowrap; vertical-align:middle;">
                 <select name="registration_group" style="width:100%;" tabindex="3">
                   <?php
                   if ($is_mobile) echo "
@@ -702,14 +723,14 @@ echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;")
                   ?>
                 </select>
               </td>
-              <td>
+              <td style="white-space:nowrap; vertical-align:middle;">
                 &nbsp;<img name="Button2" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['registrationform'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button2','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" tabindex="4" />
               </td>
             </tr>
           </table>
         </td>
         <td style="width:38px; text-align:right; vertical-align:top;">
-          <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('registrationLayer','','hide');" />
+          <img name="hcms_mediaClose2" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose2','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeuser('registrationLayer');" />
         </td>        
       </tr>
     </table>

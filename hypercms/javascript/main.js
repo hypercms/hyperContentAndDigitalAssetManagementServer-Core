@@ -1159,6 +1159,64 @@ function hcms_openChat ()
   }
 }
 
+function hcms_openSubMenu (height)
+{
+  if (document.getElementById('controlFrame'))
+  {
+    // set height
+    if (is_mobile) height = (typeof height !== 'undefined') ? height : 172;
+    else height = (typeof height !== 'undefined') ? height : 100;
+    
+    if (hcms_transitioneffect == true) document.getElementById('controlFrame').style.transition = "0.3s";
+    document.getElementById('controlFrame').style.height = height + 'px';
+
+    if (document.getElementById('mainLayer'))
+    {
+      if (hcms_transitioneffect == true) document.getElementById('mainLayer').style.transition = "0.3s";
+      document.getElementById('mainLayer').style.top = height + 'px';
+    }
+
+    if (document.getElementById('sidebarLayer'))
+    {
+      if (hcms_transitioneffect == true) document.getElementById('sidebarLayer').style.transition = "0.3s";
+      document.getElementById('sidebarLayer').style.top = height + 'px';
+    }
+  }
+}
+
+function hcms_closeSubMenu (height, minwidth)
+{
+  if ( document.getElementById('controlFrame'))
+  {
+    var width = screen.width;
+
+    // set height
+    if (is_mobile) height = (typeof height !== 'undefined') ? height : 62; 
+    else height = (typeof height !== 'undefined') ? height : 78;
+
+    // set min width
+    minwidth = (typeof minwidth !== 'undefined') ? minwidth : 370;
+
+    // force height on devices with small screens
+    if (width < minwidth && height < 100) height = 100;
+    
+    if (hcms_transitioneffect == true) document.getElementById('controlFrame').style.transition = "0.3s";
+    document.getElementById('controlFrame').style.height = height + 'px';
+
+    if (document.getElementById('mainLayer'))
+    {
+      if (hcms_transitioneffect == true) document.getElementById('mainLayer').style.transition = "0.3s";
+      document.getElementById('mainLayer').style.top = height + 'px';
+    }
+
+    if (document.getElementById('sidebarLayer'))
+    {
+      if (hcms_transitioneffect == true) document.getElementById('sidebarLayer').style.transition = "0.3s";
+      document.getElementById('sidebarLayer').style.top = height + 'px';
+    }
+  }
+}
+
 function hcms_findObj (n, d) 
 {
   var p, i, x;  

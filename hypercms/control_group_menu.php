@@ -103,6 +103,18 @@ function selectgroup (selObj)
   }
 }
 
+function creategroup ()
+{
+  hcms_showHideLayers('creategroupLayer','','show','hcms_messageLayer','','hide');
+  if (typeof parent.hcms_openSubMenu == "function") parent.hcms_openSubMenu(78);
+}
+
+function closegroup ()
+{
+  hcms_showHideLayers('creategroupLayer','','hide');
+  if (typeof parent.hcms_closeSubMenu == "function") parent.hcms_closeSubMenu();
+}
+
 function deletegroup ()
 {
   var form = document.forms['group_delete'];
@@ -167,14 +179,17 @@ function checkForm ()
   form.submit();
   return true;
 }
+
+// init
+parent.hcms_closeSubMenu();
 </script>
 </head>
 
 <body class="hcmsWorkplaceControl" onload="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:15px;", "hcms_infobox_mouseover"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;", "hcms_infobox_mouseover"); ?>
 
-<?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px; "); ?>
+<?php echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px; "); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -192,7 +207,7 @@ function checkForm ()
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar">
+<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
   <div class="hcmsToolbarBlock" style="padding:2px;">
     <form name="group_delete" action="control_group_menu.php" method="post">
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -201,7 +216,7 @@ function checkForm ()
       <span class="hcmsInvertPrimaryColor">
         <span class=""><?php echo getescapedtext ($hcms_lang['group'][$lang]); ?></span>
       </span>
-      <select name="group_name" onChange="selectgroup(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "200px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>">
+      <select name="group_name" onChange="selectgroup(this);" style="width:<?php if ($is_mobile) echo "130px"; else echo "180px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
         <?php
         if (!isset ($usergroupdata) || $usergroupdata == false)
@@ -235,7 +250,7 @@ function checkForm ()
     {
       echo "
     <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-      <img class=\"hcmsButtonSizeSquare\" onclick=\"hcms_showHideLayers('creategroupLayer','','show','hcms_messageLayer','','hide');\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\">
+      <img class=\"hcmsButtonSizeSquare\" onclick=\"creategroup();\" name=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_usergroup_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\">
     </div>";
     }
     else
@@ -263,20 +278,20 @@ function checkForm ()
 </div>
 
 <!-- create group -->
-<div id="creategroupLayer" class="hcmsMessage" style="position:absolute; width:<?php if ($is_mobile) echo "90%"; else echo "650px"; ?>; height:70px; left:10px; top:10px; visibility:hidden">
+<div id="creategroupLayer" class="hcmsMessage" style="position:absolute; left:5px; top:5px; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
   <form name="group_create" action="control_group_menu.php" method="post" onsubmit="return checkForm();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="action" value="group_create" />
     
-    <table class="hcmsTableNarrow" style="width:100%; height:60px;">
+    <table class="hcmsTableNarrow" style="width:100%; min-height:40px;">
       <tr>
         <td style="white-space:nowrap;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span><br />
-          <input type="text" name="group_name" maxlength="100" style="width:<?php if ($is_mobile) echo "200px"; else echo "80%"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>" />
+          <input type="text" name="group_name" maxlength="100" style="width:<?php if ($is_mobile) echo "180px"; else echo "220px"; ?>;" placeholder="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['group-name'][$lang]); ?>" />
           <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="checkForm();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
         </td>
         <td style="width:38px; text-align:right; vertical-align:top;">
-          <img name="hcms_mediaClose1" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose1','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="hcms_showHideLayers('creategroupLayer','','hide');" />
+          <img name="hcms_creategroupLayerClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_creategroupLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closegroup();" />
         </td>         
       </tr>
     </table>

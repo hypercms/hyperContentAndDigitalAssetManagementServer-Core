@@ -27,7 +27,7 @@ checkusersession ($user, false);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE html>
 <html>
@@ -41,8 +41,8 @@ if (session_id() != "") session_write_close();
 </head>
 
 <body class="hcmsTransBackground">
-  <iframe id="controlFrame" name="controlFrame" src="<?php echo "control_media_menu.php?site=".$site."&mediacat=".$mediacat; ?>" frameborder="0" scrolling="no" style="position:fixed; top:0; left:0; width:100%; height:100px; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
-  <div style="position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;">
+  <iframe id="controlFrame" name="controlFrame" src="<?php echo "control_media_menu.php?site=".$site."&mediacat=".$mediacat; ?>" frameborder="0" scrolling="no" style="position:fixed; top:0; left:0; width:100%; height:78px; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
+  <div id="mainLayer" style="position:fixed; top:78px; right:0; bottom:0; left:0; margin:0; padding:0;">
     <iframe id="mainFrame" name="mainFrame" src="empty.php?site=<?php echo $site; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>"></iframe>
   </div>
 </body>

@@ -155,6 +155,9 @@ function submitTo (url, action, target, features, width, height)
   form.target = target;
   form.submit();
 }
+
+// init
+parent.hcms_closeSubMenu();
 </script>
 </head>
 
@@ -162,7 +165,7 @@ function submitTo (url, action, target, features, width, height)
 
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:15px;", "hcms_infobox_mouseover"); ?>
 
-<?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
+<?php echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px; "); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -209,7 +212,7 @@ function submitTo (url, action, target, features, width, height)
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar">
+<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
   <div class="hcmsToolbarBlock">
     <?php
     // EDIT BUTTON
@@ -238,10 +241,9 @@ function submitTo (url, action, target, features, width, height)
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" ".
-        "onclick=\"if (warning_delete()==true) ".
-        "submitTo('control_message_menu.php', 'delete', 'controlFrame'); \" ".
-        "id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />
+        <img class=\"hcmsButtonSizeSquare\" id=\"media_delete\" ".
+        "onclick=\"if (warning_delete()==true) submitTo('control_message_menu.php', 'delete', 'controlFrame');\" ".
+        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />
       </div>";
     }    
     else

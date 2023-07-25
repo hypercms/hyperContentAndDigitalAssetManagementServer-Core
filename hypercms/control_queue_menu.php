@@ -177,14 +177,17 @@ function jumpTo (target)
   
   eval (target + ".location='queue_objectlist.php?site=" + encodeURIComponent(site) + "&queueuser=" + encodeURIComponent(queueuser) + "'");
 }
+
+// init
+parent.hcms_closeSubMenu();
 </script>
 </head>
 
 <body class="hcmsWorkplaceControl" onLoad="<?php echo $add_onload; ?>">
 
-<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;", "hcms_infobox_mouseover"); ?>
+<?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:10px;", "hcms_infobox_mouseover"); ?>
 
-<?php echo showmessage ($show, 660, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
+<?php echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;"); ?>
 
 <div class="hcmsLocationBar">
   <?php if (!$is_mobile) { ?>
@@ -247,8 +250,8 @@ function jumpTo (target)
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar">
-  <form name="selectboxes" action="">
+<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
+<form name="selectboxes" action="">
   <div class="hcmsToolbarBlock">
   <?php
     // QUEUE EDIT BUTTON
@@ -269,7 +272,7 @@ function jumpTo (target)
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
         <img class=\"hcmsButtonSizeSquare\" ".
-        "onClick=\"".$openlink."\" ".
+        "onclick=\"".$openlink."\" ".
         "id=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />
       </div>";
     }
@@ -288,9 +291,9 @@ function jumpTo (target)
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
         <img class=\"hcmsButtonSizeSquare\" ".
-        "onClick=\"".$openlink."\" ".
+        "onclick=\"".$openlink."\" ".
         "id=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />
-      ";
+      </div>";
     }  
     else
     {
@@ -305,9 +308,9 @@ function jumpTo (target)
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
         <img class=\"hcmsButtonSizeSquare\" ".
-        "onClick=\"if (warning_delete()==true) submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
+        "onclick=\"if (warning_delete()==true) submitTo('control_queue_menu.php', 'delete', 'controlFrame'); \" ".
         "id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />
-      ";
+      </div>";
     }    
     else
     {
@@ -324,7 +327,7 @@ function jumpTo (target)
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
-      <select name="site" onChange="jumpTo('parent.frames[\'mainFrame\']')" style="width:<?php if ($is_mobile) echo "40%"; else echo "220px"; ?>;" title="<?php  echo getescapedtext ($hcms_lang['publication'][$lang]); ?> ">
+      <select name="site" onchange="jumpTo('parent.frames[\'mainFrame\']')" style="width:<?php if ($is_mobile) echo "80px"; else echo "180px"; ?>;" title="<?php  echo getescapedtext ($hcms_lang['publication'][$lang]); ?> ">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-publications'][$lang]); ?></option>
         <?php
           // select publication
@@ -365,7 +368,7 @@ function jumpTo (target)
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
-      <select name="queueuser" onChange="jumpTo('parent.frames[\'mainFrame\']')" title="<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>">
+      <select name="queueuser" onchange="jumpTo('parent.frames[\'mainFrame\']');" style="width:<?php if ($is_mobile) echo "80px"; else echo "180px"; ?>;" title="<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>">
         <option value=""><?php echo getescapedtext ($hcms_lang['all-users'][$lang]); ?></option>
         <?php
         // select user
@@ -398,7 +401,7 @@ function jumpTo (target)
   <div class="hcmsToolbarBlock">
     <?php echo showhelpbutton ("usersguide", (checkrootpermission ('user') || checkglobalpermission ($site, 'user')), $lang, "", "hcmsHoverColor hcmsInvertColor"); ?>    
   </div>
-  </form>
+</form>
 </div>
 
 </body>
