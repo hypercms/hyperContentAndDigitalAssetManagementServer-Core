@@ -7094,6 +7094,7 @@ Release 09/2023
 - Modifications in user_edit in order to use the display name for the publications for home boxes and design themes
 - Modifications in media_playerconfig in order to provide the array keys of the user publication access to function getthemes
 - Modifications in function gethomeboxes, getuserboxes, and getthemes in Get API in order to provide the display names in the result array values for portal design themes
+- Design modifications in portal_edit in order to display the selected images
 - Updates in various language files
 - Update of all Guides due to the new version number
 - Updates in the Users Guide

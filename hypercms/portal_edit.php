@@ -342,6 +342,10 @@ function deleteSelected (name)
  if (name != "" && form.elements[name])
  {
   form.elements[name].value = "1";
+
+  // remove image
+  if (document.getElementById(name)) document.getElementById(name).style.display='none';
+
   return true;
  }
  else return false;
@@ -441,8 +445,9 @@ function settransparent ()
       <!-- Uploads -->
       <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['upload-file'][$lang]); ?></span><br/><br/>
       <?php echo getescapedtext ($hcms_lang['logo'][$lang]." (PNG, WxH >= 114x114 px)"); ?><br/>
-      <input type="file" name="logo_top" accept="image/png" style="width:280px; float:left;" />
+      <input type="file" name="logo_top" accept="image/png" style="width:120px; float:left;" onclick="this.style.width='250px';" />
       <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/logo_top.png")) { ?>
+      <img id="delete_logo_top" src="<?php echo $mgmt_config['url_path_rep']."portal/".$portaltheme."/uploads/logo_top.png"; ?>" style="height:34px;" />
       <img onclick="deleteSelected('delete_logo_top');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
       <?php } else { ?>
       <img src="<?php echo getthemelocation(); ?>img/button_delete.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
@@ -450,8 +455,9 @@ function settransparent ()
       <div style="clear:both;"></div>
       <br/>
       <?php echo getescapedtext ($hcms_lang['logo'][$lang]." (PNG, H <= 100 px)"); ?><br/>
-      <input type="file" name="logo" accept="image/png" style="width:280px; float:left;" />
+      <input type="file" name="logo" accept="image/png" style="width:120px; float:left;" onclick="this.style.width='250px';" />
       <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/logo.png")) { ?>
+      <img id="delete_logo" src="<?php echo $mgmt_config['url_path_rep']."portal/".$portaltheme."/uploads/logo.png"; ?>" style="height:34px;" />
       <img onclick="deleteSelected('delete_logo');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
       <?php } else { ?>
       <img src="<?php echo getthemelocation(); ?>img/button_delete.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
@@ -459,8 +465,10 @@ function settransparent ()
       <div style="clear:both;"></div>
       <br/>
       <?php echo getescapedtext ($hcms_lang['wallpaper'][$lang]." (PNG, JPG, ~ 1920x1080 px)"); ?><br/>
-      <input type="file" name="wallpaper" accept="image/png, image/jpeg" style="width:280px; float:left;" />
+      <input type="file" name="wallpaper" accept="image/png, image/jpeg" style="width:120px; float:left;" onclick="this.style.width='250px';" />
       <?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/wallpaper.png") || is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/wallpaper.jpg")) { ?>
+      <img id="delete_wallpaper" src="<?php if (is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/wallpaper.png")) echo $mgmt_config['url_path_rep']."portal/".$portaltheme."/uploads/wallpaper.png";
+      elseif (is_file ($mgmt_config['abs_path_rep']."portal/".$portaltheme."/uploads/wallpaper.jpg")) echo $mgmt_config['url_path_rep']."portal/".$portaltheme."/uploads/wallpaper.jpg"; ?>" style="height:34px;" />
       <img onclick="deleteSelected('delete_wallpaper');" class="hcmsButtonTiny hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
       <?php } else { ?>
       <img src="<?php echo getthemelocation(); ?>img/button_delete.png" class="hcmsButtonOff hcmsButtonSizeSquare" />

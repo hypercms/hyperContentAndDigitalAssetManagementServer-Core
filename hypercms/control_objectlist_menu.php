@@ -800,7 +800,13 @@ function switchFilter ()
       if (elem[i].checked == true) filteractive = true;
     }
 
-    if (filterset.style.visibility == 'hidden' || filteractive == true)
+    if (filteractive == true)
+    {
+      // do not use a transition effect if a filter is active
+      hcms_transitioneffect = false;
+      openSubMenu('filterLayer');
+    }
+    else if (filterset.style.visibility == 'hidden' || filterset.style.display == 'none')
     {
       openSubMenu('filterLayer');
     }
