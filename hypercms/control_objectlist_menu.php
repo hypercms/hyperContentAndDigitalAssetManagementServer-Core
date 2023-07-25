@@ -802,17 +802,15 @@ function switchFilter ()
 
     if (filteractive == true)
     {
-      // do not use a transition effect if a filter is active
-      hcms_transitioneffect = false;
-      openSubMenu('filterLayer');
+      hcms_showFormLayer('filterLayer', 0);
     }
-    else if (filterset.style.visibility == 'hidden' || filterset.style.display == 'none')
+    else if (filterset.style.display == 'none')
     {
-      openSubMenu('filterLayer');
+      hcms_showFormLayer('filterLayer', 0);
     }
     else if (filteractive == false)
     {
-      closeSubMenu('filterLayer');
+      hcms_hideFormLayer('filterLayer');
     }
      
     return true;
@@ -903,7 +901,7 @@ parent.hcms_closeSubMenu();
 </script>
 </head>
 
-<body class="hcmsWorkplaceControl" onload="<?php echo $add_onload; ?> <?php if (isset ($objectfilter) && is_array ($objectfilter) && sizeof ($objectfilter) > 0) echo "openSubMenu('filterLayer');"; ?>">
+<body class="hcmsWorkplaceControl" onload="<?php echo $add_onload; ?>">
 
 <!-- load screen --> 
 <div id="hcmsLoadScreen" class="hcmsLoadScreen" style="display:none;"></div>
@@ -1051,29 +1049,6 @@ else
       <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['back'][$lang], 11, 2)); ?></div>
     </div>
   </div>
-  
-  <?php if (!$is_mobile) { ?>
-  <div class="hcmsToolbarBlock">
-    <div class="hcmsButtonFrame">
-    <?php
-    // Filter
-    if ($from_page == "" && $cat != "page")
-    {
-      echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButtonSizeSquare\" onclick=\"switchFilter();\" title=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" alt=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" />
-      </div>";
-    }
-    else
-    {
-      echo "
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
-    }
-    ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['filter-by-file-type'][$lang], 11, 2)); ?></div>
-    </div>
-  </div>
-  <?php } ?>
   
   <div class="hcmsToolbarBlock">
     <div class="hcmsButtonFrame">
@@ -1253,6 +1228,44 @@ else
     </div>
   </div>
 
+  <?php if (!$is_mobile) { ?>
+  <div class="hcmsToolbarBlock">
+    <div class="hcmsButtonFrame">
+    <?php
+    // filter
+    if ($from_page == "" && $cat != "page")
+    {
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButtonSizeSquare\" onclick=\"switchFilter();\" title=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" alt=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" />
+      </div>";
+    }
+    else
+    {
+      echo "
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    }
+    ?>
+      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['filter-by-file-type'][$lang], 11, 2)); ?></div>
+    </div>
+    <?php if ($from_page == "" && $cat != "page") { ?>
+    <!-- filter bar -->
+    <div id="filterLayer" style="padding:9px 4px 2px 8px; float:left; display:<?php if (isset ($objectfilter) && is_array ($objectfilter) && sizeof ($objectfilter) > 0) echo "block"; else echo "none"; ?>;">
+      <form name="filter_set" action="explorer_objectlist.php" target="mainFrame" method="get">
+        <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
+        <input type="hidden" name="virtual" value="<?php echo $virtual; ?>" />
+        <input type="hidden" name="filter[dummy]" value="1" />
+        <input type="checkbox" id="filter1" onclick="setFilter();" name="filter[comp]" value="1" <?php if (!empty ($objectfilter['comp'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter1" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></span></label>&nbsp;&nbsp;
+        <input type="checkbox" id="filter2" onclick="setFilter();" name="filter[image]" value="1" <?php if (!empty ($objectfilter['image'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter2" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></span></label>&nbsp;&nbsp;
+        <input type="checkbox" id="filter3" onclick="setFilter();" name="filter[document]" value="1" <?php if (!empty ($objectfilter['document'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter3" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></span></label>&nbsp;&nbsp;
+        <input type="checkbox" id="filter4" onclick="setFilter();" name="filter[video]" value="1" <?php if (!empty ($objectfilter['video'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter4" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></span></label>&nbsp;&nbsp;
+        <input type="checkbox" id="filter5" onclick="setFilter();" name="filter[audio]" value="1" <?php if (!empty ($objectfilter['audio'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter5" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></span></label>&nbsp;&nbsp;
+      </form>
+    </div>
+    <?php } ?>
+  </div>
+  <?php } ?>
+
   <div style="float:right; <?php if (!$is_mobile || $is_iphone) echo "margin:0px 8px 0px 0px"; elseif (!$is_iphone) echo "margin:0px -2px 0px 0px;"; ?>">
     <?php
     // object list views
@@ -1263,22 +1276,22 @@ else
     <div id=\"button_obj_view\" onclick=\"hcms_switchSelector('select_obj_view'); hcms_hideSelector('select_obj_convert');\" class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeWide\">
       <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_gallery_".$temp_explorerview.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" /><img src=\"".getthemelocation($hcms_themeinvertcolors)."img/pointer_select.png\" class=\"hcmsButtonSizeNarrow\" alt=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" title=\"".getescapedtext ($hcms_lang['thumbnail-gallery'][$lang])."\" />
 
-      <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:relative; top:-52px; left:-180px; visibility:hidden; z-index:999; width:180px; max-height:".($is_mobile ? "50" : "72")."px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
+      <div id=\"select_obj_view\" class=\"hcmsSelector\" style=\"position:relative; top:".($is_mobile ? "-54" : "-68")."px; left:-180px; visibility:hidden; z-index:999; width:180px; max-height:".($is_mobile ? "62" : "74")."px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
       if (!$is_mobile) echo "
-        <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" onclick=\"switchView ('large'); document.getElementById('button_obj_view').click();\">
+        <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" style=\"margin:-1px;\" onclick=\"switchView ('large'); document.getElementById('button_obj_view').click();\">
           <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_view_gallery_large.png\" class=\"hcmsIconList\" /> 
           <span class=\"\">".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</span>
         </div>";
       echo "
-        <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" onclick=\"switchView ('medium'); document.getElementById('button_obj_view').click();\">
+        <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" style=\"margin:-1px;\" onclick=\"switchView ('medium'); document.getElementById('button_obj_view').click();\">
           <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_view_gallery_medium.png\" class=\"hcmsIconList\" /> 
           <span class=\"\">".getescapedtext ($hcms_lang['medium-thumbnails'][$lang])."</span>
         </div>
-        <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" onclick=\"switchView ('small'); document.getElementById('button_obj_view').click();\">
+        <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" style=\"margin:-1px;\" onclick=\"switchView ('small'); document.getElementById('button_obj_view').click();\">
           <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_view_gallery_small.png\" class=\"hcmsIconList\" /> 
           <span class=\"\">".getescapedtext ($hcms_lang['small-thumbnails'][$lang])."</span>
         </div>
-        <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" onclick=\"switchView ('detail'); document.getElementById('button_obj_view').click();\">
+        <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" style=\"margin:-1px;\" onclick=\"switchView ('detail'); document.getElementById('button_obj_view').click();\">
           <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_view_gallery_detail.png\" class=\"hcmsIconList\" /> 
           <span class=\"\">".getescapedtext ($hcms_lang['details'][$lang])."</span>
         </div>
@@ -1795,25 +1808,6 @@ else
     ?>
   </div>
 </div>
-
-
-
-<!-- filter bar -->
-<?php if (!$is_mobile && $from_page == "" && $cat != "page") { ?>
-<div id="filterLayer" style="position:fixed; bottom:3px; left:3px; margin:0; padding:0px; visibility:hidden;">
-  <form name="filter_set" action="explorer_objectlist.php" target="mainFrame" method="get">
-    <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />
-    <input type="hidden" name="virtual" value="<?php echo $virtual; ?>" />
-    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
-    <input type="hidden" name="filter[dummy]" value="1" />
-    <input type="checkbox" id="filter1" onclick="setFilter();" name="filter[comp]" value="1" <?php if (!empty ($objectfilter['comp'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter1" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['component'][$lang]); ?></span></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter2" onclick="setFilter();" name="filter[image]" value="1" <?php if (!empty ($objectfilter['image'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter2" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['image'][$lang]); ?></span></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter3" onclick="setFilter();" name="filter[document]" value="1" <?php if (!empty ($objectfilter['document'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter3" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['document'][$lang]); ?></span></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter4" onclick="setFilter();" name="filter[video]" value="1" <?php if (!empty ($objectfilter['video'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter4" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['video'][$lang]); ?></span></label>&nbsp;&nbsp;
-    <input type="checkbox" id="filter5" onclick="setFilter();" name="filter[audio]" value="1" <?php if (!empty ($objectfilter['audio'])) echo "checked=\"checked\""; ?>/>&nbsp;<label for="filter5" class="hcmsInvertColor"><span><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></span></label>&nbsp;&nbsp;
-  </form>
-</div>
-<?php } ?>
 
 <!-- create folder -->
 <div id="foldercreateLayer" class="hcmsMessage" style="position:absolute; left:5px; top:5px; max-width:95%; z-index:1; visibility:hidden;">

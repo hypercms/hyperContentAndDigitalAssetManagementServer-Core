@@ -7094,7 +7094,10 @@ Release 09/2023
 - Modifications in user_edit in order to use the display name for the publications for home boxes and design themes
 - Modifications in media_playerconfig in order to provide the array keys of the user publication access to function getthemes
 - Modifications in function gethomeboxes, getuserboxes, and getthemes in Get API in order to provide the display names in the result array values for portal design themes
+- Modifications in frameset_mobile in order to implement the support of the new hover color CSS classes
 - Design modifications in portal_edit in order to display the selected images
+- Modifications in control_objectlist_menu in order to move the object filter to a new position in the toolbar and display the filter checkboxes in line with the tool bar buttons
+- Modifications in control_objectlist_menu in order to optimize the positioning of the gallery view selector for the desktop and mobile devices
 - Updates in various language files
 - Update of all Guides due to the new version number
 - Updates in the Users Guide

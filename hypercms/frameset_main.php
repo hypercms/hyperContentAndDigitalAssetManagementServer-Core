@@ -513,8 +513,8 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <?php } ?>
 
   <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_info.png" class="hcmsButtonSizeSquare" style="position:absolute; left:0; bottom:0; margin:32px 0px;" onclick="hcms_showFormLayer ('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare"  style="position:absolute; left:0; bottom:0; margin:32px 0px; padding:2px;">
+    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_info.png" class="hcmsButtonSizeSquare" onclick="hcms_showFormLayer('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
   </div>
   <?php } ?>
 </div>
