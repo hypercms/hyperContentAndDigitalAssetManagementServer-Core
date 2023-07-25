@@ -369,7 +369,7 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
       <select id="theme" style="width:98%; margin:0px 0px 6px 0px;" onchange="updateCodeSegment();">
       <?php
       // get themes of user
-      if (!empty ($siteaccess)) $theme_array = getthemes ($siteaccess);
+      if (!empty ($siteaccess)) $theme_array = getthemes (array_keys ($siteaccess));
       else $theme_array = false;
 
       if (is_array ($theme_array) && sizeof ($theme_array) > 0)

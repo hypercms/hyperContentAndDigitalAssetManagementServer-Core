@@ -7091,6 +7091,9 @@ Release 09/2023
 - Modifications in all controls in order to implement the resizing of the control layer by using the JS functions hcms_openSubMenu and hcms_closeSubMenu
 - Design modifications in all controls in order to reposition the message boxes and resizing the input and select fields
 - Design modifications in explorer in order to set a min. width for the navigation tree and search form
+- Modifications in user_edit in order to use the display name for the publications for home boxes and design themes
+- Modifications in media_playerconfig in order to provide the array keys of the user publication access to function getthemes
+- Modifications in function gethomeboxes, getuserboxes, and getthemes in Get API in order to provide the display names in the result array values for portal design themes
 - Updates in various language files
 - Update of all Guides due to the new version number
 - Updates in the Users Guide

@@ -3015,7 +3015,7 @@ function getlocationname ($site, $location, $cat, $source="path")
 
 function getthemes ($site_array=array())
 {
-  global $mgmt_config;
+  global $mgmt_config, $siteaccess;
 
   $theme_array = array();
 
@@ -3061,7 +3061,10 @@ function getthemes ($site_array=array())
               {
                 if ($entry != "." && $entry != ".." && is_dir ($theme_dir.$entry) && is_dir ($theme_dir.$entry."/img") && is_dir ($theme_dir.$entry."/css"))
                 {
-                  $theme_array[$site."/".$entry] = $site."/".$entry;
+                  if (!empty ($siteaccess[$site])) $sitename = $siteaccess[$site];
+                  else $sitename = $site;
+
+                  $theme_array[$site."/".$entry] = $sitename." &gt; ".$entry;
                 }
               }
             }
@@ -6149,13 +6152,13 @@ function getclipboard ($output="path", $return_text_id=array())
 
 // ------------------------------------------ gethomeboxes --------------------------------------------
 // function: gethomeboxes()
-// input: pupblication name [array] (optional)
+// input: publication names [array] (optional)
 // output: All home boxes as array with technical name as key and readable name as value / false
 // requires: config.inc.php
 
 function gethomeboxes ($site_array=array())
 {
-  global $mgmt_config;
+  global $mgmt_config, $siteaccess;
 
   $result = array();
 
@@ -6203,10 +6206,13 @@ function gethomeboxes ($site_array=array())
             {
               if ($entry != "." && $entry != ".." && $entry != ".folder" && is_file ($boxes_dir.$entry) && substr ($entry, -4) == ".php")
               {
-                $box = str_replace (".php", "", $site."/".$entry);
+                $box = str_replace (".php", "", $entry);
                 $name = str_replace ("_", " ", $box);
 
-                $result[$box] = $name;
+                if (!empty ($siteaccess[$site])) $name = $siteaccess[$site]." &gt; ".$name;
+                else $name = $site." &gt; ".$name;
+
+                $result[$site."/".$box] = $name;
               }
             }
           }
@@ -6233,7 +6239,7 @@ function gethomeboxes ($site_array=array())
 
 function getuserboxes ($user)
 {
-  global $mgmt_config;
+  global $mgmt_config, $siteaccess;
 
   // initialize
   $result = array();
@@ -6258,9 +6264,19 @@ function getuserboxes ($user)
           foreach ($name_array as $name)
           {
             // individual home boxes (publication/name)
-            if (strpos ($name, "/") > 0) $result[$name] = str_replace ("_", " ", $name);
+            if (strpos ($name, "/") > 0)
+            {
+              list ($site_temp, $name_temp) = explode ("/", $name);
+              $name_temp = str_replace ("_", " ", $name_temp);
+
+              if (!empty ($siteaccess[$site_temp])) $result[$name] = $siteaccess[$site_temp]." &gt; ".$name_temp;
+              else $result[$name] = $site_temp." &gt; ".$name_temp;
+            }
             // system home boxes (name)
-            else $result[$name] = ucfirst (str_replace ("_", " ", $name));
+            else
+            {
+              $result[$name] = ucfirst (str_replace ("_", " ", $name));
+            }
           }
 
           return $result;
