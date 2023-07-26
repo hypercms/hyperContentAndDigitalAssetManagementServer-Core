@@ -228,6 +228,21 @@ function objectfilter ($file)
   else return false;
 }
 
+// --------------------------------------- gettoolbarstyle -------------------------------------------
+// function: gettoolbarstyle ()
+// input: is mobile edition [boolean], height in pixels [integer] (optional), min. width in pixels of the toolbar for the desktop [integer] (optional), max. height of the toolbar for mobile devices in pixels [integer] (optional)
+// output: CSS style [string]
+
+// description:
+// Unified style definitions for the standard toolbar
+
+function gettoolbarstyle ($is_mobile, $height=0, $minwidth=580, $maxheight=100)
+{
+  global $mgmt_config;
+
+  return "position:fixed; top:".(!$is_mobile ? "36px" : "20px")."; left:0; z-index:1; vertical-align:top; ".(intval($height) > 0 ? "height:".intval($height)."px;" : "")." ".(!$is_mobile ? "white-space:nowrap; min-width:".intval($minwidth)."px;" : "max-height:".intval($maxheight)."px;");
+}
+
 // --------------------------------------- getinvertcolortheme -------------------------------------------
 // function: getinvertcolortheme ()
 // input: design theme name for CSS class hcmsToolbarBlock [string]

@@ -171,7 +171,7 @@ parent.hcms_closeSubMenu();
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
+<div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
   <div class="hcmsToolbarBlock">
     <div class="hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare">
       <img onclick="location='log_export.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButtonSizeSquare" id="media_export" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_export_page.png" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
@@ -207,7 +207,7 @@ parent.hcms_closeSubMenu();
 </div>
 
 <!-- notify users (overwrite z-index for tagit selectbox) -->
-<div id="notificationLayer" class="hcmsMessage" style="position:absolute; left:5px; top:3px; z-index:99; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
+<div id="notificationLayer" class="hcmsMessage" style="position:fixed; left:5px; top:3px; z-index:99; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
 <form name="registrationform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="action" value="notification" />

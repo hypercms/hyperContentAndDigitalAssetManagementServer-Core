@@ -176,7 +176,7 @@ a.hcmsLink
   height: 80px;
   margin: 0 0 120px 0;
   padding: 0;
-  font-size: 14px;
+  font-size: 1.1em;
   text-align: left; 
 }
 
@@ -220,7 +220,7 @@ a.hcmsLink
   margin-left: -130px;
   z-index: 900;
   width: 260px;
-  font-size: 14px;
+  font-size: 1.1em;
   text-align: left;
   overflow-x: hidden;
   overflow-y: auto;
@@ -259,6 +259,9 @@ a.hcmsLink
 
 .hcmsLocationBar
 {
+  position: absolute;
+  top: 0;
+  left: 0;
   box-sizing: border-box;
   width: 100%;
   background-color: #eeeeee;
@@ -392,7 +395,7 @@ a.hcmsNavigator
 
 .hcmsFormRowLabel
 {
-  font-size: 14px;
+  font-size: 1.1em;
   padding: 14px 2px 6px 4px;
   display: block;
 }
@@ -490,7 +493,7 @@ a.hcmsNavigator
   -webkit-border-radius: 5px;
   border-radius: 5px;
   color: #FFFFFF;
-  font-size: 12px;
+  font-size: inherit;
   background-color: #292929;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
@@ -768,7 +771,7 @@ a.hcmsNavigator
 
 .hcmsSelectorItem
 {
-  font-size: 12px;
+  font-size: 0.9em;
   cursor: pointer;
   margin: 0;
   padding: 0 20px 0 0;
@@ -784,7 +787,7 @@ a.hcmsNavigator
 .hcmsHeadline 
 {  
   font-family: inherit;
-  font-size: 12px; 
+  font-size: inherit; 
   font-weight: bold; 
   text-decoration: none;
   padding: 3px 0px;
@@ -793,7 +796,7 @@ a.hcmsNavigator
 .hcmsHeadlineTiny 
 {  
   font-family: inherit;
-  font-size: 12px;
+  font-size: inherit;
   font-weight: normal;
   color: #424242;
   text-decoration: none;

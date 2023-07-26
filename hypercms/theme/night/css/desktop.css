@@ -2,22 +2,22 @@
 
 html, body, table
 {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 input, select, textarea, button, .hcmsTextArea
 {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .hcmsHeadline 
 {  
-  font-size: 12px; 
+  font-size: 13px; 
 }
 
 .hcmsHeadlineTiny 
 {  
-  font-size: 12px; 
+  font-size: 13px; 
 }
 
 .hcmsTextSmall 

@@ -207,7 +207,7 @@ parent.hcms_closeSubMenu();
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
+<div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
   <div class="hcmsToolbarBlock" style="padding:2px;">
     <form name="group_delete" action="control_group_menu.php" method="post">
       <input type="hidden" name="site" value="<?php echo $site; ?>" />
@@ -278,7 +278,7 @@ parent.hcms_closeSubMenu();
 </div>
 
 <!-- create group -->
-<div id="creategroupLayer" class="hcmsMessage" style="position:absolute; left:5px; top:5px; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
+<div id="creategroupLayer" class="hcmsMessage" style="position:fixed; left:5px; top:5px; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
   <form name="group_create" action="control_group_menu.php" method="post" onsubmit="return checkForm();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="action" value="group_create" />

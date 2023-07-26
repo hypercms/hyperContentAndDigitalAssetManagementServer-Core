@@ -7098,6 +7098,8 @@ Release 09/2023
 - Design modifications in portal_edit in order to display the selected images
 - Modifications in control_objectlist_menu in order to move the object filter to a new position in the toolbar and display the filter checkboxes in line with the tool bar buttons
 - Modifications in control_objectlist_menu in order to optimize the positioning of the gallery view selector for the desktop and mobile devices
+- Implementation of the new function gettoolbarstyle in UI API in order to unify the CSS styles of the toolbar used in the standard controls
+- Modifications in all controls in order to use the new function gettoolbarstyle
 - Updates in various language files
 - Update of all Guides due to the new version number
 - Updates in the Users Guide

@@ -81,7 +81,7 @@ elseif (!empty ($hcms_hoverinvertcolors))
     </div>
 
     <!-- toolbar -->
-    <div class="hcmsToolbar">
+    <div class="hcmsToolbar" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
       <div class="hcmsToolbarBlock">
         <div class="hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare">
           <img onClick="parent.frames['mainFrame'].location='page.php?<?php echo 'plugin='.url_encode($plugin).'&page='.url_encode($page); ?>&content=featureA';" class="hcmsButtonSizeSquare" name="button1" src="../img/button_a.png" alt="<?php echo getescapedtext ($hcms_lang['feature-a'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['feature-a'][$lang]); ?>" />

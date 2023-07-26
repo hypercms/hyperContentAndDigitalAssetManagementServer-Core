@@ -419,7 +419,7 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
+<div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
   <div class="hcmsToolbarBlock">
     <?php
     // create user

@@ -491,7 +491,7 @@ function closeMenu (id)
 <?php if (!$is_mobile) echo showinfobox ($hcms_lang['move-the-mouse-over-the-icons-to-get-more-information'][$lang], $lang, "position:fixed; top:10px; right:20px;", "hcms_infobox_mouseover"); ?>
 
 <?php if (!$is_mobile) { ?>
-<div style="position:absolute; right:40px; top:0; margin:0; padding:0;">
+<div style="position:fixed; right:40px; top:0; margin:0; padding:0; z-index:10;">
   <img onclick="parent.minControlFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['collapse'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_up.png" />
   <img onclick="parent.maxControlFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="margin:0px 4px 0px 0px;" alt="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['expand'][$lang]); ?>" src="<?php echo getthemelocation(); ?>img/button_arrow_down.png" />
 </div>
@@ -558,7 +558,7 @@ else
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
+<div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile, 64); ?>">
 
   <div class="hcmsToolbarBlock">
     <?php
@@ -834,7 +834,7 @@ else
 
 
 <!-- Download select menu -->
-<div id="downloadselectLayer" class="hcmsWorkplaceControl" style="position:absolute; left:0px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:0px;"; ?> width:100%; <?php if (!$is_mobile) echo "height:40px;"; else echo "height:100%;"; ?> padding:0; margin:0; z-index:1; display:none; overflow:auto;">
+<div id="downloadselectLayer" class="hcmsWorkplaceControl" style="position:fixed; left:0px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:0px;"; ?> width:100%; <?php if (!$is_mobile) echo "height:40px;"; else echo "height:100%;"; ?> padding:0; margin:0; z-index:1; display:none; overflow:auto;">
   <div style="position:fixed; right:2px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:2px;"; ?> width:32px; height:32px; z-index:91;">
     <img name="hcms_downloadselectLayerClose" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_downloadselectLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeMenu('downloadselectLayer');" />
   </div>
@@ -954,13 +954,12 @@ echo showmessage ($show, 660, 75, $lang, "position:fixed; left:5px; top:5px; ");
 ?>
 
 
-
 <?php
 // Tabs
 if ($page != "")
 {
   echo "
-  <div id=\"tabLayer\" class=\"hcmsTabContainer\" style=\"position:absolute; z-index:10; visibility:visible; left:0px; top:77px; white-space:nowrap;\">
+  <div id=\"tabLayer\" class=\"hcmsTabContainer\" style=\"position:fixed; z-index:10; visibility:visible; left:0px; top:77px; white-space:nowrap;\">
     <div id=\"tab1\" class=\"hcmsTabActive\">
       <a href=\"page_view.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."\" target=\"objFrame\" onClick=\"hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive');\" title=\"".$pagecomp."\">".$pagecomp."</a>
     </div>
@@ -1002,7 +1001,7 @@ if ($page != "")
 </form>
 
 <!-- create object -->
-<div id="objcreateLayer" class="hcmsMessage" style="position:absolute; left:5px; top:5px; width:<?php if ($is_mobile) echo "95%"; else echo "700px"; ?>; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
+<div id="objcreateLayer" class="hcmsMessage" style="position:fixed; left:5px; top:5px; width:<?php if ($is_mobile) echo "95%"; else echo "700px"; ?>; visibility:<?php if ($page != "") echo "hidden"; else echo "visible"; ?>">
   <form name="page_create" action="" method="post" onsubmit="return checkForm_page_create();">
     <input type="hidden" name="site" value="<?php echo $site; ?>" />
     <input type="hidden" name="location" value="<?php echo $location_esc; ?>" />

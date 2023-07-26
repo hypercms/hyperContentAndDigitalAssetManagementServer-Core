@@ -301,7 +301,7 @@ parent.hcms_closeSubMenu();
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar" style="<?php if (!$is_mobile) echo "white-space:nowrap; min-width:580px;"; else echo "max-height:100px;"; ?>">
+<div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
   <div class="hcmsToolbarBlock">
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatcreate'))
