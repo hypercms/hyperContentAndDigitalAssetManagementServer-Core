@@ -9922,7 +9922,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       else var faces = faces_json;
 
       // sort by name
-      faces = sortObjectValue (faces, 'name', true);
+      faces = hcms_sortObjectValue (faces, 'name', true);
 
       // get video width
       if ($('#hcms_mediaplayer_asset_html5_api').length > 0)

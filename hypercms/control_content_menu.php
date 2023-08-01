@@ -244,43 +244,14 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <style type="text/css">
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertPrimaryColor", true, false);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
+@media only screen and (max-width: 1496px)
 {
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
-
-.hcmsMenuItem
-{
-  padding: 2px 2px 1px 2px;
-  min-width: 190px;
-  width: 10%;
-  float: left;
-}
-
-.hcmsMenu
-{
-  width: 100%;
-}
-
-@media screen and (min-width: 1201px)
-{
-  .hcmsMenu
+  .hcmsButtonLabel
   {
-    width: 1200px;
-  }
+    display: none;
+	}
 }
 </style>
 <script type="text/javascript">
@@ -566,23 +537,31 @@ else
     if ($page != "" && $page != ".folder" && $cat != "" && $setlocalpermission['root'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onClick=\"openObjectView('".$location_esc."', '".$page."', 'preview');\" class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_preview.png\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openObjectView('".$location_esc."', '".$page."', 'preview');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_preview.png\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />";
     }
     else echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_preview.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    <div class=\"hcmsButtonOff hcmsInvertColor\">
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_preview.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
+
+      echo "
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['preview'][$lang])."</span>
+    </div>";
 
     // Live-View Button
     if (!empty ($file_info['published']) && $page != "" && $page != ".folder" && $setlocalpermission['root'] == 1 && $cat == "page" && empty ($media))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onClick=\"openObjectView('".$location_esc."', '".$page."', 'liveview');\" class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_liveview.png\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openObjectView('".$location_esc."', '".$page."', 'liveview');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_liveview.png\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />";
     }
     else echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_liveview.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    <div class=\"hcmsButtonOff hcmsInvertColor\">
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_liveview.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
+
+      echo "
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['view-live'][$lang])."</span>
+    </div>";
     ?>
   </div>
     
@@ -592,12 +571,16 @@ else
     if (($usedby == "" || $usedby == $user) && $cat != "page" && !empty ($media) && $application != "generator" && $page != ".folder" && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"openPopup('popup_upload_html.php?uploadmode=single&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."');\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" alt=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openPopup('popup_upload_html.php?uploadmode=single&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" alt=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" />";
     }
     else echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+    <div class=\"hcmsButtonOff hcmsInvertColor\">
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
+
+    echo "
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['upload'][$lang])."</span>
+    </div>";
     ?>    
     
     <?php
@@ -646,25 +629,26 @@ else
     if (!empty ($page) && !empty ($media) && $perm_rendering && $lock_rendering && ($doc_rendering || $img_rendering || $vid_rendering || $dropbox_rendering))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare\" onclick=\"openMenu('downloadselectLayer');\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openMenu('downloadselectLayer');\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />";
     } 
     // folder/file download without options
     elseif ((!empty ($media) || $page == ".folder") && !empty ($page) && $perm_rendering && $lock_rendering)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\" onclick=\"submitToSelf('download'); hcms_showHideLayers('downloadLayer','','show');\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"submitToSelf('download'); hcms_showHideLayers('downloadLayer','','show');\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />";
     }
     else
     {
       echo "
-      <div class=\"hcmsButtonOff hcmsButtonSizeSquare\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare\" />
-      </div>";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
     }
+
+    echo "
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['download'][$lang])."</span>
+    </div>";
     ?>
   </div>
     
@@ -674,20 +658,24 @@ else
     if ($page != "" && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && !empty ($mgmt_config['db_connect_rdbms']))
     {
         echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" ";        
-        if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=no', 540, 800);\" ";
-        else echo "onclick=\"submitToFrame('user_sendlink.php', 'sendlink');\" ";
-        
-        echo "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" ".
-             "alt=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" ";
+      if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=no', 540, 800);\" ";
+      else echo "onclick=\"submitToFrame('user_sendlink.php', 'sendlink');\" ";
+      echo ">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" ".
+        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" ".
+        "alt=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" />";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
     }
+
+    echo "
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['send'][$lang])."</span>
+    </div>";
     ?>    
 
     <?php
@@ -697,21 +685,24 @@ else
       if (!$is_favorite)
       {
         echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) location='control_content_menu.php?action=page_favorite_add&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" ".
-        "class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_delete.png\" alt=\"".getescapedtext ($hcms_lang['add-to-favorites'][$lang])."\" title=\"".getescapedtext ($hcms_lang['add-to-favorites'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) location='control_content_menu.php?action=page_favorite_add&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_delete.png\" alt=\"".getescapedtext ($hcms_lang['add-to-favorites'][$lang])."\" title=\"".getescapedtext ($hcms_lang['add-to-favorites'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['add-to-favorites'][$lang])."</span>
       </div>";
       }
       else echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) location='control_content_menu.php?action=page_favorite_delete&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" ".
-        "class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_new.png\" alt=\"".getescapedtext ($hcms_lang['delete-favorite'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete-favorite'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) location='control_content_menu.php?action=page_favorite_delete&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_new.png\" alt=\"".getescapedtext ($hcms_lang['delete-favorite'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete-favorite'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete-favorite'][$lang])."</span>
       </div>";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_favorites_delete.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['add-to-favorites'][$lang])."</span>
+      </div>";
     }
     ?>
     
@@ -722,26 +713,35 @@ else
       if ($usedby == "")
       {
         echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) location='control_content_menu.php?action=page_lock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" ".
-        "class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unlock.png\" alt=\"".getescapedtext ($hcms_lang['check-out'][$lang])."\" title=\"".getescapedtext ($hcms_lang['check-out'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) location='control_content_menu.php?action=page_lock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unlock.png\" alt=\"".getescapedtext ($hcms_lang['check-out'][$lang])."\" title=\"".getescapedtext ($hcms_lang['check-out'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['check-out'][$lang])."</span>
       </div>";
       }
       elseif ($usedby == $user)
       {
         echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) location='control_content_menu.php?action=page_unlock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\" ".
-        "class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" alt=\"".getescapedtext ($hcms_lang['check-in'][$lang])."\" title=\"".getescapedtext ($hcms_lang['check-in'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) location='control_content_menu.php?action=page_unlock&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."';\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" alt=\"".getescapedtext ($hcms_lang['check-in'][$lang])."\" title=\"".getescapedtext ($hcms_lang['check-in'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['check-in'][$lang])."</span>
       </div>";
       }
-      else echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";
+      else
+      {
+        echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\">
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['check-out'][$lang])."</span>
+      </div>";
+      }
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\">";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_lock.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\">
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['check-out'][$lang])."</span>
+      </div>";
     }
     ?>    
   </div>
@@ -754,30 +754,48 @@ else
       if ($usedby == "" && ($wf_role >= 1 && $wf_role <= 4) && $page != "" && $setlocalpermission['root'] == 1)
       {
         echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) openPopup('popup_message.php?action=accept&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\" ".
-        "class=\"cmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" alt=\"".getescapedtext ($hcms_lang['accept-and-forward'][$lang])."\" title=\"".getescapedtext ($hcms_lang['accept-and-forward'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) openPopup('popup_message.php?action=accept&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\">
+        <img class=\"cmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" alt=\"".getescapedtext ($hcms_lang['accept-and-forward'][$lang])."\" title=\"".getescapedtext ($hcms_lang['accept-and-forward'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['accept'][$lang])."</span>
       </div>";
       }
-      else echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      else
+      {
+        echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['accept'][$lang])."</span>
+      </div>";
+      }
   
       if ($usedby == "" && ($wf_role >= 1 && $wf_role <= 4 && $wf_id != "u.1") && $page != "" && $setlocalpermission['root'] == 1)
       {
         echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) openPopup('popup_message.php?action=reject&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\" ".
-        "class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_reject.png\" alt=\"".getescapedtext ($hcms_lang['reject-and-send-back'][$lang])."\" title=\"".getescapedtext ($hcms_lang['reject-and-send-back'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) openPopup('popup_message.php?action=reject&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_reject.png\" alt=\"".getescapedtext ($hcms_lang['reject-and-send-back'][$lang])."\" title=\"".getescapedtext ($hcms_lang['reject-and-send-back'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['reject-and-send-back'][$lang])."</span>
       </div>";
       }
-      else echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_reject.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      else
+      {
+        echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_reject.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['reject-and-send-back'][$lang])."</span>
+      </div>";
+      }
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_reject.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['accept'][$lang])."</span>
+      </div>
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_reject.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['reject-and-send-back'][$lang])."</span>
+      </div>";
     }
     ?>    
   </div>
@@ -790,30 +808,49 @@ else
       if (($usedby == "" || $usedby == $user) && $filetype != "" && $wf_role >= 3 && $setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)
       {
         echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) openPopup('popup_publish.php?action=publish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\" ".
-        "class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" alt=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) openPopup('popup_publish.php?action=publish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" alt=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['publish'][$lang])."</span>
       </div>";
       }
-      else echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      else
+      {
+        echo "
+        <div class=\"hcmsButtonOff hcmsInvertColor\">
+          <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+          <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['publish'][$lang])."</span>
+        </div>";
+      }
   
       // Unpublish
       if (($usedby == "" || $usedby == $user) && $filetype != "" && $wf_role >= 3 && $setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)
       {
         echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) openPopup('popup_publish.php?action=unpublish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\" ".
-        "class=\"hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" alt=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) openPopup('popup_publish.php?action=unpublish&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" alt=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['unpublish'][$lang])."</span>
       </div>";
       }
-      else echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      else
+      {
+        echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['unpublish'][$lang])."</span>
+      </div>";
+      }
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['publish'][$lang])."</span>
+      </div>
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['unpublish'][$lang])."</span>
+      </div>";
     }
     ?>    
   </div>
@@ -821,8 +858,9 @@ else
     <?php
     // Reload button
     echo "
-    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-      <img class=\"hcmsButtonSizeSquare\" onclick=\"if (locklayer == false) parent.frames['objFrame'].location.reload();\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />
+    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) parent.frames['objFrame'].location.reload();\" >
+      <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\"src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['refresh'][$lang])."</span>
     </div>";
     ?>    
   </div>
@@ -839,8 +877,8 @@ else
     <img name="hcms_downloadselectLayerClose" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_downloadselectLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeMenu('downloadselectLayer');" />
   </div>
 
-  <div class="hcmsMenu">
-    <div class="hcmsInvertPrimaryColor hcmsMenuItem">
+  <div class="hcmsSubMenu">
+    <div class="hcmsInvertPrimaryColor hcmsSubMenuItem">
       <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download'][$lang]); ?></span>
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_arrow_right.png" class="hcmsIconList" />
     </div>
@@ -852,7 +890,7 @@ else
       {
         // function imgConvert must be used in order to reset the rendering options
         echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"imgConvert ('','');\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"imgConvert ('','');\">
             <img src=\"".getthemelocation()."img/".$media_info['icon']."\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['original'][$lang])."</span>
           </div>";
@@ -872,7 +910,7 @@ else
             if ((empty ($downloadformats) || !empty ($downloadformats['document'][$doc_type])) && in_array ($ext, $mgmt_docconvert[$media_info['ext']]))
             {
               echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"docConvert ('".$doc_type."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"docConvert ('".$doc_type."');\">
           <img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" />
           <span class=\"\">".$doc_info['type']." (".strtoupper($doc_type).")</span>
         </div>";
@@ -897,7 +935,7 @@ else
               if ((empty ($downloadformats) || !empty ($downloadformats['image'][$image_type][$config_name])) && $config_name != "thumbnail" && $config_name != "original") 
               {
                 echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"imgConvert ('".$image_type."', '".$config_name."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"imgConvert ('".$image_type."', '".$config_name."');\">
           <img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" />
           <span class=\"\">".strtoupper($image_type)." ".$config_name."</span>
         </div>";
@@ -911,19 +949,19 @@ else
       if ($vid_rendering && is_video ($media))
       {
         if (empty ($downloadformats) || !empty ($downloadformats['video']['origthumb'])) echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"vidConvert('origthumb');\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"vidConvert('origthumb');\">
             <img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['preview'][$lang])."</span>
           </div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['jpg'])) echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"vidConvert('jpg');\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"vidConvert('jpg');\">
             <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</span>
           </div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['png'])) echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"vidConvert('png');\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"vidConvert('png');\">
             <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</span>
           </div>";
@@ -933,7 +971,7 @@ else
 			if ($dropbox_rendering)
 			{
 				echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes,width=600,height=400', 600, 400); document.getElementById('button_obj_convert').click();a\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes,width=600,height=400', 600, 400); document.getElementById('button_obj_convert').click();a\">
             <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/file_dropbox.png\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['dropbox'][$lang])."</span>
           </div>";

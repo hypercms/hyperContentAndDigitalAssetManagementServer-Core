@@ -437,7 +437,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
   $link_db_updated = false;
   $continued = false;
 
-  if (valid_publicationname ($site) && valid_objectname ($contentfile) && $contentdata != "" && is_array ($text) && (is_array ($type) || $type != "") && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
+  if (valid_publicationname ($site) && valid_objectname ($contentfile) && $contentdata != "" && is_array ($text) && (is_array ($type) || $type != "") && valid_objectname ($user) && is_array ($mgmt_config))
   {
     if (!is_array ($type))
     {
@@ -482,6 +482,7 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
         // set array if input parameter is string
         if (!empty ($typebuffer)) $type[$id] = $typebuffer;
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
+        else $art[$id] = "";
         if (!empty ($userbuffer)) $textuser[$id] = $userbuffer;
 
         // taxonomy tree selector returns an array
@@ -730,22 +731,8 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
             }
           }
 
-          // check if text
-          if ($art[$id] == "no")
-          {
-            // set the new content
-            $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
-
-            if ($contentdatanew == false)
-            {
-              $contentdatanew = addcontent ($contentdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $elemid);
-              $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
-            }
-
-            if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
-          }
-          // check if article
-          elseif ($art[$id] == "yes")
+          // if article text
+          if ($art[$id] == "yes")
           {
             // get article id
             $artid = getartid ($id);
@@ -767,6 +754,20 @@ function settext ($site, $contentdata, $contentfile, $text=array(), $type=array(
               if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
             }
           } 
+          // no article
+          else
+          {
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
+
+            if ($contentdatanew == false)
+            {
+              $contentdatanew = addcontent ($contentdata, $text_schema_xml, "", "", "", "<textcollection>", "<text_id>", $elemid);
+              $contentdatanew = setcontent ($contentdatanew, "<text>", "<textcontent>", "<![CDATA[".$textcontent."]]>", "<text_id>", $elemid, false);
+            }
+
+            if (!empty ($textuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<text>", "<textuser>", $textuser[$id], "<text_id>", $elemid, true);
+          }
 
           $contentdata = $contentdatanew;
 
@@ -856,7 +857,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
 {
   global $mgmt_config;
 
-  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($mediafile) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
+  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($mediafile) && valid_objectname ($user) && is_array ($mgmt_config))
   {
     // initialize
     $error = array();
@@ -867,6 +868,12 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
     if (!is_array ($mediaalign)) $mediaalign = array();
     if (!is_array ($mediawidth)) $mediawidth = array();
     if (!is_array ($mediaheight)) $mediaheight = array();
+
+    if (!is_array ($art))
+    {
+      $artbuffer = $art;
+      $art = Null;
+    }
 
     if (!is_array ($mediauser))
     {
@@ -882,12 +889,6 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
 
     // load link db
     $link_db = link_db_load ($site, $user);
-
-    if (!is_array ($art))
-    {
-      $artbuffer = $art;
-      $art = Null;
-    }
 
     reset ($mediafile);
 
@@ -905,6 +906,7 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
 
         // set array if input parameter is string
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
+        else $art[$id] = "";
         if (!empty ($userbuffer)) $mediauser[$id] = $userbuffer; 
 
         $mediafile[$id] = urldecode ($mediafile[$id]);
@@ -982,27 +984,8 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
         // media has been modified
         if ($mediafile[$id] != $mediafile_curr[$id] || $mediaobject[$id] != $mediaobject_curr[$id] || $mediaalttext[$id] != $mediaalttext_curr[$id] || $mediaalign[$id] != $mediaalign_curr[$id] || $mediawidth[$id] != $mediawidth_curr[$id] || $mediaheight[$id] != $mediaheight_curr[$id])
         {
-          // check if article
-          if ($art[$id] == "no")
-          {
-            // set the new content
-            $contentdatanew = setcontent ($contentdata, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
-
-            if ($contentdatanew == false)
-            {
-              $contentdatanew = addcontent ($contentdata, $media_schema_xml, "", "", "", "<mediacollection>", "<media_id>", $id);
-              $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
-            }
-
-            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaobject>", trim ($mediaobject[$id]), "<media_id>", $id);
-            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalttext>", "<![CDATA[".trim ($mediaalttext[$id])."]]>", "<media_id>", $id);
-            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
-            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
-            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
-            if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
-          }
-          // check if article media
-          elseif ($art[$id] == "yes")
+          // if article media
+          if ($art[$id] == "yes")
           {
             // get the id of the article
             $artid = getartid ($id);
@@ -1028,6 +1011,25 @@ function setmedia ($site, $contentdata, $contentfile, $mediafile=array(), $media
             $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
             $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
             if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id, true);
+          }
+          // no article
+          else
+          {
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
+
+            if ($contentdatanew == false)
+            {
+              $contentdatanew = addcontent ($contentdata, $media_schema_xml, "", "", "", "<mediacollection>", "<media_id>", $id);
+              $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediafile>", trim ($mediafile[$id]), "<media_id>", $id);
+            }
+
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaobject>", trim ($mediaobject[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalttext>", "<![CDATA[".trim ($mediaalttext[$id])."]]>", "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaalign>", trim ($mediaalign[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediawidth>", trim ($mediawidth[$id]), "<media_id>", $id);
+            $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediaheight>", trim ($mediaheight[$id]), "<media_id>", $id);
+            if (!empty ($mediauser[$id])) $contentdatanew = setcontent ($contentdatanew, "<media>", "<mediauser>", $mediauser[$id], "<media_id>", $id);
           }
 
           // ------------------------- add link to link management file ---------------------------
@@ -1123,13 +1125,20 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
   $update_data = "";
   if (!is_array ($linktarget)) $linktarget = array();
   if (!is_array ($linktext)) $linktext = array();
+
+  if (!is_array ($art))
+  {
+    $artbuffer = $art;
+    $art = Null;
+  }
+
   if (!is_array ($linkuser))
   {
     $userbuffer = $linkuser;
     $linkuser = Null;
   }
 
-  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($linkhref) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
+  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($linkhref) && valid_objectname ($user) && is_array ($mgmt_config))
   {
     $container_id = getcontentcontainerid ($contentfile); 
 
@@ -1139,12 +1148,6 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
 
     // load link db
     $link_db = link_db_load ($site, $user);
-
-    if (!is_array ($art))
-    {
-      $artbuffer = $art;
-      $art = Null;
-    }
 
     reset ($linkhref);
 
@@ -1159,6 +1162,7 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
 
         // set array if input parameter is string
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
+        else $art[$id] = "";
         if (!empty ($userbuffer)) $linkuser[$id] = $userbuffer;
 
         $linkhref[$id] = urldecode ($linkhref[$id]);
@@ -1211,24 +1215,8 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
         // if page link had been modified
         if ($linkhref_curr[$id] != $linkhref[$id] || $linktarget_curr[$id] != $linktarget[$id] || $linktext_curr[$id] != $linktext[$id])
         {
-          // check if page link
-          if ($art[$id] == "no")
-          {
-            // set the new content
-            $contentdatanew = setcontent ($contentdata, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
-
-            if ($contentdatanew == false)
-            {
-              $contentdatanew = addcontent ($contentdata, $link_schema_xml, "", "", "", "<linkcollection>", "<link_id>", $id);
-              $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
-            }
-
-            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id, true);
-            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id, true);
-            if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id, true);
-          }
-          // check if article link
-          elseif ($art[$id] == "yes")
+          // if article page link
+          if ($art[$id] == "yes")
           {
             // get the id of the article
             $artid = getartid ($id);
@@ -1246,6 +1234,22 @@ function setpagelink ($site, $contentdata, $contentfile, $linkhref=array(), $lin
                 $contentdatanew = addcontent ($contentdatanew, $link_schema_xml, "<article>", "<article_id>", $artid, "<articlelinkcollection>", "<link_id>", $id);
               }
 
+              $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
+            }
+
+            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktarget>", trim ($linktarget[$id]), "<link_id>", $id, true);
+            $contentdatanew = setcontent ($contentdatanew, "<link>", "<linktext>", "<![CDATA[".trim ($linktext[$id])."]]>", "<link_id>", $id, true);
+            if (!empty ($linkuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkuser>", $linkuser[$id], "<link_id>", $id, true);
+          }
+          // no article
+          else
+          {
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
+
+            if ($contentdatanew == false)
+            {
+              $contentdatanew = addcontent ($contentdata, $link_schema_xml, "", "", "", "<linkcollection>", "<link_id>", $id);
               $contentdatanew = setcontent ($contentdatanew, "<link>", "<linkhref>", trim ($linkhref[$id]), "<link_id>", $id);
             }
 
@@ -1362,7 +1366,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
     $compuser = Null;
   }
 
-  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($component) && (is_array ($art) || $art != "") && valid_objectname ($user) && is_array ($mgmt_config))
+  if (valid_publicationname ($site) && $contentdata != "" && valid_objectname ($contentfile) && is_array ($component) && valid_objectname ($user) && is_array ($mgmt_config))
   {
     $container_id = getcontentcontainerid ($contentfile);
 
@@ -1392,7 +1396,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
         $component_object_id[$id] = getobjectid ($component[$id]);
 
         // save object ID if DAM
-        if ($mgmt_config[$site]['dam']) $component_conv[$id] = $component_object_id[$id];
+        if (!empty ($mgmt_config[$site]['dam'])) $component_conv[$id] = $component_object_id[$id];
         else $component_conv[$id] = $component[$id];
 
         // condition
@@ -1400,6 +1404,7 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
 
         // set array if input parameter is string
         if (!empty ($artbuffer)) $art[$id] = $artbuffer;
+        else $art[$id] = "";
         if (!empty ($userbuffer)) $compuser[$id] = $userbuffer;
 
         // extract old object reference (for link management)
@@ -1425,23 +1430,8 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
         // if page link had been modified
         if ($component_curr[$id] != $component_conv[$id] || $componentcond_curr[$id] != $condition[$id])
         {
-          // check if page component
-          if ($art[$id] == "no")
-          {
-            // set the new content
-            $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
-
-            if ($contentdatanew == false)
-            {
-              $contentdatanew = addcontent ($contentdata, $component_schema_xml, "", "", "", "<componentcollection>", "<component_id>", $id);
-              $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
-            }
-
-            if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
-            if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);
-          }
-          // check if article component
-          elseif ($art[$id] == "yes")
+          // if article component link
+          if ($art[$id] == "yes")
           {
             // get the id of the article
             $artid = getartid ($id);
@@ -1458,6 +1448,21 @@ function setcomplink ($site, $contentdata, $contentfile, $component=array(), $co
                 $contentdatanew = addcontent ($contentdata, $article_schema_xml, "", "", "", "<articlecollection>", "<article_id>", $artid);
                 $contentdatanew = addcontent ($contentdatanew, $component_schema_xml, "<article>", "<article_id>", $artid, "<articlecomponentcollection>", "<component_id>", $id);
               }
+              $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
+            }
+
+            if (!empty ($compuser[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentuser>", $compuser[$id], "<component_id>", $id);
+            if (isset ($condition[$id])) $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentcond>", $condition[$id], "<component_id>", $id);
+          }
+          // no article
+          else
+          {
+            // set the new content
+            $contentdatanew = setcontent ($contentdata, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
+
+            if ($contentdatanew == false)
+            {
+              $contentdatanew = addcontent ($contentdata, $component_schema_xml, "", "", "", "<componentcollection>", "<component_id>", $id);
               $contentdatanew = setcontent ($contentdatanew, "<component>", "<componentfiles>", trim ($component_conv[$id]), "<component_id>", $id);
             }
 

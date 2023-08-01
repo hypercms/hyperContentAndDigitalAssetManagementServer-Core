@@ -9179,22 +9179,32 @@ function loadtemplate ($site, $template)
     }
 
     // 3. home box component template
-    if (!empty ($mgmt_config['homeboxes_directory']) && $template == "System-HomeBox.comp.tpl")
+    if (!empty ($mgmt_config['homeboxes_directory']))
     {
       // remove trailing slashes
       $mgmt_config['homeboxes_directory'] = trim ($mgmt_config['homeboxes_directory'], "/");
 
-      if (valid_locationname ($mgmt_config['homeboxes_directory']) && is_dir ($mgmt_config['abs_path_comp'].$site."/".$mgmt_config['homeboxes_directory']) && is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_homebox.schema.xml.php"))
+      if (valid_locationname ($mgmt_config['homeboxes_directory']) && is_dir ($mgmt_config['abs_path_comp'].$site."/".$mgmt_config['homeboxes_directory']))
       {
-        $data = loadfile ($mgmt_config['abs_path_cms']."/xmlschema/", "template_homebox.schema.xml.php");
+        if ($template == "System-HomeBox-Standard.comp.tpl" && is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_homebox.schema.xml.php"))
+        {
+          $data = loadfile ($mgmt_config['abs_path_cms']."/xmlschema/", "template_homebox.schema.xml.php");
+        }
+        elseif ($template == "System-HomeBox-Gallery.comp.tpl" && is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_homeboxgallery.schema.xml.php"))
+        {
+          $data = loadfile ($mgmt_config['abs_path_cms']."/xmlschema/", "template_homeboxgallery.schema.xml.php");
+        }
 
-        $result['content'] = $data;
-        $result['publication'] = $site;
+        if (!empty ($data))
+        { 
+          $result['content'] = $data;
+          $result['publication'] = $site;
 
-        if ($data != false) $result['result'] = true;
-        else $result['result'] = false; 
+          if ($data != false) $result['result'] = true;
+          else $result['result'] = false; 
 
-        return $result; 
+          return $result;
+        }
       }
     }
 
@@ -9603,14 +9613,14 @@ function createportal ($site, $template)
 // ----------------------------------------- editportal ---------------------------------------------
 // function: editportal()
 // input: publication name [string], template name or file name [string], portal user name [string], design theme name [string] (optional), primary color as hex code [string] (optional), hover color as hex code [string] (optional), 
-//        PHP global FILES variable for file upload/remove [array] (optional), navigation tree names [array] (optional), download formats [JSON-string] (optional), user name [string] (optional)
+//        PHP global FILES variable for file upload/remove [array] (optional), main navigation tree position [left,top] (optional), navigation tree names [array] (optional), download formats [JSON-string] (optional), user name [string] (optional)
 // output: result array
 // requires: config.inc.php to be loaded before
 
 // description:
 // This function edites the settings of a portal.
 
-function editportal ($site, $template, $portaluser, $design="day", $primarycolor="", $hovercolor="", $global_files=array(), $navigation=array(), $formats="", $user="sys")
+function editportal ($site, $template, $portaluser, $design="day", $primarycolor="", $hovercolor="", $global_files=array(), $mainnavigation="left", $navigation=array(), $formats="", $user="sys")
 {
   global $eventsystem, $mgmt_config, $hcms_lang, $lang;
  
@@ -9775,6 +9785,12 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
         $templatedata = str_replace ("</primarycolor>", "</primarycolor>\n<hovercolor></hovercolor>", $templatedata);
       }
 
+      // update to version 10.2.0
+      if (strpos ($templatedata, "<mainnavigation>") < 1)
+      {
+        $templatedata = str_replace ("</hovercolor>", "</hovercolor>\n<mainnavigation></mainnavigation>\n<showbuttonlabel></showbuttonlabel>", $templatedata);
+      }
+
       $templatedata = setcontent ($templatedata, "", "<name>", $tpl_name, "", "");
 
       if ($user != "") $templatedata = setcontent ($templatedata, "", "<user>", $user, "", "");
@@ -9786,6 +9802,8 @@ function editportal ($site, $template, $portaluser, $design="day", $primarycolor
       if ($primarycolor != "") $templatedata = setcontent ($templatedata, "", "<primarycolor>", $primarycolor, "", "");
 
       if ($hovercolor != "") $templatedata = setcontent ($templatedata, "", "<hovercolor>", $hovercolor, "", "");
+
+      if ($mainnavigation != "left" || $mainnavigation != "top") $templatedata = setcontent ($templatedata, "", "<mainnavigation>", $mainnavigation, "", "");
 
       if ($formats != "") $templatedata = setcontent ($templatedata, "", "<downloadformats>", $formats, "", "");
 
@@ -20243,7 +20261,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
           if ($temp_path != "")
           {
             $site = getpublication ($temp_path);
-            $cat = getcategory ($site, $objectpath);
+            $cat = getcategory ($site, $location);
             $location = deconvertpath ($temp_path, "file");
             $folder = getobject ($location); // could be a file or a folder 
             $location = getlocation ($location);  // location without folder
@@ -21555,7 +21573,7 @@ function loaduploadlog ($location_esc, $return_type="array")
 // output: true / false on error
 
 // description:
-// Notifies all users based on the given event and location
+// Notifies all users whoch are oberserving an event and location
 
 function notifyusers ($site, $location, $object, $event, $from_user)
 {
@@ -21581,7 +21599,7 @@ function notifyusers ($site, $location, $object, $event, $from_user)
   // include hypermailer class
   if (!class_exists ("HyperMailer")) require ($mgmt_config['abs_path_cms']."function/hypermailer.class.php");
 
-  if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($from_user) && (empty ($notify_exclude_users) || in_array ($from_user, $notify_exclude_users)))
+  if ($event != "" && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($object) && valid_objectname ($from_user) && (empty ($notify_exclude_users) || !in_array ($from_user, $notify_exclude_users)))
   {
     $mail_sent = false;
 
@@ -21613,7 +21631,7 @@ function notifyusers ($site, $location, $object, $event, $from_user)
         foreach ($notify_array as $notify)
         {
           // dont notify the same user multiple times and don't inform the user if he took the action
-          if (!empty ($notify['user']) && !in_array ($notify['user'], $user_memory) && $notify['user'] != $from_user)
+          if (!empty ($notify['user']) && !in_array ($notify['user'], $user_memory) && trim ($notify['user']) != trim ($from_user))
           {
             // get user node of sender and extract required information
             $from_usernode = selectcontent ($userdata, "<user>", "<login>", $from_user);

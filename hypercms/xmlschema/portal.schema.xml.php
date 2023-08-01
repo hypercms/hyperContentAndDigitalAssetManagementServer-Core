@@ -5,6 +5,7 @@
 <designtheme></designtheme>
 <primarycolor></primarycolor>
 <hovercolor></hovercolor>
+<mainnavigation>left</mainnavigation>
 <downloadformats></downloadformats>
 <navigation>assets</navigation>
 <portaluser></portaluser>

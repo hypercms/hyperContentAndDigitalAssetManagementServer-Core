@@ -961,6 +961,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
       'themename' => '',
       'themeinvertcolors' => false,
       'hoverinvertcolors' => false,
+      'mainnavigation' => "left",
       'downloadformats' => array(),
       'objectlistcols' => array(),
       'labels' => array(),
@@ -1358,7 +1359,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               $portal_template = $portal_theme.".portal.tpl";
               $portal_template = loadtemplate ($portal_site, $portal_template);
 
-              // get download formats
+              // get download formats and main navigation position
               if (!empty ($portal_template['content']))
               {
                 $temp_array = getcontent ($portal_template['content'], "<downloadformats>");
@@ -1366,6 +1367,13 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
                 if (!empty ($temp_array[0]))
                 {
                   $result['downloadformats'] = json_decode ($temp_array[0], true);
+                }
+
+                $temp_array = getcontent ($portal_template['content'], "<mainnavigation>");
+
+                if (!empty ($temp_array[0]))
+                {
+                  $result['mainnavigation'] = $temp_array[0];
                 }
               }
             }
@@ -1389,6 +1397,29 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
 
             if (!empty ($usertheme[0])) $result['themename'] = $usertheme[0];
             else $result['themename'] = "standard";
+          }
+
+          // if portal design theme
+          if (strpos ($result['themename'], "/") > 0)
+          {
+            list ($portal_site, $portal_theme) = explode ("/", $result['themename']);
+
+            if (valid_objectname ($portal_theme))
+            {
+              $portal_template = $portal_theme.".portal.tpl";
+              $portal_template = loadtemplate ($portal_site, $portal_template);
+
+              // get download formats and main navigation position
+              if (!empty ($portal_template['content']))
+              {
+                $temp_array = getcontent ($portal_template['content'], "<mainnavigation>");
+
+                if (!empty ($temp_array[0]))
+                {
+                  $result['mainnavigation'] = $temp_array[0];
+                }
+              }
+            }
           }
         }
 
@@ -2300,6 +2331,7 @@ function registeruser ($instance="", $login_result=array(), $accesslink=false, $
     setsession ('hcms_themelocation', getthemelocation ($login_result['themename']));
     setsession ('hcms_themeinvertcolors', $login_result['themeinvertcolors']);
     setsession ('hcms_hoverinvertcolors', $login_result['hoverinvertcolors']);
+    setsession ('hcms_mainnavigation', $login_result['mainnavigation']);
 
     // register permanent view settings
     setsession ('hcms_mobile', $login_result['mobile']);

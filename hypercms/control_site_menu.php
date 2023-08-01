@@ -65,23 +65,7 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <style type="text/css">
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
-
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertPrimaryColor", true, false);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 </style>
 <script type="text/javascript">
 
@@ -252,28 +236,36 @@ parent.hcms_closeSubMenu();
     if (checkrootpermission ('site')  && checkrootpermission ('sitecreate'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onClick=\"createpublication();\" id=\"media_new\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"createpublication();\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" alt=\"".getescapedtext ($hcms_lang['create'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['create'][$lang])."</span>
       </div>";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_new.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['create'][$lang])."</span>
+      </div>";
     }
     ?>
     <?php
     if (checkrootpermission ('site')  && checkrootpermission ('sitedelete'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onClick=\"deletepublication();\" id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"deletepublication();\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
       </div>";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_site_delete.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
+      </div>";
     }
     ?>
   </div>

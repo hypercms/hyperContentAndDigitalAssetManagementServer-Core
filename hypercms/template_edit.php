@@ -571,9 +571,6 @@ function savetemplate (mode)
 {
   if (document.forms['template_edit'].elements['extension'])
   {
-    // disable warning
-    window.onbeforeunload = function() {}
-
     if (document.forms['template_edit'].elements['extension'].value != "")
     {
       if (mode == "preview")
@@ -581,7 +578,11 @@ function savetemplate (mode)
         document.forms['template_edit'].elements['preview'].value = "yes";
       }
        
-      hcms_showFormLayer ('savelayer', 0); 
+      hcms_showFormLayer ('savelayer', 0);
+
+      // disable warning
+      window.onbeforeunload = function() {}
+
       document.forms['template_edit'].submit();
       return true;
     }
@@ -599,6 +600,10 @@ function savetemplate (mode)
     }
     
     hcms_showFormLayer ('savelayer', 0);
+
+    // disable warning
+    window.onbeforeunload = function() {}
+
     document.forms['template_edit'].submit();
     return true;
   }

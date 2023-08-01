@@ -42,6 +42,10 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
+$template = "";
+$application = "";
+
 // convert location
 $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
@@ -71,11 +75,6 @@ if (is_array ($load_template))
     $bufferdata = getcontent ($load_template['content'], "<application>");
     $application = $bufferdata[0];
   }
-}
-else
-{
-  $template = "";
-  $application = "";
 }
 
 // change template

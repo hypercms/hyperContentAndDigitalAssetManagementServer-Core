@@ -95,22 +95,7 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <style type="text/css">
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
-
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 </style>
 <script type="text/javascript">
 
@@ -307,39 +292,54 @@ parent.hcms_closeSubMenu();
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatcreate'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"openMedia('createmediacatLayer');\" name=\"media1\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_new.png\" alt=\"".getescapedtext ($hcms_lang['create-media-category'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-media-category'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openMedia('createmediacatLayer');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_new.png\" alt=\"".getescapedtext ($hcms_lang['create-media-category'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-media-category'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['create'][$lang])."</span>
       </div>";
     }
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_new.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['create'][$lang])."</span>
+      </div>";
     }
     ?>
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatrename'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"openMedia('renamemediacatLayer');\" name=\"media3\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_edit.png\" alt=\"".getescapedtext ($hcms_lang['rename-media-category'][$lang])."\" title=\"".getescapedtext ($hcms_lang['rename-media-category'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openMedia('renamemediacatLayer');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_edit.png\" alt=\"".getescapedtext ($hcms_lang['rename-media-category'][$lang])."\" title=\"".getescapedtext ($hcms_lang['rename-media-category'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['rename'][$lang])."</span>
       </div>";
     }
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_edit.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['rename'][$lang])."</span>
+      </div>";
     }
     ?>
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediacatdelete'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"openMedia('deletemediacatLayer');\" name=\"media2\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete-media-category'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete-media-category'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openMedia('deletemediacatLayer');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete-media-category'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete-media-category'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
       </div>";
     }
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_delete.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
+      </div>";
     }
     ?>
   </div>
@@ -349,26 +349,36 @@ parent.hcms_closeSubMenu();
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediaupload'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"openMedia('uploadmediaLayer');\" name=\"media_upload\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_new.png\" alt=\"".getescapedtext ($hcms_lang['upload-media-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['upload-media-file'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openMedia('uploadmediaLayer');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_new.png\" alt=\"".getescapedtext ($hcms_lang['upload-media-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['upload-media-file'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['upload'][$lang])."</span>
       </div>";
     }
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_new.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['upload'][$lang])."</span>
+      </div>";
     }
     ?>
     <?php
     if (checkglobalpermission ($site, 'tplmedia') && checkglobalpermission ($site, 'tplmediadelete'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location='frameset_edit_media.php?site=".url_encode($site)."&action=mediafile_delete&mediacat=".url_encode($mediacat)."'; closeMedia();\" name=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete-media-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete-media-file'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"parent.frames['mainFrame'].location='frameset_edit_media.php?site=".url_encode($site)."&action=mediafile_delete&mediacat=".url_encode($mediacat)."'; closeMedia();\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete-media-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete-media-file'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
       </div>";
     }
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_delete.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
+      </div>";
     }
     ?>    
   </div>
@@ -378,13 +388,18 @@ parent.hcms_closeSubMenu();
     if (checkglobalpermission ($site, 'tplmedia'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location='frameset_edit_media.php?site=".url_encode($site)."&action=mediafile_preview&mediacat=".url_encode($mediacat)."'; closeMedia();\" name=\"media_view\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_view.png\" alt=\"".getescapedtext ($hcms_lang['view-media-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-media-file'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"parent.frames['mainFrame'].location='frameset_edit_media.php?site=".url_encode($site)."&action=mediafile_preview&mediacat=".url_encode($mediacat)."'; closeMedia();\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_view.png\" alt=\"".getescapedtext ($hcms_lang['view-media-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-media-file'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['view'][$lang])."</span>
       </div>";
     }
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_view.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_media_view.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['view'][$lang])."</span>
+      </div>";
     }
     ?>
   </div>

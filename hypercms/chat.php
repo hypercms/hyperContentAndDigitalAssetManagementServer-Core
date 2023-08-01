@@ -33,13 +33,7 @@ checkusersession ($user, false);
 <link rel="stylesheet" href="<?php echo getthemelocation(); ?>css/main.css?v=<?php echo getbuildnumber(); ?>" />
 <link rel="stylesheet" href="<?php echo getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css"); ?>?v=<?php echo getbuildnumber(); ?>" />
 <style type="text/css">
-<?php
-// invert hover colors
-if (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverTextColor");
-}
-?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 
 #chat-area span
 {
@@ -164,13 +158,13 @@ function getusersonline ()
     {
       if (usersonline.hasOwnProperty(login) && login != "<?php echo $user; ?>")
       {
-        result = result + "    <div class=\"hcmsSelectorItem\" style=\"text-align:left;\" onclick=\"invite('" + login + "');\"><img src=\"<?php echo getthemelocation($hcms_hoverinvertcolors)."img/user.png"; ?>\" class=\"hcmsIconList\" /> <span class=\"hcmsInvertHoverTextColor\">" + usersonline[login] + "&nbsp;</span></div>\n";
+        result = result + "    <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" onclick=\"invite('" + login + "');\"><img src=\"<?php echo getthemelocation($hcms_hoverinvertcolors)."img/user.png"; ?>\" class=\"hcmsIconList\" /> <span class=\"\">" + usersonline[login] + "&nbsp;</span></div>\n";
       }
     }
   }
   
   if (result != "") document.getElementById('select_user').innerHTML = result;
-  else document.getElementById('select_user').innerHTML = "   <div style=\"text-align:left;\">&nbsp; . . . . . . &nbsp;</div>\n";
+  else document.getElementById('select_user').innerHTML = "   <div class=\"hcmsSelectorItem hcmsInvertHoverColor\">&nbsp; . . . . . . &nbsp;</div>\n";
 }
 
 function initialize ()

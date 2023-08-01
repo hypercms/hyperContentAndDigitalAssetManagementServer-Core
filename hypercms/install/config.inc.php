@@ -264,6 +264,9 @@ $mgmt_config['maillink'] = "download";
 // The standard themes are located in directory hypercms/theme/ and the Portal themes are in repository/portal/[publication].
 $mgmt_config['theme'] = "";
 
+// Enable (true) or disable (false) button labels in the control toolbar
+$mgmt_config['showbuttonlabel'] = true;
+
 // Define alternative logo (URL notation) for top frame.
 $mgmt_config['logo_top'] = "";
 

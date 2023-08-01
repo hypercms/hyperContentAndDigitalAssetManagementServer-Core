@@ -96,6 +96,7 @@ $hcms_themename = getsession ("hcms_themename");
 $hcms_themelocation = getsession ("hcms_themelocation");
 $hcms_themeinvertcolors = getsession ("hcms_themeinvertcolors");
 $hcms_hoverinvertcolors = getsession ("hcms_hoverinvertcolors");
+$hcms_mainnavigation = getsession ("hcms_mainnavigation");
 
 // filter options for object list
 $objectfilter = getsession ("hcms_objectfilter");

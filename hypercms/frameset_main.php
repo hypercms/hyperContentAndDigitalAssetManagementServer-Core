@@ -24,7 +24,17 @@ $location = url_encode (getrequest ("location", "url"));
 $virtual = url_encode (getrequest ("virtual", "numeric"));
 
 // layer size definitions
-$width_top = 36;
+if (empty ($hcms_mainnavigation) || $hcms_mainnavigation == "left")
+{
+  $width_top = 36;
+  $height_top = 0;
+}
+else
+{
+  $width_top = 0;
+  $height_top = 36;
+}
+
 $width_navigation = 300;
 $width_search = 440;
 
@@ -81,6 +91,20 @@ elseif (!empty ($hcms_hoverinvertcolors))
   echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
 }
 ?>
+
+<?php if (!empty ($mgmt_config['showbuttonlabel'])) { ?>
+.hcmsFloatLeft
+{
+  float: left;
+}
+<?php } ?>
+
+<?php if (empty ($mgmt_config['showbuttonlabel']) || empty ($hcms_mainnavigation) || $hcms_mainnavigation == "left") { ?>
+.hcmsButtonLabel
+{
+  display: none !important;
+}
+<?php } ?>
 </style>
 <?php
 // set time zone for user
@@ -465,76 +489,88 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 </div>
 
 <!-- top/left bar -->
-<div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; bottom:0; width:<?php echo $width_top; ?>px;">
-  <div class="hcmsButtonTinyBlank  hcmsButtonSizeSquare">
-    <img src="<?php if (!empty ($mgmt_config['logo_top'])) echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsLogoTop" onclick="openInfo();" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
+<div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; width:<?php if (!empty ($width_top)) echo intval($width_top)."px"; else echo "100%"; ?>; height:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "100%"; ?>;">
+
+  <div class="hcmsButtonTinyBlank hcmsButtonSizeSquare hcmsFloatLeft" style="float:left; min-width:36px; min-height:36px;" onclick="openInfo();">
+    <img src="<?php if (!empty ($mgmt_config['logo_top'])) echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsLogoTop" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
   </div>
 
   <?php if (empty ($hcms_assetbrowser) && linking_valid() == false) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png" class="hcmsButtonSizeSquare" onclick="showHome();" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="showHome();">
+    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
+    <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['home'][$lang]); ?></span>
   </div>
   <?php } ?>
 
   <?php if (linking_valid() == false) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png" class="hcmsButtonSizeSquare" onclick="switchNav();" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="switchNav();">
+    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+    <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?></span>
   </div>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png" class="hcmsButtonSizeSquare" onclick="switchSearch();" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="switchSearch();">
+    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
+    <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?></span>
   </div>
   <?php } ?>
   
   <?php if (linking_valid() == true)  { ?>
   <a href="frameset_objectlist.php?action=linking" target="workplFrame">
-    <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_gallery_medium.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+    <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;">
+      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_gallery_medium.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+      <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?></span>
     </div>
   </a>
   <?php if (checkrootpermission ('desktoptaskmgmt')) { ?>
   <a href="task/task_list.php" target="workplFrame">
-    <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/task.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" />
+    <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;">
+      <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/task.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" />
+      <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?></span>
     </div>
   </a>
   <?php } ?>
   <?php } ?>
 
   <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" class="hcmsButtonSizeSquare" onClick="hcms_openChat();" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onClick="hcms_openChat();">
+    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+    <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></span>
   </div>
   <?php } ?>
   
   <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_logout.png" class="hcmsButtonSizeSquare" onclick="top.location='userlogout.php';" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="top.location='userlogout.php';">
+    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_logout.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
+    <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></span>
   </div>
   <?php } ?>
 
+  <!-- user info -->
   <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare"  style="position:absolute; left:0; bottom:0; margin:32px 0px; padding:2px;">
-    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_info.png" class="hcmsButtonSizeSquare" onclick="hcms_showFormLayer('userInfoLayer', 4);" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="position:absolute; <?php if (!empty ($width_top)) echo "left:0; bottom:0; margin:32px 0px;"; else echo "right:0; top:0;"; ?> padding:2px;" onclick="hcms_showFormLayer('userInfoLayer', 4);">
+    <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_info.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
+    <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['information'][$lang]); ?></span>
   </div>
   <?php } ?>
+
 </div>
 
 <!-- user info -->
 <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-<div id="userInfoLayer" class="hcmsMessage" style="position:absolute; bottom:10px; left:32px; display:none; z-index:100; padding:4px; width:200px; min-height:80px; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
-  <img src="<?php echo getthemelocation()."img/user.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span><br/>
-  <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php echo getsession ('hcms_user'); ?></span><br/><br/>
-  <img src="<?php echo getthemelocation()."img/button_time.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?></span><br/>
-  <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php $servertime->InstallClock(); ?></span>
-</div>
-<?php $servertime->InstallClockBody(); ?>
+  <div id="userInfoLayer" class="hcmsMessage" style="position:absolute; <?php if (!empty ($width_top)) echo "left:10px; bottom:10px; margin:32px 0px;"; else echo "right:10px; top:10px;"; ?> display:none; z-index:900; padding:4px; width:200px; min-height:80px; overflow-x:hidden; overflow-y:auto; white-space:nowrap;">
+    <img src="<?php echo getthemelocation()."img/user.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['user'][$lang]); ?></span><br/>
+    <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php echo getsession ('hcms_user'); ?></span><br/><br/>
+    <img src="<?php echo getthemelocation()."img/button_time.png"; ?>" class="hcmsIconList" /> <span class="hcmsHeadline" style="white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?></span><br/>
+    <span class="hcmsHeadlineTiny hcmsTextWhite">&nbsp;<?php $servertime->InstallClock(); ?></span>
+  </div>
+  <?php $servertime->InstallClockBody(); ?>
 <?php } ?>
+
 
 <!-- Access Links -->
 <?php if (linking_valid() == true) { ?>
 
   <!-- workplace -->
-  <div id="workplLayer" style="position:fixed; top:0; bottom:0; left:<?php echo $width_top; ?>px; right:0; margin:0; padding:0;">
+  <div id="workplLayer" style="position:fixed; top:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "0"; ?>; bottom:0; left:<?php if (!empty ($width_top)) echo intval($width_top)."px"; else echo "0"; ?>; right:0; margin:0; padding:0;">
     <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?action=linking" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 
@@ -544,12 +580,12 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   if (!empty ($hcms_assetbrowser_location)) { ?>
 
   <!-- explorer -->
-  <div id="navLayer" style="position:fixed; top:0; bottom:0; left:<?php echo $width_top; ?>px; width:<?php echo $width_navigation; ?>px; margin:0; padding:0;">
+  <div id="navLayer" style="position:fixed; top:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "0"; ?>; bottom:0; left:<?php if (!empty ($width_top)) echo intval($width_top)."px"; else echo "0"; ?>; width:<?php echo intval($width_navigation); ?>px; margin:0; padding:0;">
     <iframe id="navFrame" name="navFrame" src="explorer.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
 
   <!-- workplace -->
-  <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:<?php echo ($width_top + $width_navigation); ?>px; margin:0; padding:0;">
+  <div id="workplLayer" style="position:fixed; top:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "0"; ?>; right:0; bottom:0; left:<?php echo (intval($width_top) + intval($width_navigation)); ?>px; margin:0; padding:0;">
     <iframe id="workplFrame" name="workplFrame" src="frameset_objectlist.php?location=<?php echo url_encode ($hcms_assetbrowser_location); ?>" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 
@@ -558,12 +594,12 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
     else { ?>
 
   <!-- explorer -->
-  <div id="navLayer" style="position:fixed; top:0; bottom:0; left:<?php echo $width_top; ?>px; width:<?php echo $width_navigation; ?>px; margin:0; padding:0;">
+  <div id="navLayer" style="position:fixed; top:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "0"; ?>; bottom:0; left:<?php if (!empty ($width_top)) echo intval($width_top)."px"; else echo "0"; ?>; width:<?php echo intval($width_navigation); ?>px; margin:0; padding:0;">
     <iframe id="navFrame" name="navFrame" src="explorer.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
 
   <!-- workplace -->
-  <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:<?php echo ($width_top + $width_navigation); ?>px; margin:0; padding:0;">
+  <div id="workplLayer" style="position:fixed; top:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "0"; ?>; right:0; bottom:0; left:<?php echo (intval($width_top) + intval($width_navigation)); ?>px; margin:0; padding:0;">
     <iframe id="workplFrame" name="workplFrame" src="empty.php" frameborder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
   </div>
 
@@ -573,12 +609,12 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 } else { ?>
 
   <!-- explorer -->
-  <div id="navLayer" style="position:fixed; top:0; bottom:0; left:<?php echo $width_top; ?>px; width:<?php echo $width_navigation; ?>px; margin:0; padding:0;">
+  <div id="navLayer" style="position:fixed; top:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "0"; ?>; bottom:0; left:<?php if (!empty ($width_top)) echo intval($width_top)."px"; else echo "0"; ?>; width:<?php echo $width_navigation; ?>px; margin:0; padding:0;">
     <iframe id="navFrame" name="navFrame" src="explorer.php?refresh=1" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
   </div>
 
   <!-- workplace -->
-  <div id="workplLayer" style="position:fixed; top:0; right:0; bottom:0; left:<?php echo ($width_top + $width_navigation); ?>px; margin:0; padding:0;">
+  <div id="workplLayer" style="position:fixed; top:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "0"; ?>; right:0; bottom:0; left:<?php echo (intval($width_top) + intval($width_navigation)); ?>px; margin:0; padding:0;">
     <iframe id="workplFrame" name="workplFrame" src="<?php if (!empty ($location)) echo "frameset_objectlist.php?location=".$location."&virtual=".$virtual; else echo "home.php"; ?>" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 
@@ -586,7 +622,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
 <!-- chat sidebar -->
 <?php if (!empty ($mgmt_config['chat']) && empty ($hcms_assetbrowser)) { ?>
-<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:0; right:-320px; bottom:0; width:300px; z-index:100;">
+<div id="chatLayer" class="hcmsChatBar" style="position:fixed; top:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "0"; ?>; right:-320px; bottom:0; width:300px; z-index:100;">
   <iframe id="chatFrame" src="chat.php" frameborder="0" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;"></iframe>
 </div>
 <?php } ?>

@@ -131,6 +131,34 @@ if ($action == "user_save" && (!valid_publicationname ($site) || checkpublicatio
       setsession ('hcms_themename', $theme, true);
       setsession ('hcms_themeinvertcolors', $result_inverted_themes['themeinvertcolors'], true);
       setsession ('hcms_hoverinvertcolors', $result_inverted_themes['hoverinvertcolors'], true);
+
+      // if portal design theme
+      if (strpos ($theme, "/") > 0)
+      {
+        list ($portal_site, $portal_theme) = explode ("/", $theme);
+
+        if (valid_objectname ($portal_theme))
+        {
+          $portal_template = $portal_theme.".portal.tpl";
+          $portal_template = loadtemplate ($portal_site, $portal_template);
+
+          // get download formats and main navigation position
+          if (!empty ($portal_template['content']))
+          {
+            $temp_array = getcontent ($portal_template['content'], "<mainnavigation>");
+
+            if (!empty ($temp_array[0]))
+            {
+              setsession ('hcms_mainnavigation', $temp_array[0], true);
+            }
+          }
+        }
+      }
+      // any other theme uses the left main navigation bar
+      else
+      {
+        setsession ('hcms_mainnavigation', "left", true);
+      }
       
       $add_onload = "setTimeout (function(){ top.location.reload(true); }, 1000);";
     }

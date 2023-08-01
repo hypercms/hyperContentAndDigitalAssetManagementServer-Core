@@ -1522,18 +1522,35 @@ function hcms_selectAllOptions (select)
 
 // ----------------------------------------  drag layer ---------------------------------------
 
-function hcms_dragLayer (element, id_connection)
+function hcms_dragLayer (elem, id_connection)
 {
   id_connection = (typeof id_connection !== 'undefined') ? id_connection : '';
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-  // move the DIV from anywhere inside the DIV
-  element.onmousedown = dragMouseDown;
+  if (elem === null) return false;
+
+  // define id of layer header
+  if (elem && elem.id != '') var id_header = elem.id + "header";
+  else var id_header = '';
+
+  if (id_header != '' && document.getElementById(id_header))
+  {
+    // if present, the header is where you move the DIV from
+    document.getElementById(id_header).onmousedown = dragMouseDown;
+  }
+  else
+  {
+    // otherwise, move the DIV from anywhere inside the DIV
+    elem.onmousedown = dragMouseDown;
+  }
 
   function dragMouseDown(e)
-  {
+  {    
     e = e || window.event;
     e.preventDefault();
+
+    // turn transition effects off due to slowdown
+    elem.style.transition = 'none';
 
     // get the mouse cursor position at startup
     pos3 = e.clientX;
@@ -1579,6 +1596,8 @@ function hcms_dragLayers (elem, moveelem, id_connection)
 {
   id_connection = (typeof id_connection !== 'undefined') ? id_connection : '';
 
+  if (elem === null) return false;
+
   // Setting up needed variables
   document.hcms_move = {};
   elem.hcms_move = {}
@@ -1599,6 +1618,10 @@ function hcms_dragLayers (elem, moveelem, id_connection)
       // Setting the current moved element to the one for this element
       document.hcms_move.elem = this.hcms_move.elem;
 
+      // turn transition effects off due to slowdown
+      elem.style.transition = 'none';
+      document.hcms_move.elem.style.transition = 'none';
+
       // Calculate the starting position of the move element
       var startx = parseInt(this.hcms_move.elem.style.left, 10);
       var starty = parseInt(this.hcms_move.elem.style.top, 10);
@@ -1610,7 +1633,7 @@ function hcms_dragLayers (elem, moveelem, id_connection)
       document.hcms_move.diffx = event.clientX - startx;
       document.hcms_move.diffy = event.clientY - starty;
     
-      // Do the magic on mousemove on the document (We need document here or else the user might be able to move out of the element before the element has moved
+      // on mousemove on the document (We need document here or else the user might be able to move out of the element before the element has moved)
       document.onmousemove = function(e) {
 
         // Cross Browser
@@ -2361,9 +2384,9 @@ function hcms_createVTTrecords (records)
 
           div.id = timestamp;
 
-          div.innerHTML = '<input type="text" name="vtt_start" value="' + record.start + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:98px;" readonly="readonly" />\
-              <input type="text" name="vtt_stop" value="' + record.stop + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:98px;" readonly="readonly" />\
-              <input type="text" name="vtt_text" value="' + record.text + '" maxlength="400" style="float:left; margin:2px 2px 0px 0px; width:342px;" />\
+          div.innerHTML = '<input type="text" name="vtt_start" value="' + record.start + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:88px;" readonly="readonly" />\
+              <input type="text" name="vtt_stop" value="' + record.stop + '" maxlength="12" style="float:left; margin:2px 2px 0px 0px; width:88px;" readonly="readonly" />\
+              <input type="text" name="vtt_text" value="' + record.text + '" maxlength="400" style="float:left; margin:2px 2px 0px 0px; width:350px;" />\
               ' + vtt_buttons + '\
               <br />';
       

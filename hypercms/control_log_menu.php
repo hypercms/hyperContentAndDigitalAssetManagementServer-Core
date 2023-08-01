@@ -97,22 +97,7 @@ $token_new = createtoken ($user);
 <link rel="stylesheet" type="text/css" href="javascript/tag-it/jquery.tagit.css" />
 <link rel="stylesheet" type="text/css" href="javascript/tag-it/tagit.ui-zendesk.css" />
 <style type="text/css">
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
-
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 
 ul.tagit
 {
@@ -173,32 +158,40 @@ parent.hcms_closeSubMenu();
 <!-- toolbar -->
 <div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
   <div class="hcmsToolbarBlock">
-    <div class="hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare">
-      <img onclick="location='log_export.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButtonSizeSquare" id="media_export" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_export_page.png" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
+    <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="location='log_export.php?site=<?php echo url_encode ($site); ?>';">
+      <img class="hcmsButtonSizeSquare hcmsFloatLeft" id="media_export" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_export_page.png" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
+      <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['export'][$lang]); ?></span>
     </div>
-    <div class="hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare">
-      <img onclick="warning_delete();" class="hcmsButtonSizeSquare" id="media_delete" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" />
+    </div>
+    <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="warning_delete();">
+      <img class="hcmsButtonSizeSquare hcmsFloatLeft" id="media_delete" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" />
+      <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?></span>
     </div>
     <?php
     // Notification (only per publication)
     if ($site != "*Null*" && checkglobalpermission ($site, 'user'))
     {
       echo "
-    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-      <img class=\"hcmsButtonSizeSquare\" ".
-      "onclick=\"opennotifyusers();\" ".
+    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"opennotifyusers();\">
+      <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" ".
       "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_notify.png\" alt=\"".getescapedtext ($hcms_lang['notify-users'][$lang])."\" title=\"".getescapedtext ($hcms_lang['notify-users'][$lang])."\" />
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['notify-users'][$lang])."</span>
     </div>";
     }    
     else
     {
-      echo "<img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_notify.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      echo "
+    <div class=\"hcmsButtonOff hcmsInvertColor\">
+      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_notify.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['notify-users'][$lang])."</span>
+    </div>";
     }
     ?>
   </div>
   <div class="hcmsToolbarBlock">
-    <div class="hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare">
-      <img onclick="parent['mainFrame'].location='log_list.php?site=<?php echo url_encode ($site); ?>';" class="hcmsButtonSizeSquare" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_refresh.png" alt="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" />
+    <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="parent['mainFrame'].location='log_list.php?site=<?php echo url_encode ($site); ?>';">
+      <img class="hcmsButtonSizeSquare hcmsFloatLeft" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_refresh.png" alt="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" />
+      <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></span>
     </div>
   </div>
   <div class="hcmsToolbarBlock">

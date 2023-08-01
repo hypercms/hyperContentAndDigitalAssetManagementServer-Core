@@ -3821,7 +3821,8 @@ function gettemplates ($site, $cat="all")
 
         if (valid_locationname ($mgmt_config['homeboxes_directory']) && is_dir ($mgmt_config['abs_path_comp'].$site."/".$mgmt_config['homeboxes_directory']))
         {
-          $template_array[] = "System-HomeBox.comp.tpl";
+          if (is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_homebox.schema.xml.php")) $template_array[] = "System-HomeBox-Standard.comp.tpl";
+          if (is_file ($mgmt_config['abs_path_cms']."/xmlschema/template_homeboxgallery.schema.xml.php")) $template_array[] = "System-HomeBox-Gallery.comp.tpl";
         }
       }
 
@@ -6071,7 +6072,7 @@ function getfavorites ($user, $output="path", $return_text_id=array())
           }
         }
 
-        if (sizeof ($object_path_array) > 0)
+        if (is_array ($object_path_array) && sizeof ($object_path_array) > 0)
         {
           return $object_path_array;
         }

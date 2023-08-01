@@ -27,6 +27,7 @@ $navigation = getrequest ("navigation", "array");
 $designtheme = getrequest ("designtheme");
 $primarycolor = getrequest ("primarycolor");
 $hovercolor = getrequest ("hovercolor");
+$mainnavigation = getrequest ("mainnavigation");
 $token = getrequest ("token");
 
 // formats
@@ -114,7 +115,7 @@ if (checkglobalpermission ($site, 'template') && checkglobalpermission ($site, '
   if (!empty ($delete_wallpaper)) $_FILES['wallpaper']['delete'] = 1;
 
   // save template file
-  $result_save = editportal ($site, $template, $portaluser, $designtheme, $primarycolor, $hovercolor, $_FILES, $navigation, $formats, $user);
+  $result_save = editportal ($site, $template, $portaluser, $designtheme, $primarycolor, $hovercolor, $_FILES, $mainnavigation, $navigation, $formats, $user);
   
   if (empty ($result_save['result']))
   {
@@ -148,6 +149,9 @@ else
 
   $temp_array = getcontent ($templatedata, "<hovercolor>");
   if (!empty ($temp_array[0])) $hovercolor = $temp_array[0];
+
+  $temp_array = getcontent ($templatedata, "<mainnavigation>");
+  if (!empty ($temp_array[0])) $mainnavigation = $temp_array[0];
 
   $temp_array = getcontent ($templatedata, "<user>");
   if (!empty ($temp_array[0])) $designuser = $temp_array[0];
@@ -260,15 +264,32 @@ elseif (!empty ($hcms_hoverinvertcolors))
 }
 ?>
 
+<?php if (!empty ($mgmt_config['showbuttonlabel'])) { ?>
+.hcmsFloatLeft
+{
+  float: left;
+}
+<?php } ?>
+
+<?php if (empty ($mgmt_config['showbuttonlabel']) || $mainnavigation == "left") { ?>
+.hcmsButtonLabel
+{
+  display: none !important;
+}
+<?php } ?>
+
 #settings
 {
-  width: 24%;
+  width: 25%;
   min-width: 280px;
 }
 
 #preview
 {
-  width: 72%;
+  display: block;
+  float: left;
+  overflow: hidden;
+  width: 70%;
   min-width: 640px;
   height: 700px; 
 }
@@ -432,14 +453,14 @@ function settransparent ()
 
       <label><input type="checkbox" id="transparent" name="designtheme" value="transparent" onclick="settransparent();" <?php if ($designtheme == "transparent") echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['transparent'][$lang]); ?></label><br/><br/>
 
-      <?php echo getescapedtext ($hcms_lang['text-and-icons'][$lang]); ?> &nbsp;&nbsp; 
+      <?php echo getescapedtext ($hcms_lang['text-and-icons'][$lang]); ?> &nbsp;&nbsp;
       <label><input type="radio" class="nontransparent" name="designtheme" value="night" <?php if ($designtheme == "night" || $designtheme == "transparent" || empty ($designtheme)) echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['light'][$lang]); ?></label>&nbsp;&nbsp; 
       <label><input type="radio" class="nontransparent" name="designtheme" value="day" <?php if ($designtheme == "day") echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['dark'][$lang]); ?></label><br/><br/>
 
       <?php echo getescapedtext ("Main-".$hcms_lang['color'][$lang]); ?><br/>
       <input class="jscolor nontransparent" name="primarycolor" value="<?php echo $primarycolor; ?>" style="width:280px;" /><br/><br/>
       <?php echo getescapedtext ("Hover-".$hcms_lang['color'][$lang]); ?><br/>
-      <input class="jscolor nontransparent" name="hovercolor" value="<?php echo $hovercolor; ?>" style="width:280px;" /><br/>
+      <input class="jscolor nontransparent" name="hovercolor" value="<?php echo $hovercolor; ?>" style="width:280px;" />
       <hr/><br/>
 
       <!-- Uploads -->
@@ -474,6 +495,13 @@ function settransparent ()
       <img src="<?php echo getthemelocation(); ?>img/button_delete.png" class="hcmsButtonOff hcmsButtonSizeSquare" />
       <?php } ?>
       <div style="clear:both;"></div>
+      <hr/><br/>
+
+      <!-- Toolbar -->
+      <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['customize-toolbar'][$lang]); ?></span><br/><br/>
+      <?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?> &nbsp;&nbsp; 
+      <label><input type="radio" name="mainnavigation" value="left" <?php if (empty ($mainnavigation) || $mainnavigation == "left") echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['left'][$lang]); ?></label>&nbsp;&nbsp;
+      <label><input type="radio" name="mainnavigation" value="top" <?php if ($mainnavigation == "top") echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['top'][$lang]); ?></label><br/>
       <hr/><br/>
 
       <!-- Portal user -->
@@ -666,51 +694,56 @@ function settransparent ()
   </div>
 
   <!-- preview -->
-  <div id="preview" style="float:left; scrolling:auto;">
+  <div id="preview">
     <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['preview'][$lang]); ?></span><br/><br/>
 
-    <div class="hcmsMainWindow">
-      <table class="TableNarrow hcmsImageItem">
-        <tr>
-          <td class="hcmsWorkplaceTop" style="width:36px !important;">
-            <!-- navigation items -->
-            <div class="hcmsButtonTinyBlank  hcmsButtonSizeSquare">
-              <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
-            </div>
-            <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-              <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare" />
-            </div>
-            <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-              <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare" />
-            </div>
-            <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="padding:2px;">
-              <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare" />
-            </div>
-          </td>
-          <td class="hcmsWorkplaceExplorer" style="width:260px !important;">
-            <!-- explorer items -->
-            <div style="display:block; width:260px;">
-              <div style="padding:8px 0px 0px 10px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/site.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></a></div>
-              <div style="padding:4px 0px 0px 26px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['assets'][$lang]); ?></a></div>
-              <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Marketing</a></div>
-              <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Product Management</a></div>
-              <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Public Relations</a></div>
-            </div>
-          </td>
-          <td class="hcmsStartScreen" id="homeScreen" style="position:static; display:table-cell; background-attachment:scroll;">
-            <!-- logo -->
-            <div id="logo" style="margin:10px;">
-              <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_server.png?ts=<?php echo time(); ?>" style="max-width:420px; max-height:100px;" />
-            </div>
+    <div class="hcmsMainWindow" style="width:100%; height:100%;" style="overflow:auto;">
+      <div class="hcmsWorkplaceTop" style="margin:0; padding:0; <?php if ($mainnavigation == "left") echo "float:left; width:36px !important; height:100% !important;"; else echo "width:100% !important; height:36px !important;"; ?>">
+        <!-- navigation items -->
+        <div class="hcmsButtonTinyBlank hcmsButtonSizeSquare hcmsFloatLeft" style="float:left; min-width:36px;">
+          <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
+        </div>
+        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px;">
+          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare hcmsFloatLeft" />
+          <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['home'][$lang]); ?></span>
+        </div>
+        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px;">
+          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare hcmsFloatLeft" />
+          <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?></span>
+        </div>
+        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px;">
+          <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare hcmsFloatLeft" />
+          <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?></span>
+        </div>
+      </div>
+      <div style="float:left; margin:0; padding:0; <?php if ($mainnavigation == "left") echo "width:calc(100% - 36px); height:100%;"; else echo "width:100%; height:calc(100% - 36px); margin-top:-2px;"; ?>">
+        <table class="TableNarrow" style="width:100%; height:100%; margin:0; padding:0;">
+          <tr>
+            <td style="width:260px !important;">
+              <!-- explorer items -->
+              <div class="hcmsWorkplaceExplorer" style="display:block; width:260px; height:100%;">
+                <div style="padding:8px 0px 0px 10px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/site.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></a></div>
+                <div style="padding:4px 0px 0px 26px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['assets'][$lang]); ?></a></div>
+                <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Marketing</a></div>
+                <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Product Management</a></div>
+                <div style="padding:4px 0px 0px 42px; white-space:nowrap;"><img src="<?php echo getthemelocation($portaltheme); ?>img/folder_comp.png?ts=<?php echo time(); ?>" class="hcmsIconList" /> <a href="#"><?php echo getescapedtext ($hcms_lang['folder'][$lang]); ?> Public Relations</a></div>
+              </div>
+            </td>
+            <td class="hcmsStartScreen" id="homeScreen" style="position:static; display:table-cell; background-attachment:scroll;">
+              <!-- logo -->
+              <div id="logo" style="margin:10px;">
+                <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_server.png?ts=<?php echo time(); ?>" style="max-width:420px; max-height:100px;" />
+              </div>
 
-            <!-- home boxes -->
-            <?php
-            if (is_file ($mgmt_config['abs_path_cms']."box/news.inc.php")) include ($mgmt_config['abs_path_cms']."box/news.inc.php");
-            if (is_file ($mgmt_config['abs_path_cms']."box/recent_downloads.inc.php")) include ($mgmt_config['abs_path_cms']."box/recent_downloads.inc.php");
-            ?>
-          </td>
-        </tr>
-      </table>
+              <!-- home boxes -->
+              <?php
+              if (is_file ($mgmt_config['abs_path_cms']."box/news.inc.php")) include ($mgmt_config['abs_path_cms']."box/news.inc.php");
+              if (is_file ($mgmt_config['abs_path_cms']."box/recent_downloads.inc.php")) include ($mgmt_config['abs_path_cms']."box/recent_downloads.inc.php");
+              ?>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 

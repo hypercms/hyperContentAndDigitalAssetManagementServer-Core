@@ -246,7 +246,7 @@ function gettoolbarstyle ($is_mobile, $height=0, $minwidth=580, $maxheight=100)
 // --------------------------------------- getinvertcolortheme -------------------------------------------
 // function: getinvertcolortheme ()
 // input: design theme name for CSS class hcmsToolbarBlock [string]
-// output: result array with inverted themes names or empty names if an inversion is not required based on the brightness of the background color.
+// output: result array with inverted themes names or empty names if an inversion is not required based on the brightness of the background color
 
 // description:
 // Used for portals in order to get the inverted theme names of the primary and hover colors based on the brightness of the primary and hover background color.
@@ -300,7 +300,7 @@ function getinvertcolortheme ($themename)
 // function: invertcolorCSS ()
 // input: design theme name for CSS class hcmsToolbarBlock [string] (optional), CSS selector for elements [string] (optional), 
 //        use class when no event is triggered [boolean] (optional), use class for hover event [boolean] (optional), invert percentage value [integer] (optional)
-// output: CSS style code / false on error
+// output: CSS code
 
 // description:
 // Used for portals in order to invert the color of elements.
@@ -319,7 +319,7 @@ function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $default=t
     else $invertpercentage = $percentage;
 
     // invert
-    if ($default == true) $result .= "
+    if ($theme != "" && $default == true) $result .= "
   ".$css_selector." > span
   {
     -webkit-filter: invert(".intval ($percentage)."%);
@@ -327,10 +327,11 @@ function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $default=t
     -moz-filter: invert(".intval ($percentage)."%);
     -ms-filter: invert(".intval ($percentage)."%);
     filter: invert(".intval ($percentage)."%);
-  }";
+  }
+  ";
   
   // invert on hover
-  if ($hover == true) $result .= "
+  if ($theme != "" && $hover == true) $result .= "
 
   ".$css_selector.":hover > img
   {
@@ -348,7 +349,8 @@ function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $default=t
     -moz-filter: invert(".intval ($invertpercentage)."%);
     -ms-filter: invert(".intval ($invertpercentage)."%);
     filter: invert(".intval ($invertpercentage)."%);
-  }";
+  }
+  ";
   }
 
   // set color for border for standard CSS class
@@ -362,8 +364,58 @@ function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $default=t
   .hcmsToolbarBlock
   {
     border-color: ".$color."; 
-  }";
   }
+  ";
+  }
+
+  return $result;
+}
+
+// --------------------------------------- showdynamicCSS -------------------------------------------
+// function: showdynamicCSS ()
+// input: design theme name used for the main color [string], design theme name used for the hover color [string]
+// output: CSS code
+
+// description:
+// Creates the styles for the CSS classes hcmsInvertColor, hcmsInvertHoverColor, hcmsInvertPrimaryColor, hcmsFloatLeft, and hcmsButtonLabel based on the colors of the design theme.
+// This is wrapper function that can be used to create the CSS classes and styles.
+
+function showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors)
+{
+  global $mgmt_config;
+
+  $result = "";
+
+  // inverted main colors
+  if (!empty ($hcms_themeinvertcolors))
+  {
+    if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
+    else $invertonhover = true;
+
+    $result .= invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
+    $result .= invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
+    $result .= invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertPrimaryColor", true, false);
+  }
+  // inverted hover colors
+  elseif (!empty ($hcms_hoverinvertcolors))
+  {
+    $result .= invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
+    $result .= invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
+  }
+
+  if (!empty ($mgmt_config['showbuttonlabel'])) $result .= "
+  .hcmsFloatLeft
+  {
+    float: left;
+  }
+  ";
+
+  if (empty ($mgmt_config['showbuttonlabel'])) $result .= "
+  .hcmsButtonLabel
+  {
+    display: none !important;
+  }
+  ";
 
   return $result;
 }
@@ -2237,13 +2289,14 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             </td>
           </tr>";
         }
-        // options button for image editing
+        // options, save button for image editing
         elseif ($viewtype == "preview_download")
         {
           $mediaview .= "
           <tr>
             <td style=\"text-align:left; padding-top:10px;\">
               <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>
+              <button type=\"button\" id=\"mediaplayer_save\" class=\"hcmsButtonGreen\" onclick=\"saveImage(true);\"><img src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['save'][$lang])."</button>
             </td>
           </tr>";
         }
@@ -2555,7 +2608,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType === 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
               </div>";
           }
-          // cut, embed, options button
+          // cut, embed, options, save button
           elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
           {
             $mediaview .= "
@@ -2563,6 +2616,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['audio-montage'][$lang], $hcms_charset, $lang)."</button>
                 <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>
                 <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" id=\"mediaplayer_save\" class=\"hcmsButtonGreen\" onclick=\"submitMediaConfig();\"><img src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['save'][$lang])."</button>
               </div>";
           }
         }
@@ -2804,14 +2858,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 <button type=\"button\" class=\"hcmsButtonBlue\" onclick=\"if (typeof setSaveType === 'function') setSaveType('mediaplayerconfig_so', '', 'post');\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
               </div>";
           }
-          // cut, options, embed button
+          // cut, options, embed, save button
           elseif ($viewtype == "preview_download" && valid_locationname ($location) && valid_objectname ($page))
           {
             $mediaview .= "
               <div style=\"padding-top:10px;\">
-                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint()\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['video-montage'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" id=\"mediaplayer_cut\" class=\"hcmsButtonOrange\" onclick=\"setbreakpoint();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_cut.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['video-montage'][$lang], $hcms_charset, $lang)."</button>
                 <button type=\"button\" id=\"mediaplayer_options\" class=\"hcmsButtonBlue\" onclick=\"document.getElementById('barbutton_0').click();\" style=\"display:none;\"><img src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['options'][$lang], $hcms_charset, $lang)."</button>
                 <button type=\"button\" id=\"mediaplayer_embed\" class=\"hcmsButtonBlue\" onclick=\"document.location.href='media_playerconfig.php?location=".url_encode($location_esc)."&page=".url_encode($page)."';\"><img src=\"".getthemelocation()."img/button_phpinclude.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['embed'][$lang], $hcms_charset, $lang)."</button>
+                <button type=\"button\" id=\"mediaplayer_save\" class=\"hcmsButtonGreen\" onclick=\"submitMediaConfig();\"><img src=\"".getthemelocation()."img/button_save.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['save'][$lang])."</button>
               </div>";
           }
           // 360 view button
@@ -5348,7 +5403,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
         width: ".intval ($width)."px;
         height: 22px;
         padding: 0;
-        z-index: 10;
+        z-index: 9;
       }
 
       .hcmsVideoThumbFrame
@@ -6547,7 +6602,7 @@ function showmapping ($site, $lang="en")
 
 // ------------------------- showgallery -----------------------------
 // function: showgallery()
-// input: multiobjects represented by their path or object ID [array], thumbnail size in pixels [integer] (optional), open object on click [boolean] (optional), user name [string] (optional)
+// input: multiobjects represented by their path or object ID [array], thumbnail size in pixels [integer] (optional), open or download object on click [false,open,download] (optional), user name [string] (optional)
 // output: gallery view / false
 
 // description:
@@ -6593,17 +6648,26 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
       $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
       // do not display objects without the users general access permission
-      if ($setlocalpermission['root'] != 1) continue;
+      if ($openlink != "download" && $setlocalpermission['root'] != 1) continue;
       
       $count++;
 
       // open object
-      if (!empty ($openlink) && $setlocalpermission['root'] == 1)
+      if (!empty ($openlink))
       {
-        $functioncall = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
+        // download file
+        if ($openlink == "download")
+        {
+          $openobject = "onclick=\"location.href='".createdownloadlink ($site, $location_esc, $page, $cat)."';\"";
+        }
+        // open object
+        elseif ($setlocalpermission['root'] == 1)
+        {
+          $functioncall = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
 
-        // open on click (parent must be used if function is called from iframe!)
-        $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";
+          // open on click (parent must be used if function is called from iframe!)
+          $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";
+        }
       }
 
       $fileinfo = getfileinfo ($site, $location_esc.$page, $cat);
@@ -6616,13 +6680,17 @@ function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys"
 
         // thumbnail preview
         $galleryview .= "
-        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject." title=\"".$location_name.$objectinfo['name']."\"><img data-src=\"".cleandomain (createviewlink ($site, $thumbnail, $objectinfo['name'], false, "wrapper", $fileinfo['icon']))."\" class=\"lazyload hcmsImageItem\" style=\"border:0; max-width:".$thumbsize."px; max-height:".$thumbsize."px;\" /></div>";
+        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject." title=\"".$location_name.$objectinfo['name']."\">
+          <img data-src=\"".cleandomain (createviewlink ($site, $thumbnail, $objectinfo['name'], false, "wrapper", $fileinfo['icon']))."\" class=\"lazyload hcmsImageItem\" style=\"border:0; max-width:".$thumbsize."px; max-height:".$thumbsize."px;\" />
+        </div>";
       }
       // object or folder
       else
       {
         $galleryview .= "
-        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject." title=\"".$location_name.$objectinfo['name']."\"><img src=\"".cleandomain (getthemelocation()."img/".$fileinfo['icon'])."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" /></div>";
+        <div id=\"image".$count."\" style=\"margin:5px; width:".$thumbsize."px; height:".$thumbsize."px; float:left; cursor:pointer; display:block; text-align:center; vertical-align:bottom;\" ".$openobject." title=\"".$location_name.$objectinfo['name']."\">
+          <img src=\"".cleandomain (getthemelocation()."img/".$fileinfo['icon'])."\" style=\"border:0; width:".$thumbsize."px; height:".$thumbsize."px;\" />
+        </div>";
       }
     }
 

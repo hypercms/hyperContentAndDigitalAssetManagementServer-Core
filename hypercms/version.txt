@@ -7100,6 +7100,44 @@ Release 09/2023
 - Modifications in control_objectlist_menu in order to optimize the positioning of the gallery view selector for the desktop and mobile devices
 - Implementation of the new function gettoolbarstyle in UI API in order to unify the CSS styles of the toolbar used in the standard controls
 - Modifications in all controls in order to use the new function gettoolbarstyle
+- Modifications in JS function hcms_dragLayer in main.js in order to support the element ID plus the suffix "header" as dragable zone
+- Modifications in JS function hcms_dragLayer in main.js in order to disable and enbale transition effects on drag
+- Modifications in the Project Management module in order to reposition the createproject and task boxes and close boxes if another box will be opened
+- Modifications in the Project Management module in order to implement dragable boxes
+- Modifications in the Task Management module in order to reposition the createtask box
+- Modifications in the Task Management module in order to implement dragable boxes
+- Modifications in all design themes in order to move to a relative font-size
+- Modifications in function settext, setmedia, setpagelink, and setcomplink in Set API in order to except an empty article input parameter and treat the content as no atricle
+- Modifications in function exportxmlfiles in Import/Export API in order to convert the object ID saved in the componentfiles XML-node to object paths using function getobjectlink
+- Modifications in JS function hcms_createVTTrecords in main.js in order resize the date fields for the VTT records
+- Design modifications in image_rendering, media_rendering, page_multiedit in order to use an overlay for the media options
+- Modifications in function showmedia in UI API in order to display the save button for image, audio/video media files
+- Modifications in function showvideoplayer in UI API in order to change the z-index of the CSS class hcmsVideoOverlay
+- Modifications in function notifyusers in Main API in order to trim the user names before comparison
+- Implementation of the new main configuration setting $mgmt_config['showbuttonlabel'] in the install directory
+- Modifications in frameset_main in order to support a verical and horizontal top bar layout
+- Modifications in all controls in order to implement optional labels next to the buttons
+- Modifications in function editportal in Main API in order to support the postion of the main navigation on top or left and the display of button labels in the toolbar of the controls
+- Modifications in portal_edit in order to support the postion of the main navigation on top or left and the display of button labels in the toolbar of the controls
+- Modifications in portal XML schema in order to add the new mainnavigation node
+- Removed CSS class hcmsButtonLabelSizeWide from all design themes
+- Modifications in session.inc.php in order to add the new session parameter "hcms_mainnavigation" for the main navigation position defined by a portal design theme
+- Modifications in function userlogin and registeruser in Security API in order to implement and support the main navigation position defined by a portal design theme
+- Modifications in user_edit in order to implement and support the main navigation position defined by a portal design theme
+- Implementation of the new function showdynamicCSS in the UI API
+- Modifications in the control of the test plugin in order to use the new function showdynamicCSS
+- Modifications in all controls in order to use the new function showdynamicCSS
+- Modifications in the Task Management and Project Management module in order to hide the saving overlay after the submit since it might not be executed in case of an error
+- Modifications in JS function hcms_dragLayer and hcms_dragLayers in main.js in order to verify if the provided HTML element exists
+- Removed deprecated CSS class hcmsButtonFrame from mains.css in all design themes
+- Added new CSS class hcmsSubMenu, hcmsSubMeniItem to main.css of all design themes
+- Modifications in control_content_menu in order to set the and individual max-width for CSS class hcmsButtonLabel 
+- Modifications in function showgallery in UI API in order to support the download of media files without a permission check of the user
+- Implementation of the Home box template for the presentation of collections with download of single assets
+- Modifications in function gettemplates in Get API and loadtemplate in Main API in order to include the new Home box template
+- Modifications in chat in order to add CSS class hcmsInvertHoverColor to the user selector
+- Modifications in explorer_objetview in order to add CSS class hcmsInvertHoverColor to the user selector
+- Design modifications in the Project Management module
 - Updates in various language files
 - Update of all Guides due to the new version number
 - Updates in the Users Guide
@@ -7122,3 +7160,9 @@ Release 09/2023
 - Bug fix: The local JS function sendtochat in control_objectlist_menu could not be executed due to the missing JQuery library
 - Bug fix: user_edit provided the siteaccess array and not the array keys for superadmin users as input to function getthemes which resulted in missing entries if the technical publication and display name were not the same 
 - Bug fix: Function showprojectrecord in the Project Management API used a wrong variable name in the link of an onclick event
+- Bug fix: JS function hcms_dragLayer in main.js did use a wrong variable name for dragable element
+- Bug fix: Function manipulateallobjects in Main API used wrong variable as input for function getcategory for action "paste"
+- Bug fix: The JS function initFaceOnVideo of the template engine called a non-existing function sortObjectValue instead of hcms_sortObjectValue
+- Bug fix: The black design theme used a width and height in CSS class hcmsHomeBox
+- Bug fix: The Project Management module used a wrong variable name for the dependencies of a new task
+- Bug fix: template_edit did not disable the warning in the local JS function savetemplate for both save types

@@ -89,22 +89,7 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <style type="text/css">
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
-
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 </style>
 <script type="text/javascript">
 
@@ -220,19 +205,21 @@ parent.hcms_closeSubMenu();
     if ($multiobject_count <= 1 && $message_id != "" && !empty ($mgmt_config['db_connect_rdbms']))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" ";
-        
-        if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', 600, 900);\" ";
-        else echo "onClick=\"parent.openPopup('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."');\" ";
-        
-        echo "id=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" ";
+      if (!empty ($mgmt_config['message_newwindow'])) echo "onClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', 600, 900);\" ";
+      else echo "onClick=\"parent.openPopup('user_sendlink.php?mailfile=".url_encode($message_id)."&token=".$token_new."');\" ";
+      echo ">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" id=\"media_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit-object'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['edit'][$lang])."</span>
       </div>";
     }  
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['edit'][$lang])."</span>
+      </div>";
     }
     ?>
     <?php
@@ -240,16 +227,18 @@ parent.hcms_closeSubMenu();
     if ($message_id != "" && $messageuser != "" && checkrootpermission ('desktop'))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" id=\"media_delete\" ".
-        "onclick=\"if (warning_delete()==true) submitTo('control_message_menu.php', 'delete', 'controlFrame');\" ".
-        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (warning_delete()==true) submitTo('control_message_menu.php', 'delete', 'controlFrame');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" id=\"media_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" title=\"".getescapedtext ($hcms_lang['remove-items'][$lang])."\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
       </div>";
     }    
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />\n";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+        <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
+      </div>";
     }
     ?>
   </div>
@@ -257,8 +246,9 @@ parent.hcms_closeSubMenu();
   <div class="hcmsToolbarBlock">
     <?php
     echo "
-    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-      <img class=\"hcmsButtonSizeSquare\" onclick=\"parent.frames['mainFrame'].location.reload();\" id=\"pic_obj_refresh\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />
+    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"parent.frames['mainFrame'].location.reload();\">
+      <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" id=\"pic_obj_refresh\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />
+      <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['refresh'][$lang])."</span>
     </div>";
     ?>
   </div>

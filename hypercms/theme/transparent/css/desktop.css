@@ -34,7 +34,7 @@ input, select, textarea, button, .hcmsTextArea
 
 .hcmsToolbarBlock
 {
-  padding-right: 3px;
-  margin-right: 3px;
+  padding: 0px 3px 0px 0px;
+  margin: 0px 3px 4px 0px;
   white-space: nowrap;
 }

@@ -259,6 +259,7 @@ a.hcmsLink
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 0;
   box-sizing: border-box;
   width: 100%;
   background-color: #A6CBFF;
@@ -320,6 +321,7 @@ a.hcmsLink
 
 .hcmsToolbarBlock
 {
+  min-height: 36px;
   float: left;
   border-right: 2px solid #6DA6F5;
 }
@@ -379,10 +381,10 @@ a.hcmsNavigator
   -webkit-border-radius: 5px;
   border-radius: 5px;
   background-color: #ECF3F9;
-  box-shadow: 2px 2px 3px #000000;
-  -webkit-box-shadow: 2px 2px 3px #000000;
-  -moz-box-shadow: 2px 2px 3px #000000;
-  filter: progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='4');
+  box-shadow: 2px 2px 6px #333333;
+  -webkit-box-shadow: 2px 2px 6px #333333;
+  -moz-box-shadow: 2px 2px 6px #333333;
+  filter: progid:DXImageTransform.Microsoft.Shadow(color='#333333',direction='120',strength='4');
 }
 
 .hcmsTemplateField
@@ -516,6 +518,56 @@ a.hcmsNavigator
   filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
 }
 
+.hcmsSubMenu
+{
+  width: 100%;
+}
+
+@media screen and (min-width: 1201px)
+{
+  .hcmsSubMenu
+  {
+    width: 1200px;
+  }
+}
+
+.hcmsSubMenuItem
+{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 2px 2px 0px 2px;
+  min-width: 188px;
+  width: 10%;
+  height: 21px;
+  float: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hcmsButtonLabel
+{
+  float: left;
+  font-size: inherit;
+  height: 34px;
+  line-height: 34px;
+  text-align: left;
+  border: 0;
+  margin: 0;
+  padding: 0px 4px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+}
+
+@media only screen and (max-width: 1200px)
+{
+  .hcmsButtonLabel
+  {
+    display: none;
+	}
+}
+
 .hcmsIconList
 {
   width: 16px;
@@ -523,42 +575,6 @@ a.hcmsNavigator
   border: 0;
   margin: 0px 0px 2px 2px;
   vertical-align: middle;
-}
-
-.hcmsButtonFrame
-{
-  padding: 0;
-  margin: 0;
-  border: 0;
-  float: left;
-}
-
-.hcmsButtonLabel
-{
-  float: left;
-  font-size: 8px;
-  letter-spacing: 0px;
-  min-width: 34px;
-  height: 22px;
-  border: 0;
-  margin: 0px 1px;
-  padding: 0;
-  text-align: center;
-  overflow: hidden;
-  overflow-wrap: break-word;
-}
-
-.hcmsButtonLabelSizeWide
-{
-  min-width: 48px !important;
-}
-
-@media only screen and (max-width: 760px)
-{
-  .hcmsButtonLabel
-  {
-    display: none;
-	}
 }
 
 .hcmsButton
@@ -580,6 +596,7 @@ a.hcmsNavigator
 
 .hcmsButtonOff
 {
+  pointer-events: none;
   padding: 2px;
   margin: 0;
   border: 0;
@@ -996,7 +1013,7 @@ table.hcmsTableNoFlip td
 
 .hcmsButtonDownload:hover
 {
-  background-color: #ECA03C;
+  background-color: #c5c5c5;
 }
 
 .hcmsMore

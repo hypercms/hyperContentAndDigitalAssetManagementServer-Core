@@ -1103,6 +1103,7 @@ function extractlinks ($textcontent, $identifier)
     while (strpos (strtolower ($subtext), strtolower ($identifier_search)) > 0)
     {
       $offset = strpos (strtolower ($subtext), strtolower ($identifier_search)) + strlen ($identifier_search);
+
       // extract html tag from text content
       $href_tag = gethtmltag ($subtext, $identifier_search);
  
@@ -1155,7 +1156,7 @@ function medialinks_to_complinks ($link_array)
 
         if ($container_id != false)
         {
-          if ($mgmt_config['db_connect_rdbms'] != "")
+          if (!empty ($mgmt_config['db_connect_rdbms']))
           {
             $temp_array = rdbms_getobjects ($container_id, "");
 

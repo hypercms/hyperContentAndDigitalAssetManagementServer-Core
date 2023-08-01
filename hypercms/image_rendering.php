@@ -1190,7 +1190,7 @@ echo showtopmenubar ($hcms_lang['image'][$lang], array($hcms_lang['options'][$la
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="padding:5px 5px 10px 5px; width:94%; display:none; vertical-align:top; z-index:1; margin:-4px 10px 0px 10px;" class="hcmsMediaRendering">    
+<div id="renderOptions" style="position:fixed; top:32px; left:5px; padding:5px 5px 10px 5px; width:94%; vertical-align:top; z-index:10; display:none;" class="hcmsMediaRendering">  
   <!-- start edit image -->
   <form name="mediaconfig" id="mediaconfig" action="service/renderimage.php" method="post">
     <input type="hidden" id="action" name="action" value="rendermedia" />

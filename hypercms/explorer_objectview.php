@@ -136,13 +136,7 @@ suspendsession ();
 <?php if (!empty ($file_info['ext']) && is_audio ($file_info['ext'])) echo showaudioplayer_head (false, true); ?>
 <?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false, true, true); ?>
 <style type="text/css">
-<?php
-// invert hover colors
-if (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverTextColor");
-}
-?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 </style>
 <script type="text/javascript">
 
@@ -362,7 +356,7 @@ hr
       foreach ($name_array as $name => $size)
       {
         echo "
-      <div class=\"hcmsSelectorItem\" onclick=\"setscreensize('".$size."');\">  <span class=\"hcmsInvertHoverTextColor\">&nbsp;".getescapedtext ($name." (".$size.")")."&nbsp;</span></div>";
+      <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" onclick=\"setscreensize('".$size."');\">  <span class=\"\">&nbsp;".getescapedtext ($name." (".$size.")")."&nbsp;</span></div>";
       }
       
       echo "

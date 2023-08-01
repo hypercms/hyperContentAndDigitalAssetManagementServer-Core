@@ -49,9 +49,6 @@ else
   $cat = "";
 }
 
-// enable or disable button labels
-$mgmt_config['showbuttonlabel'] = false;
-
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 // load publication configuration
@@ -310,52 +307,7 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/click.min.js"></script>
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <style type="text/css">
-.hcmsButtonLabel
-{
-  <?php
-  if (empty ($mgmt_config['showbuttonlabel'])) echo "display: none !important;";
-  else echo "display: block !important;";
-  ?>
-}
-
-.hcmsMenuItem
-{
-  padding: 2px 2px 1px 2px;
-  min-width: 190px;
-  width: 10%;
-  float: left;
-}
-
-.hcmsMenu
-{
-  width: 100%;
-}
-
-@media screen and (min-width: 1201px)
-{
-  .hcmsMenu
-  {
-    width: 1200px;
-  }
-}
-
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
-
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertPrimaryColor", true, false);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 </style>
 <script type="text/javascript">
 
@@ -897,7 +849,7 @@ function closeSubMenu (id)
 }
 
 // init
-parent.hcms_closeSubMenu();
+if (typeof parent.hcms_closeSubMenu == "function") parent.hcms_closeSubMenu();
 </script>
 </head>
 
@@ -1002,7 +954,6 @@ else
 <!-- toolbar -->
 <div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
   <div class="hcmsToolbarBlock">
-    <div class="hcmsButtonFrame">
     <?php
     // parent folder of current location
     if (
@@ -1016,14 +967,10 @@ else
        )
     {
        echo "
-       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img ".
-        "onclick=\"if (locklayer == false) parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_down_esc)."';\" ".
-        "class=\"hcmsButtonSizeSquare\" ".
-        "id=\"pic_folder_back\" ".
+       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_down_esc)."';\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" id=\"pic_folder_back\" ".
         "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_back.png\" ".
-        "alt=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" />
-       </div>";
+        "alt=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" />";
     }
     // parent folder of current object (used for search results)
     elseif (
@@ -1031,46 +978,40 @@ else
            )
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img ".
-        "onclick=\"if (locklayer == false) parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."';\" ".
-        "class=\"hcmsButtonSizeSquare\" ".
-        "id=\"pic_folder_back\" ".
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) parent.location='frameset_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."';\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" id=\"pic_folder_back\" ".
         "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_back.png\" ".
-        "alt=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" />
-      </div>";
+        "alt=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" title=\"".getescapedtext($hcms_lang['go-to-parent-folder'][$lang])."\" />";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_back.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div  class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_back.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
     }
     ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['back'][$lang], 11, 2)); ?></div>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext($hcms_lang['back'][$lang]); ?></span>
     </div>
   </div>
   
   <div class="hcmsToolbarBlock">
-    <div class="hcmsButtonFrame">
     <?php
     // Upload Button (HTML5 file upload)
     if ($from_page == "" && ($cat != "page" || !empty ($mgmt_config[$site]['upload_pages'])) && $setlocalpermission['root'] == 1 && $setlocalpermission['upload'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"window.top.openPopup('popup_upload_html.php?uploadmode=multi&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."', 'upload".md5($location_esc)."');\" ".
-        "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" alt=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"window.top.openPopup('popup_upload_html.php?uploadmode=multi&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."', 'upload".md5($location_esc)."');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" alt=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['upload-file'][$lang])."\" />";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_upload.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
     }
     ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['upload'][$lang], 11, 2)); ?></div>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext($hcms_lang['upload'][$lang]); ?></span>
     </div>
-    <div class="hcmsButtonFrame">
     <?php
     // Download/Convert Button (also for folders)
     $media_info = getfileinfo ($site, $media, $cat);
@@ -1120,9 +1061,8 @@ else
     if ($from_page != "recyclebin" && ($multiobject_count <= 1 && !empty ($page) && !empty ($media)) && $perm_rendering && $lock_rendering && ($doc_rendering || $img_rendering || $dropbox_rendering))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare\" onclick=\"openSubMenu('downloadselectLayer');\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openSubMenu('downloadselectLayer');\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />";
     }
     // file and folder download without options
     elseif ($from_page != "recyclebin" && 
@@ -1133,120 +1073,109 @@ else
     )
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare\" onclick=\"submitToSelf('download'); hcms_showHideLayers('downloadLayer','','show');\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"submitToSelf('download'); hcms_showHideLayers('downloadLayer','','show');\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" alt=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['download-file'][$lang])."\" />";
     }
     else
     {
       echo "
-        <img class=\"hcmsButtonOff hcmsButtonSizeSquare\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_download.png\" />";
     }
     ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['download'][$lang], 13, 2)); ?></div>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext($hcms_lang['download'][$lang]); ?></span>
     </div> 
   </div>
 
-  <div class="hcmsToolbarBlock">
-    <div class="hcmsButtonFrame">  
+  <div class="hcmsToolbarBlock"> 
     <?php
     // Create new objects
     if ($from_page == "" && $setlocalpermission['root'] == 1 && ($setlocalpermission['create'] == 1 || $setlocalpermission['foldercreate'] == 1))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_new.png\" class=\"hcmsButtonSizeSquare\" onclick=\"openSubMenu('createLayer');\" title=\"".getescapedtext($hcms_lang['create'][$lang])."\" alt=\"".getescapedtext($hcms_lang['create'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openSubMenu('createLayer');\" title=\"".getescapedtext($hcms_lang['create'][$lang])."\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_new.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" alt=\"".getescapedtext($hcms_lang['create'][$lang])."\" />";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_new.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_new.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
     }
     ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['create'][$lang], 11, 2)); ?></div>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext($hcms_lang['create'][$lang]); ?></span>
     </div>
-    <div class="hcmsButtonFrame">
     <?php
     // Other actions
     if ($multiobject_count > 0 || !empty ($page))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_menu.png\" class=\"hcmsButtonSizeSquare\" onclick=\"openSubMenu('actionsLayer');\" title=\"".getescapedtext($hcms_lang['action'][$lang])."\" alt=\"".getescapedtext($hcms_lang['action'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"openSubMenu('actionsLayer');\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_menu.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" title=\"".getescapedtext($hcms_lang['action'][$lang])."\" alt=\"".getescapedtext($hcms_lang['action'][$lang])."\" />";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_menu.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_menu.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
     }
     ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['action'][$lang], 11, 2)); ?></div>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext($hcms_lang['action'][$lang]); ?></span>
     </div>
-    <div class="hcmsButtonFrame">
     <?php
     // Paste Button
     if ($from_page == "" && ($setlocalpermission['root'] == 1 && ($setlocalpermission['rename'] == 1 || $setlocalpermission['folderrename'] == 1)) && !empty (getsession ('hcms_temp_clipboard')))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img onclick=\"if (locklayer == false) submitToPopup('popup_status.php', 'paste', 'paste".uniqid()."');\" ".
-        "class=\"hcmsButtonSizeSquare\" id=\"pic_obj_paste\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_paste.png\" alt=\"".getescapedtext ($hcms_lang['paste'][$lang])."\" title=\"".getescapedtext ($hcms_lang['paste'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) submitToPopup('popup_status.php', 'paste', 'paste".uniqid()."');\">
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_paste.png\" alt=\"".getescapedtext ($hcms_lang['paste'][$lang])."\" title=\"".getescapedtext ($hcms_lang['paste'][$lang])."\" />";
     }
     else
     {
       echo "
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_paste.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_paste.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
     }
     ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['paste'][$lang], 11, 2)); ?></div>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext($hcms_lang['paste'][$lang]); ?></span>
     </div>
   </div>
 
   <div class="hcmsToolbarBlock">
-    <div class="hcmsButtonFrame"> 
     <?php
     // reload button
     if ($from_page == "") $refresh = "location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&ts=".time()."'";
     else $refresh = "location.reload();";
   
     echo "
-    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-      <img class=\"hcmsButtonSizeSquare\" onclick=\"if (locklayer == false) parent.frames['mainFrame'].".$refresh.";\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\">
-    </div>";  
+    <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) parent.frames['mainFrame'].".$refresh.";\">
+      <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />";  
     ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['refresh'][$lang], 11, 2)); ?></div>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext($hcms_lang['refresh'][$lang]); ?></span>
     </div>
   </div>
   
   <div class="hcmsToolbarBlock">
-    <div class="hcmsButtonFrame"> 
-      <?php echo showhelpbutton ("usersguide", true, $lang, "", "hcmsHoverColor hcmsInvertColor"); ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['help'][$lang], 11, 2)); ?></div>
-    </div>
+    <?php echo showhelpbutton ("usersguide", true, $lang, "", "hcmsHoverColor hcmsInvertColor"); ?>
   </div>
 
   <?php if (!$is_mobile) { ?>
   <div class="hcmsToolbarBlock">
-    <div class="hcmsButtonFrame">
     <?php
     // filter
     if ($from_page == "" && $cat != "page")
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButtonSizeSquare\" onclick=\"switchFilter();\" title=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" alt=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" />
-      </div>";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"switchFilter();\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" title=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" alt=\"".getescapedtext($hcms_lang['filter-by-file-type'][$lang])."\" />";
     }
     else
     {
       echo "
-      <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButtonOff hcmsButtonSizeSquare\" />";
+      <div class=\"hcmsButtonOff\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_filter.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
     }
     ?>
-      <br/><div class="hcmsButtonLabel"><?php if (!empty ($mgmt_config['showbuttonlabel'])) echo getescapedtext(showshorttext($hcms_lang['filter-by-file-type'][$lang], 11, 2)); ?></div>
     </div>
     <?php if ($from_page == "" && $cat != "page") { ?>
     <!-- filter bar -->
@@ -1280,7 +1209,7 @@ else
       if (!$is_mobile) echo "
         <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" style=\"margin:-1px;\" onclick=\"switchView ('large'); document.getElementById('button_obj_view').click();\">
           <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_view_gallery_large.png\" class=\"hcmsIconList\" /> 
-          <span class=\"\">".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</span>
+          <span class=\"\">".$hcms_themeinvertcolors.getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</span>
         </div>";
       echo "
         <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" style=\"margin:-1px;\" onclick=\"switchView ('medium'); document.getElementById('button_obj_view').click();\">
@@ -1339,8 +1268,8 @@ else
     <img name="hcms_downloadselectLayerClose" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_downloadselectLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeSubMenu('downloadselectLayer');" />
   </div>
 
-  <div class="hcmsMenu">
-    <div class="hcmsInvertPrimaryColor hcmsMenuItem">
+  <div class="hcmsSubMenu">
+    <div class="hcmsInvertPrimaryColor hcmsSubMenuItem">
       <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download'][$lang]); ?></span>
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_arrow_right.png" class="hcmsIconList" />
     </div>
@@ -1353,7 +1282,7 @@ else
       {
         // function imgConvert must be used in order to reset the rendering options
         echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"imgConvert ('','');\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"imgConvert ('','');\">
             <img src=\"".getthemelocation()."img/".$media_info['icon']."\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['original'][$lang])."</span>
           </div>";
@@ -1373,7 +1302,7 @@ else
             if ((empty ($downloadformats) || !empty ($downloadformats['document'][$doc_type])) && in_array ($ext, $mgmt_docconvert[$media_info['ext']]))
             {
               echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"docConvert ('".$doc_type."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"docConvert ('".$doc_type."');\">
           <img src=\"".getthemelocation()."img/".$doc_info['icon']."\" class=\"hcmsIconList\" />
           <span class=\"\">".$doc_info['type']." (".strtoupper($doc_type).")</span>
         </div>";
@@ -1398,7 +1327,7 @@ else
               if ((empty ($downloadformats) || !empty ($downloadformats['image'][$image_type][$config_name])) && $config_name != "thumbnail" && $config_name != "original") 
               {
                 echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"imgConvert ('".$image_type."', '".$config_name."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"imgConvert ('".$image_type."', '".$config_name."');\">
           <img src=\"".getthemelocation()."img/".$img_info['icon']."\" class=\"hcmsIconList\" />
           <span class=\"\">".strtoupper($image_type)." ".$config_name."</span>
         </div>";
@@ -1412,19 +1341,19 @@ else
       if ($vid_rendering && is_video ($media))
       {
         if (empty ($downloadformats) || !empty ($downloadformats['video']['origthumb'])) echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"vidConvert('origthumb');\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"vidConvert('origthumb');\">
             <img src=\"".getthemelocation()."img/file_mpg.png\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['preview'][$lang])."</span>
           </div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['jpg'])) echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"vidConvert('jpg');\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"vidConvert('jpg');\">
             <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['images'][$lang])." (JPG)</span>
           </div>";
           
         if (empty ($downloadformats) || !empty ($downloadformats['video']['png'])) echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"vidConvert('png');\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"vidConvert('png');\">
             <img src=\"".getthemelocation()."img/file_image.png\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['images'][$lang])." (PNG)</span>
           </div>";
@@ -1434,7 +1363,7 @@ else
 			if ($dropbox_rendering)
 			{
 				echo "
-          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes,width=600,height=400', 600, 400); document.getElementById('button_obj_convert').click();a\">
+          <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"submitToWindow('popup_save_dropbox.php', 'Save to Dropbox', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes,width=600,height=400', 600, 400); document.getElementById('button_obj_convert').click();a\">
             <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/file_dropbox.png\" class=\"hcmsIconList\" />
             <span class=\"\">".getescapedtext ($hcms_lang['dropbox'][$lang])."</span>
           </div>";
@@ -1457,8 +1386,8 @@ else
     <img name="hcms_createLayerClose" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_createLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeSubMenu('createLayer');" />
   </div>
 
-  <div class="hcmsMenu">
-    <div class="hcmsInvertPrimaryColor hcmsMenuItem">
+  <div class="hcmsSubMenu">
+    <div class="hcmsInvertPrimaryColor hcmsSubMenuItem">
       <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create'][$lang]); ?></span>
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_arrow_right.png" class="hcmsIconList" />
     </div>
@@ -1467,7 +1396,7 @@ else
     if ($from_page == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['foldercreate'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) openSubMenu('foldercreateLayer');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) openSubMenu('foldercreateLayer');\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_folder_new.png\" alt=\"".getescapedtext ($hcms_lang['create-folder'][$lang])."\" title=\"".getescapedtext ($hcms_lang['create-folder'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['create-folder'][$lang])."</span>
       </div>";
@@ -1479,7 +1408,7 @@ else
     if ($from_page == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"hcms_openWindow('frameset_content.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"hcms_openWindow('frameset_content.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").");\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_new.png\" alt=\"".getescapedtext ($hcms_lang['new-object'][$lang])."\" title=\"".getescapedtext ($hcms_lang['new-object'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['new-object'][$lang])."</span>
       </div>";
@@ -1491,7 +1420,7 @@ else
     if ($from_page == "" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) openSubMenu('importLayer');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) openSubMenu('importLayer');\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_import.png\" alt=\"".getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['import-list-comma-delimited'][$lang])."</span>
       </div>";
@@ -1508,8 +1437,8 @@ else
     <img name="hcms_actionsLayerClose" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_actionsLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeSubMenu('actionsLayer');" />
   </div>
 
-  <div class="hcmsMenu">
-    <div class="hcmsInvertPrimaryColor hcmsMenuItem">
+  <div class="hcmsSubMenu">
+    <div class="hcmsInvertPrimaryColor hcmsSubMenuItem">
       <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['action'][$lang]); ?></span>
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_arrow_right.png" class="hcmsIconList" />
     </div>
@@ -1518,12 +1447,12 @@ else
     if ($multiobject_count <= 1 && $page != "" && $cat != "" && $setlocalpermission['root'] == 1)
     {
       if ($page != ".folder") echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"openObjectView('".$location_esc."', '".$page."', 'preview');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"openObjectView('".$location_esc."', '".$page."', 'preview');\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_preview.png\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['preview'][$lang])."</span>
       </div>";
       elseif ($page == ".folder") echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"openObjectView('".$location_esc.$folder."/', '".$page."', 'preview');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"openObjectView('".$location_esc.$folder."/', '".$page."', 'preview');\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_preview.png\" alt=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" title=\"".getescapedtext ($hcms_lang['preview'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['preview'][$lang])."</span>
       </div>";
@@ -1538,7 +1467,7 @@ else
     )
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"openObjectView('".$location_esc."', '".$page."', 'liveview');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"openObjectView('".$location_esc."', '".$page."', 'liveview');\">
         <img class=\"hcmsIconList\" id=\"pic_obj_liveview\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_liveview.png\" alt=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view-live'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['view-live'][$lang])."</span>
       </div>";
@@ -1566,7 +1495,7 @@ else
       }
 
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"".$openlink."\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"".$openlink."\">
         <img class=\"hcmsIconList\" id=\"pic_obj_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" alt=\"".getescapedtext($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['edit'][$lang])."</span>
       </div>";
@@ -1578,7 +1507,7 @@ else
       else $openlink = "submitToMainFrame('page_multiedit.php', '');";
 
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"".$openlink."\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"".$openlink."\">
         <img class=\"hcmsIconList\" id=\"pic_obj_edit\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_edit.png\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['edit'][$lang])."</span>
       </div>";
@@ -1588,7 +1517,7 @@ else
     if (($usedby == "" || $usedby == $user) && $multiobject_count <= 1 && $from_page != "recyclebin" && $page != "" && $page != ".folder" && $setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"openSubMenu('objrenameLayer');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"openSubMenu('objrenameLayer');\">
         <img class=\"hcmsIconList\" id=\"pic_obj_rename\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_rename.png\" alt=\"".getescapedtext ($hcms_lang['rename'][$lang])."\" title=\"".getescapedtext ($hcms_lang['rename'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['rename'][$lang])."</span>
       </div>";
@@ -1597,7 +1526,7 @@ else
     elseif (($usedby == "" || $usedby == $user) && $multiobject_count <= 1 && $from_page != "recyclebin" && $folder != "" && $setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) openSubMenu('folderrenameLayer');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) openSubMenu('folderrenameLayer');\">
         <img class=\"hcmsIconList\" id=\"pic_folder_rename\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_rename.png\" alt=\"".getescapedtext ($hcms_lang['rename-folder'][$lang])."\" title=\"".getescapedtext ($hcms_lang['rename-folder'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['rename'][$lang])."</span>
       </div>";
@@ -1613,7 +1542,7 @@ else
       )
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) checkForm_delete();\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) checkForm_delete();\">
         <img class=\"hcmsIconList\" id=\"pic_obj_delete\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['delete'][$lang])."</span>
       </div>";
@@ -1626,7 +1555,7 @@ else
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
       {
         echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'cut', 'cut".uniqid()."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'cut', 'cut".uniqid()."');\">
           <img class=\"hcmsIconList\" id=\"pic_obj_cut\" ".
           "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_cut.png\" alt=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" title=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" />
           <span class=\"\">".getescapedtext ($hcms_lang['cut'][$lang])."</span>
@@ -1636,7 +1565,7 @@ else
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
       {
         echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'copy', 'copy".uniqid()."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'copy', 'copy".uniqid()."');\">
           <img class=\"hcmsIconList\" id=\"pic_obj_copy\" ".
           "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_copy.png\" alt=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" />
           <span class=\"\">".getescapedtext ($hcms_lang['copy'][$lang])."</span>
@@ -1646,7 +1575,7 @@ else
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
       {
         echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'linkcopy', 'linkcopy".uniqid()."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'linkcopy', 'linkcopy".uniqid()."');\">
           <img class=\"hcmsIconList\" id=\"pic_obj_linkedcopy\" ".
           "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_copylinked.png\" alt=\"".getescapedtext ($hcms_lang['connected-copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['connected-copy'][$lang])."\">
           <span class=\"\">".getescapedtext ($hcms_lang['connected-copy'][$lang])."</span>
@@ -1659,7 +1588,7 @@ else
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1)
       {
         echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'cut', 'cut".uniqid()."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'cut', 'cut".uniqid()."');\">
           <img class=\"hcmsIconList\" id=\"pic_obj_cut\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_cut.png\" alt=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" title=\"".getescapedtext ($hcms_lang['cut'][$lang])."\" />
           <span class=\"\">".getescapedtext ($hcms_lang['cut'][$lang])."</span>
         </div>";
@@ -1668,7 +1597,7 @@ else
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1)
       {
         echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'copy', 'copy".uniqid()."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'copy', 'copy".uniqid()."');\">
           <img class=\"hcmsIconList\" id=\"pic_obj_copy\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_copy.png\" alt=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['copy'][$lang])."\" />
           <span class=\"\">".getescapedtext ($hcms_lang['copy'][$lang])."</span>
         </div>";
@@ -1677,7 +1606,7 @@ else
       if ($setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1 && $setlocalpermission['foldercreate'] == 1)
       {
         echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'linkcopy', 'linkcopy".uniqid()."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_action.php', 'linkcopy', 'linkcopy".uniqid()."');\">
           <img class=\"hcmsIconList\" id=\"pic_obj_linkedcopy\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_copylinked.png\" alt=\"".getescapedtext ($hcms_lang['connected-copy'][$lang])."\" title=\"".getescapedtext ($hcms_lang['connected-copy'][$lang])."\" />
           <span class=\"\">".getescapedtext ($hcms_lang['connected-copy'][$lang])."</span>
         </div>";
@@ -1688,7 +1617,7 @@ else
     {
       // empty recycle bin
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"emptyRecycleBin('".$token_new."');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"emptyRecycleBin('".$token_new."');\">
         <img class=\"hcmsIconList\" id=\"pic_obj_emptybin\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_recycle_bin.png\" alt=\"".getescapedtext ($hcms_lang['empty-recycle-bin'][$lang])."\" title=\"".getescapedtext ($hcms_lang['empty-recycle-bin'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['empty-recycle-bin'][$lang])."</span>
       </div>";
@@ -1697,7 +1626,7 @@ else
       if ($multiobject_count > 0 || $folder != "" || $page != "")
       {
         echo "
-        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_status.php', 'restore', 'restore".uniqid()."');\">
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_status.php', 'restore', 'restore".uniqid()."');\">
           <img class=\"hcmsIconList\" id=\"pic_obj_restorebin\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_import.png\" alt=\"".getescapedtext ($hcms_lang['restore'][$lang])."\" title=\"".getescapedtext ($hcms_lang['restore'][$lang])."\" />
           <span class=\"\">".getescapedtext ($hcms_lang['restore'][$lang])."</span>
         </div>";
@@ -1714,7 +1643,7 @@ else
       )
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) openSubMenu('zipLayer');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) openSubMenu('zipLayer');\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_zip.png\" alt=\"".getescapedtext ($hcms_lang['compress-files'][$lang])."\" title=\"".getescapedtext ($hcms_lang['compress-files'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['compress-files'][$lang])."</span>
       </div>";
@@ -1732,7 +1661,7 @@ else
       )
     {    
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\"onclick=\"if (locklayer == false) unzip('unzip".uniqid()."');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\"onclick=\"if (locklayer == false) unzip('unzip".uniqid()."');\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_unzip.png\" alt=\"".getescapedtext ($hcms_lang['extract-file'][$lang])."\" title=\"".getescapedtext ($hcms_lang['extract-file'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['extract-file'][$lang])."</span>
       </div>";
@@ -1744,7 +1673,7 @@ else
     if (($multiobject_count > 0 || $page != "") && $from_page != "recyclebin" && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && !empty ($mgmt_config['db_connect_rdbms']))
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" ";
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" ";
         if (!empty ($mgmt_config['message_newwindow'])) echo "onclick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=no', 540, 800);\" ";
         else echo "onclick=\"submitToFrame('user_sendlink.php', 'sendlink');\" ";
         echo ">
@@ -1763,7 +1692,7 @@ else
       elseif ($page == ".folder") $chatcontent = "hcms_openWindow(\\'frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc.$folder)."/&page=".url_encode($page)."\\', \\'\\', \\'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes\\', ".windowwidth("object").", ".windowheight("object").");";
       
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"sendtochat('".$chatcontent."');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"sendtochat('".$chatcontent."');\">
         <img class=\"hcmsIconList\" ".
         "src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_chat.png\" ".
         "alt=\"".getescapedtext ($hcms_lang['send-to-chat'][$lang])."\" title=\"".getescapedtext ($hcms_lang['send-to-chat'][$lang])."\" />
@@ -1777,7 +1706,7 @@ else
     if (($multiobject_count > 0 || $page != "") && $from_page != "recyclebin" && $setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_publish.php', 'publish', 'publish".uniqid()."');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_publish.php', 'publish', 'publish".uniqid()."');\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_publish.png\" alt=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['publish'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['publish'][$lang])."</span>
       </div>";
@@ -1788,7 +1717,7 @@ else
     if (($multiobject_count > 0 || $page != "") && $from_page != "recyclebin" && $setlocalpermission['root'] == 1 && $setlocalpermission['publish'] == 1)
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_publish.php', 'unpublish', 'unpublish".uniqid()."');\">
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"if (locklayer == false) submitToPopup('popup_publish.php', 'unpublish', 'unpublish".uniqid()."');\">
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_file_unpublish.png\" alt=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" title=\"".getescapedtext ($hcms_lang['unpublish'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['unpublish'][$lang])."</span>
       </div>";
@@ -1800,7 +1729,7 @@ else
     if (($usedby == "" || $usedby == $user) && ($page != "" || $multiobject_count > 0) && !empty ($mgmt_config['db_connect_rdbms']) && $from_page != "recyclebin")
     {
       echo "
-      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsMenuItem\" onclick=\"submitToSelf('export');\"> 
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"submitToSelf('export');\"> 
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_export_page.png\" alt=\"".getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang])."\" />
         <span class=\"\">".getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang])."</span>
       </div>";

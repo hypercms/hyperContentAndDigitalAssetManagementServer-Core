@@ -11,10 +11,12 @@
 
 $size = "[hyperCMS:textl id='Size' onEdit='hidden']";
 
+// box width
 if (!empty ($is_mobile)) $width = "320px";
 elseif ($size == "Large") $width = "670px";
 else $width = "320px";
 ?>
+[hyperCMS:help id='help' value='Define the contents of a Home box. The content may provide a link to a collection of assets in a folder or a link to a single asset.']
 
 [hyperCMS:scriptbegin
 // Component Link
@@ -49,7 +51,7 @@ scriptend]
   [hyperCMS:textl id='Size' label='Size of the home box' list='Small|Large' onPublish='hidden']
   [hyperCMS:components id='Link' label='Link to a single asset (optional)' onPublish='hidden']
   [hyperCMS:textl id='LinkType' label='Link type' list='Open asset|Display in browser|Download' onPublish='hidden']
-  <div class="hcmsHomeBox hcmsTextShadow" onclick="[hyperCMS:scriptbegin echo $link; scriptend]" style="text-align:left; cursor:pointer; overflow:auto; margin:10px; width:<?php echo $width; ?>; height:400px; background-image:url('[hyperCMS:mediafile id='Background' label='Background image (link to collection)' mediatype='image' pathtype='wrapper']'); background-size:cover; background-repeat:no-repeat; background-position:center center;">
+  <div class="hcmsHomeBox hcmsTextShadow" onclick="[hyperCMS:scriptbegin echo $link; scriptend]" style="cursor:pointer; overflow:auto; width:<?php echo $width; ?>; height:400px; margin:10px; background-image:url('[hyperCMS:mediafile id='Background' label='Background image (link to collection)' mediatype='image' pathtype='wrapper']'); background-size:cover; background-repeat:no-repeat; background-position:center center;">
     <div style="padding:10px;">
       <h2 style="margin:0; padding:0;">[hyperCMS:textu id='Title' label='Title' height='30']</h2>
       <span>[hyperCMS:textu id='Description' label='Description' height='60']</span>
