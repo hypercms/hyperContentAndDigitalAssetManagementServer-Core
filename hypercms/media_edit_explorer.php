@@ -171,7 +171,7 @@ if ($sender == "search")
     {
       foreach ($scandir as $entry)
       {
-        if ($entry != "." && $entry != ".." && !is_dir ($entry) && ($imagesearch == "" || preg_match ("/".$imagesearch."/i", $entry)))
+        if ($entry != "." && $entry != ".." && !is_dir ($mediadir.$entry) && ($imagesearch == "" || preg_match ("/".$imagesearch."/i", $entry)))
         {
           $files[] = $entry;
         }

@@ -15753,7 +15753,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         $test = false;
 
         $errcode = "10220";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exits in ".$location_esc;
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exists in ".$location_esc;
       }
     }
     elseif ($action == "page_paste")
@@ -15853,7 +15853,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $test = false;
       
               $errcode = "10210";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exits in ".$location_source_esc;
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exists in ".$location_source_esc;
             }
           }
         }

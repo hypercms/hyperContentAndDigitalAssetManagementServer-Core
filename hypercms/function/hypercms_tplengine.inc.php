@@ -1053,6 +1053,9 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
   // define global variables
   global $user, $mgmt_config, $location, $hcms_lang, $lang;
 
+  // initialize
+  $includedata = "";
+
   // change to current location
   if ($location != "") @chdir ($location);
 
@@ -1183,7 +1186,7 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
         $viewstore = str_replace ($hypertag, $includedata, $viewstore);
 
         // recursive inclusions of file includes
-        if (@substr_count (strtolower ($includedata), "hypercms:fileinclude") > 0)
+        if (substr_count (strtolower ($includedata), "hypercms:fileinclude") > 0)
         {
           $hypertag_array = gethypertag ($includedata, "fileinclude", 0);
 
@@ -1197,7 +1200,7 @@ function viewinclusions ($site, $viewstore, $hypertag, $view, $application, $cha
         }
 
         // recursive inclusions of template includes
-        if (@substr_count (strtolower ($includedata), "hypercms:tplinclude") > 0)
+        if (substr_count (strtolower ($includedata), "hypercms:tplinclude") > 0)
         {
           $hypertag_array = gethypertag ($includedata, "tplinclude", 0);
 
@@ -2033,10 +2036,10 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
             // use JS to set the language selectbox after the document has been loaded in order to avoid manipulation by Js frameworks
             $bodytag_selectlang = "function hcms_headstorelang ()
-{
-  var hcms_headstorelang='".str_replace ("'", "\'", $headstorelang)."';
-  document.getElementById('hcms_select_language').innerHTML=hcms_headstorelang;
-}\n";
+    {
+      var hcms_headstorelang='".str_replace ("'", "\'", $headstorelang)."';
+      if (document.getElementById('hcms_select_language')) document.getElementById('hcms_select_language').innerHTML=hcms_headstorelang;
+    }\n";
             $add_onload .= "
     if (typeof hcms_headstorelang === 'function') setTimeout (hcms_headstorelang, 200);";
             $headstorelang = "<span id=\"hcms_select_language\" style=\"all:unset;\"></span>";
@@ -6581,7 +6584,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
  
                       if (($buildview == "cmsview" || $buildview == "inlineview") && empty ($readonly))
                       {
-                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&mediatype=".url_encode($mediatype)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$compeditlink."</div>\n";
+                        $taglink = "<div style=\"all:unset; position:absolute; z-index:777777; margin-top:0px;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".url_encode($db_connect)."&id=".url_encode($id)."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&mediatype=".url_encode($mediatype)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$compeditlink."</div>\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6666,7 +6669,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if (($buildview == "cmsview" || $buildview == 'inlineview') && empty ($readonly))
                       {
-                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".$db_connect."&id=".$id."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component[".$id."]=".url_encode($contentbot)."&condition[".$id."]=".url_encode($condbot)."&mediatype[".$id."]=".url_encode($mediatype)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>\n";
+                        $taglink = "<div style=\"all:unset; position:absolute; z-index:777777; margin-top:0px;\"><img src=\"".getthemelocation()."img/edit_compsingle.png\" onclick=\"location.hypercms_href='".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_component.php?view=".url_encode($buildview)."&site=".url_encode($site)."&cat=".url_encode($cat)."&compcat=single&location=".url_encode($location_esc)."&page=".url_encode($page)."&db_connect=".$db_connect."&id=".$id."&label=".url_encode($label)."&tagname=".url_encode($hypertagname)."&component[".$id."]=".url_encode($contentbot)."&condition[".$id."]=".url_encode($condbot)."&mediatype[".$id."]=".url_encode($mediatype)."';\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-single-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6765,7 +6768,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if (($buildview == "cmsview" || $buildview == 'inlineview') && empty ($readonly))
                       {
-                        $taglink = "<img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; cursor:pointer; z-index:9999999;\" /><br />\n";
+                        $taglink = "<img onclick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" style=\"all:unset; position:absolute; width:20px; height:20px; cursor:pointer; z-index:777777; margin-top:0px;\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" /><br />\n";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -6878,7 +6881,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                       // create tag link for editor
                       if (($buildview == "cmsview" || $buildview == "inlineview") && empty ($readonly))
                       {
-                        $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>";
+                        $taglink = "<div style=\"all:unset; position:absolute; z-index:777777; margin-top:0px;\"><img onclick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','send');\" src=\"".getthemelocation()."img/edit_compmulti.png\" alt=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" title=\"".$labelname.": ".getescapedtext ($hcms_lang['insert-multiple-component'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; margin:0; padding:0; cursor:pointer;\" />".$arttaglink[$artid]."</div>";
                       }
                       elseif ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock")
                       {
@@ -7193,7 +7196,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         {
                           if (($buildview == "cmsview" || $buildview == "inlineview") && $onedit != "hidden" && $icon != "hidden")
                           {
-                            $taglink = "<div style=\"all:unset; display:inline-block !important;\"><img onClick=\"hcms_openWindowComp('', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/edit_edit.png\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','delete');\" src=\"".getthemelocation()."img/edit_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','moveup');\"  src=\"".getthemelocation()."img/edit_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','movedown');\" src=\"".getthemelocation()."img/edit_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /></div>\n";
+                            $taglink = "<div style=\"all:unset; position:absolute; z-index:888888; margin-top:0px;\"><img onclick=\"hcms_openWindowComp('', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=yes,status=yes', '".str_replace ("%comp%", "", $component_link)."');\"  src=\"".getthemelocation()."img/edit_edit.png\" alt=\"".$hcms_lang['edit'][$lang]."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','delete');\" src=\"".getthemelocation()."img/edit_delete.png\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['delete'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','moveup');\"  src=\"".getthemelocation()."img/edit_moveup.png\" alt=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-up'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /><img onClick=\"hcms_selectComponents('".$hypertagname."','".$id."','".$condbot."','".$mediatype."','".$i."','movedown');\" src=\"".getthemelocation()."img/edit_movedown.png\" alt=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['move-component-down'][$lang], $charset, $lang)."\" style=\"all:unset; display:inline !important; width:20px; height:20px; border:0; margin:0; padding:0; cursor:pointer;\" /></div>\n";
 
                             $scriptarray .= "item['".$id."'][".$i."] = '".$component_link."';\n";
                             $i++;
@@ -7876,7 +7879,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // drag button
               if ($buildview != "preview" && ($headstoremeta != "" || $headstoreform != "" || $headstoreview != "" || $headstorelang != ""))
               {
-                $headstore = "<div id=\"meta_info\" style=\"all:unset; position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left; cursor:pointer;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_dragLayers(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div>";
+                $headstore = "<div id=\"meta_info\" style=\"all:unset; position:fixed; padding:0; margin:0; z-index:999999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left; cursor:pointer;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_dragLayers(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div>";
               }
             }
             // no body-tag available
@@ -7900,7 +7903,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <body class=\"hcmsWorkplaceGeneric\">\n";
 
               // meta info button
-              if ($buildview != "preview") $viewstore_new .= "<div id=\"meta_info\" style=\"position:fixed; padding:0; margin:0; z-index:99999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_dragLayers(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div><div style=\"width:100%; height:38px; display:block;\">&nbsp;</div>";
+              if ($buildview != "preview") $viewstore_new .= "<div id=\"meta_info\" style=\"position:fixed; padding:0; margin:0; z-index:999999; left:4px; top:4px; border:0; background:none; visibility:visible;\"><img src=\"".getthemelocation()."img/edit_drag.png\" style=\"all:unset; display:inline !important; width:32px; height:32px; padding:0; margin:0; border:0; vertical-align:top; text-align:left;\" alt=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" title=\"".getescapedtext ($hcms_lang['drag'][$lang], $charset, $lang)."\" id=\"meta_mover\"/>".$headstoremeta.$headstoreform.$headstoreview.$headstorelang."<script type=\"text/javascript\">hcms_dragLayers(document.getElementById('meta_mover'), document.getElementById('meta_info'));</script></div><div style=\"width:100%; height:38px; display:block;\">&nbsp;</div>";
 
               $viewstore_new .= $viewstore."\n</body>\n</html>";
 
@@ -7949,7 +7952,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       <input type=\"hidden\" name=\"token\" value=\"".$token."\" />
     </form>
     </div>
-    <div style=\"margin:4px; padding:0; border:0; background:none; visibility:visible;\">".$headstore."</div>\n";
+    <div style=\"display:block; position:fixed: top:4px; left:4px; padding:0; border:0; background:none; visibility:visible;\">".$headstore."</div>\n";
 
             // javascript code
             if ($buildview != "preview") $scriptcode .= "<script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/main.min.js\" type=\"text/javascript\"></script>

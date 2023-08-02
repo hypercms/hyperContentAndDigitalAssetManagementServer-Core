@@ -43,7 +43,6 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // initialize
-$template = "";
 $application = "";
 
 // convert location

@@ -7138,6 +7138,9 @@ Release 09/2023
 - Modifications in chat in order to add CSS class hcmsInvertHoverColor to the user selector
 - Modifications in explorer_objetview in order to add CSS class hcmsInvertHoverColor to the user selector
 - Design modifications in the Project Management module
+- Modifications in function viewinclusions in template engine in order to initialize the variable includedata
+- Modifications in template engine in order to set a fixed position for the editing header bar
+- Modifications in template engine in order to use an absolute positiong of the component edit buttons in the CMS/Inline view
 - Updates in various language files
 - Update of all Guides due to the new version number
 - Updates in the Users Guide
@@ -7166,3 +7169,4 @@ Release 09/2023
 - Bug fix: The black design theme used a width and height in CSS class hcmsHomeBox
 - Bug fix: The Project Management module used a wrong variable name for the dependencies of a new task
 - Bug fix: template_edit did not disable the warning in the local JS function savetemplate for both save types
+- Bug fix: media_edit_explorer alos included directories since the absolute path was missing for function is_dir

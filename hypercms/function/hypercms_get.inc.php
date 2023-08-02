@@ -2672,7 +2672,7 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
     $location = correctpath ($location);
 
     // evaluate if object is a file or a folder
-    if (@is_dir ($location.$object))
+    if (is_dir ($location.$object))
     {
       $location = $location.$object."/";
       $object = ".folder";

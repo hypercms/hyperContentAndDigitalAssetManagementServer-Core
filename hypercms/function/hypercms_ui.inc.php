@@ -3139,7 +3139,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       }
       else $unit = "KB";
 
-      $mediafilesize = number_format ($mediafilesize, 0, ".", " ")." ".$unit;
+      $mediafilesize = number_format (floatval ($mediafilesize), 0, ".", " ")." ".$unit;
 
       // output information
       $col_width = "min-width:120px; ";
