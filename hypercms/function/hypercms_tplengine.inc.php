@@ -2101,6 +2101,9 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       // replace the container variables in the template with the container ID
       if (isset ($container_id)) $viewstore = str_replace ("%container_id%", $container_id, $viewstore);
 
+      // replace the container variables in the template with the container content
+      if (isset ($containerdata)) $viewstore = str_replace ("%container_content%", $containerdata, $viewstore);
+
       // replace the object variables in the template with object hash
       if (!empty ($mgmt_config['db_connect_rdbms']) && isset ($location_esc) && isset ($page)) $objecthash = rdbms_getobject_hash ($location_esc.$page);
       else $objecthash = "";
@@ -2905,6 +2908,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             // extract text value of checkbox
             $value = getattribute ($hypertag, "value", false);
 
+            // get multilingual content
             if ($value != "") $value = getlabel ($value, $lang);
 
             if (trim ($value) != "" && $groupaccess == true && ($buildview == "formedit" || $buildview == "formmeta" || $buildview == "formlock"))

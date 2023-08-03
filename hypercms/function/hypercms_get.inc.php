@@ -462,7 +462,7 @@ function getlabel ($label, $lang="en")
 
   if ($label != "" && $lang != "")
   {
-    // multiple labels
+    // multiple labels seperated by semicolon
     if (substr_count ($label, ";") > 0)
     {
       $labels_array = explode (";", $label);
@@ -476,12 +476,16 @@ function getlabel ($label, $lang="en")
           if (substr_count ($label_entry, ":") > 0)
           {
             list ($langcode, $text) = explode (":", $label_entry);
-            $langcode = trim ($langcode);
-            $result[$langcode] = trim ($text);
 
-            if ($i == 0 || $langcode == "en") $result['default'] = $result[$langcode];
+            if (strlen ($langcode) >= 2 && strlen ($langcode) <= 4)
+            {
+              $langcode = trim ($langcode);
+              $result[$langcode] = trim ($text);
 
-            $i++;
+              if ($i == 0 || $langcode == "en") $result['default'] = $result[$langcode];
+
+              $i++;
+            }
           }
         }
       }
@@ -492,16 +496,19 @@ function getlabel ($label, $lang="en")
       if (substr_count ($label, ":") > 0)
       {
         list ($langcode, $text) = explode (":", $label);
-        $result['default'] = $text;
+
+        if (strlen ($langcode) >= 2 && strlen ($langcode) <= 4)
+        {
+          $result['default'] = $text;
+        }
       }
-      else $result['default'] = $label;
     }
 
     if (!empty ($result[$lang])) return $result[$lang];
     elseif (!empty ($result['default'])) return $result['default'];
-    else return $label;
   }
-  else return $label;
+
+  return $label;
 }
 
 // ----------------------------------------- getescapedtext ------------------------------------------
