@@ -7142,10 +7142,11 @@ Release 09/2023
 - Modifications in template engine in order to set a fixed position for the editing header bar
 - Modifications in template engine in order to use an absolute positiong of the component edit buttons in the CMS/Inline view
 - Implementation of the new template variable "%container_content%" in order to use the content of the XML content container of the current object in the template 
-- Modifications in function getlabel in Get API in order to optimze the result
+- Modifications in function getlabel in Get API in order to optimize the result by verifing the length of the language code
+- Modifications in explorer in order to set the min. length of the search expression to 3 although the standard min. length of indexed words in MySQL and MariaDB is 4 digits
+- Design modifications in the Mobile Edition in order to diplay the gallery view and the task button in the main navigation bar in case an access link user is logged in
 - Updates in various language files
-- Update of all Guides due to the new version number
-- Updates in the Users Guide
+- Update of all Guides
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
 - Bug fix: Function manipulateobject in Main API did not call the event onpasteobject_pre in the correct position (after the source location has been defined)
 - Bug fix: The template engine did reuse the temp_array for components due a missing condition and used media objects instead of components

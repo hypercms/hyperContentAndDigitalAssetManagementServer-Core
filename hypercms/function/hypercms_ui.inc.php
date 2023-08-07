@@ -373,14 +373,14 @@ function invertcolorCSS ($theme="", $css_selector=".hcmsInvertColor", $default=t
 
 // --------------------------------------- showdynamicCSS -------------------------------------------
 // function: showdynamicCSS ()
-// input: design theme name used for the main color [string], design theme name used for the hover color [string]
+// input: design theme name used for the main color [string], design theme name used for the hover color [string], main navigation position [left,top] (optional), is main navigation [boolean] (optional)
 // output: CSS code
 
 // description:
 // Creates the styles for the CSS classes hcmsInvertColor, hcmsInvertHoverColor, hcmsInvertPrimaryColor, hcmsFloatLeft, and hcmsButtonLabel based on the colors of the design theme.
 // This is wrapper function that can be used to create the CSS classes and styles.
 
-function showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors)
+function showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors, $hcms_mainnavigation="left", $is_mainnavigation=false)
 {
   global $mgmt_config;
 
@@ -410,7 +410,8 @@ function showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors)
   }
   ";
 
-  if (empty ($mgmt_config['showbuttonlabel'])) $result .= "
+  // for main navigation bar
+  if (empty ($mgmt_config['showbuttonlabel']) || $is_mainnavigation && (empty ($hcms_mainnavigation) || $hcms_mainnavigation == "left")) $result .= "
   .hcmsButtonLabel
   {
     display: none !important;

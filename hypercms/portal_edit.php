@@ -134,6 +134,8 @@ else
   $primarycolor = "";
   $hovercolor = "";
   $hcms_themeinvertcolors = "";
+  $hcms_hoverinvertcolors = "";
+  $hcms_mainnavigation = "";
   $designuser = "";
   $navigation = array();
   $format_img = array();
@@ -211,27 +213,32 @@ if ($templatename != "")
   // design theme
   $portaltheme = $site."/".$templatename;
 
-  // inverted theme default value
-  $hcms_themeinvertcolors = $portaltheme;
-
   $wallpaper = getwallpaper ($portaltheme);
 }
 
 // invert colors
-if (!empty ($designtheme) && !empty ($primarycolor))
+if (!empty ($designtheme))
 {
-  $brightness_primarycolor = getbrightness ($primarycolor);
+  // primary color
+  if (!empty ($primarycolor))
+  {
+    $brightness_primarycolor = getbrightness ($primarycolor);
 
-  if ($designtheme == "day" && $brightness_primarycolor < 130) $hcms_themeinvertcolors = "night";
-  elseif ($designtheme == "night" && $brightness_primarycolor >= 130) $hcms_themeinvertcolors = "day";
-}
+    if ($designtheme == "day" && $brightness_primarycolor < 130) $hcms_themeinvertcolors = "night";
+    elseif ($designtheme == "night" && $brightness_primarycolor >= 130) $hcms_themeinvertcolors = "day";
+  }
 
-if (!empty ($designtheme) && !empty ($hovercolor))
-{
-  $brightness_hovercolor = getbrightness ($hovercolor);
+  // hover color
+  if (!empty ($hovercolor))
+  {
+    $brightness_hovercolor = getbrightness ($hovercolor);
 
-  if ($designtheme == "day" && $brightness_hovercolor < 130) $hcms_hoverinvertcolors = "night";
-  elseif ($designtheme == "night" && $brightness_hovercolor >= 130) $hcms_hoverinvertcolors = "day";
+    if ($designtheme == "day" && $brightness_hovercolor < 130) $hcms_hoverinvertcolors = "night";
+    elseif ($designtheme == "night" && $brightness_hovercolor >= 130) $hcms_hoverinvertcolors = "day";
+  }
+
+  // main navigation position
+  $hcms_mainnavigation = $mainnavigation;
 }
 
 // create secure token
@@ -247,36 +254,7 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/jscolor/jscolor.min.js"></script>
 <style type="text/css">
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
-
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
-
-<?php if (!empty ($mgmt_config['showbuttonlabel'])) { ?>
-.hcmsFloatLeft
-{
-  float: left;
-}
-<?php } ?>
-
-<?php if (empty ($mgmt_config['showbuttonlabel']) || $mainnavigation == "left") { ?>
-.hcmsButtonLabel
-{
-  display: none !important;
-}
-<?php } ?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors, $hcms_mainnavigation, true); ?>
 
 #settings
 {
@@ -700,7 +678,7 @@ function settransparent ()
     <div class="hcmsMainWindow" style="width:100%; height:100%;" style="overflow:auto;">
       <div class="hcmsWorkplaceTop" style="margin:0; padding:0; <?php if ($mainnavigation == "left") echo "float:left; width:36px !important; height:100% !important;"; else echo "width:100% !important; height:36px !important;"; ?>">
         <!-- navigation items -->
-        <div class="hcmsButtonTinyBlank hcmsButtonSizeSquare hcmsFloatLeft" style="float:left; min-width:36px;">
+        <div class="hcmsButtonTinyBlank hcmsButtonSizeSquare hcmsFloatLeft" style="float:left; min-width:36px; min-height:36px;">
           <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
         </div>
         <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px;">

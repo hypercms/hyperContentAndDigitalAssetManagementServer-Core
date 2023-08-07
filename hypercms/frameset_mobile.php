@@ -50,22 +50,7 @@ suspendsession ();
 <!-- JQuery used for AJAX viewport set request -->
 <script src="javascript/jquery/jquery.min.js" type="text/javascript"></script>
 <style type="text/css">
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
-
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
 </style>
 <script type="text/javascript">
 // reassign permissions for main.js and contextmenu.js
@@ -317,36 +302,38 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
 <body class="hcmsMainWindow hcmsWorkplaceObjectlist" onload="<?php if (getsession ('hcms_temp_latitude') == "" || getsession ('hcms_temp_longitude') == "") echo "hcms_geolocation(); "; ?>">
 
-  <!-- header -->
+  <!-- main navigation bar -->
   <div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; width:100%; height:36px;">
-    <div style="float:left; width:72px; text-align:left;"> 
+    <div style="float:left; text-align:left;"> 
     <?php if (linking_valid() == false) { ?>
-      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="float:left; padding:2px;">
-        <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png" onclick="switchNav();" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
+      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="switchNav();">
+        <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
       </div>
     <?php } else { ?>
-      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="float:left; padding:2px;">
-        <a href="frameset_objectlist.php?action=linking" id="navigateButton" target="workplFrame" onclick="this.style.display='none'; document.getElementById('tasksButton').style.display='inline';" style="display:none;">
+      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;">
+        <a href="frameset_objectlist.php?action=linking" id="navigateButton" target="workplFrame">
           <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_gallery_medium.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
         </a>
       </div>
-      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="float:left; padding:2px;">
-        <a href="task/task_list.php" id="tasksButton" target="workplFrame" onclick="document.getElementById('navigateButton').style.display='inline'; this.style.display='none';">
+      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;">
+        <a href="task/task_list.php" id="tasksButton" target="workplFrame">
           <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/task.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" />
         </a>
       </div>
     <?php } ?>
     <?php if (empty ($hcms_assetbrowser)) { ?>
-      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="float:left; padding:2px;">
-        <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_logout.png" onclick="top.location='userlogout.php';" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
+      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="top.location='userlogout.php';">
+        <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_logout.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
       </div>
     <?php } ?>
     </div>
-    <div style="float:left; width:calc(100% - 144px); text-align:center;"><div class="hcmsHeadline" style="padding:8px;"></div></div>
-    <div style="float:left; width:36px; text-align:right; margin-left:35px;"> 
+    <div style="float:left; text-align:center;">
+      <div class="hcmsHeadline" style="padding:8px;"></div>
+    </div>
+    <div style="float:right; width:36px; text-align:right; margin-left:35px;"> 
     <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
-      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare" style="float:left; padding:2px;">
-        <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" onclick="hcms_openChat();" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
+      <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="hcms_openChat();">
+        <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" class="hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
       </div>
     <?php } ?>
     </div>

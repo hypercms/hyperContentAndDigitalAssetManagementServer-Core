@@ -75,36 +75,7 @@ hcms_permission['minnavframe'] = false;
 </script>
 <?php } ?>
 <style type="text/css">
-<?php
-// inverted main colors
-if (!empty ($hcms_themeinvertcolors))
-{
-  if (!empty ($hcms_hoverinvertcolors)) $invertonhover = false;
-  else $invertonhover = true;
-
-  echo invertcolorCSS ($hcms_themeinvertcolors, ".hcmsInvertColor", true, $invertonhover);
-}
-// inverted hover colors
-elseif (!empty ($hcms_hoverinvertcolors))
-{
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertColor", false, true);
-  echo invertcolorCSS ($hcms_hoverinvertcolors, ".hcmsInvertHoverColor", true, false);
-}
-?>
-
-<?php if (!empty ($mgmt_config['showbuttonlabel'])) { ?>
-.hcmsFloatLeft
-{
-  float: left;
-}
-<?php } ?>
-
-<?php if (empty ($mgmt_config['showbuttonlabel']) || empty ($hcms_mainnavigation) || $hcms_mainnavigation == "left") { ?>
-.hcmsButtonLabel
-{
-  display: none !important;
-}
-<?php } ?>
+<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors, $hcms_mainnavigation, true); ?>
 </style>
 <?php
 // set time zone for user

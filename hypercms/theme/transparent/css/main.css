@@ -567,7 +567,7 @@ a.hcmsNavigator
   border: 0;
   margin: 0;
   padding: 0px 4px;
-  overflow: hidden;
+  overflow: hidden;vercol
   overflow-wrap: break-word;
   text-overflow: ellipsis;
 }
@@ -598,9 +598,15 @@ a.hcmsNavigator
   float: left;
 }
 
-.hcmsButton:hover, .hcmsButtonActive
+.hcmsButton:hover, .hcmsButtonTiny:hover, .hcmsButtonActive
 {
-  background-color: #FF8411;
+	background-color: #8a8a8a;
+}
+
+/* used for toolbar buttons in controls */
+.hcmsHoverColor:hover
+{
+  background-color: #222222 !important;
 }
 
 .hcmsButtonOff
@@ -700,7 +706,7 @@ a.hcmsNavigator
 
 .hcmsButtonMenu:hover
 {
-  background-color: #FB8C0C;
+  background-color: #FF8411;
 }
 
 .hcmsButtonMenu:active
@@ -711,7 +717,7 @@ a.hcmsNavigator
 
 .hcmsButtonMenuActive
 {
-  background-color: #FB8C0C;
+  background-color: #FF8411;
   position: relative;
   top: 1px;
 }
@@ -786,7 +792,7 @@ a.hcmsNavigator
 {
   margin: 0;
   padding: 1px;
-  background-color: #D25D03;
+  background-color: #FF8411;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -807,7 +813,8 @@ a.hcmsNavigator
 
 .hcmsSelectorItem:hover
 {
-  background-color: #FB8C14;
+  background-color: #FF8411;
+  filter: brightness(85%);
 }
 
 .hcmsHeadline 
@@ -1121,8 +1128,8 @@ div.hcmsObjectUnselected
 .hcmsSelectArea
 {
   display: none;
-  border: 1px solid #FB980C;
-  background-color: rgba(252, 176, 69);
+  border: 1px solid #FF8411;
+  background-color: #FF8411;
   position: absolute;
   z-index: 5;
   filter: gray() alpha(opacity=70);

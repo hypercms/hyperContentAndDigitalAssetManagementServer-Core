@@ -618,6 +618,7 @@ a.hcmsNavigator
 	background-color: #8a8a8a;
 }
 
+/* used for toolbar buttons in controls */
 .hcmsHoverColor:hover
 {
   background-color: #FF8411 !important;

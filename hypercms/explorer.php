@@ -1998,7 +1998,7 @@ else
         if (document.getElementById('saveLayer').style.display == 'none' || !document.getElementById('search_execute') || document.getElementById('search_execute').value == "")
         {
           // full text search
-          if (document.getElementById('fulltextLayer').style.display != 'none' && document.getElementById('search_expression').value.trim() == "")
+          if (document.getElementById('fulltextLayer').style.display != 'none' && document.getElementById('search_expression').value.trim().length < 3)
           {
             alert (hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['please-insert-a-search-expression'][$lang]); ?>"));
             document.getElementById('search_expression').focus();
