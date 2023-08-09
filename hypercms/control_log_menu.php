@@ -162,7 +162,6 @@ parent.hcms_closeSubMenu();
       <img class="hcmsButtonSizeSquare hcmsFloatLeft" id="media_export" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_export_page.png" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
       <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['export'][$lang]); ?></span>
     </div>
-    </div>
     <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="warning_delete();">
       <img class="hcmsButtonSizeSquare hcmsFloatLeft" id="media_delete" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" />
       <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?></span>

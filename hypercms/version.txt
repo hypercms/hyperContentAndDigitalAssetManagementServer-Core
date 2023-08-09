@@ -7145,6 +7145,10 @@ Release 09/2023
 - Modifications in function getlabel in Get API in order to optimize the result by verifing the length of the language code
 - Modifications in explorer in order to set the min. length of the search expression to 3 although the standard min. length of indexed words in MySQL and MariaDB is 4 digits
 - Design modifications in the Mobile Edition in order to diplay the gallery view and the task button in the main navigation bar in case an access link user is logged in
+- Modifications in function createmedia in Media API in order to log errors if the ID3 image of an audio file could not be created or saved
+- Modifications in service chat in order to verify the chat record before processing its data 
+- Modifications in control_objectlist_menu in order to provide the location name in the same notation as in the control
+- Implementation of new folder icons for the Day, Night, and Transparent design themes
 - Updates in various language files
 - Update of all Guides
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
@@ -7173,4 +7177,4 @@ Release 09/2023
 - Bug fix: The Project Management module used a wrong variable name for the dependencies of a new task
 - Bug fix: template_edit did not disable the warning in the local JS function savetemplate for both save types
 - Bug fix: media_edit_explorer included directories since the absolute path was missing for function is_dir
-- Bug fix: templaet_default.schema.xml.php did not close the hyperCMS tag for the id "YoutubeCategories"
+- Bug fix: template_default.schema.xml.php did not close the hyperCMS tag for the id "YoutubeCategories"

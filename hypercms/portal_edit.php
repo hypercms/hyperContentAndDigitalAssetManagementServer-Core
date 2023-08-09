@@ -219,7 +219,7 @@ if ($templatename != "")
 // invert colors
 if (!empty ($designtheme))
 {
-  // primary color
+  // switch theme based on primary color
   if (!empty ($primarycolor))
   {
     $brightness_primarycolor = getbrightness ($primarycolor);
@@ -229,6 +229,9 @@ if (!empty ($designtheme))
   }
 
   // hover color
+  //$hcms_hoverinvertcolors = $designtheme;
+
+  // switch theme based on hover color
   if (!empty ($hovercolor))
   {
     $brightness_hovercolor = getbrightness ($hovercolor);
@@ -240,6 +243,12 @@ if (!empty ($designtheme))
   // main navigation position
   $hcms_mainnavigation = $mainnavigation;
 }
+
+// create CSS
+$css = showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors, $hcms_mainnavigation, true);
+
+// set theme for toolbar icons if not inverted (important since the session uses the current theme of the user)
+if (empty ($hcms_themeinvertcolors)) $hcms_themeinvertcolors = $designtheme;
 
 // create secure token
 $token_new = createtoken ($user);
@@ -254,7 +263,7 @@ $token_new = createtoken ($user);
 <script type="text/javascript" src="javascript/main.min.js?v=<?php echo getbuildnumber(); ?>"></script>
 <script type="text/javascript" src="javascript/jscolor/jscolor.min.js"></script>
 <style type="text/css">
-<?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors, $hcms_mainnavigation, true); ?>
+<?php echo $css; ?>
 
 #settings
 {

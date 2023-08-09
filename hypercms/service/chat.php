@@ -93,39 +93,42 @@ switch ($function)
           {
             $line = str_replace ("\n", "", $line);
 
-            // get chat message log entries
-            list ($chat_date, $chat_sites, $chat_user, $chat_text) = explode ("|", $line);
-
-            foreach ($siteaccess as $site => $displayname)
+            if (substr_count ($line, "|") >= 3)
             {
-              // verify publication access
-              if (substr_count (";".$chat_sites.";", ";".$site.";") > 0)
+              // get chat message log entries
+              list ($chat_date, $chat_sites, $chat_user, $chat_text) = explode ("|", $line);
+
+              foreach ($siteaccess as $site => $displayname)
               {
-                // users own messages
-                if ($user == $chat_user)
+                // verify publication access
+                if (substr_count (";".$chat_sites.";", ";".$site.";") > 0)
                 {
-                  $text[] = $chat_text;
-                }
-                // private chat
-                elseif (!empty ($mgmt_config['chat_type']) && strtolower ($mgmt_config['chat_type']) == "private" && !empty ($chat_relations_array) && is_array ($chat_relations_array))
-                {
-                  // verify host and invited users (guests) against chat user entry
-                  foreach ($chat_relations_array as $host=>$guest_array)
+                  // users own messages
+                  if ($user == $chat_user)
                   {
-                    if ((in_array ($user, $guest_array) && in_array ($chat_user, $guest_array)) || ($chat_user == $host && in_array ($user, $guest_array)) || ($user == $host && in_array ($chat_user, $guest_array)))
+                    $text[] = $chat_text;
+                  }
+                  // private chat
+                  elseif (!empty ($mgmt_config['chat_type']) && strtolower ($mgmt_config['chat_type']) == "private" && !empty ($chat_relations_array) && is_array ($chat_relations_array))
+                  {
+                    // verify host and invited users (guests) against chat user entry
+                    foreach ($chat_relations_array as $host=>$guest_array)
                     {
-                      $text[] = $chat_text;
+                      if ((in_array ($user, $guest_array) && in_array ($chat_user, $guest_array)) || ($chat_user == $host && in_array ($user, $guest_array)) || ($user == $host && in_array ($chat_user, $guest_array)))
+                      {
+                        $text[] = $chat_text;
+                      }
                     }
                   }
-                }
-                // public chat
-                elseif (empty ($mgmt_config['chat_type']) || strtolower ($mgmt_config['chat_type']) == "public")
-                {
-                  $text[] = $chat_text;
-                }
+                  // public chat
+                  elseif (empty ($mgmt_config['chat_type']) || strtolower ($mgmt_config['chat_type']) == "public")
+                  {
+                    $text[] = $chat_text;
+                  }
 
-                break;
-              } 
+                  break;
+                } 
+              }
             }
           }
         }

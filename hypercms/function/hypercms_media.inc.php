@@ -2120,7 +2120,18 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               if (is_file ($location_temp.$temp_file)) deletefile ($location_temp, $temp_file, 0);
 
               // move temporary thumbnail file to destination
-              if ($temp_file_2 != "" && is_file ($location_temp.$temp_file_2)) rename ($location_temp.$temp_file_2, $location_dest.$newfile); 
+              if ($temp_file_2 != "" && is_file ($location_temp.$temp_file_2))
+              {
+                rename ($location_temp.$temp_file_2, $location_dest.$newfile); 
+              }
+              else
+              {
+                $errcode = "20122";
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|ID3 image from audio file could not be converted and saved: ".$location_dest.$newfile; 
+       
+                // save log
+                savelog ($error);
+              }
             }
           }
           // save binary image in destination
@@ -2133,6 +2144,14 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               // write binary data to file
               fwrite ($filehandler, $id3_data['imagedata']);
               fclose ($filehandler);
+            }
+            else
+            {
+              $errcode = "20123";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|ID3 image from audio file could not be saved: ".$location_dest.$newfile; 
+     
+              // save log
+              savelog ($error);
             }
           }
         }

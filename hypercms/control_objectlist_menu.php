@@ -1244,7 +1244,7 @@ else
         {
           echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsButtonSizeSquare\">
-        <img class=\"hcmsButtonSizeSquare\" onclick=\"if (locklayer == false) parent.setSearchLocation('".$location_esc."', '".getlocationname ($site, $location, $cat, "path")."');\" id=\"pic_obj_search\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_search.png\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />
+        <img class=\"hcmsButtonSizeSquare\" onclick=\"if (locklayer == false) parent.setSearchLocation('".$location_esc."', '".str_replace ("/", " &gt; ",  trim (getlocationname ($site, $location, $cat, "path"), "/"))."');\" id=\"pic_obj_search\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_search.png\" alt=\"".getescapedtext ($hcms_lang['search'][$lang])."\" title=\"".getescapedtext ($hcms_lang['search'][$lang])."\" />
       </div>";
         }
         else
