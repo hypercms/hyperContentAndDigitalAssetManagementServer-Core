@@ -511,7 +511,7 @@ a.hcmsNavigator
   border-radius: 5px;
   background-color: #191919;
   color: #FFFFFF;
-  box-shadow: 3px 3px 12px #000000;
+  box-shadow: 3px 3px 12px #000000;k
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
   filter:progid:DXImageTransform.Microsoft.Shadow(color='#000000',direction='120',strength='5');
@@ -587,7 +587,7 @@ a.hcmsNavigator
 
 .hcmsButton:hover, .hcmsButtonActive
 {
-  border-radius: 7px;
+  border-radius: 5px;
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFB759), color-stop(1, #FF9100) );
   background: -moz-linear-gradient( center top, #FFB759 5%, #FB9E25 100% );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFB759', endColorstr='#FB9E25');
@@ -616,7 +616,7 @@ a.hcmsNavigator
 
 .hcmsButtonTiny:hover
 {
-  border-radius: 7px;
+  border-radius: 5px;
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFB759), color-stop(1, #FF9100) );
   background: -moz-linear-gradient( center top, #FFB759 5%, #FB9E25 100% );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFB759', endColorstr='#FB9E25');
@@ -650,7 +650,7 @@ a.hcmsNavigator
   background-position: center center;
   margin: 0;
   border: 0;
-  border-radius: 7px; 
+  border-radius: 5px; 
   float: left;
 }
 
@@ -697,7 +697,7 @@ a.hcmsNavigator
 .hcmsButtonMenu:hover
 {
   border: 0;
-  border-radius: 7px;
+  border-radius: 5px;
   background-color: #FB8C0C;
 }
 
@@ -710,7 +710,7 @@ a.hcmsNavigator
 .hcmsButtonMenuActive
 {
   border: 0;
-  border-radius: 7px;
+  border-radius: 5px;
   background-color: #FB8C0C;
   position: relative;
   top: 1px;
@@ -721,7 +721,7 @@ a.hcmsNavigator
   color: #FFFFFF;
   background-color: #3094D7;
   border: 1px solid #469df5;
-  border-radius: 7px;
+  border-radius: 5px;
   display: inline-block;
   padding: 4px 6px;
   text-decoration: none;
@@ -744,7 +744,7 @@ a.hcmsNavigator
   color: #FFFFFF;
   background-color: #69A738;
   border: 1px solid #268a16;
-  border-radius: 7px;
+  border-radius: 5px;
   display: inline-block;
   padding: 4px 6px;
   text-decoration: none;
@@ -767,7 +767,7 @@ a.hcmsNavigator
   color: #FFFFFF;
   background-color: #E58912;
   border: 1px solid #C28B2C;
-  border-radius: 7px;
+  border-radius: 5px;
   display: inline-block;
   padding: 4px 6px;
   text-decoration: none;
@@ -811,7 +811,7 @@ a.hcmsNavigator
 .hcmsSelectorItem:hover
 {
   border: 0;
-  border-radius: 7px;
+  border-radius: 5px;
   background-color: #FB8C14;
 }
 

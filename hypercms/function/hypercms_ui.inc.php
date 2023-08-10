@@ -4164,7 +4164,7 @@ function showeditor ($site, $hypertagname, $id, $contentbot="", $sizewidth=600, 
           filebrowserLinkBrowsePageUrl:	    	'".cleandomain ($mgmt_config['url_path_cms'])."text_link_explorer.php?site=".url_encode($site)."',
           filebrowserLinkBrowseComponentUrl:	'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=',
           toolbar:	              						'".$toolbar."',
-          cmsLink:	              						'".cleandomain ($mgmt_config['url_path_cms'])."'
+          cmsLink:	              						'".$mgmt_config['url_path_cms']."'
         });
       </script>";
   }
@@ -5016,7 +5016,7 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
                 filebrowserLinkBrowsePageUrl:	    	'".cleandomain ($mgmt_config['url_path_cms'])."text_link_explorer.php?site=".url_encode($site)."',
                 filebrowserLinkBrowseComponentUrl:	'".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_text.php?site=".url_encode($site)."&mediacat=cnt&mediatype=',
                 toolbar:	              						'".$toolbar."',
-                cmsLink:	              						'".cleandomain ($mgmt_config['url_path_cms'])."',
+                cmsLink:	              						'".$mgmt_config['url_path_cms']."',
                 on: {
                   focus: function( event ) {
                     oldtext_".$hypertagname."_".$id." = jq_inline.trim(event.editor.getData());

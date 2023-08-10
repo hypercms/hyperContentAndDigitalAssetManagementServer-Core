@@ -7148,7 +7148,7 @@ Release 09/2023
 - Modifications in function createmedia in Media API in order to log errors if the ID3 image of an audio file could not be created or saved
 - Modifications in service chat in order to verify the chat record before processing its data 
 - Modifications in control_objectlist_menu in order to provide the location name in the same notation as in the control
-- Implementation of new folder icons for the Day, Night, and Transparent design themes
+- Implementation of new folder icons for all design themes
 - Updates in various language files
 - Update of all Guides
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
@@ -7178,3 +7178,4 @@ Release 09/2023
 - Bug fix: template_edit did not disable the warning in the local JS function savetemplate for both save types
 - Bug fix: media_edit_explorer included directories since the absolute path was missing for function is_dir
 - Bug fix: template_default.schema.xml.php did not close the hyperCMS tag for the id "YoutubeCategories"
+- Bug fix: Function showeditor and showinlineeditor in UI API removed the domain from the JS configuration property cmsLink for CKEditor

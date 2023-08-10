@@ -226,7 +226,7 @@ a.hcmsLink
 
 .hcmsWorkplaceTop
 {
-  background-color: #83d555;
+  background-color: #72b34f;
 }
 
 .hcmsLogoTop
@@ -341,7 +341,7 @@ a.hcmsNavigator
 {
   margin: 0;
   padding: 0;;
-  background-color: #ffb978  !important;
+  background-color: #ffbe6b !important;
 }
 
 .hcmsWorkplaceObjectlist
@@ -588,7 +588,7 @@ a.hcmsNavigator
 
 .hcmsButton:hover, .hcmsButtonActive
 {
-  border-radius: 7px;
+  border-radius: 5px;
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
 	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
@@ -617,7 +617,7 @@ a.hcmsNavigator
 
 .hcmsButtonTiny:hover
 {
-  border-radius: 7px;
+  border-radius: 5px;
 	background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFC477), color-stop(1, #FB940C) );
 	background: -moz-linear-gradient( center top, #FFC477 5%, #FB9E25 100% );
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC477', endColorstr='#FB9E25');
@@ -697,7 +697,7 @@ a.hcmsNavigator
 .hcmsButtonMenu:hover
 {
   border: 0;
-  border-radius: 7px;
+  border-radius: 5px;
   background-color: #FB8C0C;
 }
 
