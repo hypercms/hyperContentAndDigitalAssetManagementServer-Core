@@ -1209,7 +1209,7 @@ else
       if (!$is_mobile) echo "
         <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" style=\"margin:-1px;\" onclick=\"switchView ('large'); document.getElementById('button_obj_view').click();\">
           <img src=\"".getthemelocation($hcms_hoverinvertcolors)."img/button_view_gallery_large.png\" class=\"hcmsIconList\" /> 
-          <span class=\"\">".$hcms_themeinvertcolors.getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</span>
+          <span class=\"\">".getescapedtext ($hcms_lang['large-thumbnails'][$lang])."</span>
         </div>";
       echo "
         <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" style=\"margin:-1px;\" onclick=\"switchView ('medium'); document.getElementById('button_obj_view').click();\">
