@@ -7148,6 +7148,7 @@ Release 09/2023
 - Modifications in function createmedia in Media API in order to log errors if the ID3 image of an audio file could not be created or saved
 - Modifications in service chat in order to verify the chat record before processing its data 
 - Modifications in control_objectlist_menu in order to provide the location name in the same notation as in the control
+- Modifications in function createmedia in Media API order to verify the sharpness amount variable
 - Implementation of new folder icons for all design themes
 - Updates in various language files
 - Update of all Guides
@@ -7179,3 +7180,4 @@ Release 09/2023
 - Bug fix: media_edit_explorer included directories since the absolute path was missing for function is_dir
 - Bug fix: template_default.schema.xml.php did not close the hyperCMS tag for the id "YoutubeCategories"
 - Bug fix: Function showeditor and showinlineeditor in UI API removed the domain from the JS configuration property cmsLink for CKEditor
+- Bug fix: control_log_menu verified the rootpermissions and not the globalpermissions which are necessary for the publication log

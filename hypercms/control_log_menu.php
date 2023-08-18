@@ -38,7 +38,7 @@ checkusersession ($user);
 $show = "";
 $add_onload = "";
 
-if ((checkrootpermission ('site') || checkrootpermission ('user')) && checktoken ($token, $user))
+if ((checkrootpermission ('site') || checkrootpermission ('user') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))) && checktoken ($token, $user))
 {
   // clear event log
   if ($action == "clear")
@@ -162,10 +162,17 @@ parent.hcms_closeSubMenu();
       <img class="hcmsButtonSizeSquare hcmsFloatLeft" id="media_export" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_export_page.png" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
       <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['export'][$lang]); ?></span>
     </div>
+    <?php if (checkrootpermission ('site') || checkrootpermission ('user') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))) { ?>
     <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="warning_delete();">
       <img class="hcmsButtonSizeSquare hcmsFloatLeft" id="media_delete" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?>" />
       <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?></span>
     </div>
+    <?php } else { ?>
+    <div class="hcmsButtonOff hcmsInvertColor">
+      <img class="hcmsButtonSizeSquare hcmsFloatLeft" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_delete.png" />
+      <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['clear-all-events'][$lang]); ?></span>
+    </div>
+    <?php } ?>
     <?php
     // Notification (only per publication)
     if ($site != "*Null*" && checkglobalpermission ($site, 'user'))
