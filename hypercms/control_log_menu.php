@@ -175,7 +175,7 @@ parent.hcms_closeSubMenu();
     <?php } ?>
     <?php
     // Notification (only per publication)
-    if ($site != "*Null*" && checkglobalpermission ($site, 'user'))
+    if (valid_publicationname ($site) && $site != "*Null*" && checkglobalpermission ($site, 'user'))
     {
       echo "
     <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"opennotifyusers();\">

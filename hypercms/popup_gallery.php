@@ -54,7 +54,7 @@ elseif ($multiobject != "")
 }
 
 // gallery
-$show = showgallery ($assets_array, 140, true, $user);
+$show = showgallery ($assets_array, 140, "open", $user);
 ?>
 <!DOCTYPE html>
 <html>
@@ -75,5 +75,6 @@ if (!empty ($show)) echo $show;
 ?>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

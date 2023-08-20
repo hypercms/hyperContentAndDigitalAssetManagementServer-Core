@@ -6603,13 +6603,13 @@ function showmapping ($site, $lang="en")
 
 // ------------------------- showgallery -----------------------------
 // function: showgallery()
-// input: multiobjects represented by their path or object ID [array], thumbnail size in pixels [integer] (optional), open or download object on click [false,open,download] (optional), user name [string] (optional)
+// input: multiobjects represented by their path or object ID [array], thumbnail size in pixels [integer] (optional), open or download object on click [open,download] (optional), user name [string] (optional)
 // output: gallery view / false
 
 // description:
 // Presents all objects in a gallery with their thumbnails.
 
-function showgallery ($multiobject, $thumbsize=100, $openlink=false, $user="sys")
+function showgallery ($multiobject, $thumbsize=100, $openlink="download", $user="sys")
 {
   global $mgmt_config, $pageaccess, $compaccess, $hiddenfolder, $hcms_linking, $globalpermission, $setlocalpermission, $hcms_lang, $lang;
 

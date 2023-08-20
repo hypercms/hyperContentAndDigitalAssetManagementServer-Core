@@ -565,7 +565,7 @@ $token_new = createtoken ($user);
       else $multiobject_array[0] = $location_esc.$page;
     }
     
-    echo showgallery ($multiobject_array, 140, true, $user);
+    echo showgallery ($multiobject_array, 140, "open", $user);
     ?>
     </div>
   </div>

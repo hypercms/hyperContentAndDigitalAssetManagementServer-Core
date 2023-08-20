@@ -235,7 +235,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
           <td>".getescapedtext ($hcms_lang['related-assets'][$lang])."</td>
         </tr>
       </table><br/>
-      ".showgallery ($components_array, 92, true, $user);
+      ".showgallery ($components_array, 92, "open", $user);
       }
     }
   }

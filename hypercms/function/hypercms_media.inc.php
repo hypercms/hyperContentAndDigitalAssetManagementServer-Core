@@ -3404,7 +3404,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     // sharpen
                     elseif ($sharpness > 0) $amount = round ($sharpness * 5, 2);
 
-                    $vfilter[] = "unsharp=5:5:".floatval($amount).":5:5:".floatval($amount);
+                    if (!empty ($amount)) $vfilter[] = "unsharp=5:5:".floatval($amount).":5:5:".floatval($amount);
                   }
 
                   // remove from options string since it will be added later as a video filter
