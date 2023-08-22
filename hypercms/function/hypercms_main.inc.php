@@ -5063,7 +5063,10 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     // define media location in repository
     $medialocation = getmedialocation ($site, strrpos ($mediafile, ".").".thumb.jpg", "abs_path_media");
 
-    // original media file
+    // get container id
+    $container_id = getmediacontainerid ($mediafile);
+
+    // delete original media file
     if ($delete_original == true)
     {
       // define media location of original file (may have been exported)
@@ -5089,6 +5092,25 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
 
       // delete media file in temp/view as well (copied by 360 viewer)
       if (is_file ($mgmt_config['abs_path_view'].$mediafile)) deletefile ($mgmt_config['abs_path_view'], $mediafile, 0);
+
+      // delete VTT files of video
+      if (!empty ($container_id))
+      {
+        // load language code index file
+        $langcode_array = getlanguageoptions ();
+
+        // delete all VTT files of videos
+        if ($langcode_array != false)
+        {
+          foreach ($langcode_array as $code => $language)
+          {
+            if (is_file ($mgmt_config['abs_path_view'].$container_id."_".trim($code).".vtt"))
+            {
+              deletefile ($mgmt_config['abs_path_view'], $container_id."_".trim($code).".vtt", 0);
+            }
+          }
+        }
+      }
     }
 
     // delete JSON image editor file
@@ -13225,7 +13247,7 @@ function renamefolder ($site, $location, $folder, $foldernew, $user)
               }
               else
               {
-                // update link in link management 
+                // update link in link management
                 $link_db = link_db_update ($site, $link_db, "link", $container, $cat, $folder_curr, $folder_new, "all"); 
 
                 // update actual record in link management
@@ -15931,7 +15953,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           if ($action == "page_rename")
           {
             // if multimedia object
-            if ($mediafile_self != "")
+            if (!empty ($mediafile_self))
             {
               // get extension of multimedia file
               $mediafile_self_info = getfileinfo ($site, $mediafile_self, "comp");
@@ -15939,6 +15961,10 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $pagenew = $pagenewname = $pagenew.$fileext;
               $pagenewname_orig = $pagenew_orig.$fileext;
               $pagenewname_orig_webdav = $pagenew_orig_webdav.$fileext;
+
+              // old media file name
+              $fileext_old = strrchr ($page, ".");
+              $mediafile_self_old = $mediafile_self_info['filename'].$fileext_old;
             }
             // if object (page or component)
             else
@@ -15987,7 +16013,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
             $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-object-exists-already'][$lang]."</span><br />\n";
           }
           // if WebDAV is used and the renamed object exists already (case insensitive)
-          elseif ($mediafile_self != "" && $is_webdav && strtolower ($location.$page) != strtolower ($location.$pagenew))
+          elseif (!empty ($mediafile_self) && $is_webdav && strtolower ($location.$page) != strtolower ($location.$pagenew))
           {
             // get file name and extension
             $pagenew_info = getfileinfo ($site, $pagenew, "comp");
@@ -16148,7 +16174,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                 // update links in content containers
 
                 // check if manipulated object is in the linklist of other objects
-                if (@substr_count ($link_db_record['link'], $obj_location."|") > 0)
+                if (substr_count ($link_db_record['link'], $obj_location."|") > 0)
                 {
                   // get content container
                   $contentcontainer = $link_db_record['container'];
@@ -16157,9 +16183,9 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                   $container_id = getcontentcontainerid ($contentcontainer); 
 
                   // remove link to page or component from content container
-                  if ($action == "page_delete" || ($action == "page_unpublish" && $cat == "page")) $test = link_update ($site, $contentcontainer, $obj_location, "");
+                  if ($action == "page_delete" || ($action == "page_unpublish" && $cat == "page")) $test = link_update ($site, $contentcontainer, $obj_location, "", $mediafile_self, "");
                   // update link in content container
-                  elseif ($action == "page_rename" || $action == "file_rename" || ($action == "page_paste" && $method == "cut")) $test = link_update ($site, $contentcontainer, $obj_location, $obj_location_new);
+                  elseif ($action == "page_rename" || $action == "file_rename" || ($action == "page_paste" && $method == "cut")) $test = link_update ($site, $contentcontainer, $obj_location, $obj_location_new, $mediafile_self_old, $mediafile_self);
                   else $test = true;
 
                   if ($test == false) 
@@ -16322,7 +16348,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
       }
     } 
 
-    // ============================== make changes on page or component  ===================================
+    // ============================== make changes in page or component  ===================================
     if ($show == "")
     {
       // get original site from buffer
@@ -16349,7 +16375,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
 
         if (!empty ($bufferdata))
         {
-          // insert new content status and object references into content file
+          // insert new content status and object references in content file
           if ($action == "page_delete") 
           {
             $objects = getcontent ($bufferdata, "<contentobjects>");
@@ -16373,7 +16399,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentstatus>", "deleted", "", "");
             } 
           }
-          // insert new objects references into content container
+          // insert new objects references in content container
           elseif ($action == "page_rename" || $action == "file_rename") 
           {
             // remove .recycle directory or file extension from the path since it is not saved in the XML container
@@ -16390,7 +16416,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $bufferdata = setcontent ($bufferdata, "<hyperCMS>", "<contentobjects>", $objects_str, "", "");
             }
           }
-          // insert new objects references into content container
+          // insert new objects references in content container
           elseif ($action == "page_paste" && $method == "cut") 
           {
             // remove .recycle directory or file extension from the path since it is not saved in the XML container
@@ -16500,21 +16526,6 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
                 {
                   $errcode = "10119";
                   $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."deletefile failed for ".$mgmt_config['abs_path_link'].$contentfile_id;
-                }
-              }
-
-              // load language code index file
-              $langcode_array = getlanguageoptions ();
-
-              // delete all VTT files of videos
-              if ($langcode_array != false)
-              {
-                foreach ($langcode_array as $code => $language)
-                {
-                  if (is_file ($mgmt_config['abs_path_view'].$contentfile_id."_".trim($code).".vtt"))
-                  {
-                    deletefile ($mgmt_config['abs_path_view'], $contentfile_id."_".trim($code).".vtt", 0);
-                  }
                 }
               }
 

@@ -237,8 +237,8 @@ if ($authorized == true || $force == "stop")
     // $source_root and $source_folder are passed as global variables to the functions and are needed if action = paste.
     if ($from_page != "recyclebin" && $action == "delete" && !empty ($mgmt_config['recyclebin'])) $action = "deletemark";
 
-    // reset action for system user
-    if ($user == "sys" && getsession ("hcms_temp_sys_recyclebin") == "1") $action = "delete";
+    // reset action for system user when deleting objects in the recylce bin
+    if ($user == "sys" && $action == "deletemark" && getsession ("hcms_temp_sys_recyclebin") == "1") $action = "delete";
 
     $result = manipulateallobjects ($action, $multiobject_array, "$method", $force, $published_only, $user, $process);
     

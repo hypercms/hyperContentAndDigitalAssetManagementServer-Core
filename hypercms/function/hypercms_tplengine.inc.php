@@ -2196,7 +2196,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
       $viewstore = str_replace ("%view%", $buildview_tplvar, $viewstore);
 
-      // replace the template media variables in the template with the template images-url
+      // replace the template media variables in the template
       if ($buildview == "publish" || $buildview == "unpublish") $url_tplmedia = $publ_config['url_publ_tplmedia'];
       else $url_tplmedia = $mgmt_config['url_path_tplmedia'];
 
@@ -2204,7 +2204,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       if (isset ($url_tplmedia)) $viewstore = str_replace ("%url_tplmedia%", $url_tplmedia.$templatesite, $viewstore);
       $viewstore = str_replace ("%abs_tplmedia%", $mgmt_config['abs_path_tplmedia'].$templatesite, $viewstore);
 
-      // replace the media variables in the template with the images-url
+      // replace the media variables in the template
       if ($buildview == "publish" || $buildview == "unpublish")
       {
         $url_media = $publ_config['url_publ_media'];
@@ -3458,25 +3458,25 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   if ($buildview == "publish")
                   {
                     // replace the media variables with the media root
-                    $contentbot = str_replace ("%media%", substr ($publ_config['url_publ_media'], 0, strlen ($publ_config['url_publ_media'])-1), $contentbot);
+                    $contentbot = str_replace ("%media%/", $publ_config['url_publ_media'], $contentbot);
 
                     // replace the object variables with the URL of the page root
-                    $contentbot = str_replace ("%page%/".$site, substr ($publ_config['url_publ_page'], 0, strlen ($publ_config['url_publ_page'])-1), $contentbot);
+                    $contentbot = str_replace ("%page%/".$site."/",$publ_config['url_publ_page'], $contentbot);
 
                     // replace the url_comp variables with the URL of the component root
-                    $contentbot = str_replace ("%comp%", substr ($publ_config['url_publ_comp'], 0, strlen ($publ_config['url_publ_comp'])-1), $contentbot);
+                    $contentbot = str_replace ("%comp%/", $publ_config['url_publ_comp'], $contentbot);
                   }
                   // use management settings
                   else
                   {
                     // replace the media variables with the media root
-                    $contentbot = str_replace ("%media%", substr ($mgmt_config['url_path_media'], 0, strlen ($mgmt_config['url_path_media'])-1), $contentbot);
+                    $contentbot = str_replace ("%media%/", $mgmt_config['url_path_media'], $contentbot);
 
                     // replace the object variables with the URL of the page root
-                    $contentbot = str_replace ("%page%/".$site, substr ($mgmt_config[$site]['url_path_page'], 0, strlen ($mgmt_config[$site]['url_path_page'])-1), $contentbot);
+                    $contentbot = str_replace ("%page%/".$site."/", $mgmt_config[$site]['url_path_page'], $contentbot);
 
                     // replace the url_comp variables with the URL of the component root
-                    $contentbot = str_replace ("%comp%", substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp'])-1), $contentbot);
+                    $contentbot = str_replace ("%comp%/", $mgmt_config['url_path_comp'], $contentbot);
                   }
                 }
 

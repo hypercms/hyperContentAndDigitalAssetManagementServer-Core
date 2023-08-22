@@ -388,7 +388,7 @@ function accessgeneral ($site, $location, $cat)
     {
       foreach ($hiddenfolder[$site] as $exclude_folder)
       {
-        if (substr_count ($location_esc, $exclude_folder) > 0) return false;
+        if (!empty ($location_esc) && !empty ($exclude_folder) && substr_count ($location_esc, $exclude_folder) > 0) return false;
       }
     }
 
@@ -2956,7 +2956,7 @@ function checkdiskkey ()
       $result = getcontent ($result_post, "<result>");
 
       // result must be true or the default hash key is provided by the system (free edition)
-      if ((is_array ($result) && $result[0] == "true") || ($mgmt_config[$key] == "tg3234g234zg78ze8whf" && $data['modules'] == "")) return true;
+      if ((!empty ($result[0]) && $result[0] == "true") || ($mgmt_config[$key] == "tg3234g234zg78ze8whf" && !empty ($data['modules']))) return true;
       else return false;
     }
     elseif (!empty ($mgmt_config[$hash]))

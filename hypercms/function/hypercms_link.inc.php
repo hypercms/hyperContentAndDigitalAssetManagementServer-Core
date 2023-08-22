@@ -763,17 +763,17 @@ function link_db_getobject ($multiobject)
 
 // ---------------------------------------- link_update --------------------------------------------
 // function: link_update()
-// input: publication name [string], container name [string], old link (converted) [string], new link (converted) [string]
+// input: publication name [string], container name [string], old link (converted) [string], new link (converted) [string], old media file name [string] (optional), new media file name [string] (optional)
 // output: true/false 
 
 // description:
 // This function updates the link of the published and working content container and link file
 
-function link_update ($site, $container, $link_old, $link_new)
+function link_update ($site, $container, $link_old, $link_new, $media_old="", $media_new="")
 {
   global $user, $mgmt_config;
 
-  if ($container != "" && $link_old != "" && (substr_count ($link_old, "%page%") > 0 || substr_count ($link_old, "%comp%") > 0) && ($link_new == "" || substr_count ($link_new, "%page%") > 0 || substr_count ($link_new, "%comp%") > 0))
+  if ($container != "" && $link_old != "" && (substr_count ($link_old, "%page%") > 0 || substr_count ($link_old, "%comp%") > 0 || substr_count ($link_old, "%media%") > 0) && ($link_new == "" || substr_count ($link_new, "%page%") > 0 || substr_count ($link_new, "%comp%") > 0 || substr_count ($link_new, "%media%") > 0))
   {
     // get container id
     $container_id = getcontentcontainerid ($container);
@@ -781,12 +781,25 @@ function link_update ($site, $container, $link_old, $link_new)
     // load content container
     $container_data = loadcontainer ($container, "published", $user);
 
+    // prepare media file name
+    if (strpos ($media_old, "/") > 0)
+    {
+      $parts = explode ("/", $media_old);
+      $media_old = end ($parts);
+    }
+
+    if (strpos ($media_new, "/") > 0)
+    {
+      $parts = explode ("/", $media_new);
+      $media_new = end ($parts);
+    }
+
     // update link and save content container and link file 
     // published container
     if ($container_data != false)
     {
       // remove current link
-      if ($link_new == "")
+      if (trim ($link_new) == "")
       {
         // try with delimiter first
         $container_data = str_replace ($link_old."|", "", $container_data);
@@ -796,6 +809,19 @@ function link_update ($site, $container, $link_old, $link_new)
       else
       {
         $container_data = str_replace ($link_old, $link_new, $container_data);
+      }
+
+      // remove media file
+      if (!empty ($media_old) && trim ($media_new) == "")
+      {
+        $container_data = str_replace ("%media%/".$site."/".$media_old, "", $container_data);
+        $container_data = str_replace ("<mediafile>".$site."/".$media_old."</mediafile>", "<mediafile></mediafile>", $container_data);
+      }
+      // update media file
+      elseif (!empty ($media_old) && !empty ($media_new))
+      {
+        $container_data = str_replace ("/".$site."/".$media_old, "/".$site."/".$media_new, $container_data);
+        $container_data = str_replace ("<mediafile>".$site."/".$media_old."</mediafile>", "<mediafile>".$site."/".$media_new."</mediafile>", $container_data);
       }
 
       $test1 = savecontainer ($container, "published", $container_data, $user); 
@@ -823,6 +849,19 @@ function link_update ($site, $container, $link_old, $link_new)
       else
       {
         $containerwrk_data = str_replace ($link_old, $link_new, $containerwrk_data);
+      }
+
+      // remove media file
+      if (!empty ($media_old) && trim ($media_new) == "")
+      {
+        $containerwrk_data = str_replace ("%media%/".$site."/".$media_old, "", $containerwrk_data);
+        $containerwrk_data = str_replace ("<mediafile>".$site."/".$media_old."</mediafile>", "<mediafile></mediafile>", $containerwrk_data);
+      }
+      // update media file
+      elseif (!empty ($media_old) && !empty ($media_new))
+      {
+        $containerwrk_data = str_replace ("/".$site."/".$media_old, "/".$site."/".$media_new, $containerwrk_data);
+        $containerwrk_data = str_replace ("<mediafile>".$site."/".$media_old."</mediafile>", "<mediafile>".$site."/".$media_new."</mediafile>", $containerwrk_data);
       }
 
       $test2 = savecontainer ($containerwrk, "work", $containerwrk_data, $user);

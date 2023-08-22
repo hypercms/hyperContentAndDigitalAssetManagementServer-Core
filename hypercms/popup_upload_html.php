@@ -540,27 +540,32 @@ $(document).ready(function ()
 
     buildFileUpload(data);
     
-    // Update queue counter
+    // update queue counter
     queuecount--;
   })
   
   // file upload is finished (for each file)
   .bind('fileuploaddone', function(e, data) {
     
-    var file = "";
+    var fileExt = data.files[0].name.split('.').pop();
+
+    <?php
+    if ($uploadmode == "multi") echo "var file = \"\"";
+    elseif (!empty ($object)) echo "var file = \"".$location_esc.substr($object, 0, strrpos ($object, ".")).".\" + fileExt";
+    ?>
 
     console.log("The file '" + data.files[0].name + "' has been uploaded");
 
     // put out message if possible
     getResponseAndBuildFileMessage(data, true, true);
     
-    // Update the total count of uploaded files
+    // update the total count of uploaded files
     filecount++;
     $('#status').text(filecount);
 
     if (queuecount <= 0) frameReload(file, hcms_waitTillClose);
     
-    // Remove the div
+    // remove the div
     setTimeout(function() {
       data.context.remove();
       selectcount--;
@@ -652,7 +657,7 @@ $(document).ready(function ()
               var text = data.result;
             }
 
-            // seperate message from command/objects
+            // separate message from command/objects
             if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
             {
               file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
@@ -968,7 +973,7 @@ $(document).ready(function ()
               var text = data.result;
             }
 
-            // seperate message from command/objects
+            // separate message from command/objects
             if (text != "" && (filepos1 = text.indexOf("[")) > 0 && (filepos2 = text.indexOf("]")) == text.length -1)
             {
               file = text.substr (filepos1 + 1, filepos2 - filepos1 - 1);
@@ -1325,6 +1330,8 @@ function frameReload (objectpath, timeout)
 
       // reload object view
       parent.document.getElementById('objFrame').src='page_view.php?ctrlreload=yes&location=' +  encodeURIComponent(location) + '&page=' + encodeURIComponent(newpage);
+
+      console.log("Reloading object '" + location + newpage + "'");
     }
 
     setTimeout ('parent.closePopup()', timeout);

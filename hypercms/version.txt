@@ -7150,6 +7150,11 @@ Release 09/2023
 - Modifications in control_objectlist_menu in order to provide the location name in the same notation as in the control
 - Modifications in function createmedia in Media API order to verify the sharpness amount variable
 - Implementation of new folder icons for all design themes
+- Modifications in function readnavigation in order to apply function cleandomain on the root URL definition of the navigation $navi_config['root_url']
+- Modifications in function deletemediafiles in Main API in order to remove the VTT files of videos
+- Modifications in function manipulateobjet in Main API in order remove the code for deleting the VTT files of videos since
+- Modifications in function link_update in Link API in order to support new input parameters and update the media file references in the published and working content container
+- Modifications in function accessgeneral in Security API in order to verify that the location and the exluded folder is not empty
 - Updates in various language files
 - Update of all Guides
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
@@ -7181,3 +7186,5 @@ Release 09/2023
 - Bug fix: template_default.schema.xml.php did not close the hyperCMS tag for the id "YoutubeCategories"
 - Bug fix: Function showeditor and showinlineeditor in UI API removed the domain from the JS configuration property cmsLink for CKEditor
 - Bug fix: control_log_menu verified the rootpermissions and not the globalpermissions which are necessary for the publication log
+- Bug fix: Function importxmlfiles in the Import/Export API used the wrong div-tag for a success message
+- Bug fix: popup_upload_html did not provide the correct file name as input for the local JS function frameRelaod if the file extension has been changed due to the upload/update of a file with a different file extension

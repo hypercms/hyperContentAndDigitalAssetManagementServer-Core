@@ -6009,8 +6009,11 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
 {
   global $mgmt_config, $navi_config;
 
-  if (valid_publicationname ($site) && valid_locationname ($docroot) && valid_objectname ($object) && valid_objectname ($user))
+  if (valid_publicationname ($site) && valid_locationname ($docroot) && valid_objectname ($object) && valid_objectname ($user) && !empty ($navi_config) && is_array ($navi_config))
   {
+    // clean domain from URL
+    if (!empty ($navi_config['root_url'])) $navi_config['root_url'] = cleandomain ($navi_config['root_url']);
+
     $xmldata = getobjectcontainer ($site, $docroot, $object, $user);
 
     if (!empty ($xmldata))
@@ -6125,9 +6128,9 @@ function readnavigation ($site, $docroot, $object, $view="publish", $user="sys")
 
       return $result;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- createnavigation -----------------------------
@@ -6352,7 +6355,7 @@ function shownavigation ($navigation, $level=1)
 {
   global $mgmt_config, $navi_config;
 
-  if (is_array ($navigation))
+  if (is_array ($navigation) && !empty ($navi_config) && is_array ($navi_config) && !empty ($navi_config['tag_ul']))
   {
     $out = "";
     $sub = "";
