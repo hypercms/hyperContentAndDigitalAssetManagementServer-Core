@@ -17023,7 +17023,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
           {
             $link_db = link_db_insert ($site, $link_db, $contentfile_new, $cat, $location.$pagename_sec); 
 
-            if ($link_db != false) $link_db[$contentfile_new]['link'] = $link_db[$contentfile_self]['link'];
+            if (!empty ($link_db[$contentfile_self]['link'])) $link_db[$contentfile_new]['link'] = $link_db[$contentfile_self]['link'];
 
             if ($link_db != false) $test = link_db_save ($site, $link_db, $user);
             else $test = false;

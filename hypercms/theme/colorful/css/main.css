@@ -130,8 +130,8 @@ hr
 {
   height: 2px;
   border-width :0;
-  color: #ffa339;
-  background-color: #ffa339;
+  color: #86a265;
+  background-color: #86a265;
 }
 
 /* Main */
@@ -226,7 +226,7 @@ a.hcmsLink
 
 .hcmsWorkplaceTop
 {
-  background-color: #72b34f;
+  background-color: #76a85c;
 }
 
 .hcmsLogoTop
@@ -242,7 +242,7 @@ a.hcmsLink
 .hcmsWorkplaceBar
 {
   box-sizing: border-box;
-  background-color: #ddeafc;
+  background-color: #c9e1ac;
   border-left: 6px solid #EB6804;
   position: fixed;
   top: 0;
@@ -310,7 +310,7 @@ a.hcmsLink
 {
   margin: 0;
   padding: 0;
-  background-color: #74a9ff;
+  background-color: #87b0f2;
 }
 
 .hcmsToolbar
@@ -341,12 +341,12 @@ a.hcmsNavigator
 {
   margin: 0;
   padding: 0;;
-  background-color: #ffbe6b !important;
+  background-color: #fbb255 !important;
 }
 
 .hcmsWorkplaceObjectlist
 {
-  background-color: #e4edff !important;
+  background-color: #c3d5ac !important;
 }
 
 .hcmsWorkplaceObjectlistLinks
@@ -356,12 +356,12 @@ a.hcmsNavigator
 
 .hcmsWorkplaceWorkflow
 {
-  background-color: #98c8ff !important;
+  background-color: #acc7df !important;
 }
 
 .hcmsWorkplaceGeneric
 {
-  background-color: #c7daff;
+  background-color: #b5c89a;
   margin: 0; 
   padding: 0;
   overflow: auto;
@@ -408,12 +408,12 @@ a.hcmsNavigator
 
 .hcmsRowHead1
 {
-  background-color: #42B551 !important;
+  background-color: #f0b06b !important;
 }
 
 .hcmsRowHead2
 {
-  background-color: #94CE9C !important;
+  background-color: #87B05E !important;
 }
 
 .hcmsRowData1
@@ -473,7 +473,7 @@ a.hcmsNavigator
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
-  background-color: #7ecc5f;
+  background-color: #bed7b5;
   box-shadow: 3px 3px 12px #000000;
   -webkit-box-shadow: 3px 3px 12px #000000;
   -moz-box-shadow: 3px 3px 12px #000000;
@@ -847,11 +847,11 @@ a.hcmsNavigator
 .hcmsTabActive
 {
   float: left;
-  background-color: #c7daff;
+  background-color: #b5c89a;
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;
-  border-bottom: 2px solid #c7daff;
+  border-bottom: 2px solid #b5c89a;
   width: 116px;
   height: 17px;
   padding: 2px;
@@ -864,7 +864,7 @@ a.hcmsNavigator
 .hcmsTabPassive
 {
   float: left;
-  background-color: #aac6fd;
+  background-color: #8cac6b;
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;
@@ -1042,7 +1042,7 @@ table.hcmsTableNoFlip td
 
 tr.hcmsObjectSelected
 {
-  background-color: #a0c9ff;
+  background-color: #efffb8;
 }
 
 tr.hcmsObjectUnselected
@@ -1053,7 +1053,7 @@ tr.hcmsObjectUnselected
 div.hcmsObjectSelected
 {
   margin: 2px;
-  background-color: #a0c9ff;
+  background-color: #efffb8;
   background-image: url("../img/button_textc.png");
   background-repeat: no-repeat !important;
   background-position: 2% 98% !important;

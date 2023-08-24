@@ -104,7 +104,7 @@ class hcms_db
     elseif ($this->_isMySqli())
     {
       // log
-      if ($mgmt_config['rdbms_log'])
+      if (!empty ($mgmt_config['rdbms_log']))
       {
         $time_start = microtime(true);
         $log = array();
@@ -114,7 +114,7 @@ class hcms_db
       $result = $this->_db->query ($sql);
       
       // log
-      if ($mgmt_config['rdbms_log'])
+      if (!empty ($mgmt_config['rdbms_log']))
       {    
         $time_stop = microtime(true);
         $time = $time_stop - $time_start;
@@ -5405,7 +5405,7 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
       if (!empty ($cmd)) $cmd = $db->rdbms_escape_string ($cmd);
       $user = $db->rdbms_escape_string ($user);
       
-      // find duplicate command
+      // find duplicate commands that are not to be executed in the future
       if (strtolower ($action) == "execute" && $cmd != "")
       {
         $sql = 'SELECT date FROM queue WHERE object_id='.intval ($object_id).' AND action="execute" AND cmd="'.$cmd.'"';
@@ -5415,7 +5415,7 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
   
         if ($done && $row = $db->rdbms_getresultrow ())
         {
-          if ($row['date'] != "" && strtotime ($row['date']) <= time()) return true;
+          if (!empty ($row['date']) && strtotime ($row['date']) <= time()) return true;
         }
       }
 
@@ -5945,17 +5945,17 @@ function rdbms_licensenotification ($folderpath, $text_id, $date_begin, $date_en
 
 // description:
 // Updates the daily access statistics.
-// The dailystat table contains a counter for each 'activity' (upload, download, view) for each object (i.e. media file of container) per day.
+// The dailystat table contains a counter for each 'activity' (upload, download, view) for each object (media asset/container) per day.
 
 function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all=false)
 {
   global $mgmt_config;
 
-  if ($activity != "" && (is_array ($container_id) || intval ($container_id) > 0) && $user != "sys")
+  if ($activity != "" && (is_array ($container_id) || intval ($container_id) > 0) && ($user != "sys" || $activity == "upload"))
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 
-    // clean input    
+    // clean input
     $activity = $db->rdbms_escape_string ($activity);
     if ($user != "") $user = $db->rdbms_escape_string ($user);
 

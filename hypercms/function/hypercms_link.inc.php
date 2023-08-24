@@ -224,7 +224,7 @@ function link_db_load ($site, $user)
       {
         $link_db_record = trim ($link_db_record);
  
-        if ($link_db_record != "")
+        if ($link_db_record != "" && substr_count ($link_db_record, ":|") > 1)
         {
           list ($container, $objects, $links) = explode (":|", $link_db_record);
 
@@ -524,7 +524,7 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
             // get container name of current record
             $contentfile = $link_db_record['container'];
 
-            if ($contentfile != "")
+            if ($contentfile != "" && !empty ($link_db[$contentfile][$attribute]))
             {
               // check if current link in use exists
               if ($link_curr != "")
@@ -569,7 +569,7 @@ function link_db_update ($site, $link_db, $attribute, $contentfile="", $cat="", 
           }
         }
         // if specific content container should be manipulated
-        else
+        elseif (!empty ($link_db[$contentfile][$attribute]))
         { 
           // check if current link in use exists
           if ($link_curr != "")

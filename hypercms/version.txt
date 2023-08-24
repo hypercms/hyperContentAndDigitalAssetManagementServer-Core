@@ -7155,6 +7155,11 @@ Release 09/2023
 - Modifications in function manipulateobjet in Main API in order remove the code for deleting the VTT files of videos since
 - Modifications in function link_update in Link API in order to support new input parameters and update the media file references in the published and working content container
 - Modifications in function accessgeneral in Security API in order to verify that the location and the exluded folder is not empty
+- Modifications in the comments in main configuration file in the install directory
+- Modifications in the screen resolutions of mobile devices in main configuration file in the install directory
+- Modifications in function link_db_load in Link API in order to verify the link record before extracting the information
+- Modifications in function link_db_update in Link API in order to verify the link record
+- Modifications in function manipulateobject in Main API in order to verify the link exists before inserting the reference into the link index
 - Updates in various language files
 - Update of all Guides
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
