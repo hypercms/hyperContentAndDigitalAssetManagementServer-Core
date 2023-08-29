@@ -7152,24 +7152,35 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                   if ($hypertagname == $searchtag."s")
                   {
                     $component_link = $contentbot;
+                    $component = "";
 
                     if ($onpublish != "hidden" && $component_link != "")
                     {
-                      //$component_link = deconvertpath ($component_link, "file");
+                      if (is_file (deconvertpath ($component_link, "file"))) $published = true;
+                      else $published = false;
+
                       $component_file = getobject ($component_link);
                       $component_location = getlocation ($component_link);
                       $container_collection = "live";
                       $container_buffer = $container;
                       $container = null;
  
-                      if ($buildview == "publish" && $application == "generator") $component_view = buildview ($site, $component_location, $component_file, $user, "publish", "no", "", "", "", false);
-                      else $component_view = buildview ($site, $component_location, $component_file, $user, "preview", "no");
+                      // render component
+                      if ($buildview == "publish" && $application == "generator")
+                      {
+                        $component_view = buildview ($site, $component_location, $component_file, $user, "publish", "no", "", "", "", false);
+                        if (!empty ($component_view['view'])) $component = $component_view['view'];
+                      }
+                      elseif ($published == true || $buildview != "preview")
+                      {
+                        $component_view = buildview ($site, $component_location, $component_file, $user, "preview", "no");
+                        if (!empty ($component_view['view'])) $component = $component_view['view'];
+                      }
  
                       $container = $container_buffer;
-                      $component = $component_view['view'];
  
                       // if template is a XML-document escape all < and > and add <br />
-                      if ($application == "xml" && ($buildview == "template" || $buildview == "cmsview" || $buildview == 'inlineview'))
+                      if ($component != "" && $application == "xml" && ($buildview == "template" || $buildview == "cmsview" || $buildview == 'inlineview'))
                       {
                         $component = str_replace ("<![CDATA[", "&lt;![CDATA[", $component);
                         $component = str_replace ("]]>", "]]&gt;", $component);
@@ -7178,13 +7189,14 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         $component = str_replace ("\n", "<br />", $component);
                       }
                     }
-                    else $component = "";
  
                     $viewstore = str_replace ($hypertag, $component, $viewstore);
                   }
                   // ------------ multi component --------------
                   elseif ($hypertagname == $searchtag."m")
                   {
+                    $multicomponent = "";
+
                     if (!empty ($contentbot))
                     {
                       if ($contentbot[strlen ($contentbot) - 1] == "|") $contentbot = substr ($contentbot, 0, strlen ($contentbot) - 1);
@@ -7196,6 +7208,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
                       foreach ($contentbot_array as $component_link)
                       {
+                        $component = "";
+
                         if ($component_link != "")
                         {
                           if (($buildview == "cmsview" || $buildview == "inlineview") && $onedit != "hidden" && $icon != "hidden")
@@ -7207,9 +7221,11 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           }
                           else $taglink = "";
  
-                          if ($onpublish != "hidden" && $component_link != "")
+                          if ($onpublish != "hidden")
                           {
-                            // $component_link = deconvertpath ($component_link, "file");
+                            if (is_file (deconvertpath ($component_link, "file"))) $published = true;
+                            else $published = false;
+
                             $component_file = getobject ($component_link);
                             $component_location = getlocation ($component_link);
                             $container_collection = "live";
@@ -7217,14 +7233,21 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                             $container = null;
  
                             // render component
-                            if ($buildview == "publish" && $application == "generator") $component_view = buildview ($site, $component_location, $component_file, $user, "publish", "no", "", "", "", false);
-                            else $component_view = buildview ($site, $component_location, $component_file, $user, "preview", "no");
+                            if ($buildview == "publish" && $application == "generator")
+                            {
+                              $component_view = buildview ($site, $component_location, $component_file, $user, "publish", "no", "", "", "", false);
+                              if (!empty ($component_view['view'])) $component = $component_view['view'];
+                            }
+                            elseif ($published == true || $buildview != "preview")
+                            {
+                              $component_view = buildview ($site, $component_location, $component_file, $user, "preview", "no");
+                              if (!empty ($component_view['view'])) $component = $component_view['view'];
+                            }
  
                             $container = $container_buffer;
-                            $component = $component_view['view'];
-
+                            
                             // if template is a XML-document escape all < and > and add <br />
-                            if ($application == "xml" && ($buildview == "template" || $buildview == "cmsview" || $buildview == 'inlineview'))
+                            if ($component != "" && $application == "xml" && ($buildview == "template" || $buildview == "cmsview" || $buildview == 'inlineview'))
                             {
                               $component = str_replace ("<![CDATA[", "&lt;![CDATA[", $component);
                               $component = str_replace ("]]>", "]]&gt;", $component);
@@ -7239,7 +7262,6 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                         }
                       }
                     }
-                    else $multicomponent = "";
  
                     // insert component into view store
                     $viewstore = str_replace ($hypertag, $multicomponent, $viewstore);

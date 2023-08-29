@@ -31,6 +31,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check permissions
 if (!checkglobalpermission ($site, 'template') || !checkglobalpermission ($site, 'tpl') || !valid_publicationname ($site)) killsession ($user);
+
 // check session of user
 checkusersession ($user, false);
 

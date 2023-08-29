@@ -154,14 +154,14 @@ function recognizeFaces (element)
 </script>
 </head>
 
-<body class="hcmsMainWindow hcmsWorkplaceObjectlist" onload="hcms_setViewportScale();">
+<body class="hcmsMainWindow" onload="hcms_setViewportScale();">
 
 <!-- popup for preview/live-view (do not used nested fixed positioned div-layers due to MS IE and Edge issue) --> 
 <div id="objectviewLayer" style="display:none;">
   <div style="position:fixed; right:18px; top:<?php if ($is_mobile) echo "22px"; else echo "40px"; ?>; z-index:9011;">
     <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
   </div>
-  <div class="hcmsWorkplaceExplorer" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> position:fixed; margin:0; padding:0; left:0; top:<?php if ($is_mobile) echo "20px"; else echo "36px"; ?>; right:0; bottom:0; z-index:9010;">
+  <div class="hcmsWorkplaceGeneric" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> position:fixed; margin:0; padding:0; left:0; top:<?php if ($is_mobile) echo "20px"; else echo "36px"; ?>; right:0; bottom:0; z-index:9010;">
     <iframe id="objectview" name="objectview" src="" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" frameBorder="0" <?php if (!$is_mobile) echo 'scrolling="no"'; else echo 'scrolling="yes"'; ?> style="width:100%; height:100%; border:0; margin:0; padding:0; <?php if (!$is_mobile) echo "overflow:auto;"; else echo "overflow:scroll;"; ?>" sandbox="allow-top-navigation allow-same-origin allow-scripts allow-forms" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
   </div>
 </div>
@@ -178,7 +178,7 @@ if (!empty ($page))
   <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; height:100px; margin:0; padding:0;\">
     <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"loading.php\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100px; border:0; margin:0; padding:0; overflow:hidden;\"></iframe>
   </div>
-  <div id=\"objLayer\" class=\"hcmsWorkplaceObjectlist\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;".$css_iphone."\">
+  <div id=\"objLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;".$css_iphone."\">
     <iframe allowfullscreen id=\"objFrame\" name=\"objFrame\" src=\"page_view.php?ctrlreload=".$ctrlreload."&location=".$location."&page=".$page."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
   </div>";
 }
@@ -189,7 +189,7 @@ elseif (!empty ($location))
   <div id=\"controlLayer\" style=\"position:fixed; top:0; right:0; left:0; height:100px; margin:0; padding:0;\">
     <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_content_menu.php?location=".$location."\" frameBorder=\"0\" scrolling=\"no\" style=\"width:100%; height:100px; border:0; margin:0; padding:0; overflow:hidden;\"></iframe>
   </div>
-  <div id=\"objLayer\" class=\"hcmsWorkplaceObjectlist\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;".$css_iphone."\">
+  <div id=\"objLayer\" style=\"position:fixed; top:100px; right:0; bottom:0; left:0; margin:0; padding:0;".$css_iphone."\">
     <iframe allowfullscreen id=\"objFrame\" name=\"objFrame\" src=\"empty.php\" frameborder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe>
   </div>";
 }

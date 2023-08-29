@@ -197,7 +197,18 @@ if (empty ($name))
 if (substr_count ($media, "/") == 1) $site = substr ($media, 0, strpos ($media, "/"));
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site))
+{
+  if (is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+  {
+    require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  }
+  else
+  {
+    header ('HTTP/1.0 403 Forbidden', true, 403);
+    exit;
+  }
+}
 
 // read multimedia file (publication/file) and submit data
 if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != "" || is_thumbnail ($media, false) || empty ($mgmt_config[$site]['dam']))) || $media_approved == true))

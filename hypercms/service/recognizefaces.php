@@ -34,7 +34,7 @@ if (is_facerecognition ($user))
 
   if (!empty ($mgmt_config['facerecognition_service_exclude']))
   {
-    $temp_array = explode (";", trim ($mgmt_config['facerecognition_service_exclude'], ";"));
+    $temp_array = splitstring ($mgmt_config['facerecognition_service_exclude']);
 
     foreach ($temp_array as $temp)
     {
@@ -62,7 +62,18 @@ if (is_facerecognition ($user))
     $cat = getcategory ($site, $location);
 
     // publication management config
-    if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (valid_publicationname ($site))
+    {
+      if (is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+      {
+        require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+      }
+      else
+      {
+        header ('HTTP/1.0 403 Forbidden', true, 403);
+        exit;
+      }
+    }
 
     // if link refers to a managed object (internal page)
     if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))

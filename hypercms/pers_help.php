@@ -24,6 +24,7 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 
 // check permissions
 if (!checkglobalpermission ($site, 'pers') || (!checkglobalpermission ($site, 'perstrack') && !checkglobalpermission ($site, 'persprof')) || !empty ($mgmt_config[$site]['dam']) || !valid_publicationname ($site)) killsession ($user);
+
 // check session of user
 checkusersession ($user, false);
 ?>

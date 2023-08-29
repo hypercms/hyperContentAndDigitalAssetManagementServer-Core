@@ -74,6 +74,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   {
     $ownergroup = accesspermission ($site, $location, $cat);
     $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+  
     if ($setlocalpermission['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
   }
   // check permissions
@@ -338,7 +339,7 @@ hr
 </style>
 </head>
 
-<body class="hcmsWorkplaceWorkflow" onload="centercontainer(); initialize();">
+<body class="hcmsWorkplaceObjectlist" onload="centercontainer(); initialize();">
 
 <!-- toolbar -->
 <div id="toolbar" style="position:fixed; top:5px; left:5px; text-align:left; z-index:30;">

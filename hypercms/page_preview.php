@@ -36,6 +36,7 @@ if (!empty ($mgmt_config[$site]['dam']))
 {
   $ownergroup = accesspermission ($site, $location, $cat);
   $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
   if ($setlocalpermission['root'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 }
 // check permissions

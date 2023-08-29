@@ -17,17 +17,27 @@ require ("../function/hypercms_api.inc.php");
 // location must provide the converted path
 $media = getrequest ("media", "locationname");
 $location = getrequest ("location", "locationname");
+
+// get publication and category from location
 $site = getpublication ($location);
 $cat = getcategory ($site, $location);
 
-// get publication
+// get publication from media
 if (substr_count ($media, "/") == 1) list ($site, $mediafile) = explode ("/", $media);
 else $mediafile = $media;
 
 // publication management config
-if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+if (valid_publicationname ($site))
 {
-  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  if (is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+  {
+    require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  }
+  else
+  {
+    header ('HTTP/1.0 403 Forbidden', true, 403);
+    exit;
+  }
 }
 
 // ------------------------------ permission section --------------------------------

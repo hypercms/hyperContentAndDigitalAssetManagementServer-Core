@@ -35,7 +35,9 @@ if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."confi
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission( $site, $ownergroup, $cat );
+
 if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site)) killsession ($user);
+
 // check session of user
 checkusersession ($user);
 

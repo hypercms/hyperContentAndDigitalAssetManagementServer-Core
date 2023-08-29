@@ -432,7 +432,7 @@ function hcms_saveEvent ()
     <!-- Desktop -->
     <tr class="hcmsRowHead1">
       <td style="white-space:nowrap;"><label><input type="checkbox" id="desktopglobal" name="permission[desktopglobal]" onclick="initPermissions();" value="1" <?php if ($desktopglobal==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
-      <b><img src="<?php echo getthemelocation(); ?>img/desk.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-desktop-management'][$lang]." / ".$hcms_lang['plugins'][$lang]); ?> &nbsp;</b></td>
+      <b><img src="<?php echo getthemelocation(); ?>img/desk.png" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['grant-desktop-management'][$lang]); ?></b></td>
     </tr>
     <tr class="hcmsRowData1 hcmsDesktop">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="permission[desktopsetting]" value="1" <?php if ($desktopsetting==1) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />

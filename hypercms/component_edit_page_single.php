@@ -42,7 +42,8 @@ $location_esc = convertpath ($site, $location, $cat);
 
 // check access permissions
 $ownergroup = accesspermission ($site, $location, $cat);
-$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);  
+$setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
+
 if ($ownergroup == false || $setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1 || !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($page)) killsession ($user);
 
 // check session of user

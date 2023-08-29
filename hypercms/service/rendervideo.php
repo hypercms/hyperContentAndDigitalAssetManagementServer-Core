@@ -81,7 +81,18 @@ if ($location != "" && $page != "")
 else $mediafile = getrequest ("media", "objectname");
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site))
+{
+  if (is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+  {
+    require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  }
+  else
+  {
+    header ('HTTP/1.0 403 Forbidden', true, 403);
+    exit;
+  }
+}
 
 // ------------------------------ permission section --------------------------------
 
@@ -399,8 +410,8 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
           
         $result = startConversion ("videoplayer");
         
+        // the objects file name of the video will not be changed
         $success = $result['success'];
-        $object = $object; // the objects file name of the video will not be changed
         $show .= $result['message']."\n";
         
         $run = 1;
@@ -411,7 +422,6 @@ if (checktoken ($token, $user) && valid_publicationname ($site) && valid_locatio
   else
   {
     $result = startConversion ($filetype);
-    $object = $page;
     $success = $result['success'];
     $show .= $result['message']."\n";
   }
@@ -422,7 +432,7 @@ if ($savetype == "auto" || $savetype == "")
 { 
   $output = array();
   $output['success'] = $success;
-  $output['object'] = $location_esc.$object;
+  $output['object'] = $location_esc.$page;
   $output['message'] = trim ($show);
   
   header ('Content-Type: application/json; charset=utf-8');
