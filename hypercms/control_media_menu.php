@@ -454,10 +454,13 @@ parent.hcms_closeSubMenu();
 
               foreach ($mediacat_array as $mediacat_record)
               {
-                list ($mediacategory, $files) = explode (":|", $mediacat_record);
+                if (strpos ($mediacat_record, ":|") > 0)
+                {
+                  list ($mediacategory, $files) = explode (":|", $mediacat_record);
 
-                echo "
+                  echo "
               <option value=\"".$mediacategory."\">".$mediacategory."</option>";
+                }
               }
             }
             ?>
@@ -495,10 +498,13 @@ parent.hcms_closeSubMenu();
 
               foreach ($mediacat_array as $mediacat_record)
               {
-                list ($mediacategory, $files) = explode (":|", $mediacat_record);
+                if (strpos ($mediacat_record, ":|") > 0)
+                {
+                  list ($mediacategory, $files) = explode (":|", $mediacat_record);
 
-                echo "
+                  echo "
               <option value=\"".$mediacategory."\">".$mediacategory."</option>";
+                }
               }
             }
             ?>
@@ -536,10 +542,13 @@ parent.hcms_closeSubMenu();
 
               foreach ($mediacat_array as $mediacat_record)
               {
-                list ($mediacategory, $files) = explode (":|", $mediacat_record);
+                if (strpos ($mediacat_record, ":|") > 0)
+                {
+                  list ($mediacategory, $files) = explode (":|", $mediacat_record);
 
-                echo "
+                  echo "
               <option value=\"".$mediacategory."\">".$mediacategory."</option>";
+                }
               }
             }
             ?>

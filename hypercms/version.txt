@@ -7164,10 +7164,11 @@ Release 09/2023
 - Modifications in various services in order to verify that the publication manegement configuration file exists provide and error in the response in case the file does not exist
 - Modifications in frameset_log in order to integrate control_log_menu in order to enable bigger sized overlays
 - Modifications in function deletelog in Main API ni order to modify the addonload result 
-- Design modifications in explorer_objectview, frameset_content, and framset_objectlist
+- Design modifications in explorer_objectview, frameset_content, and frameset_objectlist
 - Removed control_log_menu
 - Update of the JQuery tagit library
 - Design modifications in control_log_menu
+- Modifications in control_media_menu in order to verify the media record before extracting te information from it
 - Updates in various language files
 - Update of all Guides
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
@@ -7202,3 +7203,4 @@ Release 09/2023
 - Bug fix: Function importxmlfiles in the Import/Export API used the wrong div-tag for a success message
 - Bug fix: popup_upload_html did not provide the correct file name as input for the local JS function frameRelaod if the file extension has been changed due to the upload/update of a file with a different file extension
 - Bug fix: Service rendervideo used  a wrong variable name for the object name
+- Bug fix: Function executeREST in REST API of the Connector module escaped special used in the object path which resulted to wrong object names whenever a new object has been created
