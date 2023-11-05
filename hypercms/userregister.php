@@ -40,11 +40,13 @@ $theme = getrequest_esc ("theme", "objectname");
 $email = getrequest_esc ("email");
 $phone = getrequest_esc ("phone");
 $signature = getrequest_esc ("signature");
-$usersite = getrequest_esc ("usersite");
 $token = getrequest ("token");
 
 // publication management config
-if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php")) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // include language file
 if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
@@ -71,9 +73,31 @@ if (is_mobilebrowser () || $is_mobile == "1" || $is_mobile == "yes") $is_mobile 
 if (!empty ($theme)) $themename = $theme;
 else $themename = "";
 
+// get valid publications
+$inherit_db = inherit_db_read ("sys");      
+$valid_site_array = array();
+
+if ($inherit_db != false && is_array ($inherit_db))
+{                        
+  foreach ($inherit_db as $inherit_db_record)
+  {
+    if (!empty ($inherit_db_record['parent']))
+    {
+      $site_temp = $inherit_db_record['parent'];
+
+      // publication management config
+      if (valid_publicationname ($site_temp) && is_file ($mgmt_config['abs_path_data']."config/".$site_temp.".conf.php"))
+      {
+        require ($mgmt_config['abs_path_data']."config/".$site_temp.".conf.php");
+      }
+      
+      if (!empty ($mgmt_config[$site_temp]['registration'])) $valid_site_array[] = $site_temp;
+    }
+  }
+}
 
 // save user
-if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_config['userregistration']))
+if ($action == "user_register" && checktoken ($token, "sys") && !empty ($mgmt_config['userregistration']) && in_array ($site, $valid_site_array))
 {
   // reload GUI
   $add_onload = "";
@@ -354,7 +378,7 @@ function blurbackground (blur)
     <form name="userform" action="" method="post" onsubmit="return checkForm();">
       <input type="hidden" name="action" value="user_register">
       <input type="hidden" name="is_mobile" value="0" />
-      <input type="hidden" name="site" value="<?php echo $site; ?>">
+      <?php if (!empty ($site)) { ?><input type="hidden" name="site" value="<?php echo $site; ?>"><?php } ?>
       <input type="hidden" name="token" value="<?php echo $token_new; ?>">
       
       <div class="hcmsTextWhite hcmsTextShadow" style="padding-top:8px;"><?php echo getescapedtext ($hcms_lang['user-name'][$lang]); ?> </div>
@@ -475,27 +499,14 @@ function blurbackground (blur)
         $inherit_db = inherit_db_read ("sys");      
         $site_array = array();
 
-        if ($inherit_db != false && is_array ($inherit_db))
-        {                        
-          foreach ($inherit_db as $inherit_db_record)
-          {
-            if ($inherit_db_record['parent'] != "")
-            {
-              $site = $inherit_db_record['parent'];
-              
-              // publication management config
-              if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php")) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
-              
-              if (!empty ($mgmt_config[$site]['registration'])) $site_array[] = $site;
-            }
-          }
+        if (is_array ($valid_site_array))
+        {                                  
+          natcasesort ($valid_site_array);
+          reset ($valid_site_array);
           
-          natcasesort ($site_array);
-          reset ($site_array);
-          
-          if (is_array ($site_array) && sizeof ($site_array) > 0)
+          if (sizeof ($valid_site_array) > 0)
           {
-            foreach ($site_array as $temp) echo "
+            foreach ($valid_site_array as $temp) echo "
         <option value=\"".$temp."\">".$temp."</option>";
           }
         }

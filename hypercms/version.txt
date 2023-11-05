@@ -7024,7 +7024,7 @@ Release 09/2023
 - Modifications in public function authenticate in the Workplace Integration module in order to accept IP address entries if the user log file if they are not older than 100 days (only if SSO is used)
 - Modifications in function loadfile, loadlockfile, and appendfile in Main API in order to always use sleep to avoid collision and CPU load whenever waiting for the file to be unlocked again
 - Modifications in function getuserboxes in Main API in order to use function splitstring for the preparation of the users home boxes definition
-- Performance improvements when processing media files of an unpacked ZIP file by processing the media objects using the queue and the minutely job (previews and serach index entries are therefore delayed for these objects)  
+- Performance improvements when processing media files of an unpacked ZIP file by processing the media objects using the queue and the minutely job (previews and search index entries are therefore delayed for these objects)  
 - Modifications in function createmediaobjects in Main API in order to support a new input parameter for creating the media files in the background 
 - Modifications in function unzipfile in Media API in order to support a new input parameter for creating the media files in the background
 - Modifications in popup_action in order to call function unzipfile with the new enabled parameter for processing the media files in the background
@@ -7115,9 +7115,9 @@ Release 09/2023
 - Modifications in function showvideoplayer in UI API in order to change the z-index of the CSS class hcmsVideoOverlay
 - Modifications in function notifyusers in Main API in order to trim the user names before comparison
 - Implementation of the new main configuration setting $mgmt_config['showbuttonlabel'] in the install directory
-- Modifications in frameset_main in order to support a verical and horizontal top bar layout
+- Modifications in frameset_main in order to support a vertical and horizontal top bar layout
 - Modifications in all controls in order to implement optional labels next to the buttons
-- Modifications in function editportal in Main API in order to support the postion of the main navigation on top or left and the display of button labels in the toolbar of the controls
+- Modifications in function editportal in Main API in order to support the position of the main navigation on top or left and the display of button labels in the toolbar of the controls
 - Modifications in portal_edit in order to support the postion of the main navigation on top or left and the display of button labels in the toolbar of the controls
 - Modifications in portal XML schema in order to add the new mainnavigation node
 - Removed CSS class hcmsButtonLabelSizeWide from all design themes
@@ -7140,11 +7140,11 @@ Release 09/2023
 - Design modifications in the Project Management module
 - Modifications in function viewinclusions in template engine in order to initialize the variable includedata
 - Modifications in the template engine in order to set a fixed position for the editing header bar
-- Modifications in the template engine in order to use an absolute positiong of the component edit buttons in the CMS/Inline view
+- Modifications in the template engine in order to use an absolute positioning of the component edit buttons in the CMS/Inline view
 - Implementation of the new template variable "%container_content%" in order to use the content of the XML content container of the current object in the template 
-- Modifications in function getlabel in Get API in order to optimize the result by verifing the length of the language code
+- Modifications in function getlabel in Get API in order to optimize the result by verifying the length of the language code
 - Modifications in explorer in order to set the min. length of the search expression to 3 although the standard min. length of indexed words in MySQL and MariaDB is 4 digits
-- Design modifications in the Mobile Edition in order to diplay the gallery view and the task button in the main navigation bar in case an access link user is logged in
+- Design modifications in the Mobile Edition in order to display the gallery view and the task button in the main navigation bar in case an access link user is logged in
 - Modifications in function createmedia in Media API in order to log errors if the ID3 image of an audio file could not be created or saved
 - Modifications in service chat in order to verify the chat record before processing its data 
 - Modifications in control_objectlist_menu in order to provide the location name in the same notation as in the control
@@ -7161,7 +7161,7 @@ Release 09/2023
 - Modifications in function link_db_update in Link API in order to verify the link record
 - Modifications in function manipulateobject in Main API in order to verify the link exists before inserting the reference into the link index
 - Modifications in the template engine in order not to render the preview of included unpublished components
-- Modifications in various services in order to verify that the publication manegement configuration file exists provide and error in the response in case the file does not exist
+- Modifications in various services in order to verify that the publication management configuration file exists provide and error in the response in case the file does not exist
 - Modifications in frameset_log in order to integrate control_log_menu in order to enable bigger sized overlays
 - Modifications in function deletelog in Main API ni order to modify the addonload result 
 - Design modifications in explorer_objectview, frameset_content, and frameset_objectlist
@@ -7169,6 +7169,13 @@ Release 09/2023
 - Update of the JQuery tagit library
 - Design modifications in control_log_menu
 - Modifications in control_media_menu in order to verify the media record before extracting te information from it
+- Modifications in function checkuserip in Security API in order to convert timeout to integer values
+- Modifications in function createfolder in Main API in order to initialize the variable location_esc
+- Modifications in class HyperMailer in order to verify the main configuration settings before their usage
+- Modifications in service mediastream in order to set the value of variable mediafile to media
+- Modifications in control_objectlist_menu in order to verify the result of the API functions before assigning the result values
+- Modifications in all system components in order to verify that the publication configuration file exists before loading the configuration
+- Modifications in userregister in order to verify the selected publication before creating and editing the user
 - Updates in various language files
 - Update of all Guides
 - Bug fix: Function getobjectlist in Get API did not create a result if the search result for the text content was empty and the search result for the object path was not empty
@@ -7201,6 +7208,8 @@ Release 09/2023
 - Bug fix: Function showeditor and showinlineeditor in UI API removed the domain from the JS configuration property cmsLink for CKEditor
 - Bug fix: control_log_menu verified the rootpermissions and not the globalpermissions which are necessary for the publication log
 - Bug fix: Function importxmlfiles in the Import/Export API used the wrong div-tag for a success message
-- Bug fix: popup_upload_html did not provide the correct file name as input for the local JS function frameRelaod if the file extension has been changed due to the upload/update of a file with a different file extension
-- Bug fix: Service rendervideo used  a wrong variable name for the object name
-- Bug fix: Function executeREST in REST API of the Connector module escaped special used in the object path which resulted to wrong object names whenever a new object has been created
+- Bug fix: popup_upload_html did not provide the correct file name as input for the local JS function frameReload if the file extension has been changed due to the upload/update of a file with a different file extension
+- Bug fix: Service rendervideo used a wrong variable name for the object name
+- Bug fix: Function executeREST in REST API of the Connector module escaped special characters used in the object path which resulted to wrong object names whenever a new object has been created
+- Bug fix: Function getmetadata in Get API did not strip HTML tags if a double quote was not present in the string
+- Bug fix: Explorer used a wrong variable name for the image width search parameter

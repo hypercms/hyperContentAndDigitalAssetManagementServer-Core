@@ -286,7 +286,7 @@ function link_db_read ($site)
         {
           $link_db_record = trim ($link_db_record);
  
-          if ($link_db_record != "")
+          if ($link_db_record != "" && substr_count ($link_db_record, ":|") > 1)
           {
             list ($container, $objects, $links) = explode (":|", $link_db_record);
 

@@ -29,7 +29,10 @@ $site = getpublication ($location);
 $cat = getcategory ($site, $location);
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // convert location
 $location = deconvertpath ($location, "file");
@@ -52,7 +55,7 @@ $show = "";
 $add_onload = "";
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // read actual file info (to get associated content)
 $pagestore = loadfile ($location, $page);

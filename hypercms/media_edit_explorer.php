@@ -27,7 +27,10 @@ $mediaformat = getrequest_esc ("mediaformat");
 $imagesearch = getrequest_esc ("imagesearch");
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // ------------------------------ permission section --------------------------------
 

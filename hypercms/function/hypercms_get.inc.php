@@ -1632,7 +1632,7 @@ function getmetadata ($location, $object, $container="", $separator="\r\n", $tem
         }
       }
 
-			if ($contentdata != false)
+			if (!empty ($contentdata))
       {
         if (strtolower ($separator) != "array") $metadata = "";
         else $metadata = array();
@@ -1654,7 +1654,7 @@ function getmetadata ($location, $object, $container="", $separator="\r\n", $tem
                 $text_content = getcontent ($textnode[0], "<textcontent>", true);
 
                 // strip tags and replace double by single quotes
-                if (!empty ($text_content[0]) && strpos ("_".$text_content[0], "\"") > 0)
+                if (!empty ($text_content[0]))
                 {
                   $text_content[0] = str_replace ("\"", "'", strip_tags ($text_content[0]));
                 }

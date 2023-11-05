@@ -28,8 +28,11 @@ $multiobject = getrequest ("multiobject");
 $site = getpublication ($location);
 $cat = getcategory ($site, $location);
 
-// load publication configuration
-if (valid_publicationname ($site) && empty ($mgmt_config[$site])) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+// publication management config
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // convert location
 $location = deconvertpath ($location, "file");

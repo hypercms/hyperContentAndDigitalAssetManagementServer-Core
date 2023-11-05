@@ -29,6 +29,7 @@ if ($wm != "")
   // get publication
   if (substr_count ($media, "/") == 1) list ($site, $mediafile) = explode ("/", $media);
   elseif (substr_count ($media, "/") == 2) list ($site, $container_id, $mediafile) = explode ("/", $media);
+  else $mediafile = $media;
   
   // check media file name
   if (valid_objectname ($mediafile) || is_thumbnail ($media, false))

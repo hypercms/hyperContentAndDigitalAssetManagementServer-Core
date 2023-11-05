@@ -1179,7 +1179,7 @@ function is_newthumbnail ($container_id, $recreate_index=false)
         if (sizeof ($temp_thumbnails) > 0) 
         {
           // save reduced thumbnails.dat
-          savefile ($mgmt_config['abs_path_temp'], "thumbnails.dat", implode ("\n", $temp_data));
+          savefile ($mgmt_config['abs_path_temp'], "thumbnails.dat", implode ("\n", $temp_data)."\n");
 
           // reset time for last entry, required for the filemtime verification
           $temp_thumbnails[$temp_container_id] = time();
@@ -12498,6 +12498,7 @@ function createfolder ($site, $location, $folder, $user)
   $success = false;
   $add_onload = "";
   $show = "";
+  $location_esc = "";
   $folder_orig = "";
   $folder_orig_webdav = "";
   $contentfile = "";
@@ -21317,7 +21318,7 @@ function deletelog ($logname="")
       if (strpos ($logname, ".") > 0) $site = substr ($logname, 0, strpos ($logname, "."));
       else $site = "";
 
-      $add_onload = "parent.frames['mainFrame'].location='log_list.php?site=".url_encode($site)."'; ";
+      $add_onload = "frames['mainFrame'].location='log_list.php?site=".url_encode($site)."'; ";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['cleared-all-events-from-list'][$lang]."</span>\n";
 
       $errcode = "00821";

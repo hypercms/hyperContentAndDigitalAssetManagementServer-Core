@@ -23,7 +23,10 @@ $eventlog_notify = getrequest_esc ("eventlog_notify");
 $token = getrequest ("token");
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // ------------------------------ permission section --------------------------------
 
@@ -58,7 +61,10 @@ if ((checkrootpermission ('site') || checkrootpermission ('user') || (valid_publ
     $result = editpublicationsetting ($site, $settings, $user);
 
     // reload publication management config
-    if (!empty ($result['result']) && valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    if (!empty ($result['result']) && valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+    {
+      require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+    }
 
     $add_onload .= $result['add_onload'];
     $show = $result['message'];

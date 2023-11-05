@@ -19,12 +19,12 @@ class HyperMailer extends PHPMailer
 
     $this->IsSMTP();
     $this->SMTPAuth = true;
-    $this->CharSet = $hcms_lang_codepage[$lang];
-    $this->Host     = $mgmt_config['smtp_host'];
-    $this->Username = $mgmt_config['smtp_username'];
-    $this->Password = $mgmt_config['smtp_password'];
-    $this->Port     = $mgmt_config['smtp_port'];
-    $this->Sender   = $mgmt_config['smtp_sender'];
+    if (!empty ($hcms_lang_codepage[$lang])) $this->CharSet = $hcms_lang_codepage[$lang];
+    if (!empty ($mgmt_config['smtp_host'])) $this->Host = $mgmt_config['smtp_host'];
+    if (!empty ($mgmt_config['smtp_username'])) $this->Username = $mgmt_config['smtp_username'];
+    if (!empty ($mgmt_config['smtp_password'])) $this->Password = $mgmt_config['smtp_password'];
+    if (!empty ($mgmt_config['smtp_port'])) $this->Port = $mgmt_config['smtp_port'];
+    if (!empty ($mgmt_config['smtp_sender'])) $this->Sender = $mgmt_config['smtp_sender'];
   }
 
   // for backwards compatibility

@@ -31,8 +31,11 @@ $token = getrequest ("token");
 $site = getpublication ($location);
 $cat = getcategory ($site, $location);
 
-// publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+// load publication configuration
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+{
+  $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+}
 
 // ------------------------------ permission section --------------------------------
 

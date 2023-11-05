@@ -27,7 +27,10 @@ $site = getpublication ($location);
 $cat = getcategory ($site, $location);
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // convert location
 $location = deconvertpath ($location, "file");
@@ -1564,7 +1567,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><div style=\"width:90%;
     <input type="hidden" name="zipcount" id="zipcount" value="" />
     <input type="hidden" name="totalcount" id="totalcount" value="" />
 
-    <div class="hcmsWorkplaceGeneric" style="display:block; position:fixed; top:38px; left:6px; right:6px; z-index:1;">
+    <div class="hcmsWorkplaceGeneric" style="display:block; position:fixed; top:36px; left:6px; right:6px; z-index:1;">
       <!-- info -->
       <?php if (!$is_mobile) { ?>
       <div style="margin:8px 0px;">

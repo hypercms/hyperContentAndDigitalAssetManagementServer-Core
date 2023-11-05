@@ -51,7 +51,10 @@ $location_esc = convertpath ($site, $location, $cat);
 $charset = $hcms_lang_codepage[$lang];
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
 {

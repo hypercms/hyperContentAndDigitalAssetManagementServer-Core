@@ -143,14 +143,14 @@ if ($site != "" && $cat != "")
 elseif ($site != "")
 {
   // reduce labels
-  if (!empty ($labels[$site]['page']) && !empty ($labels[$site]['comp'])) $labels_reduced = array_merge ($labels[$site]['page'], $labels[$site]['comp']);
-  elseif (!empty ($labels[$site]['page'])) $labels_reduced = $labels[$site]['page'];
-  elseif (!empty ($labels[$site]['comp'])) $labels_reduced = $labels[$site]['comp'];
+  if (!empty ($labels[$site]['page']) && !empty ($labels[$site]['comp']) && is_array ($labels[$site]['page']) && is_array ($labels[$site]['comp'])) $labels_reduced = array_merge ($labels[$site]['page'], $labels[$site]['comp']);
+  elseif (!empty ($labels[$site]['page']) && is_array ($labels[$site]['page'])) $labels_reduced = $labels[$site]['page'];
+  elseif (!empty ($labels[$site]['comp']) && is_array ($labels[$site]['comp'])) $labels_reduced = $labels[$site]['comp'];
   
   // reduce objectlistcols
-  if (!empty ($objectlistcols[$site]['page']) && !empty ($objectlistcols[$site]['comp'])) $objectlistcols_reduced = array_merge ($objectlistcols[$site]['page'], $objectlistcols[$site]['comp']);
-  elseif (!empty ($objectlistcols[$site]['page'])) $objectlistcols_reduced = $objectlistcols[$site]['page'];
-  elseif (!empty ($objectlistcols[$site]['comp'])) $objectlistcols_reduced = $objectlistcols[$site]['comp'];
+  if (!empty ($objectlistcols[$site]['page']) && !empty ($objectlistcols[$site]['comp']) && is_array ($objectlistcols[$site]['page']) && is_array ($objectlistcols[$site]['comp'])) $objectlistcols_reduced = array_merge ($objectlistcols[$site]['page'], $objectlistcols[$site]['comp']);
+  elseif (!empty ($objectlistcols[$site]['page']) && is_array ($objectlistcols[$site]['comp'])) $objectlistcols_reduced = $objectlistcols[$site]['page'];
+  elseif (!empty ($objectlistcols[$site]['comp']) && is_array ($objectlistcols[$site]['comp'])) $objectlistcols_reduced = $objectlistcols[$site]['comp'];
 }
 else
 {
@@ -203,7 +203,10 @@ elseif (is_array ($objectlistcols_reduced))
 }
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // save search parameters
 if (!empty ($search_save))

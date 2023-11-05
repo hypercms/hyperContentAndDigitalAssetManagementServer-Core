@@ -21,10 +21,17 @@ $search_expression = getrequest ("search_expression");
 if (empty ($lang) || empty ($_REQUEST['lang'])) $lang = getrequest_esc ("langCode");
 elseif (empty ($lang)) $lang = getrequest_esc ("lang");
 
-// publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+// load publication configuration
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+{
+  $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+}
+
 // publication management config for live system
-if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+{
+  $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+}
 
 // ------------------------------ permission section --------------------------------
 

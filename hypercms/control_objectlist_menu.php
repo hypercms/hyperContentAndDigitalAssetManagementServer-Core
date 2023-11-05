@@ -50,9 +50,16 @@ else
 }
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
+
 // load publication configuration
-if (valid_publicationname ($site)) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+{
+  $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+}
 
 // ------------------------------ permission section --------------------------------
 
@@ -170,29 +177,29 @@ if (checktoken ($token, $user))
   {
     $result = createfolder ($site, $location, $foldernew, $user);
 
-    $add_onload = $result['add_onload'];
-    $show = $result['message'];
+    if (!empty ($result['add_onload'])) $add_onload = $result['add_onload'];
+    if (!empty ($result['message'])) $show = $result['message'];
   }
   // rename folder
   elseif ($action == "folder_rename" && $setlocalpermission['root'] == 1 && $setlocalpermission['folderrename'] == 1) 
   {
     $result = renamefolder ($site, $location, $folder, $foldernew, $user);
 
-    $add_onload = $result['add_onload'];
-    $show = $result['message'];
-    $folder = $result['folder'];
-    $pagename = $result['name'];  
+    if (!empty ($result['add_onload'])) $add_onload = $result['add_onload'];
+    if (!empty ($result['message'])) $show = $result['message'];
+    if (!empty ($result['folder'])) $folder = $result['folder'];
+    if (!empty ($result['name'])) $pagename = $result['name'];  
   }
   // rename object
   elseif ($action == "page_rename" && $page != ".folder" && $setlocalpermission['root'] == 1 && $setlocalpermission['rename'] == 1)
   {
     $result = renameobject ($site, $location, $page, $pagenew, $user);
 
-    $add_onload = $result['add_onload'];
-    $show = $result['message'];  
-    $page = $result['object'];
-    $pagename = $result['name'];
-    $filetype = $result['objecttype'];
+    if (!empty ($result['add_onload'])) $add_onload = $result['add_onload'];
+    if (!empty ($result['message'])) $show = $result['message'];
+    if (!empty ($result['object'])) $page = $result['object'];
+    if (!empty ($result['name'])) $pagename = $result['name'];
+    if (!empty ($result['objecttype'])) $filetype = $result['objecttype'];
   }
   // create zip
   elseif ($action == "zip" && $setlocalpermission['root'] == 1)
@@ -209,9 +216,9 @@ if (checktoken ($token, $user))
     {
       $add_onload = "parent.frames['mainFrame'].location.reload();";
       $show = getescapedtext ($hcms_lang['the-file-'][$lang].$pagenew.$hcms_lang['zip-was-created'][$lang]);
-      $page = $result['object'];
-      $pagename = $result['name'];
-      $filetype = $result['objecttype'];  
+      if (!empty ($result['object'])) $page = $result['object'];
+      if (!empty ($result['name'])) $pagename = $result['name'];
+      if (!empty ($result['objecttype'])) $filetype = $result['objecttype'];  
     }
     else
     {

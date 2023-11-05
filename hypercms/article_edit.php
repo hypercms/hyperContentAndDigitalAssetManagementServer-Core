@@ -32,7 +32,10 @@ $artdatefrom = getrequest_esc ("artdatefrom");
 $artdateto = getrequest_esc ("artdateto");
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // ------------------------------ permission section --------------------------------
 
@@ -48,7 +51,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 
 // convert location
 $location = deconvertpath ($location, "file");
@@ -254,5 +257,6 @@ echo showtopbar ($label, $lang, $mgmt_config['url_path_cms']."page_view.php?view
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

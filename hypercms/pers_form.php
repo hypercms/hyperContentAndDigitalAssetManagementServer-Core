@@ -24,7 +24,10 @@ $persdata = getrequest ("persdata");
 $token = getrequest ("token");
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 // ------------------------------ permission section --------------------------------
 
@@ -231,7 +234,6 @@ function hcms_saveEvent ()
     <tr>
       <td colspan="2" style="text-align:left;">
         <textarea id="hcmsContent" name="persdata" wrap="VIRTUAL" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;" <?php if ($preview == "yes") echo " disabled=\"disabled\""; ?>><?php echo $persdata; ?></textarea>
-      </div>
       </td>
     </tr>
   </table>  

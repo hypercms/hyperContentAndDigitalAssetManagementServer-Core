@@ -63,7 +63,10 @@ $location = deconvertpath ($location, "file");
 $location_esc = convertpath ($site, $location, $cat);
 
 // publication management config
-if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
+{
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+}
 
 if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
 {
@@ -352,7 +355,7 @@ hr
     {
       echo "
     <div onmouseover=\"closeselectors();\" onclick=\"hcms_switchSelector('select_view_".$device."');\" class=\"hcmsButton hcmsButtonSizeWide\"><img src=\"".getthemelocation()."img/icon_".$device.".png\" class=\"hcmsButtonSizeSquare\" id=\"pic_obj_view\" name=\"pic_obj_view\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /><img src=\"".getthemelocation()."img/pointer_select.png\" class=\" hcmsButtonSizeNarrow\" alt=\"".getescapedtext(ucfirst($device))."\" title=\"".getescapedtext(ucfirst($device))."\" /></div>
-      <div id=\"select_view_".$device."\" class=\"hcmsSelector\" style=\"position:absolute; top:32px; left:".(54 * $i + 5)."px; visibility:hidden; z-index:40; max-height:200px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
+      <div id=\"select_view_".$device."\" class=\"hcmsSelector\" style=\"position:absolute; top:32px; left:".(54 * $i + 5)."px; visibility:hidden; z-index:140; max-height:200px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;\">";
 
       foreach ($name_array as $name => $size)
       {

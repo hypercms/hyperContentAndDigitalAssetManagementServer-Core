@@ -3143,7 +3143,7 @@ function checkuserip ($client_ip, $user="", $timeout=0)
         list ($log_ip, $log_user, $log_time) = explode ("|", $record);
 
         // check if client ip is already in log and locked
-        if ($client_ip == $log_ip && ($user == "" || $user == $log_user) && $now < ($log_time + 60 * $timeout)) 
+        if ($client_ip == $log_ip && ($user == "" || $user == $log_user) && $now < (intval ($log_time) + 60 * intval ($timeout)))
         {
           // no access
           $valid = false;

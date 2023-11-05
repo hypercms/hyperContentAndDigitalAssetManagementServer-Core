@@ -935,7 +935,7 @@ else
         // include configuration file of publication if not included already
         if ((empty ($mgmt_config[$site]) || !is_array ($mgmt_config[$site])) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
         {
-          @require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");  
+          require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");  
         }
         // no publication available
         else
@@ -2708,7 +2708,7 @@ else
                   // image based search
                   $search_imagecolor = json_decode ($search_imagecolor, true);
                   
-                  if (!empty ($search_imagewidth) || !empty ($search_imageheight)) $search_parameter['imagesize'] = $search_imagewidt.($search_imageheight != "" ? "" : "x".$search_imageheight);
+                  if (!empty ($search_imagewidth) || !empty ($search_imageheight)) $search_parameter['imagesize'] = $search_imagewidth.($search_imageheight != "" ? "" : "x".$search_imageheight);
                   if (is_array ($search_imagecolor) && sizeof ($search_imagecolor) > 0) $search_parameter['imagecolor'] = getescapedtext ($hcms_lang['image-color'][$lang])." (".implode (", ", $search_imagecolor).")";
                   if (!empty ($search_imagetype)) $search_parameter['imagetype'] = getescapedtext ($hcms_lang['image-type'][$lang])." (".$search_imagetype.")";
                   
@@ -2716,7 +2716,7 @@ else
                   if (!empty ($geo_border_sw) && !empty ($geo_border_ne)) $search_parameter['geo'] = getescapedtext ($hcms_lang['geo-location'][$lang])." SW ".$geo_border_sw." NE ".$geo_border_ne."";
                   
                   // specific search for ID
-                  if (!empty ($object_id) || !empty ($container_id)) $search_parameter['id'] .= getescapedtext ($hcms_lang['object-id-link-id'][$lang])." (".(!empty ($object_id) ? $object_id : $container_id).")";
+                  if (!empty ($object_id) || !empty ($container_id)) $search_parameter['id'] = getescapedtext ($hcms_lang['object-id-link-id'][$lang])." (".(!empty ($object_id) ? $object_id : $container_id).")";
                   
                   echo "
                     <option value=\"".$uniqid."\">".htmlspecialchars (implode (", ", $search_parameter))."</option>";
