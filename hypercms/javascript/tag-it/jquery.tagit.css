@@ -1,13 +1,12 @@
 ul.tagit {
-    padding: 1px 5px;
+    padding: 1px 3px;
     overflow: auto;
-    margin-left: inherit; /* usually we don't want the regular ul margins. */
-    margin-right: inherit;
+    margin: 1px 1px 1px 0px;
 }
 ul.tagit li {
     display: block;
     float: left;
-    margin: 2px 5px 2px 0;
+    margin: 2px 3px 2px 0;
 }
 ul.tagit li.tagit-choice {    
     position: relative;
@@ -49,7 +48,7 @@ ul.tagit li.tagit-choice .tagit-close .text-icon {
 ul.tagit li.tagit-choice input {
     display: block;
     float: left;
-    margin: 2px 5px 2px 0;
+    margin: 2px 3px 2px 0;
 }
 ul.tagit input[type="text"] {
     -moz-box-sizing:    border-box;

@@ -183,6 +183,14 @@ ul.tagit
   width: 280px;
   height: 28px;
 }
+
+@media only screen and (max-width: 1600px)
+{
+  .hcmsButtonLabel
+  {
+    display: none;
+	}
+}
 </style>
 <script type="text/javascript">
 
@@ -569,7 +577,7 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
   <div class="hcmsToolbarBlock">
     <div style="padding:3px; float:left;">
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" />
-      <select name="group" id="groupfilter" onchange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>" style="width:<?php if ($is_mobile) echo "120px"; else echo "180px"; ?>;">
+      <select name="group" id="groupfilter" onchange="hcms_jumpMenu('parent.frames[\'mainFrame\']',this,0)" title="<?php echo $item_name; ?>" style="width:<?php if ($is_mobile) echo "120px"; else echo "160px"; ?>;">
         <?php
         // select users by group membership
         if (valid_publicationname ($site))
@@ -589,14 +597,14 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
             {
               natcasesort ($group_array);
               reset ($group_array);
-  
+
               foreach ($group_array as $group_item)
               {
                 if ($group_item != "")
                 {
                   if ($group == $group_item) $selected = "selected=\"selected\"";
                   else $selected = "";
-                  
+
                   echo "
           <option value=\"user_objectlist.php?site=".url_encode($site)."&group=".url_encode($group_item)."\" ".$selected.">".$group_item."</option>\n";
                 }
@@ -611,7 +619,7 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
           <option value=\"user_objectlist.php?site=*Null*\" ".($site == "*Null*" ? "selected" : "").">".getescapedtext ($hcms_lang['all-users'][$lang])."</option>";
           echo "
           <option value=\"user_objectlist.php?site=*no_memberof*\" ".($site == "*no_memberof*" ? "selected" : "").">".getescapedtext ($hcms_lang['publication'][$lang])." &gt; ".getescapedtext ($hcms_lang['none'][$lang])."</option>";
-        
+
           $inherit_db = inherit_db_read ();          
           $site_array = array();
           
@@ -624,17 +632,17 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
                 $site_array[] = $inherit_db_record['parent'];
               }
             }
-            
+
             if (is_array ($site_array) && sizeof ($site_array) > 0)
             {
               natcasesort ($site_array);
               reset ($site_array);
-                        
+         
               foreach ($site_array as $site_item)
               {
                 if ($site == $site_item) $selected = "selected=\"selected\"";
                 else $selected = "";
-                              
+
                 echo "
             <option value=\"user_objectlist.php?site=".url_encode($site_item)."\" ".$selected." title=\"".$site_item."\">".$siteaccess[$site_item]."</option>";
               }
@@ -650,7 +658,7 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
       <form name="searchform" method="post" action="user_objectlist.php" target="mainFrame" style="margin:0; padding:0; border:0;">
         <input type="hidden" name="site" value="<?php echo $site; ?>" />
         <input type="hidden" name="group" value="<?php if (valid_publicationname ($site)) echo "*all*"; ?>" />
-        <input type="text" name="search" onkeydown="if (hcms_enterKeyPressed(event)) startSearch();" style="float:left; width:<?php if ($is_mobile) echo "130px"; else echo "180px"; ?>;" maxlength="400" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" value="" />
+        <input type="text" name="search" onkeydown="if (hcms_enterKeyPressed(event)) startSearch();" style="float:left; width:<?php if ($is_mobile) echo "120px"; else echo "160px"; ?>;" maxlength="400" placeholder="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" value="" />
         <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search_dark.png" onclick="startSearch();" style="float:left; cursor:pointer; width:22px; height:22px; margin:5px 0px 3px -26px; " title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
       </form>
     </div>

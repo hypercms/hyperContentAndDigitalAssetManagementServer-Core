@@ -185,7 +185,7 @@ function checkUpdatedContent ()
   $.ajax({
     type: 'POST',
     url: "<?php echo cleandomain ($mgmt_config['url_path_cms'])."service/checkupdatedcontent.php"; ?>",
-    data: {container_id:"<?php echo $container_id; ?>",tagname:"link",tagid:"<?php echo $id; ?>""},
+    data: {container_id:"<?php echo $container_id; ?>",tagname:"link",tagid:"<?php echo $id; ?>"},
     success: function (data)
     {
       if (data.message.length !== 0)

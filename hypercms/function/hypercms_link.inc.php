@@ -11,144 +11,127 @@
 
 // ----------------------------------------- link_db_restore ---------------------------------------------
 // function: link_db_restore()
-// input: publication name [string] (optional)
+// input: publication name [string]
 // output: true / false on error
 // requires: hypercms_api.inc.php, config.inc.php
 
 // description:
-// This function restores a given or all link management index files
+// This function restores a link management index file of a publication
 
-function link_db_restore ($site="")
+function link_db_restore ($site)
 {
   global $mgmt_config;
 
   // initialize
   $error = array();
 
-  if (is_array ($mgmt_config) && isset ($mgmt_config['abs_path_cms']))
-  { 
-    // content repository
-    $loc = $mgmt_config['abs_path_data']."content/";
+  if (is_array ($mgmt_config) && isset ($mgmt_config['abs_path_cms']) && $site != "")
+  {
+    // collect container IDs of publication
+    $result_array = rdbms_externalquery ('SELECT id FROM object WHERE objectpath LIKE "*comp*/'.$site.'/%" OR objectpath LIKE "*page*/'.$site.'/%" ORDER BY id');
 
     // 1 st level (content container blocks)
-    if (is_dir ($loc))
+    if (!empty ($result_array) && sizeof ($result_array) > 0)
     {
-      $blockdir = scandir ($loc);
-
       $i = 0;
       $time_1 = time();
-      $link_db_entry = null;
+      $link_db_entry = array();
+      $link_db_entry[$site] = "";
 
-      // browse all containers in content repository
-      foreach ($blockdir as $block)
+      // browse all containers of publication
+      foreach ($result_array as $temp)
       {
-        if (is_dir ($loc.$block) && $block != "." && $block != ".." && is_numeric ($block))
+        if (!empty ($temp['id']))
         {
-          // 2nd level (specific content container folder)
-          $contdir = scandir ($loc.$block);
+          // add missing zeros
+          $container_id = str_pad ($temp['id'], 7, "0", STR_PAD_LEFT);
 
-          foreach ($contdir as $container_id)
+          // update page links
+          $contentdata = loadcontainer ($container_id, "work", "sys"); 
+
+          if ($contentdata != false) 
           {
-            if (is_dir ($loc.$block."/".$container_id))
+            $i++;
+
+            // extract publication from the location path of the object
+            $objref_array = getcontent ($contentdata, "<contentobjects>");
+            $publication = getpublication ($objref_array[0]);
+
+            // compare publication of container with the requested publication
+            if ($publication != "" && $site == $publication)
             {
-              // update page links
-              $contentdata = loadcontainer ($container_id, "work", "sys"); 
+              // container reference
+              $link_db_entry[$site] .= "\n".$container_id.".xml:|";
 
-              if ($contentdata != false) 
+              // object references
+              $link_db_entry[$site] .= $objref_array[0].":|";
+
+              // page references
+              $linkobj_array = getcontent ($contentdata, "<link>");
+
+              if (is_array ($linkobj_array) && sizeof ($linkobj_array) > 0)
               {
-                $i++;
-
-                // extract publication vom origin location of the object
-                $objorigin_array = getcontent ($contentdata, "<contentorigin>");
-                $objref_array = getcontent ($contentdata, "<contentobjects>");
-
-                $publication1 = getpublication ($objorigin_array[0]);
-                $publication2 = getpublication ($objref_array[0]);
-
-                if ($publication1 == $publication2) $publication = $publication1;
-                elseif ($publication2 != "") $publication = $publication2;
-                elseif ($publication1 != "") $publication = $publication1;
-                else $publication = "";
-
-                if ($publication != "" && ($site == "" || ($site != "" && $site == $publication)))
+                foreach ($linkobj_array as $linkobj)
                 {
-                  if (!is_array ($publication_array)) $publication_array[] = $publication;
-                  elseif (!in_array ($publication, $publication_array)) $publication_array[] = $publication;
+                  $link_href = getcontent ($linkobj, "<linkhref>");
 
-                  // container reference
-                  $link_db_entry[$publication] .= "\n".$container_id.".xml:|";
-
-                  // object references
-                  $link_db_entry[$publication] .= $objref_array[0].":|";
-
-                  // page references
-                  $linkobj_array = getcontent ($contentdata, "<link>");
-
-                  if (is_array ($linkobj_array) && sizeof ($linkobj_array) > 0)
+                  if (!empty ($link_href[0]))
                   {
-                    foreach ($linkobj_array as $linkobj)
-                    {
-                      $link_href = getcontent ($linkobj, "<linkhref>");
-
-                      if (!empty ($link_href[0]))
-                      {
-                        $link_db_entry[$publication] .= $link_href[0]."|";
-                      }
-                    }
+                    $link_db_entry[$site] .= $link_href[0]."|";
                   }
+                }
+              }
 
-                  // component references 
-                  $compobj_array = getcontent ($contentdata, "<component>"); 
+              // component references 
+              $compobj_array = getcontent ($contentdata, "<component>"); 
 
-                  if (is_array ($compobj_array) && sizeof ($compobj_array) > 0)
+              if (is_array ($compobj_array) && sizeof ($compobj_array) > 0)
+              {
+                foreach ($compobj_array as $compobj)
+                {
+                  $component_files = getcontent ($compobj, "<componentfiles>");
+
+                  if (!empty ($component_files[0]))
                   {
-                    foreach ($compobj_array as $compobj)
+                    $component_files = trim ($component_files[0]);
+
+                    // if multi component
+                    if (@substr_count ($component_files, "|") >= 1)
                     {
-                      $component_files = getcontent ($compobj, "<componentfiles>");
-
-                      if (!empty ($component_files[0]))
-                      {
-                        $component_files = trim ($component_files[0]);
-
-                        // if multi component
-                        if (@substr_count ($component_files, "|") >= 1)
-                        {
-                          if ($component_files[strlen ($component_files)-1] == "|")
-                          { 
-                            $component_files = substr ($component_files, 0, strlen ($component_files)-1);
-                          }
-                        }
-
-                        if ($component_files != "") $link_db_entry[$publication] .= $component_files."|"; 
+                      if ($component_files[strlen ($component_files)-1] == "|")
+                      { 
+                        $component_files = substr ($component_files, 0, strlen ($component_files)-1);
                       }
                     }
+
+                    if ($component_files != "") $link_db_entry[$site] .= $component_files."|"; 
                   }
+                }
+              }
 
-                  // media references 
-                  $mediaobj_array = getcontent ($contentdata, "<media>"); 
+              // media references 
+              $mediaobj_array = getcontent ($contentdata, "<media>"); 
 
-                  if (is_array ($mediaobj_array) && sizeof ($mediaobj_array) > 0)
+              if (is_array ($mediaobj_array) && sizeof ($mediaobj_array) > 0)
+              {
+                foreach ($mediaobj_array as $mediaobj)
+                {
+                  $media_files = getcontent ($mediaobj, "<mediaobject>");
+
+                  if (!empty ($media_files[0]))
                   {
-                    foreach ($mediaobj_array as $mediaobj)
+                    $media_files = trim ($media_files[0]);
+
+                    // if multi component
+                    if (@substr_count ($component_files, "|") >= 1)
                     {
-                      $media_files = getcontent ($mediaobj, "<mediaobject>");
-
-                      if (!empty ($media_files[0]))
-                      {
-                        $media_files = trim ($media_files[0]);
-
-                        // if multi component
-                        if (@substr_count ($component_files, "|") >= 1)
-                        {
-                          if ($media_files[strlen ($media_files)-1] == "|")
-                          { 
-                            $media_files = substr ($media_files, 0, strlen ($media_files)-1);
-                          }
-                        }
-
-                        if ($media_files != "") $link_db_entry[$publication] .= $media_files."|"; 
+                      if ($media_files[strlen ($media_files)-1] == "|")
+                      { 
+                        $media_files = substr ($media_files, 0, strlen ($media_files)-1);
                       }
                     }
+
+                    if ($media_files != "") $link_db_entry[$site] .= $media_files."|"; 
                   }
                 }
               }
@@ -162,24 +145,21 @@ function link_db_restore ($site="")
     $duration = $time_2 - $time_1;
 
     // copy all containers to new location
-    if (is_array ($link_db_entry) && is_array ($publication_array))
+    if (!empty ($link_db_entry[$site]))
     {
-      foreach ($publication_array as $publication)
+      $link_database = "container:|ojbect|:|link|".$link_db_entry[$site];
+
+      $test = savefile ($mgmt_config['abs_path_data']."link/", $site.".link.dat", $link_database);
+
+      if ($test == true)
       {
-        $link_database = "container:|ojbect|:|link|".$link_db_entry[$publication];
-
-        $test = savefile ($mgmt_config['abs_path_data']."link/", $publication.".link.dat", $link_database);
-
-        if ($test == true)
-        {
-          $errcode = "00810";
-          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|information|".$errcode."|Regernated and saved link index for publication '".$publication."' successfully (execution time: ".$duration." sec)";
-        }
-        else
-        {
-          $errcode = "10810";
-          $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not regenerate and save link index for publication '".$publication."' (execution time: ".$duration." sec)";
-        }
+        $errcode = "00810";
+        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|information|".$errcode."|Regenerated and saved link index for publication '".$site."' successfully (execution time: ".$duration." sec)";
+      }
+      else
+      {
+        $errcode = "10810";
+        $error[] = $mgmt_config['today']."|hypercms_link.inc.php|error|".$errcode."|Could not regenerate and save link index for publication '".$site."' (execution time: ".$duration." sec)";
       }
 
       // save log

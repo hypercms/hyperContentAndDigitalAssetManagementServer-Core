@@ -54,6 +54,12 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit') && $action 
   $add_onload = $result['add_onload'];
   $show = $result['message'];  
 }
+
+// restore link DB if missing
+if (!empty ($setting['linkengine']) && link_db_read ($site_name) == false)
+{
+  link_db_restore ($site_name);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -341,7 +347,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <tr>
       <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['link-management'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
-        <input type="checkbox" id="linkengine" name="setting[linkengine]" value="true" <?php if (@$mgmt_config[$site_name]['linkengine'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
+        <input type="checkbox" id="linkengine" name="setting[linkengine]" value="true" <?php if (!empty ($mgmt_config[$site_name]['linkengine'])) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>
@@ -352,7 +358,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     <tr> 
       <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </td>
       <td style="white-space:nowrap; vertical-align:top; padding-top:8px;">
-        <input type="checkbox" name="setting[sendmail]" value="true" <?php if (@$mgmt_config[$site_name]['sendmail'] == true) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
+        <input type="checkbox" name="setting[sendmail]" value="true" <?php if (!empty ($mgmt_config[$site_name]['sendmail'])) echo "checked=\"checked\""; if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['active'][$lang]); ?></label>
       </td>
     </tr>

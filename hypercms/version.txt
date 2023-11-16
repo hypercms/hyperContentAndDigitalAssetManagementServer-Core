@@ -7213,3 +7213,12 @@ Release 09/2023
 - Bug fix: Function executeREST in REST API of the Connector module escaped special characters used in the object path which resulted to wrong object names whenever a new object has been created
 - Bug fix: Function getmetadata in Get API did not strip HTML tags if a double quote was not present in the string
 - Bug fix: Explorer used a wrong variable name for the image width search parameter
+
+Version 10.2.1
+Release 01/2024
+- Design modifications in the tag-it JQuery plugin
+- Design modifications in control_user_menu in order to set an individual screen size for the dislpay of the button labels due to the width of the toolbar
+- Modifications in site_edit_form in order to restore or create the link index of a publication if the link management is enabled and the link index is missing
+- Modifications in function link_db_restore in Link DB API in order to support the collection of the container IDs by using a database query for a specific publication instead of browsing all content containers
+- Bug fix: text_edit_date used two double quotes at the end of the tagid value string and caused an error in the local JS function checkUpdatedContent
+- Bug fix: Function rdbms_searchcontent and rdbms_replacecontent in DB Connect used the wrong column for the page and component search filter

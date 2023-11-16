@@ -2549,7 +2549,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if ($search_type == "page" || $search_type == "comp") 
           {
             if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-            $sql_where['object'] .= 'obj.objectpath LIKE "*.'.$search_type.'*/%"';
+            $sql_where['object'] .= 'obj.template LIKE "%.'.$search_type.'.tpl"';
           }
 
           // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
@@ -3006,7 +3006,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
           if ($search_type == "page" || $search_type == "comp") 
           {
             if ($sql_where['object'] != "") $sql_where['object'] .= " OR ";
-            $sql_where['object'] .= 'obj.objectpath LIKE "*.'.$search_type.'*/"';
+            $sql_where['object'] .= 'obj.template LIKE "%.'.$search_type.'.tpl"';
           }
 
           // media file-type (audio, document, text, image, video, compressed, flash, binary, unknown)
