@@ -693,15 +693,15 @@ function settransparent ()
         <div class="hcmsButtonTinyBlank hcmsButtonSizeSquare hcmsFloatLeft" style="float:left; min-width:36px; min-height:36px;">
           <img src="<?php echo getthemelocation($portaltheme); ?>img/logo_top.png?ts=<?php echo time(); ?>" class="hcmsLogoTop" />
         </div>
-        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px;">
+        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px; border-radius:0;">
           <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare hcmsFloatLeft" />
           <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['home'][$lang]); ?></span>
         </div>
-        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px;">
+        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px; border-radius:0;">
           <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare hcmsFloatLeft" />
           <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?></span>
         </div>
-        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px;">
+        <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor"  style="float:left; padding:2px; border-radius:0;">
           <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png?ts=<?php echo time(); ?>" class="hcmsButtonSizeSquare hcmsFloatLeft" />
           <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?></span>
         </div>

@@ -7217,8 +7217,24 @@ Release 09/2023
 Version 10.2.1
 Release 01/2024
 - Design modifications in the tag-it JQuery plugin
-- Design modifications in control_user_menu in order to set an individual screen size for the dislpay of the button labels due to the width of the toolbar
+- Design modifications in control_user_menu in order to set an individual screen size for the display of the button labels due to the width of the toolbar
 - Modifications in site_edit_form in order to restore or create the link index of a publication if the link management is enabled and the link index is missing
 - Modifications in function link_db_restore in Link DB API in order to support the collection of the container IDs by using a database query for a specific publication instead of browsing all content containers
+- Design modifications in rich calender CSS
+- Update to JQuery library version 3.7.1
+- Update to JQuery UI library version 1.4.2
+- Design modifications in Workflow Management module
+- Design modifications in media_edit_explorer
+- Modifications in media_edit_explorer in order to display the selected media category after performing a media search
+- Modifications in media_edit_explorer in order to display the search expression after performing a media search
+- Updates in the German language file
+- Design modifications in the Standard design theme for rounded buttons
+- Design modifications in the Day design theme for rounded buttons
+- Design modifications in the Night design theme for rounded buttons
+- Design modifications in the Transparent design theme for rounded buttons
+- Design modifications in frameset_main in order to disable rounded buttons in the top/left main navigation bar
+- Design modifications in frameset_mobile in order to disable rounded buttons in the top main navigation bar
+- Design modifications in portal_edit in order to disable rounded buttons in the top main navigation bar
 - Bug fix: text_edit_date used two double quotes at the end of the tagid value string and caused an error in the local JS function checkUpdatedContent
 - Bug fix: Function rdbms_searchcontent and rdbms_replacecontent in DB Connect used the wrong column for the page and component search filter
+- Bug fix: Function uploadhandler in Main API did not initialize the error array

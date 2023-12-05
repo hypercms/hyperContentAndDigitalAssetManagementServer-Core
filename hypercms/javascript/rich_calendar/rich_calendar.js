@@ -646,7 +646,7 @@ RichCalendar.prototype.show = function(x, y, el, position) {
 	var iframe_styles = RichCalendar.get_iframe_styles();
 
 	// put calendar content into the iframe
-	var iframe_content = '' +
+	var iframe_content = '<!DOCTYPE html>' +
 '<html>' +
 '<head>' +
 '<style type="text/css">'+iframe_styles+'</style>' +

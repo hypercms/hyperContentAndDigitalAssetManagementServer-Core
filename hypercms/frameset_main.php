@@ -462,23 +462,23 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <!-- top/left bar -->
 <div class="hcmsWorkplaceTop" style="position:fixed; left:0; top:0; width:<?php if (!empty ($width_top)) echo intval($width_top)."px"; else echo "100%"; ?>; height:<?php if (!empty ($height_top)) echo intval($height_top)."px"; else echo "100%"; ?>;">
 
-  <div class="hcmsButtonTinyBlank hcmsButtonSizeSquare hcmsFloatLeft" style="float:left; min-width:36px; min-height:36px;" onclick="openInfo();">
+  <div class="hcmsButtonTinyBlank hcmsButtonSizeSquare hcmsFloatLeft" style="float:left; min-width:36px; min-height:36px; border-radius:0;" onclick="openInfo();">
     <img src="<?php if (!empty ($mgmt_config['logo_top'])) echo $mgmt_config['logo_top']; else echo getthemelocation()."img/logo_top.png"; ?>" class="hcmsLogoTop" title="hyper Content & Digital Asset Management Server" alt="hyper Content & Digital Asset Management Server" />
   </div>
 
   <?php if (empty ($hcms_assetbrowser) && linking_valid() == false) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="showHome();">
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px; border-radius:0;" onclick="showHome();">
     <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/home.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['home'][$lang]); ?>" />
     <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['home'][$lang]); ?></span>
   </div>
   <?php } ?>
 
   <?php if (linking_valid() == false) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="switchNav();">
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px; border-radius:0;" onclick="switchNav();">
     <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_explorer.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
     <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?></span>
   </div>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="switchSearch();">
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px; border-radius:0;" onclick="switchSearch();">
     <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_search.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['search'][$lang]); ?>" />
     <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['search'][$lang]); ?></span>
   </div>
@@ -486,14 +486,14 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   
   <?php if (linking_valid() == true)  { ?>
   <a href="frameset_objectlist.php?action=linking" target="workplFrame">
-    <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;">
+    <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px; border-radius:0;">
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_gallery_medium.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?>" />
       <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['navigate'][$lang]); ?></span>
     </div>
   </a>
   <?php if (checkrootpermission ('desktoptaskmgmt')) { ?>
   <a href="task/task_list.php" target="workplFrame">
-    <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;">
+    <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px; border-radius:0;">
       <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/task.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?>" />
       <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['task-management'][$lang]); ?></span>
     </div>
@@ -502,14 +502,14 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
   <?php } ?>
 
   <?php if (empty ($hcms_assetbrowser) && !empty ($mgmt_config['chat'])) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onClick="hcms_openChat();">
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px; border-radius:0;" onClick="hcms_openChat();">
     <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_chat.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?>" />
     <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['chat'][$lang]); ?></span>
   </div>
   <?php } ?>
   
   <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px;" onclick="top.location='userlogout.php';">
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="float:left; padding:2px; border-radius:0;" onclick="top.location='userlogout.php';">
     <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_logout.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?>" />
     <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></span>
   </div>
@@ -517,7 +517,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 
   <!-- user info -->
   <?php if (empty ($hcms_assetbrowser) && empty ($hcms_portal)) { ?>
-  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="position:absolute; <?php if (!empty ($width_top)) echo "left:0; bottom:0; margin:32px 0px;"; else echo "right:0; top:0;"; ?> padding:2px;" onclick="hcms_showFormLayer('userInfoLayer', 4);">
+  <div class="hcmsButtonTiny hcmsHoverColor hcmsInvertColor" style="position:absolute; <?php if (!empty ($width_top)) echo "left:0; bottom:0; margin:32px 0px;"; else echo "right:0; top:0;"; ?> padding:2px; border-radius:0;" onclick="hcms_showFormLayer('userInfoLayer', 4);">
     <img src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_info.png" class="hcmsButtonSizeSquare hcmsFloatLeft" alt="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>" />
     <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['information'][$lang]); ?></span>
   </div>

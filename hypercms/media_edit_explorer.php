@@ -96,11 +96,11 @@ function goToURL()
   <img onclick="parent.maxNavFrame();" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
 
-<div id="Navigator" class="hcmsWorkplaceFrame">
+<div id="Navigator">
 <table class="hcmsTableStandard" style="width:100%;">
   <tr>
-    <td class="hcmsHeadline">
-      <?php echo getescapedtext ($hcms_lang['select-media-files'][$lang]); ?>
+    <td>
+      <div class="hcmsHeadline" style="margin-left:4px;"><?php echo getescapedtext ($hcms_lang['select-media-files'][$lang]); ?></div>
       <form name="imagesearch" method="post" action="">
         <input type="hidden" name="site" value="<?php echo $site; ?>" />
         <input type="hidden" name="mediacat" value="<?php echo $mediacat; ?>" />
@@ -113,7 +113,7 @@ function goToURL()
           </tr>
           <tr>
             <td>
-            <select name="mediacat_name" style="width:210px;">
+            <select name="mediacat_name" style="width:220px;">
               <option value=""><?php echo getescapedtext ($hcms_lang['all-categories'][$lang]); ?></option>
               <?php
               if (is_array ($mediacat_array) && sizeof ($mediacat_array) > 0)
@@ -121,7 +121,7 @@ function goToURL()
                 foreach ($mediacat_array as $mediacat_record)
                 {
                   list ($mediacategory, $rest) = explode (":|", $mediacat_record);
-                  echo "<option value=\"".$mediacategory."\">".$mediacategory."</option>\n";
+                  echo "<option value=\"".$mediacategory."\" ".($mediacategory == $mediacat_name ? "selected" : "").">".$mediacategory."</option>\n";
                 }
               }
               ?>
@@ -133,7 +133,7 @@ function goToURL()
           </tr>
           <tr>
             <td>
-            <select name="mediaformat" style="width:210px;">
+            <select name="mediaformat" style="width:220px;">
               <option value=""><?php echo getescapedtext ($hcms_lang['all-formats'][$lang]); ?></option>
               <option value="audio" <?php if ($mediaformat == "audio") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['audio'][$lang]); ?></option>
               <option value="compressed" <?php if ($mediaformat == "compressed") echo "selected=\"selected\""; ?>><?php echo getescapedtext ($hcms_lang['compressed'][$lang]); ?></option>
@@ -149,7 +149,7 @@ function goToURL()
           </tr>
           <tr>
             <td>
-            <input type="text" name="imagesearch" style="width:174px;" />
+            <input type="text" name="imagesearch" style="width:184px;" value="<?php echo $imagesearch; ?>"/>
             <img name="Button" src="<?php echo getthemelocation(); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onclick="document.forms['imagesearch'].submit();" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" />
             </td>
           </tr>
@@ -220,7 +220,7 @@ if ($sender == "search")
     elseif ($mediaformat == "compressed") $format_ext = strtolower ($hcms_ext['compressed']);
   }
 
-  echo "<span class=\"hcmsHeadlineTiny\">".getescapedtext ($hcms_lang['found-media-files'][$lang])."</span><br />\n";
+  echo "<div class=\"hcmsHeadlineTiny\" style=\"margin-bottom:8px;\">".getescapedtext ($hcms_lang['found-media-files'][$lang])."</div>\n";
 
   // files in actual directory
   if (!empty ($files) && is_array ($files) && sizeof ($files) > 0)

@@ -629,6 +629,8 @@ a.hcmsNavigator
 
 .hcmsButton:hover, .hcmsButtonTiny:hover, .hcmsButtonActive
 {
+  border: 0;
+  border-radius: 5px;
 	background-color: #999999;
 }
 
@@ -692,6 +694,8 @@ a.hcmsNavigator
 
 .hcmsButtonMenu:hover
 {
+  border: 0;
+  border-radius: 5px;
   background-color: #FFC477;
 }
 
@@ -703,6 +707,8 @@ a.hcmsNavigator
 
 .hcmsButtonMenuActive
 {
+  border: 0;
+  border-radius: 5px;
   background-color: #FFC477;
   position: relative;
   top: 1px;
@@ -712,6 +718,7 @@ a.hcmsNavigator
 {
   background-color: #65B1FC;
   border: 1px solid #469df5;
+  border-radius: 5px;
   display: inline-block;
   padding: 4px 10px;
   text-decoration: none;
@@ -733,6 +740,7 @@ a.hcmsNavigator
 {
   background-color: #77d42a;
   border: 1px solid #268a16;
+  border-radius: 5px;
   display: inline-block;
   padding: 4px 10px;
   text-decoration: none;
@@ -754,6 +762,7 @@ a.hcmsNavigator
 {
   background-color: #FB9004;
   border: 1px solid #C28B2C;
+  border-radius: 5px;
   display: inline-block;
   padding: 4px 10px;
   text-decoration: none;

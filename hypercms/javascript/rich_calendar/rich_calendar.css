@@ -1,6 +1,7 @@
 .rc_calendar {
 	border: 1px solid #000000;
-  z-index: 90000;
+	max-width: 188px;
+	z-index: 90000;
 }
 
 .rc_iframe_body {
