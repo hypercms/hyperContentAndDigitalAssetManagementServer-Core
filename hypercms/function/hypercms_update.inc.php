@@ -163,22 +163,22 @@ function update_tasks_v584 ()
 
       // create task table
       $sql = "CREATE TABLE `task` (
-    `task_id` int(11) NOT NULL auto_increment,
-    `project_id` int(11) DEFAULT NULL,
-    `object_id` int(11),
-    `task` varchar(200) NOT NULL DEFAULT 'undefined',
-    `from_user` varchar(200) NOT NULL default '',
-    `to_user` varchar(200) NOT NULL default '',
-    `startdate` date NOT NULL,
-    `finishdate` date DEFAULT NULL,
-    `category` varchar(20) NOT NULL default 'user',
-    `description` varchar(3600),
-    `priority` varchar(10) NOT NULL default 'low',
-    `status` tinyint(3) NOT NULL,
-    `duration` time DEFAULT NULL,
-    PRIMARY KEY  (`task_id`),
-    KEY `task` (`to_user`)
-  ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+      `task_id` int(11) NOT NULL auto_increment,
+      `project_id` int(11) DEFAULT NULL,
+      `object_id` int(11),
+      `task` varchar(200) NOT NULL DEFAULT 'undefined',
+      `from_user` varchar(200) NOT NULL default '',
+      `to_user` varchar(200) NOT NULL default '',
+      `startdate` date NOT NULL,
+      `finishdate` date DEFAULT NULL,
+      `category` varchar(20) NOT NULL default 'user',
+      `description` varchar(3600),
+      `priority` varchar(10) NOT NULL default 'low',
+      `status` tinyint(3) NOT NULL,
+      `duration` time DEFAULT NULL,
+      PRIMARY KEY  (`task_id`),
+      KEY `task` (`to_user`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
       $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'create');
 
@@ -2567,6 +2567,127 @@ function update_database_v1012 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v1021 ----------------------------------------------
+// function: update_database_v1021()
+// input: %
+// output: true / false
+
+// description: 
+// Migration from file based contentcount to database tabel contentcount of version 10.2.1.
+
+function update_database_v1021 ()
+{
+  global $mgmt_config;
+
+  if (!checksoftwareversion ("10.2.1"))
+  {
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset'], "");
+
+    // check if table exists
+    $sql = "SHOW TABLES LIKE 'contentcount'";
+    $errcode = "50830";
+    $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'show');
+    $tableexists = $db->rdbms_getnumrows ('show') > 0;
+
+    if (!$tableexists)
+    {
+      // create contentcount table
+      $sql = "CREATE TABLE `contentcount` (
+        `id` int(11) NOT NULL auto_increment,
+        `time` int(11) DEFAULT NULL,
+        PRIMARY KEY (`id`)
+      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+      $errcode = "50831";
+      $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'create');
+    }
+
+    // read contentcount
+    $filedata = loadfile ($mgmt_config['abs_path_data'], "contentcount.dat", 5);
+
+    // try to restore contentcount from database
+    if (empty ($filedata))
+    {
+      $temp = rdbms_externalquery ("SELECT MAX(id) AS contentcount FROM object");
+
+      if (!empty ($temp[0]['contentcount']))
+      {
+        $filedata = intval ($temp[0]['contentcount']);
+
+        if ($filedata > 0)
+        {
+          // add 10 for safety reasons
+          $filedata = $filedata + 10;
+        }
+      }
+    }
+
+    // insert contentcount
+    $contentcount = intval ($filedata);
+
+    if ($contentcount > 0)
+    {
+      $sql = 'ALTER TABLE contentcount AUTO_INCREMENT='.$contentcount;
+      $errcode = "50832";
+      $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+      // update log
+      if ($result)
+      {
+        savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.2.1|updated to version 10.2.1"), "update");
+        deletefile ($mgmt_config['abs_path_data'], "contentcount.dat", false);
+      }
+    }
+
+    // save log
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
+
+    return true;
+  }
+  else return false;
+}
+
+// ------------------------------------------ update_database_v10212 ----------------------------------------------
+// function: update_database_v10212()
+// input: %
+// output: true / false
+
+// description: 
+// Update of column colorkey and object_media index of table object to version 10.2.1.2.
+
+function update_database_v10212 ()
+{
+  global $mgmt_config;
+
+  if (!checksoftwareversion ("10.2.1.2"))
+  {
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset'], "");
+
+    // alter table object
+    $sql = "ALTER TABLE object MODIFY colorkey CHAR(6);";
+
+    $errcode = "50833";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'alter');
+
+    // create new index for image colors
+    $sql = 'CREATE INDEX object_color ON object (filetype, colorkey, red, green, blue)';
+    $errcode = "50835";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.2.1.2|updated to version 10.2.1.2"), "update");
+
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -2622,6 +2743,8 @@ function updates_all ()
     update_database_v1009 ();
     update_database_v1011 ();
     update_database_v1012 ();
+    update_database_v1021 ();
+    update_database_v10212 ();
   }
 }
 

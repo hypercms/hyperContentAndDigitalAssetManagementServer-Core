@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['cs'] = "Obsah byl změněn uživatelem '
 $hcms_lang['dependencies']['cs'] = "Závislosti";
 $hcms_lang['info-plus-icon']['cs'] = "Vytvořte novou složku nebo objekt, importujte data CSV";
 $hcms_lang['info-action-icon']['cs'] = "Otevřete podnabídku s dalšími akcemi vybraných objektů";
+$hcms_lang['show-similar']['cs'] = "Zobrazit podobné";
 ?>

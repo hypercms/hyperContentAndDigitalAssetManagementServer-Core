@@ -1433,4 +1433,5 @@ $hcms_lang['search-wildcard-asterisk']['el'] = "* … Ο αστερίσκος χ
 $hcms_lang['search-wildcard-doublequote']['el'] = "\" … Μια φράση που περικλείεται μέσα σε χαρακτήρες διπλών εισαγωγικών πρέπει να υπάρχει ως η φράση κυριολεκτικά, όπως πληκτρολογήθηκε";
 $hcms_lang['content-modified-by-user']['el'] = "Το περιεχόμενο έχει τροποποιηθεί από τον χρήστη '%user%'. Θέλετε να φορτώσετε ξανά το περιεχόμενο?";
 $hcms_lang['dependencies']['el'] = "Εξαρτήσεις";
+$hcms_lang['show-similar']['el'] = "Εμφάνιση παρόμοιου";
 ?>

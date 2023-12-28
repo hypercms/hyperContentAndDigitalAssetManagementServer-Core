@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['ur'] = "مواد کو صارف '%user%' 
 $hcms_lang['dependencies']['ur'] = "انحصار";
 $hcms_lang['info-plus-icon']['ur'] = "نیا فولڈر یا آبجیکٹ بنائیں، CSV ڈیٹا درآمد کریں۔";
 $hcms_lang['info-action-icon']['ur'] = "منتخب اشیاء کی مزید کارروائیوں کے ساتھ ذیلی مینیو کھولیں۔";
+$hcms_lang['show-similar']['ur'] = "اسی طرح دکھائیں۔";
 ?>

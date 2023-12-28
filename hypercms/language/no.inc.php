@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['no'] = "Innholdet har blitt endret av br
 $hcms_lang['dependencies']['no'] = "Avhengigheter";
 $hcms_lang['info-plus-icon']['no'] = "Opprett ny mappe eller objekt, importer CSV-data";
 $hcms_lang['info-action-icon']['no'] = "Åpne undermenyen med ytterligere handlinger for de valgte objektene";
+$hcms_lang['show-similar']['no'] = "Vis lignende";
 ?>

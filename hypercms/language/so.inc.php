@@ -1431,4 +1431,5 @@ $hcms_lang['search-wildcard-asterisk']['so'] = "* … Xiddigigu waxa uu u adeega
 $hcms_lang['search-wildcard-doublequote']['so'] = "\" … Weedha lagu dhex lifaaqo jilayaasha xigashada laba jibaaran waa in ay ahaataa sida weedha macno ahaan, sida loo qoray";
 $hcms_lang['content-modified-by-user']['so'] = "Waxa ku jira waxa wax ka beddelay isticmaale '%user%'. Ma rabtaa in aad dib u soo shubto waxa ku jira?";
 $hcms_lang['dependencies']['so'] = "Ku-tiirsanaanta";
+$hcms_lang['show-similar']['so'] = "Muuji wax la mid ah";
 ?>

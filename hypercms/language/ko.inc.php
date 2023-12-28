@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['ko'] = "'%user%' 사용자가 콘텐츠�
 $hcms_lang['dependencies']['ko'] = "종속성";
 $hcms_lang['info-plus-icon']['ko'] = "새 폴더 또는 개체 만들기, CSV 데이터 가져오기";
 $hcms_lang['info-action-icon']['ko'] = "선택한 개체의 추가 작업이 포함된 하위 메뉴 열기";
+$hcms_lang['show-similar']['ko'] = "유사한 항목 표시";
 ?>

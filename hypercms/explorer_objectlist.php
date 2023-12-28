@@ -812,7 +812,10 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
           if ($file_info['published'] == false) $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
           else $class_image  = "class=\"lazyload hcmsImageItem\"";
 
-          $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($site, $media_info['filename'].".thumb.jpg", $object_name, false, "wrapper", $file_info['icon']))."\" ".$class_image." /></div>";      
+          if (!empty ($mgmt_config['showsimilar']) && !$is_mobile && is_image ($mediafile)) $similar = "<div id=\"s".$items_id."\" class=\"hcmsInfoBox hcmsSimilar\" onclick=\"showsimilar('".$mediafile."')\">".getescapedtext ($hcms_lang['show-similar'][$lang])."</div>";
+          else $similar = "";
+
+          $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\" ".(!empty ($mgmt_config['showsimilar']) ? "onmouseover=\"showbutton('s".$items_id."')\" onmouseout=\"hidebutton('s".$items_id."')\"" : "")."><img data-src=\"".cleandomain (createviewlink ($site, $media_info['filename'].".thumb.jpg", $object_name, false, "wrapper", $file_info['icon']))."\" ".$class_image." />".$similar."</div>";      
         }
         // display file icon for non multimedia objects 
         else
@@ -931,9 +934,18 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 
 .hcmsThumbnailFrame
 {
+  position: relative;
   display: block;
   text-align: center;
   vertical-align: bottom;
+}
+
+.hcmsSimilar
+{
+  display: none;
+  position: absolute;
+  left: 6px;
+  bottom: 12px; 
 }
 
 .hcmsItemName
@@ -1045,6 +1057,35 @@ var explorerview = "<?php echo $temp_explorerview; ?>";
 // verify sidebar
 if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.width > 0) var sidebar = true;
 else var sidebar = false;
+
+function showbutton (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    document.getElementById(id).style.display='block';
+  }
+}
+
+function hidebutton (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    document.getElementById(id).style.display='none';
+  }
+}
+
+function showsimilar (mediafile)
+{
+  if (mediafile != "")
+  {
+    if (event) event.stopPropagation();
+    
+    // local load screen
+    if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
+
+    document.location.href='search_objectlist.php?action=base_search&cat=comp&search_image=' + encodeURIComponent(mediafile);
+  }
+}
 
 function checktype (type)
 {

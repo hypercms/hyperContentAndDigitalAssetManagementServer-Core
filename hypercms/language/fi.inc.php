@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['fi'] = "Käyttäjä '%user%' on muokannu
 $hcms_lang['dependencies']['fi'] = "Riippuvuudet";
 $hcms_lang['info-plus-icon']['fi'] = "Luo uusi kansio tai objekti, tuo CSV-tiedot";
 $hcms_lang['info-action-icon']['fi'] = "Avaa alivalikko valittujen objektien lisätoiminnoilla";
+$hcms_lang['show-similar']['fi'] = "Näytä samanlainen";
 ?>

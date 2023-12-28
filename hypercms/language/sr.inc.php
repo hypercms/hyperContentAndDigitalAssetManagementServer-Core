@@ -1431,4 +1431,5 @@ $hcms_lang['search-vildcard-asterisk']['sr'] = "* ... Zvezdica služi kao operat
 $hcms_lang['search-vildcard-doublekuote']['sr'] = "\" ... Fraza koja je zatvorena u dvostrukim navodnicima mora biti prisutna kao fraza doslovno, onako kako je otkucana";
 $hcms_lang['content-modified-by-user']['sr'] = "Sadržaj je izmenio korisnik '%user%'. Da li želite da ponovo učitate sadržaj?";
 $hcms_lang['dependencies']['sr'] = "Zavisnosti";
+$hcms_lang['show-similar']['sr'] = "Prikaži slično";
 ?>

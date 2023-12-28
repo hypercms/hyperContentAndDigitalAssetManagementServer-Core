@@ -1434,4 +1434,5 @@ $hcms_lang['content-modified-by-user']['fr'] = "Le contenu a été modifié par 
 $hcms_lang['dependencies']['fr'] = "Dépendances";
 $hcms_lang['info-plus-icon']['fr'] = "Créer un nouveau dossier ou objet, importer des données CSV";
 $hcms_lang['info-action-icon']['fr'] = "Ouvrir le sous-menu avec d'autres actions des objets sélectionnés";
+$hcms_lang['show-similar']['fr'] = "Montrer similaire";
 ?>

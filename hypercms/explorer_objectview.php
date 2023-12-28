@@ -141,6 +141,26 @@ suspendsession ();
 <?php if (!empty ($file_info['ext']) && is_video ($file_info['ext'])) echo showvideoplayer_head (false, true, true); ?>
 <style type="text/css">
 <?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors); ?>
+
+hr
+{
+  display: none;
+}
+
+#hcmsImageZoom
+{
+  width: 100%;
+  height: 100%;
+  transform-origin: 0px 0px;
+  transform: scale(1) translate(0px, 0px);
+  cursor: grab;
+}
+
+div#hcmsImageZoom > img
+{
+  width: 100%;
+  height: auto;
+}
 </style>
 <script type="text/javascript">
 
@@ -334,12 +354,6 @@ function hcms_rightArrowEvent ()
   nextObject ('<?php echo $location_esc.$page; ?>');
 }
 </script>
-<style>
-hr
-{
-  display: none;
-}
-</style>
 </head>
 
 <body class="hcmsWorkplaceObjectlist" onload="centercontainer(); initialize();">
@@ -386,13 +400,87 @@ hr
   <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="margin:16px;" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" />
 </div>
 
-<div id="container" style="position:fixed; top:0px; left:0px; width:90%; height:90%; margin:-1900px 0px 0px 0px; z-index:10;">
+<div id="container" style="position:fixed; top:0px; left:0px; right:0px; bottom:0px; margin:-1900px 0px 0px 0px; padding:0px; z-index:10;">
   <?php if (!empty ($objectview)) echo $objectview; ?>
 </div>
 
 <div id="next" style="display:none; position:fixed; top:50%; right:0px; width:64px; height:64px; text-align:right; z-index:20; cursor:pointer;" onclick="nextObject('<?php echo $location_esc.$page; ?>');">
   <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="margin:16px;" src="<?php echo getthemelocation(); ?>img/button_arrow_right.png" />
 </div>
+
+<?php if (!$is_mobile) { ?>
+<script type="text/javascript">
+// image zoom
+if (document.getElementById("hcmsImageZoom"))
+{
+  var scale = 1,
+  panning = false,
+  pointX = 0,
+  pointY = 0,
+  start = { x: 0, y: 0 },
+  zoom = document.getElementById("hcmsImageZoom"),
+  imagewidth = zoom.children[0].width,
+  imageheight = zoom.children[0].height;
+
+  function setTransform()
+  {
+    zoom.style.transform = "translate(" + pointX + "px, " + pointY + "px) scale(" + scale + ")";
+  }
+
+  zoom.onmousedown = function (e) {
+    e.preventDefault();
+    start = { x: e.clientX - pointX, y: e.clientY - pointY };
+    panning = true;
+  }
+
+  zoom.onmouseup = function (e) {
+    panning = false;
+  }
+
+  zoom.onmousemove = function (e) {
+    e.preventDefault();
+    if (!panning) return;
+
+    if (scale <= 1)
+    {
+      scale = 1;
+      pointX = 0;
+      pointY = 0;
+    }
+    else
+    {
+      pointX = (e.clientX - start.x);
+      pointY = (e.clientY - start.y);
+    }
+
+    setTransform();
+  }
+
+  zoom.onwheel = function (e) {
+    e.preventDefault();
+
+    var delta = (e.wheelDelta ? e.wheelDelta : -e.deltaY);
+    
+    if (delta > 0) scale *= 1.2;
+    else scale /= 1.2;
+
+    if (scale <= 1)
+    {
+      scale = 1;
+      pointX = 0;
+      pointY = 0;
+    }
+    else
+    {
+      pointX = (imagewidth - imagewidth * scale) / 2;
+      pointY = (imageheight - imageheight * scale) / 2;
+    }
+
+    setTransform();
+  }
+}
+</script>
+<?php } ?>
 
 <?php includefooter(); ?>
 

@@ -180,7 +180,7 @@ $mgmt_config['keep_previews'] = false;
 // Example: array ("http://server1.domain.com/hypercms/service/", "http://server2.domain.com/hypercms/service/")
 $mgmt_config['url_path_service'] = array();
 
-// ------------------------------------ GUI settings ----------------------------------------
+// ------------------------------------ User interface settings ----------------------------------------
 
 // Enable (true) or disable (false) html tags used in text editor for unformatted text
 $mgmt_config['editoru_html'] = true;
@@ -266,6 +266,9 @@ $mgmt_config['theme'] = "";
 
 // Enable (true) or disable (false) button labels in the control toolbar
 $mgmt_config['showbuttonlabel'] = true;
+
+// Show (true) or hide (false) the button in the gallery view for the search of similar images.
+$mgmt_config['showsimilar'] = false;
 
 // Define alternative logo (URL notation) for top frame.
 $mgmt_config['logo_top'] = "";
@@ -353,27 +356,22 @@ $mgmt_config['screensize']['phone']['Apple iPhone 11'] = "390 x 844";
 $mgmt_config['screensize']['phone']['Apple iPhone 12'] = "414 x 895";
 $mgmt_config['screensize']['phone']['Apple iPhone 12 Pro'] = "390 x 844";
 $mgmt_config['screensize']['phone']['Apple iPhone 12 Pro Max'] = "428 x 926";
+$mgmt_config['screensize']['phone']['Apple iPhone 13 Pro'] = "390 x 844";
+$mgmt_config['screensize']['phone']['Apple iPhone 13 Pro Max'] = "428 x 926";
 $mgmt_config['screensize']['phone']['Apple iPhone X'] = "375 x 812";
 $mgmt_config['screensize']['phone']['Apple iPhone XR'] = "	414 x 896";
 $mgmt_config['screensize']['phone']['Apple iPhone XS'] = "375 x 812";
 $mgmt_config['screensize']['phone']['Apple iPhone XS Max'] = "414 x 896";
-$mgmt_config['screensize']['phone']['ASUS Galaxy 7'] = "320 x 533";
-$mgmt_config['screensize']['phone']['BlackBerry 8300'] = "320 x 240";
-$mgmt_config['screensize']['phone']['Google Nexus 5X'] = "412 x 732";
-$mgmt_config['screensize']['phone']['Google Nexus 6P'] = "412 x 732";
-$mgmt_config['screensize']['phone']['Google Pixel'] = "412 x 732";
-$mgmt_config['screensize']['phone']['Google Pixel XL'] = "412 x 732";
 $mgmt_config['screensize']['phone']['Google Pixel 2 XL'] = "412 x 732";
 $mgmt_config['screensize']['phone']['Google Pixel 3'] = "412 x 824";
 $mgmt_config['screensize']['phone']['Google Pixel 3 XL'] = "412 x 847";
 $mgmt_config['screensize']['phone']['Google Pixel 4'] = "412 x 869";
 $mgmt_config['screensize']['phone']['Google Pixel 4 XL'] = "412 x 869";
 $mgmt_config['screensize']['phone']['Google Pixel 5'] = "393 x 851";
+$mgmt_config['screensize']['phone']['Google Pixel 7 Pro'] = "412 x 771";
 $mgmt_config['screensize']['phone']['LG Optimus S'] = "320 x 480";
 $mgmt_config['screensize']['phone']['LG G5'] = "480 x 853";
 $mgmt_config['screensize']['phone']['One Plus 3'] = "480 x 853";
-$mgmt_config['screensize']['phone']['Samsung Galaxy S2'] = "320 x 533";
-$mgmt_config['screensize']['phone']['Samsung Galaxy S3/4'] = "320 x 640";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S5'] = "360 x 640";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S7'] = "360 x 640";
 $mgmt_config['screensize']['phone']['Samsung Galaxy S7 Edge'] = "360 x 640";
@@ -708,7 +706,7 @@ $mgmt_config['user_log'] = false;
 // Provide a list of users by their user names (use "," as separator) for automated notification, or leave empty.
 $mgmt_config['eventlog_notify'] = "";
 
-// Define users by their user name (use "," as separator) that should be excluded as senders from the automatic notifications (function notifyusers in Main API).
+// Define users by their user name (use "," as separator) that should be excluded as senders from automatic notifications (function notifyusers in Main API) and event logging (function savelog in Main API).
 // Usually the events of the system user "sys" should be excluded.
 $mgmt_config['notify_exclude_users'] = "sys";
 

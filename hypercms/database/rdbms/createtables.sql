@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS `contentcount`;
+
+CREATE TABLE `contentcount` (
+  `id` int(11) NOT NULL auto_increment,
+  `time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `accesslink`;
 
 CREATE TABLE `accesslink` (
@@ -36,7 +44,7 @@ CREATE TABLE `object` (
   `red` smallint(3) DEFAULT NULL,
   `green` smallint(3) DEFAULT NULL,
   `blue` smallint(3) DEFAULT NULL,
-  `colorkey` char(8) DEFAULT NULL,
+  `colorkey` char(6) DEFAULT NULL,
   `imagetype` char(16) DEFAULT NULL,
   `md5_hash` char(32) BINARY DEFAULT NULL,
   `analyzed` tinyint(1) NOT NULL DEFAULT '0',
@@ -51,6 +59,7 @@ CREATE TABLE `object` (
   KEY `object_id` (`id`),
   KEY `object_date` (`date`),
   KEY `object_media` (`filesize`,`filetype`,`width`,`height`,`imagetype`),
+  KEY `object_color` (`filetype`,`colorkey`,`red`,`green`,`blue`),
   KEY `object_lat_lng` (`latitude`,`longitude`),
   KEY `object_objectpath` (`objectpath`),
   KEY `object_deleteuser` (`deleteuser`),

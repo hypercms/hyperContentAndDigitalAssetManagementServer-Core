@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['nl'] = "De inhoud is gewijzigd door gebr
 $hcms_lang['dependencies']['nl'] = "Afhankelijkheden";
 $hcms_lang['info-plus-icon']['nl'] = "Nieuwe map of object maken, CSV-gegevens importeren";
 $hcms_lang['info-action-icon']['nl'] = "Submenu openen met verdere acties van de geselecteerde objecten";
+$hcms_lang['show-similar']['nl'] = "Toon vergelijkbaar";
 ?>

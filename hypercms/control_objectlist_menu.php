@@ -798,6 +798,14 @@ function openObjectView (location, object, view)
   else return false;
 }
 
+function showsimilar (mediafile)
+{
+  if (mediafile != "" && typeof parent.frames['mainFrame'].showsimilar == "function")
+  {
+    parent.frames['mainFrame'].showsimilar(mediafile);
+  }
+}
+
 function hideselectors ()
 {
   hcms_hideSelector('select_obj_view');
@@ -1480,7 +1488,17 @@ else
       </div>";
     }
     ?>
-
+    <?php
+    // Show similar
+    if ($multiobject_count <= 1 && $page != "" && $page != ".folder" && $cat == "comp" && !empty ($media) && is_image ($media) && $setlocalpermission['root'] == 1)
+    {
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"showsimilar('".$media."');\">
+        <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_color.png\" alt=\"".getescapedtext ($hcms_lang['show-similar'][$lang])."\" title=\"".getescapedtext ($hcms_lang['show-similar'][$lang])."\" />
+        <span class=\"\">".getescapedtext ($hcms_lang['show-similar'][$lang])."</span>
+      </div>";
+    }
+    ?>
     <?php
     // Edit Button   
     if (

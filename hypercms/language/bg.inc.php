@@ -1434,4 +1434,5 @@ $hcms_lang['content-modified-by-user']['bg'] = "Съдържанието е пр
 $hcms_lang['dependencies']['bg'] = "Зависимости";
 $hcms_lang['info-plus-icon']['bg'] = "Създайте нова папка или обект, импортирайте CSV данни";
 $hcms_lang['info-action-icon']['bg'] = "Отворете подменю с допълнителни действия на избраните обекти";
+$hcms_lang['show-similar']['bg'] = "Покажи подобни";
 ?>

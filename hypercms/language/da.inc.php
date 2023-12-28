@@ -1431,4 +1431,5 @@ $hcms_lang['search-wildcard-asterisk']['da'] = "* … Stjernen tjener som trunke
 $hcms_lang['search-wildcard-doublequote']['da'] = "\" … En sætning, der er omgivet af dobbelte anførselstegn, skal være til stede som sætningen bogstaveligt, som den blev skrevet";
 $hcms_lang['content-modified-by-user']['da'] = "Indholdet er blevet ændret af brugeren '%user%'. Vil du genindlæse indholdet?";
 $hcms_lang['dependencies']['da'] = "Afhængigheder";
+$hcms_lang['show-similar']['da'] = "Vis lignende";
 ?>

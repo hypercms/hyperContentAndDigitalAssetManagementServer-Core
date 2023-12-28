@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['tr'] = "İçerik '%user%' kullanıcısı
 $hcms_lang['dependencies']['tr'] = "Bağımlılıklar";
 $hcms_lang['info-plus-icon']['tr'] = "Yeni klasör veya nesne oluşturun, CSV verilerini içe aktarın";
 $hcms_lang['info-action-icon']['tr'] = "Seçilen nesnelerin diğer işlemlerini içeren alt menüyü aç";
+$hcms_lang['show-similar']['tr'] = "Benzerlerini göster";
 ?>

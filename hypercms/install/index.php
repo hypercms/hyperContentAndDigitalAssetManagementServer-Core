@@ -212,13 +212,6 @@ if ($action == "install" && !empty ($mgmt_config['abs_path_cms']) && checktoken 
       $result = copyrecursive ($mgmt_config['abs_path_cms']."install/repository/", $mgmt_config['abs_path_rep']);
       if ($result == false) $show .= "<li>Repository file structure could not be created!</li>\n";
     }
-
-    // create contentcount.dat file
-    if (!is_file ($mgmt_config['abs_path_data']."contentcount.dat")) 
-    {
-      $result = savefile ($mgmt_config['abs_path_data'], "contentcount.dat", "0");
-      if ($result == false) $show .= "<li>contentcount.dat file could not be created!</li>\n";
-    }
   }
 
   // create database

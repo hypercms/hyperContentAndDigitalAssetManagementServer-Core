@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['hi'] = "सामग्री को उ
 $hcms_lang['dependencies']['hi'] = "निर्भरता";
 $hcms_lang['info-plus-icon']['hi'] = "नया फ़ोल्डर या ऑब्जेक्ट बनाएं, CSV डेटा आयात करें";
 $hcms_lang['info-action-icon']['hi'] = "चयनित ऑब्जेक्ट की आगे की कार्रवाइयों के साथ सबमेनू खोलें";
+$hcms_lang['show-similar']['hi'] = "समान दिखाओ";
 ?>

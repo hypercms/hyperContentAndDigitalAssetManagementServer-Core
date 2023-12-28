@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['sv'] = "Innehållet har ändrats av anv�
 $hcms_lang['dependencies']['sv'] = "Beroenden";
 $hcms_lang['info-plus-icon']['sv'] = "Skapa ny mapp eller objekt, importera CSV-data";
 $hcms_lang['info-action-icon']['sv'] = "Öppna undermenyn med ytterligare åtgärder för de markerade objekten";
+$hcms_lang['show-similar']['sv'] = "Visa liknande";
 ?>

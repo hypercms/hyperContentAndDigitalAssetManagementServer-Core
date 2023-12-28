@@ -752,7 +752,7 @@ echo showtopmenubar ($hcms_lang['video'][$lang], array($hcms_lang['options'][$la
 ?>
 
 <!-- rendering settings -->
-<div id="renderOptions" style="position:fixed; top:32px; left:5px; padding:5px 5px 10px 5px; width:94%; vertical-align:top; z-index:10; display:none;" class="hcmsMediaRendering">
+<div id="renderOptions" style="position:fixed; top:32px; left:5px; padding:5px 5px 10px 5px; width:94%; vertical-align:top; z-index:800; display:none;" class="hcmsMediaRendering">
 
   <?php if (!empty ($mgmt_mediapreview) && is_supported ($mgmt_mediapreview, "mp4")) { ?>
 

@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['hu'] = "A tartalmat '%user%' felhasznál
 $hcms_lang['dependencies']['hu'] = "Függőségek";
 $hcms_lang['info-plus-icon']['hu'] = "Hozzon létre új mappát vagy objektumot, importálja a CSV-adatokat";
 $hcms_lang['info-action-icon']['hu'] = "Nyissa meg az almenüt a kiválasztott objektumok további műveleteivel";
+$hcms_lang['show-similar']['hu'] = "Hasonló mutatása";
 ?>

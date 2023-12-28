@@ -1433,4 +1433,5 @@ $hcms_lang['content-modified-by-user']['ja'] = "コンテンツはユーザー '
 $hcms_lang['dependencies']['ja'] = "依存関係";
 $hcms_lang['info-plus-icon']['ja'] = "新しいフォルダーまたはオブジェクトの作成、CSV データのインポート";
 $hcms_lang['info-action-icon']['ja'] = "選択したオブジェクトのさらなるアクションを含むサブメニューを開きます";
+$hcms_lang['show-similar']['ja'] = "類似したものを表示";
 ?>

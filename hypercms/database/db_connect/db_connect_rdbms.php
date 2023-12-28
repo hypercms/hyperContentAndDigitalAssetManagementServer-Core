@@ -298,8 +298,7 @@ function odbc_rdbms_escape_string ($connection, $value)
 {
   if ($value != "")
   {
-    $value = addslashes ($value);
-    return $value;
+    return addslashes ($value);
   }
   else return "";
 }
@@ -327,7 +326,116 @@ function convert_dbcharset ($charset)
   }
   else return false;
 }
- 
+
+// ------------------------------------------------ clean contentcount -------------------------------------------------
+// function: rdbms_cleancontentcount()
+// input: %
+// output: true / false
+
+// description:
+// Removes all rows from tabel contentcount that are older than 24 hours.
+
+function rdbms_cleancontentcount ()
+{
+  global $mgmt_config;
+
+  // initalize
+  $maxage = 24 * 60 * 60;
+
+  $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+  // clean contentcount
+  $sql = 'DELETE FROM contentcount WHERE time<'.(time() - $maxage);
+  $errcode = "50909";
+  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+  if ($done) return true;
+  else return false;
+}
+
+// ------------------------------------------------ contentcount -------------------------------------------------
+// function: rdbms_contentcount()
+// input: restore contentcount from table object [boolean] (optional)
+// output: contentcount / false
+
+// description:
+// Creates and returns the new contentcount value.
+
+function rdbms_contentcount ($restore=false)
+{
+  global $mgmt_config;
+
+  // initalize
+  $error = array();
+  $contentcount = 0;
+
+  $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+  if ($restore == true)
+  {
+    // get contentcount for verification
+    $sql = 'SELECT MAX(id) AS contentcount FROM contentcount';
+    $errcode = "50903";
+    $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select_pre");
+
+    if ($done && $row = $db->rdbms_getresultrow ("select_pre"))
+    {
+      $pre_contentcount = intval ($row['contentcount']);
+    }
+
+    // restore contentcount if empty
+    if (empty ($pre_contentcount))
+    {
+      $sql = 'SELECT MAX(id) AS contentcount FROM object';
+      $errcode = "50904";
+      $result = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select_objs");
+
+      if ($result && $row = $db->rdbms_getresultrow("select_objs"))
+      {
+        $contentcount = intval ($row['contentcount']);
+
+        if ($contentcount > 0)
+        {
+          // add 10 due to processing of objects for safety reasons
+          $contentcount = $contentcount + 10;
+
+          // update contentcount
+          $sql = 'ALTER TABLE contentcount AUTO_INCREMENT='.$contentcount;
+          $errcode = "50905";
+          $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+          $errcode = "00906";
+          $error[] = $mgmt_config['today']."|db_connect_rdbms.php|warning|".$errcode."|contentcount was recreated by the database with max id='".$contentcount."'";
+        }
+      }
+    }
+  }
+
+  // insert new ID into contentcount
+  $sql = 'INSERT INTO contentcount (time) VALUES ('.time().')';
+  $errcode = "50901";
+  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+  // get the inserted ID
+  if ($done)
+  {
+    $contentcount = $db->rdbms_getinsertid();
+  }
+  else
+  {
+    $errcode = "00902";
+    $error[] = $mgmt_config['today']."|db_connect_rdbms.php|error|".$errcode."|New ID in contentcount could not be created";
+  }
+
+  // save log
+  savelog ($db->rdbms_geterror());
+  savelog ($error);
+
+  $db->rdbms_close();
+  
+  return $contentcount;
+}
+
 // ------------------------------------------------ create object -------------------------------------------------
 // function: rdbms_createobject()
 // input: container ID [integer], object path [string], template name [string], media name [string] (optional), content container name [string] (optional), user name [string] (optional), 
@@ -389,7 +497,7 @@ function rdbms_createobject ($container_id, $object, $template, $media="", $cont
         $errcode = "40911";
         $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|error|".$errcode."|Duplicate object '".$object."' (ID: ".$container_id_duplicate.") already existed in database and has been deleted";
       
-        savelog (@$error);
+        savelog ($error);
       }
     }
 
@@ -1799,7 +1907,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // function: rdbms_searchcontent()
 // input: location [string,array] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,folder,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), file extensions without dot [array] (optional)
-//        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image color [array] (optional), image-type [portrait,landscape,square] (optional), 
+//        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image colors [array,string] (optional), image-type [portrait,landscape,square] (optional), 
 //        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
 //        log search expression [true/false] (optional), taxonomy level to include [integer] (optional), order by for sorting of the result [string] (optional)
 // output: result array with object hash as 1st key and object information as 2nd key of all found objects / false
@@ -1820,6 +1928,10 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
   // define the default value for the combination of MATCH AGAINST and LIKE in the search query for textcontent (true has performance disadvantages since the fulltext index will not be used)
   if (!isset ($mgmt_config['search_combine_like'])) $mgmt_config['search_combine_like'] = false;
+
+  // search similarity for the search for similar images based on their colorkey
+  // (0 = exact match, 1 = match of 1st primary color, 2 = match of first 2 primar colors, 3 = match of first 3 primar colors, 4 = match of first 4 primar colors, 5 = 0 = match of all 5 primary colors in the same order)
+  if (!isset ($mgmt_config['search_colorkey_level'])) $mgmt_config['search_colorkey_level'] = 4;
 
   // set object_type if the search is image or video related
   if (!is_array ($object_type) && (!empty ($imagewidth) || !empty ($imageheight) || !empty ($imagecolor) || !empty ($imagetype)))
@@ -2654,7 +2766,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     // query image and video
     if (isset ($object_type) && is_array ($object_type) && (in_array ("image", $object_type) || in_array ("video", $object_type)))
     {
-      if (!empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || (isset ($imagecolor) && is_array ($imagecolor)) || !empty ($imagetype))
+      if (!empty ($filesize) || !empty ($imagewidth) || !empty ($imageheight) || (isset ($imagecolor) && (is_array ($imagecolor) || is_string ($imagecolor))) || !empty ($imagetype))
       {
         // parameter imagewidth can be used as general image size parameter
         // search for image_size (defined by min-max value)
@@ -2682,21 +2794,67 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           }
         }
 
-        if (isset ($imagecolor) && is_array ($imagecolor))
+        // find image based on their primary colors
+        if (isset ($imagecolor) && is_array ($imagecolor) && sizeof ($imagecolor) > 0)
         {
           foreach ($imagecolor as $colorkey)
           {
             if (!empty ($colorkey))
             {
+              $colorkey = $db->rdbms_escape_string ($colorkey);
               if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
 
               $sql_where['media'] .= 'INSTR(obj.colorkey,"'.$colorkey.'")>0';
             }
           }
         }
+        // find images with the same or similar primary colors
+        elseif (!empty ($imagecolor) && is_string ($imagecolor))
+        {
+          $imagecolor = $db->rdbms_escape_string ($imagecolor);
+
+          // extract colorkey and RGB values
+          if (strpos ($imagecolor, ";") > 0)
+          {
+            list ($colorkey, $RGB) = explode (";", $imagecolor);
+            if ($RGB != "") list ($red, $green, $blue) = explode (",", $RGB);
+          }
+          // only colorkey provided
+          else $colorkey = $imagecolor;
+
+          // exact search for colorkey
+          if (!empty ($colorkey))
+          {
+            $sql_where['media'] .= '(';
+
+            if (strlen ($colorkey) <= 3 || empty ($mgmt_config['search_colorkey_level']) || intval ($mgmt_config['search_colorkey_level']) > 4)
+            {
+              $sql_where['media'] .= 'obj.colorkey="'.$colorkey.'"';
+            }
+            // compare colorkey
+            elseif (intval ($mgmt_config['search_colorkey_level']) > 0)
+            {
+              $sql_where['media'] .= 'obj.colorkey LIKE "'.substr ($colorkey, 0, intval ($mgmt_config['search_colorkey_level'])).'%"';
+            }
+
+            // include median image color
+            if (strlen ($colorkey) >= 4 && !empty ($red) && !empty ($green) && !empty ($blue))
+            {
+              $colortolerance = 35;
+
+              if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
+              $sql_where['media'] .= '(obj.red<'.(intval($red) + $colortolerance).' AND obj.red>'.(intval($red) - $colortolerance).' ';
+              $sql_where['media'] .= 'AND obj.green<'.(intval($green) + $colortolerance).' AND obj.green>'.(intval($green) - $colortolerance).' ';
+              $sql_where['media'] .= 'AND obj.blue<'.(intval($blue) + $colortolerance).' AND obj.blue>'.(intval($blue) - $colortolerance).')';
+            }
+
+            $sql_where['media'] .= ')';
+          }
+        }
 
         if (!empty ($imagetype))
         {
+          $imagetype = $db->rdbms_escape_string ($imagetype);
           if (!empty ($sql_where['media'])) $sql_where['media'] .= ' AND ';
 
           $sql_where['media'] .= 'obj.imagetype="'.$imagetype.'"';
@@ -5062,7 +5220,7 @@ function rdbms_setdeletedobjects ($objects, $user, $mark="set")
 
     // save log
     savelog ($db->rdbms_geterror());
-    savelog (@$error);
+    savelog ($error);
 
     $db->rdbms_close();
 

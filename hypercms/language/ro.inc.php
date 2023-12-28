@@ -1431,4 +1431,5 @@ $hcms_lang['search-wildcard-asterisk']['ro'] = "* … Asteriscul servește ca op
 $hcms_lang['search-wildcard-doublequote']['ro'] = "\" … O expresie care este inclusă între ghilimele duble trebuie să fie prezentă ca expresie literal, așa cum a fost introdusă";
 $hcms_lang['content-modified-by-user']['ro'] = "Conținutul a fost modificat de utilizatorul '%user%'. Doriți să reîncărcați conținutul?";
 $hcms_lang['dependencies']['ro'] = "Dependente";
+$hcms_lang['show-similar']['ro'] = "Arată similar";
 ?>

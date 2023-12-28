@@ -1434,4 +1434,5 @@ $hcms_lang['content-modified-by-user']['id'] = "Konten telah diubah oleh penggun
 $hcms_lang['dependencies']['id'] = "Ketergantungan";
 $hcms_lang['info-plus-icon']['id'] = "Buat folder atau objek baru, Impor data CSV";
 $hcms_lang['info-action-icon']['id'] = "Buka submenu dengan tindakan lebih lanjut dari objek yang dipilih";
+$hcms_lang['show-similar']['id'] = "Tampilkan serupa";
 ?>

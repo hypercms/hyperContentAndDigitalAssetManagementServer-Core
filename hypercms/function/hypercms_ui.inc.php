@@ -1193,10 +1193,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
   // initialize
   $media_root = "";
-  $mediafilesize = "";
+  $mediafilesize = 0;
   $mediafiletime = "";
-  $width_orig = "";
-  $height_orig = "";
+  $width_input = $width;
+  $height_input = $height;
+  $width_orig = 0;
+  $height_orig = 0;
   $mediaview = "";
   $mediaratio = 0;
   $owner = "";
@@ -2089,8 +2091,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               }
             }
 
+            // use original image supported by browsers for viewtype "media_only"
+            if ($viewtype == "media_only" && ($file_info['orig_ext'] == ".gif" || (($width_input > 1024 || $width_input >= $width_orig) && ($file_info['orig_ext'] == ".avif" || $file_info['orig_ext'] == ".jpg" || $file_info['orig_ext'] == ".jpeg" || $file_info['orig_ext'] == ".png" || $file_info['orig_ext'] == ".svg" || $file_info['orig_ext'] == ".webp"))))
+            {
+              $mediafile = $mediafile_orig;
+            }
             // generate a new image file if the new image size is greater than 150% of the width or height of the thumbnail
-            if (!empty ($mediaratio) && ($width > 0 && $thumb_size['width'] * 1.5 < $width) && ($height > 0 && $thumb_size['height'] * 1.5 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
+            elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size['width'] * 1.5 < $width) && ($height > 0 && $thumb_size['height'] * 1.5 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
             {
               // define parameters for view-images
               $viewfolder = $mgmt_config['abs_path_temp'];
@@ -2100,7 +2107,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               // predict the name to check if the file does exist and maybe is actual
               $newname = $file_info['filename'].".".$typename.'.'.$newext;
 
-              // generate new file only when another one wasn't already created or is outdated (use thumbnail since the date of the decrypted temporary file is not representative)
+              // generate new file only when one wasn't already created or is outdated (use thumbnail since the date of the decrypted temporary file is not representative)
               if (!is_file ($viewfolder.$newname) || (is_file ($thumb_root.$thumbfile) && @filemtime ($thumb_root.$thumbfile) > @filemtime ($viewfolder.$newname)) || !empty ($force_recreate)) 
               {
                 if (!empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
@@ -2196,7 +2203,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               if (!$is_mobile && empty ($recognizefaces_service)) $mediaview .= "
               <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:9910; display:none; margin-left:-2px; width:".intval($width_annotation + $width_diff + 4)."px; height:".intval($height_annotation + 42)."px;\">
                 <div style=\"position:absolute; right:4px; top:4px;\">
-                  <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+                  <img name=\"hcms_mediaClose\" onclick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
                 <!-- 360 view -->
                 <iframe src=\"".cleandomain ($mgmt_config['url_path_cms'])."media_360view.php?type=image&link=".url_encode($previewimage_link).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
@@ -2221,13 +2228,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               if (!$is_mobile && empty ($recognizefaces_service)) $mediaview .= "
               <div id=\"hcms360View\" class=\"".$class."\" style=\"position:absolute; z-index:9910; display:none; ".$style."\">
                 <div style=\"position:absolute; right:4px; top:4px;\">
-                  <img name=\"hcms_mediaClose\" onClick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
+                  <img name=\"hcms_mediaClose\" onclick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
                 <!-- 360 view --> 
                 <iframe src=\"".cleandomain ($mgmt_config['url_path_cms'])."media_360view.php?type=image&link=".url_encode($previewimage_link).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowfullscreen ></iframe>
               </div>";
               $mediaview .= "
-              <div id=\"facemarker\" style=\"position:relative; width:auto; height:auto;\" ".(((is_facerecognition ("sys") || is_annotation ()) && $viewtype == "preview") ? "onclick=\"if (typeof createFaceOnImage === 'function') createFaceOnImage (event, '".$id."');\"" : "").">
+              <div style=\"position:relative; width:auto; height:auto;\" ".(((is_facerecognition ("sys") || is_annotation ()) && $viewtype == "preview") ? "id=\"facemarker\" onclick=\"if (typeof createFaceOnImage === 'function') createFaceOnImage (event, '".$id."');\"" : "id=\"hcmsImageZoom\"").">
                 <!-- face marker -->  
                 <img src=\"".cleandomain ($previewimage_link)."\" id=\"".$id."\" alt=\"".$medianame."\" title=\"".$medianame."\" class=\"".$class."\" style=\"".$style."\" />
               </div>";

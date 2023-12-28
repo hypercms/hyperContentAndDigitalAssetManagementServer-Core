@@ -1434,4 +1434,5 @@ $hcms_lang['content-modified-by-user']['he'] = "התוכן השתנה על יד�
 $hcms_lang['dependencies']['he'] = "תלות";
 $hcms_lang['info-plus-icon']['he'] = "צור תיקייה או אובייקט חדש, ייבא נתוני CSV";
 $hcms_lang['info-action-icon']['he'] = "פתח תפריט משנה עם פעולות נוספות של האובייקטים שנבחרו";
+$hcms_lang['show-similar']['he'] = "הצג דומה";
 ?>

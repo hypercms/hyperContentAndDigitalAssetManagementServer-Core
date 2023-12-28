@@ -1435,4 +1435,5 @@ $hcms_lang['content-modified-by-user']['de'] = "Der Inhalte wurde vom Benutzer '
 $hcms_lang['dependencies']['de'] = "Abhängigkeiten";
 $hcms_lang['info-plus-icon']['de'] = "Neuen Ordner oder Objekt erstellen, CSV-Daten importieren";
 $hcms_lang['info-action-icon']['de'] = "Untermenü mit weiteren Aktionen der gewählten Objekte öffnen";
+$hcms_lang['show-similar']['de'] = "Zeige Ähnliche";
 ?>

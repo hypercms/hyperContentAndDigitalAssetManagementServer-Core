@@ -5418,7 +5418,12 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
   $session_id = "";
 
   if (valid_locationname ($filepath) && $name != "")
-  {
+  { 
+    // deprectaed: if browser is MS IE then we need to encode it (does not detect IE 11)
+    // if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);
+    // clean name due to issues with special characters in the file name (causes 500 error)
+    $name = rawurlencode ($name);
+
     // get publication, location and media object
     $site = getpublication ($filepath);
     $location = getlocation ($filepath);
@@ -5467,9 +5472,6 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
 
     // get browser information/version
     $user_client = getbrowserinfo ();
-
-    // if browser is MS IE then we need to encode it (does not detect IE 11)
-    if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);
 
     // read file without headers, no streaming supported (used by WebDAV)
     if ($force == "noheader")
@@ -13416,81 +13418,94 @@ function correctcontainername ($container_id)
 
 // ------------------------------------------ contentcount -------------------------------------------
 // function: contentcount()
-// input: user name [string]
+// input: %
 // output: true/false
 
 // description:
-// This functions reads and defines the contentcount for the creation of a new container.
-// It will unlock the contentcount file if it has been locked by a user.
+// This functions returnes the contentcount for the creation of a new container.
 
-function contentcount ($user)
+function contentcount ()
 {
   global $mgmt_config;
 
-  // initialize
-  $error = array();
-  $contentcount = false;
-  $lock = uniqid();
+  // define new contentcount / container ID
+  $contentcount = rdbms_contentcount ();
 
-  // load contentcount file and add the new page
-  $filedata = loadlockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
-
-  // try to restore contentcount from database
-  if (empty ($filedata))
+  // try update
+  if (empty ($contentcount))
   {
-    $temp = rdbms_externalquery ("SELECT MAX(id) AS contentcount FROM object");
-
-    if (!empty ($temp[0]['contentcount']))
-    {
-      $filedata = intval ($temp[0]['contentcount']);
-
-      if ($filedata > 0)
-      {
-        // add 100 for safety reasons
-        $filedata = $filedata + 100;
-
-        $errcode = "00887";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|contentcount.dat was recreated by the database with max id='".$filedata."' for user '".$user."'";
-      }
-    }
+    update_database_v1021 ();
+    $contentcount = rdbms_contentcount ();
   }
 
-  // define new contentcount / container ID
-  if (!empty ($filedata) || strval ($filedata) == "0")
+  // fallback to file contentcount.dat
+  if (empty ($contentcount))
   {
-    $contentcount = intval ($filedata);
+    // initialize
+    $error = array();
+    $contentcount = false;
+    $lock = uniqid();
 
-    // add 1 to contentcount
-    $contentcount++;
+    // load contentcount file and add the new page
+    $filedata = loadlockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat", 5);
 
-    // write to file
-    $test = savelockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
-
-    // on error
-    if ($test == false)
+    // try to restore contentcount from database
+    if (empty ($filedata))
     {
-      // reset contentcount
-      $contentcount = false;
+      $temp = rdbms_externalquery ("SELECT MAX(id) AS contentcount FROM object");
 
+      if (!empty ($temp[0]['contentcount']))
+      {
+        $filedata = intval ($temp[0]['contentcount']);
+
+        if ($filedata > 0)
+        {
+          // add 100 for safety reasons
+          $filedata = $filedata + 100;
+
+          $errcode = "00887";
+          $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|contentcount.dat was recreated by the database with max id='".$filedata."' for user '".$user."'";
+        }
+      }
+    }
+
+    // define new contentcount / container ID
+    if (!empty ($filedata) || strval ($filedata) == "0")
+    {
+      $contentcount = intval ($filedata);
+
+      // add 1 to contentcount
+      $contentcount++;
+
+      // write to file
+      $test = savelockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat", $contentcount);
+
+      // on error
+      if ($test == false)
+      {
+        // reset contentcount
+        $contentcount = false;
+
+        // unlock file
+        unlockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat");
+
+        $errcode = "20885";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|contentcount failure (contentcount.dat could not be saved for user '".$user."')";
+      }
+    }
+    // contentcount could not be loaded
+    else
+    {
       // unlock file
       unlockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat");
 
-      $errcode = "20885";
-      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|contentcount failure (contentcount.dat could not be saved for user '".$user."')";
+      $errcode = "20886";
+      $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|contentcount failure (contentcount.dat could not be loaded for user '".$user."')";
     }
-  }
-  // contentcount could not be loaded
-  else
-  {
-    // unlock file
-    unlockfile ($lock, $mgmt_config['abs_path_data'], "contentcount.dat");
 
-    $errcode = "20886";
-    $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|contentcount failure (contentcount.dat could not be loaded for user '".$user."')";
+    // save log
+    savelog ($error);
   }
-
-  // save log
-  savelog ($error);
 
   return $contentcount;
 }
@@ -13675,7 +13690,7 @@ function createobject ($site, $location, $page, $template, $user)
         {
           // --------------------------------- hyperCMS content ------------------------------------
           // get contentcount and create the content file name
-          $contentcount = contentcount ($user);
+          $contentcount = contentcount ();
 
           if (empty ($contentcount))
           {
@@ -13713,7 +13728,7 @@ function createobject ($site, $location, $page, $template, $user)
 
               // --------------------------------- hyperCMS content ------------------------------------
               // get contentcount and create the content file name
-              $contentcount = contentcount ($user);
+              $contentcount = contentcount ();
 
               if (empty ($contentcount))
               {
@@ -14103,6 +14118,7 @@ function uploadhandler ($uploaded_file, $save_file, $is_remote_file=false, $webd
   global $mgmt_config, $hcms_lang, $lang, $is_webdav;
 
   // initialize
+  $error = array();
   $result = array();
   $result['result'] = false;
   $request_method = "";
@@ -16950,7 +16966,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         if ($contentfile_self != "")
         {
           // get contentcount and create the content file name
-          $contentcount = contentcount ($user);
+          $contentcount = contentcount ();
 
           // on contentcount error
           if (empty ($contentcount))

@@ -2561,7 +2561,7 @@ $().ready(function() {
   </div>
 
   <!-- rendering settings -->
-  <div id="renderOptions" style="position:fixed; top:32px; left:5px; padding:5px 5px 10px 5px; width:94%; vertical-align:top; z-index:10; display:none;" class="hcmsMediaRendering">
+  <div id="renderOptions" style="position:fixed; top:32px; left:5px; padding:5px 5px 10px 5px; width:94%; vertical-align:top; z-index:800; display:none;" class="hcmsMediaRendering">
   
     <?php if (!$mixedmedia && $is_image) { ?>
     <!-- start edit image -->

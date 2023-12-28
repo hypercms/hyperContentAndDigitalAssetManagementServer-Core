@@ -223,12 +223,12 @@ if ($sender == "search")
   echo "<div class=\"hcmsHeadlineTiny\" style=\"margin-bottom:8px;\">".getescapedtext ($hcms_lang['found-media-files'][$lang])."</div>\n";
 
   // files in actual directory
+  $c = 0;
+  
   if (!empty ($files) && is_array ($files) && sizeof ($files) > 0)
   {
     natcasesort ($files);
     reset ($files);
-
-    $c = 0;
 
     foreach ($files as $file)
     {

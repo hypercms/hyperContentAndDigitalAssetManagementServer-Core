@@ -7232,9 +7232,52 @@ Release 01/2024
 - Design modifications in the Day design theme for rounded buttons
 - Design modifications in the Night design theme for rounded buttons
 - Design modifications in the Transparent design theme for rounded buttons
+- Design modifications in the Blue design theme for rounded buttons
 - Design modifications in frameset_main in order to disable rounded buttons in the top/left main navigation bar
 - Design modifications in frameset_mobile in order to disable rounded buttons in the top main navigation bar
 - Design modifications in portal_edit in order to disable rounded buttons in the top main navigation bar
+- Migration from contentcount.dat file to a database entity
+- Modifications in createtables.sql in order to add the new table contentcount
+- Implementation of the new function update_database_v1021 in the Update API in order to migrate contentcount.dat to the new table contentcount
+- Modifications in function updates_all in the Update API in order to execute function update_database_v1021
+- Implementation of the new function rdbms_contentcount in DB Connect in order to create and return the contentcount value
+- Implementation of the new function rdbms_cleancontentcount in DB Connect in order to remove all rows that are older than 24 hours
+- Modifications in function contentcount in Main API in order replace the file based contentcount by the new function rdbms_contentcount with support of update_database_v1021 and fallback to contentcount.dat file on error (in case the database user has not the required permission to create the new table)
+- Modifications in all functions that used function contentcount in order to remove the old input parameter for the user name
+- Modifications in the installation routine in order to remove the creation of the contentcount.dat file
+- Modifications in the daily job in order to implement the new function rdbms_cleancontentcount
+- Modifications in function rdbms_searchcontent in DB Connect in order to escape the values of the search parameters imagecolor and imagetype
+- Modifications in function rdbms_searchcontent in DB Connect in order to support the search for images with similar primary colors or similar RGB values (input parameter imagecolor can be an array and now also a string)
+- Implementation of the new local CSS class hcmsSimilar in explorer_objectlist and search_objectlist
+- Implementation of the new local JS functions showbutton, hidebutton, showsimilar in explorer_objectlist and search_objectlist
+- Modifications in explorer_objectlist and search_objectlist in order to implement the search for images with similar primary colors or similar median RGB values on mouse over
+- Modifications in search_objectlist in order to support the category as input value
+- Implementation of the new main configuration setting $mgmt_config['search_colorkey_level'] in search_objectlist (0 = exact match, 1 = match of 1st primary color, 2 = match of first 2 primar colors, 3 = match of first 3 primar colors, 4 = match of first 4 primar colors, 5 = 0 = match of all 5 primary colors in the same order)
+- Modifications in search_objectlist in order to support the new search input parameter search_image and query the colorkey and RGB values of the source image as input for function rdbms_searchcontent
+- Modifications in createtables.sql in order to create a new index object_color for table object using column filetype, colorkey, red, green, and blue
+- Modifications in createtables.sql in order to modify the column colorkey to 6 digits fixed character length
+- Implementation of the new function update_database_v10212 in the Update API in order to alter the table object and create the new index object_color
+- Modifications in function updates_all in the Update API in order to execute function update_database_v10212
+- Implementation of the new text elements for the display of similar images in all language files
+- Update of the update log entry for version 10.2.1 in the installation directory
+- Update of the update log entry for version 10.2.1.2 in the installation directory
+- Modifications in function showmedia in UI API in order to support different tag-IDs for the standard image, for face markers and image zoom
+- Implementation of a new JS image zoom in explorer_objectview with support of image zoom and image move for preview (not used for Mobile Edition)
+- Implementation of the color icon image for all design themes
+- Implementation of the new show similar action in control_objectlist_menu for teh search of similar images
+- Modifications in explorer_objectlist and search_objectlist in order to disable the show similar button for the Modile Edition
+- Implementation of the new main configuration setting $mgmt_config['showsimilar'] in the config.inc.php of the install directory
+- Modifications in explorer_objectlist and search_objectlist in order to support the new main configuration setting $mgmt_config['showsimilar']
+- Modifications in function showmedia in UI API in order to use the original GIF image if the view type "media_only" has been requested
+- Modifications in function showmedia in UI API in order to use the original image if supported by modern browsers and if the view type "media_only" has been requested, the requested width is more than 1024 pixels, or more than the original image width
+- Modifications in function showmedia in UI API in order to save the requested input width and height and use it for the comparison with the original image
+- Update of the Installation Guide
+- Update of the Users Guide
 - Bug fix: text_edit_date used two double quotes at the end of the tagid value string and caused an error in the local JS function checkUpdatedContent
 - Bug fix: Function rdbms_searchcontent and rdbms_replacecontent in DB Connect used the wrong column for the page and component search filter
 - Bug fix: Function uploadhandler in Main API did not initialize the error array
+- Bug fix: media_edit_explorer did not initialize the counter variable for the number of search results correctly
+- Bug fix: The locking mechanism of the file based contentcount caused issues with duplicate Container IDs. In order to avoid duplicates a new contentcount mechansim that uses the database has been implemented.
+- Bug fix: The Chinsese language file used a wrong language code in the last two text elements
+- Bug fix: Function downloadfile did not URL encode the file name and caused issues with unencoded filename in the HTTP header in case of certain special characters in the file name (URL encoding has only be used for MS IE browser)
+- Bug fix: The z-index of the rendering options layer in image_rendering was below the z-index of the image crop tool layer 

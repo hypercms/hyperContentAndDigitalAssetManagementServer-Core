@@ -21,6 +21,7 @@ require_once ("include/format_ext.inc.php");
 $action = getrequest ("action");
 $start = getrequest ("start", "numeric", 0);
 $site = getrequest ("site"); // site can be %Null%
+$cat = getrequest ("cat", "objectname");
 $login = getrequest ("login", "objectname");
 $search_dir = getrequest ("search_dir", "locationname");
 $search_textnode = getrequest ("search_textnode", "array");
@@ -30,6 +31,7 @@ $search_cat = getrequest ("search_cat", "objectname");
 $search_format = getrequest ("search_format", "array");
 $search_filesize = getrequest ("search_filesize", "numeric");
 $search_filesize_operator = getrequest ("search_filesize_operator");
+$search_image = getrequest ("search_image", "objectname");
 $search_imagecolor = getrequest ("search_imagecolor", "array");
 $search_operator = getrequest ("search_operator", "objectname");
 $find_expression = getrequest ("find_expression");
@@ -50,7 +52,6 @@ $search_execute = getrequest ("search_execute");
 
 // initialize
 $error = array();
-$cat = "";
 $object_array = array();
 $search_dir_esc = array ();
 $exclude_dir_esc = array ();
@@ -103,11 +104,38 @@ else
   $search_imageheight = "";
 }
 
+// get image colors from source image (container ID)
+if (!empty ($search_image))
+{
+  $search_imagecolor = "";
+
+  // get thumbnail location
+  $image_container_id = getmediacontainerid ($search_image);
+  $search_format = array("image");
+
+  if (intval ($image_container_id) > 0)
+  {
+    $temp = rdbms_externalquery ("SELECT colorkey, red, green, blue FROM object WHERE id=".intval($image_container_id));
+
+    if (!empty ($temp[0]['colorkey'])) $search_imagecolor .= $temp[0]['colorkey'];
+
+    if (isset ($temp[0]['red']) && isset ($temp[0]['green']) && isset ($temp[0]['blue']))
+    {
+      $search_imagecolor .= ";".intval($temp[0]['red']).",".intval($temp[0]['green']).",".intval($temp[0]['blue']);
+    }
+  }
+}
+
 // image color keys
 if (is_array ($search_imagecolor))
 {
   // array holds no values
   if (!array_filter ($search_imagecolor)) $search_imagecolor = "";
+}
+// exact image colors
+elseif (is_string ($search_imagecolor) && $search_imagecolor != "")
+{
+  $search_imagecolor = trim ($search_imagecolor);
 }
 else $search_imagecolor = "";
 
@@ -1062,7 +1090,10 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
               if ($file_info['published'] == false && $action != "recyclebin") $class_image = "class=\"lazyload hcmsImageItem hcmsIconOff\"";
               else $class_image = "class=\"lazyload hcmsImageItem\"";
 
-              $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\"><img data-src=\"".cleandomain (createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name, false, "wrapper", $file_info['icon']))."\" ".$class_image." /></div>";
+              if (!empty ($mgmt_config['showsimilar']) && !$is_mobile && is_image ($mediafile)) $similar = "<div id=\"s".$items_id."\" class=\"hcmsInfoBox hcmsSimilar\" onclick=\"showsimilar('".url_encode($mediafile)."')\">".getescapedtext ($hcms_lang['show-similar'][$lang])."</div>";
+              else $similar = "";
+
+              $thumbnail = "<div id=\"m".$items_id."\" class=\"hcmsThumbnailFrame hcmsThumbnail".$temp_explorerview."\" ".(!empty ($mgmt_config['showsimilar']) ? "onmouseover=\"showbutton('s".$items_id."')\" onmouseout=\"hidebutton('s".$items_id."')\"" : "")."><img data-src=\"".cleandomain (createviewlink ($item_site, $media_info['filename'].".thumb.jpg", $object_name, false, "wrapper", $file_info['icon']))."\" ".$class_image." />".$similar."</div>";
             }
             // display file icon for non multimedia objects 
             else
@@ -1182,8 +1213,18 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 
 .hcmsThumbnailFrame
 {
+  position: relative;
   display: block;
+  text-align: center;
   vertical-align: bottom;
+}
+
+.hcmsSimilar
+{
+  display: none;
+  position: absolute;
+  left: 6px;
+  bottom: 12px; 
 }
 
 .hcmsItemName
@@ -1300,6 +1341,35 @@ var explorerview = "<?php echo getescapedtext ($temp_explorerview); ?>";
 // verify sidebar
 if (parent.document.getElementById('sidebarLayer') && parent.document.getElementById('sidebarLayer').style.width > 0) var sidebar = true;
 else var sidebar = false;
+
+function showbutton (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    document.getElementById(id).style.display='block';
+  }
+}
+
+function hidebutton (id)
+{
+  if (id != "" && document.getElementById(id))
+  {
+    document.getElementById(id).style.display='none';
+  }
+}
+
+function showsimilar (mediafile)
+{
+  if (mediafile != "")
+  {
+    if (event) event.stopPropagation();
+    
+    // local load screen
+    if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display = 'inline';
+
+    document.location.href='search_objectlist.php?action=base_search&cat=comp&search_image=' + encodeURIComponent(mediafile);
+  }
+}
 
 function checktype (type)
 {

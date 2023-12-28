@@ -4837,7 +4837,7 @@ function getimagecolorkey ($image)
     $colorkey = "";
     foreach ($table as $key=>$value) $colorkey .= $key;
 
-    // color key with the 5 mostyl used colors in the image
+    // color key with the 5 mostly used colors in the image
     $colorkey = substr (strrev ($colorkey), 0, 5);
 
     return $colorkey;
