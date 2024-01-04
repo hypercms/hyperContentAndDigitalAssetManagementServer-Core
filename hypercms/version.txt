@@ -7278,6 +7278,7 @@ Release 01/2024
 - Modifications in function createmedia in Media API in order to get the image size for KRITA files from the converted JPEG version using function getmediasize
 - Modifications in function createthumbnail_krita in Media API in order to convert the extracted mergedimage.png file to JPEG
 - Modifications in explorer_objectlist and search_objectlist in order to disable the large gallery view for the Mobile Edition
+- Modifications in daily job in order to use deletefolder instead of deleteobject for folder objects in the fallback procedure
 - Update of the Installation Guide
 - Update of the Users Guide
 - Bug fix: text_edit_date used two double quotes at the end of the tagid value string and caused an error in the local JS function checkUpdatedContent
@@ -7293,3 +7294,4 @@ Release 01/2024
 - Bug fix: Function createmedia in Media API did not correctly extract the image size of KRITA files since the thumbnail image has been used as input for function getmediasize
 - Bug fix: Function createthumbnail_krita in Media API did not convert the extracted mergedimage.png file to the JPEG format which resulted to a wrong image format and a large preview file size
 - Bug fix: The Mobile Edition did not switch to the next smaller gallery view automatically (There is no large gallery view support and view select option in the Mobile Edition)
+- Bug fix: The daily job did not call function deletefolder for folder objects in the fallback procedure

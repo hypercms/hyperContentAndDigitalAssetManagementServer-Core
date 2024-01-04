@@ -189,18 +189,30 @@ if (is_file ("../config/config.inc.php"))
                 // save original path for rdbms_deleteobject
                 $temp_location = $objectpath['objectpath'];
 
-                // remove .folder for folder object 
-                if (getobject ($objectpath['objectpath']) == ".folder") $objectpath['objectpath'] = getlocation ($objectpath['objectpath']);
+                // remove .folder for folder object
+                if (getobject ($objectpath['objectpath']) == ".folder")
+                {
+                  $objectpath['objectpath'] = getlocation ($objectpath['objectpath']);
 
-                // delete object
-                $temp = deleteobject (getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), $objectpath['user']);
+                  // delete folder
+                  $temp = deletefolder (getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), $objectpath['user']);
+                }
+                else
+                {
+                  // delete object
+                  $temp = deleteobject (getpublication($objectpath['objectpath']), getlocation($objectpath['objectpath']), getobject($objectpath['objectpath']), $objectpath['user']);
+                }
 
-                // delete database entry in case deleteobject failed (object does not exist in the file system anymore)
+                // delete database entry in case deletefolder or deleteobject failed (object does not exist in the file system anymore)
                 if (empty ($temp['result'])) rdbms_deleteobject ($temp_location, "");
               }
             }
           }
         }
+
+        // ------------------------------------------- CLEAN CONTENTCOUNT ----------------------------------------------
+
+        rdbms_cleancontentcount ();
         
         // ----------------------------------------------- CLOUD SYNC -------------------------------------------------
 
