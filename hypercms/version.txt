@@ -7252,7 +7252,7 @@ Release 01/2024
 - Implementation of the new local JS functions showbutton, hidebutton, showsimilar in explorer_objectlist and search_objectlist
 - Modifications in explorer_objectlist and search_objectlist in order to implement the search for images with similar primary colors or similar median RGB values on mouse over
 - Modifications in search_objectlist in order to support the category as input value
-- Implementation of the new main configuration setting $mgmt_config['search_colorkey_level'] in search_objectlist (0 = exact match, 1 = match of 1st primary color, 2 = match of first 2 primar colors, 3 = match of first 3 primar colors, 4 = match of first 4 primar colors, 5 = 0 = match of all 5 primary colors in the same order)
+- Implementation of the new main configuration setting $mgmt_config['search_colorkey_level'] in search_objectlist (0 = exact match, 1 = match of 1st primary color, 2 = match of first 2 primary colors, 3 = match of first 3 primary colors, 4 = match of first 4 primary colors, 5 = 0 = match of all 5 primary colors in the same order)
 - Modifications in search_objectlist in order to support the new search input parameter search_image and query the colorkey and RGB values of the source image as input for function rdbms_searchcontent
 - Modifications in createtables.sql in order to create a new index object_color for table object using column filetype, colorkey, red, green, and blue
 - Modifications in createtables.sql in order to modify the column colorkey to 6 digits fixed character length
@@ -7264,20 +7264,32 @@ Release 01/2024
 - Modifications in function showmedia in UI API in order to support different tag-IDs for the standard image, for face markers and image zoom
 - Implementation of a new JS image zoom in explorer_objectview with support of image zoom and image move for preview (not used for Mobile Edition)
 - Implementation of the color icon image for all design themes
-- Implementation of the new show similar action in control_objectlist_menu for teh search of similar images
+- Implementation of the new show similar action in control_objectlist_menu for the search of similar images
 - Modifications in explorer_objectlist and search_objectlist in order to disable the show similar button for the Modile Edition
 - Implementation of the new main configuration setting $mgmt_config['showsimilar'] in the config.inc.php of the install directory
 - Modifications in explorer_objectlist and search_objectlist in order to support the new main configuration setting $mgmt_config['showsimilar']
 - Modifications in function showmedia in UI API in order to use the original GIF image if the view type "media_only" has been requested
-- Modifications in function showmedia in UI API in order to use the original image if supported by modern browsers and if the view type "media_only" has been requested, the requested width is more than 1024 pixels, or more than the original image width
+- Modifications in function showmedia in UI API in order to use the original image if supported by modern browsers and if the view type "media_only" has been requested, the requested width is more than 420 pixels, or more than the original image width
 - Modifications in function showmedia in UI API in order to save the requested input width and height and use it for the comparison with the original image
+- Modifications in function showmedia in UI API in order to avoid creating temporary preview images if annotation images are used
+- Modifications in function showmedia in UI API in order to optimize the code and the performance
+- Modifications in function deletemediafiles in Main API in order to remove the JPEG version of the original KRITA file
+- Modifications in function function getmediasize in Get API in order to support the size of RAW and KRITA image files
+- Modifications in function createmedia in Media API in order to get the image size for KRITA files from the converted JPEG version using function getmediasize
+- Modifications in function createthumbnail_krita in Media API in order to convert the extracted mergedimage.png file to JPEG
+- Modifications in explorer_objectlist and search_objectlist in order to disable the large gallery view for the Mobile Edition
 - Update of the Installation Guide
 - Update of the Users Guide
 - Bug fix: text_edit_date used two double quotes at the end of the tagid value string and caused an error in the local JS function checkUpdatedContent
 - Bug fix: Function rdbms_searchcontent and rdbms_replacecontent in DB Connect used the wrong column for the page and component search filter
 - Bug fix: Function uploadhandler in Main API did not initialize the error array
 - Bug fix: media_edit_explorer did not initialize the counter variable for the number of search results correctly
-- Bug fix: The locking mechanism of the file based contentcount caused issues with duplicate Container IDs. In order to avoid duplicates a new contentcount mechansim that uses the database has been implemented.
-- Bug fix: The Chinsese language file used a wrong language code in the last two text elements
+- Bug fix: The locking mechanism of the file based contentcount caused issues with duplicate Container IDs. In order to avoid content duplicates a new contentcount mechansim that uses the database has been implemented.
+- Bug fix: The Chinese language file used a wrong language code in the last two text elements
 - Bug fix: Function downloadfile did not URL encode the file name and caused issues with unencoded filename in the HTTP header in case of certain special characters in the file name (URL encoding has only be used for MS IE browser)
 - Bug fix: The z-index of the rendering options layer in image_rendering was below the z-index of the image crop tool layer 
+- Bug fix: Function showmedia in UI API created temporary preview images even if not required
+- Bug fix: Function deletemediafiles in Main API did not remove the JPEG version of KRITA files
+- Bug fix: Function createmedia in Media API did not correctly extract the image size of KRITA files since the thumbnail image has been used as input for function getmediasize
+- Bug fix: Function createthumbnail_krita in Media API did not convert the extracted mergedimage.png file to the JPEG format which resulted to a wrong image format and a large preview file size
+- Bug fix: The Mobile Edition did not switch to the next smaller gallery view automatically (There is no large gallery view support and view select option in the Mobile Edition)

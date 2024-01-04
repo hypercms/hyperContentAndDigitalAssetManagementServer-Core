@@ -5024,64 +5024,106 @@ function getmediasize ($filepath)
     $location = getlocation ($filepath);
     $media = getobject ($filepath);
 
-    // prepare media file
-    $temp = preparemediafile ($site, $location, $media, $user);
-
-    // if encrypted
-    if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+    // use JPEG version of original image
+    if (is_rawimage ($media) || is_kritaimage ($media))
     {
-      $location = $temp['templocation'];
-      $media = $temp['tempfile'];
+      $file_info = getfileinfo ($site, $media, "comp");
 
-      // set new file path
-      $filepath = $location.$media;
-    }
-    // if restored
-    elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
-    {
-      $location = $temp['location'];
-      $media = $temp['file'];
+      // prepare media file
+      $temp_file = preparemediafile ($site, $location, $file_info['filename'].".jpg", $user);
 
-      // set new file path
-      $filepath = $location.$media;
-    }
-
-    // verify local media file
-    if (!is_file ($filepath)) return false;
-
-    // get file width and heigth in pixels
-    $imagesize = @getimagesize ($filepath);
-
-    if (!empty ($imagesize))
-    {
-      $result['width'] = $imagesize[0];
-      $result['height'] = $imagesize[1];
-    }
-    // try to read values from source file (e.g. SVG files)
-    else
-    {
-      // use ImageMagick
-      if (!empty ($mgmt_imagepreview) && is_supported ($mgmt_imagepreview, $filepath))
+      // if encrypted
+      if (!empty ($temp_file['result']) && !empty ($temp_file['crypted']) && !empty ($temp_file['templocation']) && !empty ($temp_file['tempfile']))
       {
-        // get size of first page if document with more than one page
-        $cmdresult = exec ("identify -format \"%wx%h\" \"".shellcmd_encode ($filepath)."[0]\"");
-
-        if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
+        $location = $temp_file['templocation'];
+        $media = $temp_file['tempfile'];
       }
-      // extract from source
+      // if restored
+      elseif (!empty ($temp_file['result']) && !empty ($temp_file['restored']) && !empty ($temp_file['location']) && !empty ($temp_file['file']))
+      {
+        $location = $temp_file['location'];
+        $media = $temp_file['file'];
+      }
+      // use existing file
       else
       {
-        $header = loadfile_header (getlocation ($filepath), getobject ($filepath));
+        $media = $file_info['filename'].".jpg";
+      }
 
-        if (!empty ($header))
+      // set new file path
+      $filepath = $location.$media;
+
+      // verify local media file
+      if (!is_file ($filepath)) return false;
+
+      // get file width and heigth in pixels
+      $imagesize = getimagesize ($filepath);
+
+      if (!empty ($imagesize))
+      {
+        $result['width'] = $imagesize[0];
+        $result['height'] = $imagesize[1];
+      }     
+    }
+    // other image formats
+    else
+    {
+      // prepare media file
+      $temp = preparemediafile ($site, $location, $media, $user);
+
+      // if encrypted
+      if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
+      {
+        $location = $temp['templocation'];
+        $media = $temp['tempfile'];
+      }
+      // if restored
+      elseif (!empty ($temp['result']) && !empty ($temp['restored']) && !empty ($temp['location']) && !empty ($temp['file']))
+      {
+        $location = $temp['location'];
+        $media = $temp['file'];
+      }
+
+      // set new file path
+      $filepath = $location.$media;
+
+      // verify local media file
+      if (!is_file ($filepath)) return false;
+
+      // get file width and heigth in pixels
+      $imagesize = @getimagesize ($filepath);
+
+      if (!empty ($imagesize))
+      {
+        $result['width'] = $imagesize[0];
+        $result['height'] = $imagesize[1];
+      }
+      // try to read values from source file (e.g. SVG files)
+      else
+      {
+        // use ImageMagick
+        if (!empty ($mgmt_imagepreview) && is_supported ($mgmt_imagepreview, $filepath))
         {
-          // get SVG tag
-          $svg_tag = gethtmltag ($header, "svg");
+          // get size of first page if document with more than one page
+          $cmdresult = exec ("identify -format \"%wx%h\" \"".shellcmd_encode ($filepath)."[0]\"");
 
-          if (!empty ($svg_tag)) $header = $svg_tag;
+          if (strpos ($cmdresult, "x") > 0) list ($result["width"], $result["height"]) = explode ("x", $cmdresult);
+        }
+        // extract from source
+        else
+        {
+          $header = loadfile_header (getlocation ($filepath), getobject ($filepath));
 
-          $result['width'] = getattribute ($header, "width", true);
-          $result['height'] = getattribute ($header, "height", true);
+          if (!empty ($header))
+          {
+            // get SVG tag
+            $svg_tag = gethtmltag ($header, "svg");
+
+            if (!empty ($svg_tag)) $header = $svg_tag;
+
+            $result['width'] = getattribute ($header, "width", true);
+            $result['height'] = getattribute ($header, "height", true);
+          }
         }
       }
     }

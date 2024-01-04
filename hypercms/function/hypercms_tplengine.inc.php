@@ -7703,7 +7703,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               // error handling
               $viewstore = errorhandler ($viewstore_buffer, $viewstore_save, $unique_id.".generate.php");
 
-              // creation of the file was successful, save it to the media repository
+              // on success, save it to the media repository
               if ($viewstore == $viewstore_save)
               {
                 $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";

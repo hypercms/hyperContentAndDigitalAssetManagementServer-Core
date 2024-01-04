@@ -1950,7 +1950,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
       </tr>
     </table>";
       }
-      // ----------------------------------- if image (including encapsulated post script and svg files that are treated as multi-page files by function createmedia) ------------------------------------- 
+      // ----------------------------------- if image (including encapsulated post script and SVG files that are treated as multi-page files by function createmedia) ------------------------------------- 
       elseif (!empty ($file_info['ext']) && is_image ($file_info['ext']))
       {
         // media size
@@ -1958,10 +1958,8 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
         if ($viewtype != "template")
         {
-          $thumbfile = $file_info['filename'].".thumb.jpg";
-
-          // prepare media file
-          $temp = preparemediafile ($site, $thumb_root, $thumbfile, $user);
+          // prepare thumbnail file
+          $temp = preparemediafile ($site, $thumb_root, $file_info['filename'].".thumb.jpg", $user);
 
           // if encrypted
           if (!empty ($temp['result']) && !empty ($temp['crypted']) && !empty ($temp['templocation']) && !empty ($temp['tempfile']))
@@ -1975,9 +1973,40 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             $thumb_root = $temp['location'];
             $thumbfile = $temp['file'];
           }
+          // use existing file
+          elseif (is_file ($thumb_root.$file_info['filename'].".thumb.jpg"))
+          {
+            $thumbfile = $file_info['filename'].".thumb.jpg";
+          }
+          
+          // use existing converted image file in case of RAW or KRITA image
+          if (is_rawimage ($file_info['orig_ext']) || is_kritaimage ($file_info['orig_ext']))
+          {
+            // prepare media file
+            $temp_file = preparemediafile ($site, $thumb_root, $file_info['filename'].".jpg", $user);
+
+            // if encrypted
+            if (!empty ($temp_file['result']) && !empty ($temp_file['crypted']) && !empty ($temp_file['templocation']) && !empty ($temp_file['tempfile']))
+            {
+              $media_root = $temp_file['templocation'];
+              $mediafile = $temp_file['tempfile'];
+            }
+            // if restored
+            elseif (!empty ($temp_file['result']) && !empty ($temp_file['restored']) && !empty ($temp_file['location']) && !empty ($temp_file['file']))
+            {
+              $media_root = $temp_file['location'];
+              $mediafile = $temp_file['file'];
+            }
+            // use existing file
+            elseif (is_file ($thumb_root.$file_info['filename'].".jpg"))
+            {
+              $media_root = $thumb_root;
+              $mediafile = $file_info['filename'].".jpg";
+            }
+          }
 
           // use thumbnail if it is valid
-          if (is_file ($thumb_root.$thumbfile))
+          if (!empty ($thumbfile) && is_file ($thumb_root.$thumbfile))
           {
             // get thumbnail image information
             $thumb_size = getmediasize ($thumb_root.$thumbfile);
@@ -2012,18 +2041,28 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $height = $newsize['height'];
             }
 
-            // create new image for annotations (only if annotations are enabled and image conversion software and permissions are given)
+            // define annoation image file name
             if (substr_count ($doc_ext.$hcms_ext['vectorimage'], $file_info['orig_ext'].".") > 0) $annotation_file = $file_info['filename'].".annotation-0.jpg";
             else $annotation_file = $file_info['filename'].'.annotation.jpg';
 
-            if (
-                 $viewtype == "preview" &&
-                 !empty ($mediaratio) && ($thumb_size['width'] >= 180 || $thumb_size['height'] >= 180) && 
-                 is_annotation () && 
-                 (!is_file ($thumb_root.$annotation_file) || filemtime ($thumb_root.$annotation_file) < filemtime ($thumb_root.$thumbfile)) && 
-                 (is_supported ($mgmt_imagepreview, $file_info['orig_ext'])  || is_kritaimage ($file_info['orig_ext'])) && 
-                 $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1
-               )
+            // use original image supported by browsers for viewtype "media_only"
+            if ($viewtype == "media_only" && ($file_info['orig_ext'] == ".gif" || (($width_input > 420 || $width_input >= $width_orig) && ($file_info['orig_ext'] == ".avif" || $file_info['orig_ext'] == ".jpg" || $file_info['orig_ext'] == ".jpeg" || $file_info['orig_ext'] == ".png" || $file_info['orig_ext'] == ".webp"))))
+            {
+              $mediafile = $mediafile_orig;
+            }
+            // use JPEG version of original RAW or KRITA image for viewtype "media_only"
+            elseif ($viewtype == "media_only" && $width_input > 420 && (is_rawimage ($file_info['orig_ext']) || is_kritaimage ($file_info['orig_ext'])) && is_file ($media_root.$mediafile))
+            {
+              $mediafile = $mediafile;
+            }
+            // create new image for annotations (only if annotations are enabled and image conversion software and permissions are given)
+            elseif (
+              $viewtype == "preview" &&
+              !empty ($mediaratio) && ($thumb_size['width'] >= 180 || $thumb_size['height'] >= 180) && 
+              is_annotation () && 
+              (is_supported ($mgmt_imagepreview, $file_info['orig_ext']) || is_kritaimage ($file_info['orig_ext'])) && 
+              $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1
+            )
             {
               // render image using the default image width
               $width_render = getpreviewwidth ($site, $mediafile, $width_orig);
@@ -2040,41 +2079,18 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 $height = round (($width / $mediaratio), 0);
               }
 
-              if (is_array ($mgmt_imageoptions))
+              // create new file only when one wasn't already created or is outdated
+              if ((!is_file ($thumb_root.$annotation_file) || filemtime ($thumb_root.$annotation_file) < filemtime ($thumb_root.$thumbfile)) && is_array ($mgmt_imageoptions))
               {
+                $result = false;
+
                 // define image format
                 $mgmt_imageoptions['.jpg.jpeg']['annotation'] = '-s '.$width_render.'x'.$height_render.' -q 100 -f jpg';
 
                 // use existing converted image file in case of RAW or KRITA image
                 if (is_rawimage ($file_info['orig_ext']) || is_kritaimage ($file_info['orig_ext']))
                 {
-                  // prepare media file
-                  $temp_file = preparemediafile ($site, $thumb_root, $file_info['filename'].".jpg", $user);
-
-                  // if encrypted
-                  if (!empty ($temp_file['result']) && !empty ($temp_file['crypted']) && !empty ($temp_file['templocation']) && !empty ($temp_file['tempfile']))
-                  {
-                    $temp_location = $temp_file['templocation'];
-                    $temp_mediafile = $temp_file['tempfile'];
-                  }
-                  // if restored
-                  elseif (!empty ($temp_file['result']) && !empty ($temp_file['restored']) && !empty ($temp_file['location']) && !empty ($temp_file['file']))
-                  {
-                    $temp_location = $temp_file['location'];
-                    $temp_mediafile = $temp_file['file'];
-                  }
-                  // use existing file
-                  else
-                  {
-                    $temp_location = $thumb_root;
-                    $temp_mediafile = $file_info['filename'].".jpg";
-                  }
-
-                  // create new image for annotations
-                  if (!empty ($temp_location) && !empty ($temp_mediafile))
-                  {
-                    $result = createmedia ($site, $temp_location, $thumb_root, $temp_mediafile, 'jpg', 'annotation', true, false);
-                  }
+                  $result = createmedia ($site, $media_root, $thumb_root, $mediafile, 'jpg', 'annotation', true, false);
                 }
 
                 // create new image for annotations using the original image file
@@ -2089,14 +2105,10 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   $previewimage_path = $thumb_root.$result;
                 }
               }
+              // we use the existing annotation file
+              else $mediafile = $annotation_file;
             }
-
-            // use original image supported by browsers for viewtype "media_only"
-            if ($viewtype == "media_only" && ($file_info['orig_ext'] == ".gif" || (($width_input > 1024 || $width_input >= $width_orig) && ($file_info['orig_ext'] == ".avif" || $file_info['orig_ext'] == ".jpg" || $file_info['orig_ext'] == ".jpeg" || $file_info['orig_ext'] == ".png" || $file_info['orig_ext'] == ".svg" || $file_info['orig_ext'] == ".webp"))))
-            {
-              $mediafile = $mediafile_orig;
-            }
-            // generate a new image file if the new image size is greater than 150% of the width or height of the thumbnail
+            // create new image file if the new image size is greater than 150% of the width or height of the thumbnail
             elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size['width'] * 1.5 < $width) && ($height > 0 && $thumb_size['height'] * 1.5 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
             {
               // define parameters for view-images
@@ -2104,11 +2116,11 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               $newext = 'jpg';
               $typename = 'preview.'.$width.'x'.$height;
 
-              // predict the name to check if the file does exist and maybe is actual
+              // predict the name to check if the file does exist and is not outdated
               $newname = $file_info['filename'].".".$typename.'.'.$newext;
 
-              // generate new file only when one wasn't already created or is outdated (use thumbnail since the date of the decrypted temporary file is not representative)
-              if (!is_file ($viewfolder.$newname) || (is_file ($thumb_root.$thumbfile) && @filemtime ($thumb_root.$thumbfile) > @filemtime ($viewfolder.$newname)) || !empty ($force_recreate)) 
+              // create new file only when one wasn't already created or is outdated (use thumbnail since the date of the decrypted temporary file is not representative)
+              if (!is_file ($viewfolder.$newname) || (is_file ($thumb_root.$thumbfile) && filemtime ($thumb_root.$thumbfile) > filemtime ($viewfolder.$newname)) || !empty ($force_recreate)) 
               {
                 if (!empty ($mgmt_imagepreview) && is_array ($mgmt_imagepreview))
                 {
@@ -2178,7 +2190,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
               <td style=\"text-align:left;\">";
 
             // image annotation
-            if (($thumb_size['width'] >= 180 || $thumb_size['height'] >= 180) && is_annotation () && is_file ($thumb_root.$annotation_file) && $viewtype == "preview" && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
+            if ($viewtype == "preview" && ($thumb_size['width'] >= 180 || $thumb_size['height'] >= 180) && is_annotation () && is_file ($thumb_root.$annotation_file) && $setlocalpermission['root'] == 1 && $setlocalpermission['create'] == 1)
             {
               // get annotation image size
               $temp = getmediasize ($thumb_root.$annotation_file);
@@ -2206,13 +2218,13 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   <img name=\"hcms_mediaClose\" onclick=\"if (typeof showFaceOnImage === 'function') showFaceOnImage(); hcms_switchFormLayer('hcms360View');\" src=\"".getthemelocation()."img/button_close.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['close'][$lang])."\" title=\"".getescapedtext ($hcms_lang['close'][$lang])."\" onMouseOut=\"hcms_swapImgRestore();\" onMouseOver=\"hcms_swapImage('hcms_mediaClose','','".getthemelocation()."img/button_close_over.png',1);\" />
                 </div>
                 <!-- 360 view -->
-                <iframe src=\"".cleandomain ($mgmt_config['url_path_cms'])."media_360view.php?type=image&link=".url_encode($previewimage_link).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
+                <iframe src=\"".cleandomain($mgmt_config['url_path_cms'])."media_360view.php?type=image&link=".url_encode($previewimage_link).($mediaratio > $switch_panoview ? "&view=horizontal" : "")."\" frameborder=\"0\" style=\"width:100%; height:100%; border:0;\" allowFullScreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\"></iframe>
               </div>";
               $mediaview .= "
               <div id=\"annotationFrame\" style=\"margin-top:40px; width:".intval($width_annotation + $width_diff)."px; height:".intval($height_annotation + 8)."px;\">
                 <div style=\"position:relative; left:0; top:0; width:0; height:0;\">
                   <!-- annotation image --> 
-                  <img src=\"".cleandomain ($previewimage_link)."\" id=\"".$id."\" style=\"position:absolute; left:0; top:0; z-index:-10; visibility:hidden;\" />
+                  <img src=\"".cleandomain($previewimage_link)."\" id=\"".$id."\" style=\"position:absolute; left:0; top:0; z-index:-10; visibility:hidden;\" />
                 </div>
                 <div id=\"annotation\" style=\"position:relative;\" ".(((is_facerecognition ("sys") || is_annotation ()) && $viewtype == "preview") ? "onclick=\"if (typeof createFaceOnImage === 'function') createFaceOnImage (event, 'annotation');\" onmousedown=\"$('.hcmsFace').hide(); $('.hcmsFaceName').hide();\" onmouseup=\"$('.hcmsFace').show(); $('.hcmsFaceName').show();\"" : "")." class=\"".$class."\"></div>
               </div>";
@@ -2268,7 +2280,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           }
         }
         // if template media view
-        elseif (is_file ($media_root.$mediafile))
+        elseif (!empty ($mediafile) && is_file ($media_root.$mediafile))
         {
           $mediaview .= "
         <table style=\"width:100%; margin:0; border-spacing:0; border-collapse:collapse;\">

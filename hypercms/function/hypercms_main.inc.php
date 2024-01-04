@@ -5144,7 +5144,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     deleteannotationimages ($site, $mediafile);
 
     // image file from RAW image
-    if (is_rawimage ($mediafile))
+    if (is_rawimage ($mediafile) || is_kritaimage ($mediafile))
     {
       $mediafile_raw = substr ($mediafile, 0, strrpos ($mediafile, ".")).".jpg";
 

@@ -94,6 +94,9 @@ if ((is_array ($column) || empty ($column)) && checktoken ($token, $user))
   $resetcols = true;
 }
 
+// disable large gallery view for Mobile Edition
+if ($is_mobile && $temp_explorerview == "large") $temp_explorerview = "medium";
+
 // important: call is_newthumbnail with dummy container ID before session will be suspended
 is_newthumbnail ("0000001", true);
 
@@ -1048,7 +1051,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
 </style>
 <script type="text/javascript">
 
-// design theme
+// design theme (initalized in contextmenu.js)
 themelocation = '<?php echo getthemelocation(); ?>';
 
 // explorer view option

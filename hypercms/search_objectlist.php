@@ -66,6 +66,9 @@ $thumbnailsize_medium = 160;
 $thumbnailsize_large = 180;
 $objects_counted = 0;
 
+// disable large gallery view for Mobile Edition
+if ($is_mobile && $temp_explorerview == "large") $temp_explorerview = "medium";
+
 // SQL limit (result does not contain unique objetpaths if content is returned)
 $limit_standard = 1000;
 $limit_large = 2000;
@@ -1318,7 +1321,7 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
 // select area
 var selectarea;
 
-// design theme
+// design theme (initalized in contextmenu.js)
 themelocation = '<?php echo getthemelocation(); ?>';
 
 // context menu

@@ -1426,7 +1426,14 @@ function createthumbnail_krita ($site, $location_source, $location_dest, $file)
       // get merged image
       if (is_file ($temp_dir."mergedimage.png"))
       {
-        copy ($temp_dir."mergedimage.png", $location_dest.$file_name.".jpg");
+        //copy ($temp_dir."mergedimage.png", $location_dest.$file_name.".jpg");
+        $temp_file = convertimage ($site, $temp_dir."mergedimage.png", $temp_dir, "jpg", "RGB", "", "", "", 0, "px", 72, "", true);
+
+        // move temporary file to destination
+        if ($temp_file != "" && is_file ($temp_dir.$temp_file))
+        {
+          rename ($temp_dir.$temp_file, $location_dest.$file_name.".jpg"); 
+        }
       }
     }
 
@@ -1920,7 +1927,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
             if (!empty ($file_ext) && substr_count (strtolower ($imagepreview_ext).".", $file_ext.".") > 0 && trim ($imagepreview) != "")
             {
               // using dcraw package and ImageMagick (Debian 11 does not provide package ufraw-patch anymore since it is not maintained since 2016)
-              // don ot use is_executable since the path /usr/bin/dcraw might be outside the allowed pathes and will result in errors in the php error log
+              // do not use is_executable since the path /usr/bin/dcraw might be outside the allowed pathes and will result in errors in the php error log
               if (!empty ($mgmt_imagepreview['rawimage']) && strtolower ($mgmt_imagepreview['rawimage']) == "dcraw")
               {
                 $cmd = getlocation ($mgmt_imagepreview[$imagepreview_ext])."dcraw -c -w \"".shellcmd_encode ($path_source)."\" | ".$mgmt_imagepreview[$imagepreview_ext]." - \"".shellcmd_encode ($location_dest.$file_name).".jpg\"";
@@ -1940,7 +1947,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
               if ($errorCode)
               {
                 $errcode = "20259";
-                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".str_replace ("|", "->", $cmd).") failed for file '".$file."' \t".implode ("\t", $output); 
+                $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick or dcraw (code:".$errorCode.", command:".str_replace ("|", "->", $cmd).") failed for file '".$file."' \t".implode ("\t", $output); 
               }
               else
               {
@@ -2169,15 +2176,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
           $imagecolor = getimagecolors ($site, $newfile);
 
-          if ($imagewidth_orig < 1 || $imageheight_orig < 1)
-          {
-            $temp = getmediasize ($location_dest.$newfile);
+          $temp = getmediasize ($location_dest.$newfile);
 
-            if ($temp != false)
-            {
-              $imagewidth_orig = $temp['width'];
-              $imageheight_orig = $temp['height'];
-            }
+          if ($temp != false)
+          {
+            $imagewidth_orig = $temp['width'];
+            $imageheight_orig = $temp['height'];
           }
 
           // write media information to container and DB
@@ -2200,15 +2204,12 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
 
           $imagecolor = getimagecolors ($site, $newfile);
 
-          if ($imagewidth_orig < 1 || $imageheight_orig < 1)
-          {
-            $temp = getmediasize ($location_dest.$newfile);
+          $temp = getmediasize ($location_source.$file);
 
-            if ($temp != false)
-            {
-              $imagewidth_orig = $temp['width'];
-              $imageheight_orig = $temp['height'];
-            }
+          if ($temp != false)
+          {
+            $imagewidth_orig = $temp['width'];
+            $imageheight_orig = $temp['height'];
           }
 
           // write media information to container and DB
