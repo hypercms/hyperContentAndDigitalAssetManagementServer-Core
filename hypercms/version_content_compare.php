@@ -146,6 +146,9 @@ if ($compare_1 != "" && $compare_2 != "" && checktoken ($token, $user))
             
             // replace the url_comp variables with the URL of the component root
             $contentbot = str_replace ("%comp%", substr ($mgmt_config['url_path_comp'], 0, strlen ($mgmt_config['url_path_comp'])-1), $contentbot);
+
+            // add spaces after commas for the proper display of keyword lists
+            $contentbot = str_replace (",", ", ", $contentbot);
             
             // remove html tags              
             $content_array[$id][$i] = trim (strip_tags ($contentbot));

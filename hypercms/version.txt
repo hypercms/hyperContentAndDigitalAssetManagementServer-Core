@@ -7274,11 +7274,15 @@ Release 01/2024
 - Modifications in function showmedia in UI API in order to avoid creating temporary preview images if annotation images are used
 - Modifications in function showmedia in UI API in order to optimize the code and the performance
 - Modifications in function deletemediafiles in Main API in order to remove the JPEG version of the original KRITA file
+- Modifications in function deletemediafiles in Main API in order to verify symbolic links and remove the referred file and link as well
 - Modifications in function function getmediasize in Get API in order to support the size of RAW and KRITA image files
 - Modifications in function createmedia in Media API in order to get the image size for KRITA files from the converted JPEG version using function getmediasize
 - Modifications in function createthumbnail_krita in Media API in order to convert the extracted mergedimage.png file to JPEG
 - Modifications in explorer_objectlist and search_objectlist in order to disable the large gallery view for the Mobile Edition
 - Modifications in daily job in order to use deletefolder instead of deleteobject for folder objects in the fallback procedure
+- Modifications in function deleteversion and deleteversions in Main API in order to verify symbolic links and remove the referred file and link as well
+- Modifications in function deletefile in Main API in order to remove files referred by a symbolic link for recursive and non-recursive input parameter
+- Modifications in version_content_compare in order to add free spaces after commas for keyword lists
 - Update of the Installation Guide
 - Update of the Users Guide
 - Bug fix: text_edit_date used two double quotes at the end of the tagid value string and caused an error in the local JS function checkUpdatedContent
@@ -7295,3 +7299,6 @@ Release 01/2024
 - Bug fix: Function createthumbnail_krita in Media API did not convert the extracted mergedimage.png file to the JPEG format which resulted to a wrong image format and a large preview file size
 - Bug fix: The Mobile Edition did not switch to the next smaller gallery view automatically (There is no large gallery view support and view select option in the Mobile Edition)
 - Bug fix: The daily job did not call function deletefolder for folder objects in the fallback procedure
+- Bug fix: Function deletemediafiles in Main API did not remove files that are referred by symbolic links (extported media files)
+- Bug fix: Function deleteversion and deleteversions in Main API did not remove files that are referred by symbolic links (extported media files)
+- Bug fix: Long keyword lists have been displayed outside the text field when comparing two content versions

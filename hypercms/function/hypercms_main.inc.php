@@ -3783,10 +3783,10 @@ function deleteversion ($site, $container_version, $user="sys")
       $datetime = $date." ".$time;
 
       // delete media file version
-      if (is_file ($mediadir.$container_version) || is_cloudobject ($container_version))
+      if (is_file ($mediadir.$container_version) || is_link ($mediadir.$container_version) || is_cloudobject ($container_version))
       {
         // delete media file and symbolic link to media file (if exported file)
-        if (is_file ($mediadir.$container_version)) $media_result = deletefile ($mediadir, $container_version, false);
+        if (is_file ($mediadir.$container_version) || is_link ($mediadir.$container_version)) $media_result = deletefile ($mediadir, $container_version, false);
 
         // fallback delete of symbolic link to media file (if exported file)
         if (is_link ($thumbdir.$container_version)) deletefile ($thumbdir, $container_version, false);
@@ -3799,9 +3799,9 @@ function deleteversion ($site, $container_version, $user="sys")
       // delete thumbnail file
       $thumbnail = $fileinfo['filename'].".thumb.jpg".strrchr ($container_version, ".");
 
-      if (is_file ($thumbdir.$thumbnail))
+      if (is_file ($thumbdir.$thumbnail) || is_link ($thumbdir.$thumbnail))
       {
-        if (is_file ($thumbdir.$thumbnail)) $thumbnail_result = deletefile ($thumbdir, $thumbnail, false);
+        $thumbnail_result = deletefile ($thumbdir, $thumbnail, false);
 
         // cloud storage
         if (function_exists ("deletecloudobject")) deletecloudobject ($site, $thumbdir, $thumbnail, $user);
@@ -3856,7 +3856,7 @@ function deleteversions ($type, $report, $user="sys")
           $report_str = deleteversions ($versiondir.$entry."/", $report, $user);
         }
         // suitable for templates and containers
-        elseif ($entry != "." && $entry != ".." && is_file ($versiondir.$entry) && (preg_match ("/.v_/i", $entry) || preg_match ("/_hcm/i", $entry)))
+        elseif ($entry != "." && $entry != ".." && (is_file ($versiondir.$entry) || is_link ($versiondir.$entry)) && (preg_match ("/.v_/i", $entry) || preg_match ("/_hcm/i", $entry)))
         {
           // remove container and media file version
           if (preg_match ("/_hcm/i", $entry))
@@ -3881,7 +3881,7 @@ function deleteversions ($type, $report, $user="sys")
           // remove template or other version
           else
           {
-            if (is_file ($versiondir.$entry)) $test = deletefile ($versiondir, $entry, false);
+            if (is_file ($versiondir.$entry) || is_link ($versiondir.$entry)) $test = deletefile ($versiondir, $entry, false);
             else $test = false;
           }
 
@@ -4728,7 +4728,7 @@ function unlockfile ($user, $abs_path, $filename)
 // output: true/false
 
 // description:
-// Deletes a file or directory. If parameter recursive is et to true all items of a directory will be removed as well.
+// Deletes a file or directory. If parameter recursive is set to true all items in a directory will be removed as well.
 
 function deletefile ($abs_path, $filename, $recursive=false)
 {
@@ -4753,9 +4753,10 @@ function deletefile ($abs_path, $filename, $recursive=false)
     if (is_link ($abs_path.$filename))
     {
       // delete target file
-      if (!empty ($recursive))
+      $symlinktarget_path = readlink ($abs_path.$filename);
+      
+      if (is_file ($symlinktarget_path) || is_link ($symlinktarget_path))
       {
-        $symlinktarget_path = readlink ($abs_path.$filename);
         deletefile (getlocation ($symlinktarget_path), getobject ($symlinktarget_path), $recursive);
       }
 
@@ -5072,7 +5073,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
       // define media location of original file (may have been exported)
       $medialocation_orig = getmedialocation ($site, $mediafile, "abs_path_media");
 
-      // symbol link is used
+      // symbolic link is used
       if (is_link ($medialocation_orig.$site."/".$mediafile))
       {
         $target = readlink ($medialocation_orig.$site."/".$mediafile);
@@ -5080,7 +5081,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
       }
 
       // local media file or symbolic link to media file (due to import/export)
-      if (is_file ($medialocation_orig.$site."/".$mediafile)) $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, false);
+      if (is_file ($medialocation_orig.$site."/".$mediafile) || is_link ($medialocation_orig.$site."/".$mediafile)) $deletefile = deletefile ($medialocation_orig.$site."/", $mediafile, false);
 
       // remove symbolic link of exported media file (deprecated since version 7.0.7)
       // if ($deletefile && is_link ($medialocation.$site."/".$mediafile)) unlink ($medialocation.$site."/".$mediafile);
@@ -5119,7 +5120,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
       $mediafile_json = substr ($mediafile, 0, strrpos ($mediafile, ".")).".json";
 
       // local media file
-      if (is_file ($medialocation.$site."/".$mediafile_json)) deletefile ($medialocation.$site."/", $mediafile_json, 0);
+      if (is_file ($medialocation.$site."/".$mediafile_json) || is_link ($medialocation.$site."/".$mediafile_json)) deletefile ($medialocation.$site."/", $mediafile_json, 0);
 
       // cloud storage
       if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_json, $user);
@@ -5132,7 +5133,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb.jpg";
 
     // local media file
-    if (is_file ($medialocation.$site."/".$mediafile_thumb)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_thumb) || is_link ($medialocation.$site."/".$mediafile_thumb)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
 
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
@@ -5149,7 +5150,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
       $mediafile_raw = substr ($mediafile, 0, strrpos ($mediafile, ".")).".jpg";
 
       // local media file
-      if (is_file ($medialocation.$site."/".$mediafile_raw)) deletefile ($medialocation.$site."/", $mediafile_raw, 0);
+      if (is_file ($medialocation.$site."/".$mediafile_raw) || is_link ($medialocation.$site."/".$mediafile_raw)) deletefile ($medialocation.$site."/", $mediafile_raw, 0);
 
       // cloud storage
       if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_raw, $user);
@@ -5166,7 +5167,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$docoptions_ext;
 
           // local media file
-          if (is_file ($medialocation.$site."/".$mediafile_thumb)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_thumb) || is_link ($medialocation.$site."/".$mediafile_thumb)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
 
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
@@ -5187,7 +5188,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           // original thumbnail video file
           $mediafile_orig = substr ($mediafile, 0, strrpos ($mediafile, ".")).".orig".$mediaoptions_ext;
           // local media file
-          if (is_file ($medialocation.$site."/".$mediafile_orig)) deletefile ($medialocation.$site."/", $mediafile_orig, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_orig) || is_link ($medialocation.$site."/".$mediafile_orig)) deletefile ($medialocation.$site."/", $mediafile_orig, 0);
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_orig, $user);
           // remote client
@@ -5196,7 +5197,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           // video thumbnail files
           $mediafile_thumb = substr ($mediafile, 0, strrpos ($mediafile, ".")).".thumb".$mediaoptions_ext;
           // local media file
-          if (is_file ($medialocation.$site."/".$mediafile_thumb)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_thumb) || is_link ($medialocation.$site."/".$mediafile_orig)) deletefile ($medialocation.$site."/", $mediafile_thumb, 0);
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_thumb, $user);
           // remote client
@@ -5205,7 +5206,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           // video individual files
           $mediafile_video = substr ($mediafile, 0, strrpos ($mediafile, ".")).".media".$mediaoptions_ext;
           // local media file
-          if (is_file ($medialocation.$site."/".$mediafile_video)) deletefile ($medialocation.$site."/", $mediafile_video, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_video) || is_link ($medialocation.$site."/".$mediafile_video)) deletefile ($medialocation.$site."/", $mediafile_video, 0);
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_video, $user);
           // remote client
@@ -5214,7 +5215,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
           // media player config file
           $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config".$mediaoptions_ext;
           // local media file
-          if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
+          if (is_file ($medialocation.$site."/".$mediafile_config) || is_link ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
           // cloud storage
           if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
           // remote client
@@ -5232,7 +5233,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     // delete original media player config
     $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.orig";
     // local media file
-    if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_config) || is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
     // remote client
@@ -5241,7 +5242,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     // delete general audio player config
     $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.audio";
     // local media file
-    if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_config) || is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
     // remote client
@@ -5250,7 +5251,7 @@ function deletemediafiles ($site, $mediafile, $delete_original=false, $delete_js
     // delete general video player config
     $mediafile_config = substr ($mediafile, 0, strrpos ($mediafile, ".")).".config.video";
     // local media file
-    if (is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
+    if (is_file ($medialocation.$site."/".$mediafile_config) || is_file ($medialocation.$site."/".$mediafile_config)) deletefile ($medialocation.$site."/", $mediafile_config, 0);
     // cloud storage
     if (function_exists ("deletecloudobject")) deletecloudobject ($site, $medialocation.$site."/", $mediafile_config, $user);
     // remote client
