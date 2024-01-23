@@ -836,7 +836,16 @@ else
       $point->addSubPoint($subpoint);
     }
 
-    if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config['clipboard']))
+    if (!empty ($mgmt_config['db_connect_rdbms']))
+    {
+      $subpoint = new hcms_menupoint($hcms_lang['check-for-duplicates'][$lang], "frameset_objectlist.php?virtual=1&action=duplicates", 'button_file_copy.png');
+      $subpoint->setOnClick('changeSelection(this); minNavFrame();');
+      $subpoint->setTarget('workplFrame');
+      $subpoint->setOnMouseOver('hcms_resetContext();');
+      $point->addSubPoint($subpoint);
+    }
+
+    if (!empty ($mgmt_config['db_connect_rdbms']) && !empty ($mgmt_config['showclipboard']))
     {
       $subpoint = new hcms_menupoint($hcms_lang['clipboard'][$lang], "frameset_objectlist.php?virtual=1&action=clipboard", 'button_file_paste.png');
       $subpoint->setOnClick('changeSelection(this); minNavFrame();');

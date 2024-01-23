@@ -322,12 +322,36 @@ if ($pagestore != false)
       echo "<tr><td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['show-where-used'][$lang])." </td><td><img name=\"Button1\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_inclusions.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button1','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
     }
     
-    // show container usage button
-    if (!empty ($contentfile))
+    // connected objects or duplicates
+    if (!empty ($container_id))
     {
-      echo "<tr><td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['container-usage'][$lang])." </td><td><img name=\"Button2\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      // show container usage button
+      $temp_array = rdbms_getobjects ($container_id);
+
+      if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+      {
+        echo "<tr><td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['container-usage'][$lang])." </td><td><img name=\"Button2\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button2','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+      }
+
+      // show duplicate objects button
+      if (!empty ($media))
+      {
+        // get MD5 hash of object
+        $object_info = rdbms_getobject_info ($location_esc.$page, array('md5_hash'));
+
+        if (!empty ($object_info['md5_hash']))
+        {
+          // get duplicate objects
+          $temp_array = rdbms_getduplicatefiles ($object_info['md5_hash']);
+
+          if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+          {
+            echo "<tr><td style=\"white-space:nowrap;\">".getescapedtext ($hcms_lang['check-for-duplicates'][$lang])." </td><td><img name=\"Button1\" src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"location='page_info_duplicates.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."';\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('Button1','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" /></td></tr>\n";
+          }
+        }
+      }
     }
-    
+
     // show access statistics button
     if ((!empty ($media) || $page == ".folder") && !empty ($mgmt_config['db_connect_rdbms']) && !empty ($container_id))
     {
@@ -374,5 +398,6 @@ echo showworkflowstatus ($site, $location, $page);
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

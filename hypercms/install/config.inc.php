@@ -240,10 +240,13 @@ $mgmt_config['chat_support'] = "";
 // Define chat update interval in ms
 $mgmt_config['chat_update_interval'] = 1600;
 
-// Define if markers for images and videos and annotations for images and documents should be enabled (true) or disabled (false)
+// Enable (true) or disbale (false) preview thumbnail images in the video players playback bar
+$mgmt_config['videoplayerthumbnails'] = false;
+
+// Enable (true) or disbale (false) markers for images and videos, and annotations for images and documents
 $mgmt_config['annotation'] = false;
 
-// Define if face detection and recognition for images and videos should be enabled (true) or disabled (false)
+// Enable (true) or disbale (false) face detection and recognition for images and videos
 $mgmt_config['facerecognition'] = false;
 
 // Define URL of your system using a different subdomain or domain in order to run the service indepenendtly (non-blocking).
@@ -267,8 +270,11 @@ $mgmt_config['theme'] = "";
 // Enable (true) or disable (false) button labels in the control toolbar
 $mgmt_config['showbuttonlabel'] = true;
 
-// Show (true) or hide (false) the button in the gallery view for the search of similar images.
+// Show (true) or hide (false) the button in the gallery view for the search of similar images
 $mgmt_config['showsimilar'] = false;
+
+// Enable (true) or disable (false) the display of the users clipboard objects in the desktop tree 
+$mgmt_config['showclipboard'] = true;
 
 // Define alternative logo (URL notation) for top frame.
 $mgmt_config['logo_top'] = "";
@@ -581,6 +587,10 @@ $mgmt_config['maxfilesize'] = 0;
 // Maximum file size to be compressed in ZIP file in MB. Set value to 0 to disable limit.
 $mgmt_config['maxzipsize'] = 0;
 
+// Downloads per day
+// Maximum size in GB of all downloaded media files per day. Set value to 0 to disable limit.
+$mgmt_config['maxdownloadsize_per_day'] = 0;
+
 // Maximum digits for file and folder names (applies for createobject and uploadfile)
 // Most file systems does not support more than 255 bytes.
 // A value of not more than 200 digits is recommended since the system adds suffixes for the container ID, versioning and file locking to the file names.
@@ -648,7 +658,7 @@ $mgmt_config['search_operator'] = "";
 // "like" cannot use a fulltext search index and will be slower but will lead to more or the same results since it uses the text content as is.
 $mgmt_config['search_query_match'] = "match";
 
-// Maximum number of search results (per page/request).
+// Maximum number of search results per page/request
 $mgmt_config['search_max_results'] = 300;
 
 // Strong Passwords

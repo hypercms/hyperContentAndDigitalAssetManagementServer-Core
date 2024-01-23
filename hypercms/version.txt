@@ -99,7 +99,7 @@ Release 04/2007 - 08/2007
 
 Version 5.0.0
 Release 09/2007
-- DAM functionality (former medie database does not exist anymore, new architecture based on multimedia components)
+- DAM functionality (former media database does not exist anymore, new architecture based on multimedia components)
 - Upload and index content from documents
 - Upload and thumbnail generation for images, PDF-docs
 - Preview of uploaded videos using streaming technology (FLV-Format)
@@ -116,7 +116,7 @@ Release 03/2008
 
 Version 5.2.x
 Release 04/2008 - 09/2008
-- history of all recipients of sent objects
+- History of all recipients of sent objects
 - Report of recipients in object info
 - Context menu for user administration
 - Send link to multiple users and to group members
@@ -6487,6 +6487,7 @@ Release 01/2023
 
 Version 10.1.0 (former Development Version 10.0.9)
 Release 03/2023
+- Implementation and support of the new LinkRUI plugin for Adobe and MS Office (REST API)
 - Modifications in function getobjectlist in Get API in order to clean the filter values for the format search
 - Modifications in function getobjectlist in Get API in order to exclude the folders a user has access to if the search format does not request folders
 - Modifications in function getobjectlist in Get API in order to remove duplicates in the users publications and sort the publications
@@ -7302,3 +7303,68 @@ Release 01/2024
 - Bug fix: Function deletemediafiles in Main API did not remove files that are referred by symbolic links (extported media files)
 - Bug fix: Function deleteversion and deleteversions in Main API did not remove files that are referred by symbolic links (extported media files)
 - Bug fix: Long keyword lists have been displayed outside the text field when comparing two content versions
+
+Version 10.2.2
+Release 03/2024
+- Function rdbms_getduplicate_file in DB Connect has been renamed to rdbms_getduplicatefiles
+- Modifcations in function uploadfile in Main API in order to rename function rdbms_getduplicate_file to rdbms_getduplicatefiles
+- Implementation of the new function rdbms_findduplicatefiles in DB Connect in order to find all existing duplicate media files
+- Modifications in search_objectlist in order to implement the new function rdbms_findduplicatefiles
+- Modifications in explorer in order to add the new "check for duplicates" item in the desktop tree
+- Modifications in frameset_objectlist in order to support the search for duplicates
+- Implementation of the new page_info_duplicates in order to display all duplicates of a selected media object
+- Modifications in function rdbms_getobject_info in DB Connect in order to support the publication, location, object name, category, and MD5 hash of an object in the result
+- Modifications in page_info in order to add the new "check for duplicates" button that calls the new page_info_duplicate
+- Modifications in function rdbms_getduplicatefiles in DB Connect in order to support the object hash, object ID, container ID, publication, location, object name, category, and media name of an object in the result
+- Modifications in function rdbms_getduplicatefiles in DB Connect in order to use the object hash as unique array key for each object in the result
+- Modifications in function rdbms_getduplicatefiles in DB Connect in order to require the objects MD5 hash as the obnly mandatory input, making the pulication name as second optional input parameter
+- Modifications in function uplaodfile in Main API in order to modify the call of function rdbms_getduplicatefiles due to the new order of input parameters
+- Modifications in page_info_duplicates in order to modify the call of function rdbms_getduplicatefiles due to the new order of input parameters
+- Modifications in page_info_container in order to use function getlocationname for the readable location path
+- Implementation of the new main configuration parameter $mgmt_config['showclipboard'] in order to enable or disable the objects in the users clipboard 
+- Modifications in function getclipboard in Main API in order to support folders
+- Modifications in explorer in order to support the new main configuration parameter $mgmt_config['showclipboard'] and display the objects of the users clipboard
+- Modifications in createtables.sql in order to create a new index object_md5 for table object using column deleteuser and md5_hash
+- Implementation of the new function update_database_v1022 in the Update API in order to create a new index for table object
+- Modifications in function updates_all in the Update API in order to execute function update_database_v1022
+- Modifications in page_preview in order to support the "check for duplicates" feature
+- Modifications in page_info in order to verify that connected copies and duplicates exist before displaying the buttons
+- Modifications in function rdbms_getduplicatefiles in DB Connect in order to exclude objects with the same container Id (connected objects)
+- Modifications in function createmedia in Media API in order to only create a temporary file of the original if the original file will be replaced by the edited version
+- Modifications in function showmedia in UI API in order to verify if one of the image views was successful and use the thumbnail as fallback
+- Modifications in function createmedia in Media API in order to set the color space to sRGB by default
+- Modifications in function createmedia in Media API in order to flatten encapsulated post script (EPS) and vector graphics
+- Modifications in function rdbms_getmediastat in DB Connect in order to fully support SQL limits
+- Modifications in function rdbms_searchuser in DB Connect in order to fully support SQL limits
+- Modifications in function rdbms_searchrecipient in DB Connect in order to fully support SQL limits
+- Design modifications in main.css of the Day design theme
+- Modifications in popup_status in order to close the window if explorer_objectlist is not present
+- Modifications in function rdbms_cleancontentcount in DB Connect in order to remove all contentcount records except for the last one
+- Modifications in version_content_compare in order to initialize the result array
+- Modifications in version_content in order to implement the JS void function to avoid autoscrolling to top when an object of the version history is opened
+- Modifications in text_link_explorer in order to verify the temporary page location and initialize it if required
+- Modifications in text_link_explorer in order to verify that the hash key is not a counter
+- Modifications in link_edit_explorer in order to verify that the objectpath of a search result record is not empty
+- Modifications in function zipfiles in Media API in order to create a new log entry when a ZIP file has been created
+- Modifications in function showmedia in UI API in order to verify that the integer values of a videos width and height is greater than zero
+- Modifications in function mediasize2frame in Media API in order to verify that the integer values of the input parameter mediawidth and mediaheight is greater than zero
+- Implementation of the new main configuration parameter $mgmt_config['maxdownloadsize_per_day'] in order to set a daily global download limit in GB
+- Modifications in function downloadfile in Main API in order to implement a daily download limit using the new main configuration parameter $mgmt_config['maxdownloadsize_per_day']
+- Modifications in function rdbms_optimizedatabase in DB Connect in order to remove records in table dailystat which are older than 5 years
+- Implementation of the new main configuration parameter $mgmt_config['videoplayerthumbnails'] in order to enable and disable preview thumbnail images in the videoplayer playback bar
+- Modifications in function showvideoplayer in UI API in order to disable the preview thumbnail images in the playback bar
+- Modifications in function downloadfile in Main API in order to only stream files that are larger than 500 kB
+- Update of the update log entry for version 10.2.2 in the installation directory
+- Update of the Users Guide
+- Bug fix: Function getclipboard in Main API did not return folder objects
+- Bug fix: Function rdbms_getdeletedobjects, rdbms_searchuser, and rdbms_searchrecipient in DB Connect used a wrong name to access the result of the row counter
+- Bug fix: Imagemagick could not convert EPS files without a defined colorspace
+- Bug fix: The status popup has not been closed automatically when using an access link to access the system
+- Bug fix: text_link_explorer did load the liev system publication configuration twice but didn't load the management configuration
+- Bug fix: text_link_explorer did not access the objectpath key of the search result and therefore did not display any search results
+- Bug fix: The Czech and Korean language file included a wrong filesize variable name
+- Bug fix: The refresh button in frameset_log did not refresh the log list 
+- Bug fix: The Workflow Management control used a wrong div closing tag for the help button
+- Bug fix: The log_list of the Logviewer plugin did not initialize the variable item_id
+- Bug fix: The home box free_storage_per_publication did initialze the variable space_used with the wrong value and leading to a wrong total space if no assets are present in a publication
+- Bug fix: The VIDEOJS thumbnail images plugin caused playback issues when using the playback bar to select a play time (can only be solved by disabling the Plugin) 

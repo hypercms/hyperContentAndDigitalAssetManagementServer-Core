@@ -229,7 +229,10 @@ if (sizeof ($showmedia_array) > 1)
 }
 
 if (!empty ($content_array) && is_array ($content_array))
-{  
+{
+  // initialize
+  $result = array();
+
   // compare old version to new version
   foreach ($content_array as $id => $content)
   {
@@ -249,7 +252,7 @@ if (!empty ($content_array) && is_array ($content_array))
   }
   
   // output results
-  if (is_array ($result))
+  if (is_array ($result) && sizeof ($result) > 0)
   {
     foreach ($result as $print) echo $print;
   }
@@ -259,5 +262,6 @@ else showmessage ($hcms_lang['error-occured-no-text-based-content-could-be-found
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

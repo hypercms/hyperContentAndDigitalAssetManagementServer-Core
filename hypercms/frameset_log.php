@@ -200,7 +200,7 @@ parent.hcms_closeSubMenu();
       ?>
     </div>
     <div class="hcmsToolbarBlock">
-      <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="parent['mainFrame'].location='log_list.php?site=<?php echo url_encode ($site); ?>';">
+      <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="document.getElementById('mainFrame').src='log_list.php?site=<?php echo url_encode ($site); ?>';">
         <img class="hcmsButtonSizeSquare hcmsFloatLeft" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_view_refresh.png" alt="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?>" />
         <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></span>
       </div>

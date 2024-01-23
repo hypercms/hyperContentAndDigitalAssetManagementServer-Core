@@ -1856,7 +1856,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
     }
 
     // check if source file exists and has a size of min. 100 bytes
-    if (!is_file ($location_source.$file) || filesize ($location_source.$file) < 100) return false;
+    if (!is_file ($path_source) || filesize ($path_source) < 100) return false;
 
     // write and close session (important for non-blocking: any page that needs to access a session now has to wait for the long running script to finish execution before it can begin)
     $session_id = suspendsession ();
@@ -2401,9 +2401,21 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                   if ($imagecontrast == 0) $imageBrightnessContrast .= "0";
                   else $imageBrightnessContrast .= shellcmd_encode ($imagecontrast);
                 }
+                
+                // ImageMagick Color Spaces:
+                // RGB ... Color Space for screens (Red, Green, Blue Channels)
+                // CMY ... Color Space for print (Cyan, Magenta, Yellow Channels)
+                // CMYK ... Color Space for print (Cyan, Magenta, Yellow, Black Channels)
+                // sRGB ... for better non-linear handling of Dark Colors
+                // HSB,HSL,HSI,OTHA ... Color Spaces for Color rainbows and hues (intensity not preserved)
+                // XYZ ... standardized definition colors
+                // LAB and LUV ... colorspace, and their LCHab and LCHuv cyclic hue equiv for precise or Perceptual Color Differences
+                // scRGB ... for expanded High-Dynamic Ranges (for use with HDRI images)
+                // YIQ and YUV ... for better compression of color values
+                // YCbCr, YPbPr, where Y = BW signal ... for transmission for TVs
 
                 // set image color space
-                $imagecolorspace = "";
+                $imagecolorspace = "-colorspace sRGB";
 
                 if (strpos ("_".$mgmt_imageoptions[$imageoptions_ext][$type], "-cs ") > 0) 
                 {
@@ -2602,25 +2614,36 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     unlink ($location_dest.$file_name.".thumb.jpg");
                   }
                   // copy original image before conversion to restore it if an error occured
-                  elseif ($type != "thumbnail" && is_file ($path_source))
+                  elseif ($type == "original" && is_file ($path_source))
                   {
                     // create temp file
                     $buffer_file = $location_temp.$file_name.".temp".strrchr ($file, ".");;
-                    copy ($path_source, $buffer_file);
+                    $result_copy = copy ($path_source, $buffer_file);
 
-                    // delete the old file if we overwrite the original file
-                    if ($type == "original")
+                    // delete the original file since it can't be overwritten by ImageMagick
+                    if ($result_copy)
                     {
                       unlink ($path_source);
+                      $delete_buffer_file = true;
                     }
+                    // copy failed
+                    else $buffer_file = $path_source;  
                   }
 
                   // set background properties for JPEG (thumbnail images, annotation images, preview images) 
                   if ($imageformat == "jpg") $background = "-background white -alpha remove";
 
-                  // ---------------------- CASE: document-based formats (if converted to PDF), encapsulated post script (EPS) and vector graphics ----------------------
+                  // ---------------------- CASE: document-based formats (PDF), encapsulated post script (EPS) and vector graphics ----------------------
                   if (strpos ("_.pdf".$hcms_ext['vectorimage'].".", $file_ext.".") > 0)
                   {
+                    // flatten vector images image
+                    $flatten = "";
+
+                    if (strpos ($hcms_ext['vectorimage'].".", $file_ext.".") > 0)
+                    {
+                      $flatten = "-flatten";
+                    }
+
                     // set size for thumbnails
                     if ($type == "thumbnail" && !empty ($imagewidth_orig) && !empty ($imageheight_orig))
                     {
@@ -2643,7 +2666,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     elseif (empty ($imagedensity))
                     {
                       // density for vector graphics (300 dpi for SVG only, do not use for EPS)
-                      if ($file_ext == ".svg") $imagedensity = "-density 300";
+                      if ($file_ext == ".eps" || $file_ext == ".svg") $imagedensity = "-density 300";
                       elseif ($file_ext == ".pdf")  $imagedensity = "-density 150";
                     }
 
@@ -2651,7 +2674,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     {
                       $newfile = $file_name.".thumb.jpg";
 
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($path_source)."[0]\" ".$imageresize." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($path_source)."[0]\" ".$flatten." ".$imageresize." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
                     elseif ($type == "annotation" && is_dir ($mgmt_config['abs_path_cms']."workflow/"))
                     {
@@ -2701,7 +2724,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       }
 
                       // render all pages from document as images
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$imageresize." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.".$format)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."\" ".$flatten." ".$imageresize." ".$background." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile."-%0d.".$format)."\"";
                     }
                     else
                     {
@@ -2711,7 +2734,7 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                       // use geometry instead of resize for EPS files
                       if ($file_ext == ".eps") $imageresize = $imagegeometry;
 
-                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$background." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
+                      $cmd = $mgmt_imagepreview[$imagepreview_ext]." -background none ".$imagedensity." ".$iccprofile." ".$imagecolorspace." \"".shellcmd_encode ($buffer_file)."[0]\" ".$flatten." ".$imagerotate." ".$imageBrightnessContrast." ".$imageresize." ".$background." ".$imageflip." ".$sepia." ".$sharpen." ".$blur." ".$sketch." ".$paint." ".$gravity." ".$extent." ".$imagequality." \"".shellcmd_encode ($location_dest.$newfile)."\"";
                     }
 
                     // asynchronous shell exec
@@ -2936,8 +2959,8 @@ function createmedia ($site, $location_source, $location_dest, $file, $format=""
                     }
                   }
 
-                  // delete buffer file
-                  if ($type != "thumbnail" && is_file ($buffer_file)) unlink ($buffer_file);
+                  // delete temporary buffer file
+                  if (!empty ($delete_buffer_file) && $type == "original" && strpos ("_".$buffer_file, $location_temp) > 0 && is_file ($buffer_file)) unlink ($buffer_file);
                 }
                 // -------------------- convert image using GD-Library (no watermarking supported) -----------------------
                 elseif ($imagewidth_orig > 0 && $imageheight_orig > 0 && (empty ($mgmt_imagepreview[$imagepreview_ext]) || $mgmt_imagepreview[$imagepreview_ext] == "GD") && in_array (strtolower($file_ext), $GD_allowed_ext) && function_exists ("imagecreatefromjpeg") && function_exists ("imagecreatefrompng") && function_exists ("imagecreatefromgif"))
@@ -5994,7 +6017,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     // remove temp files
     if (is_dir ($temp_dir.$temp_foldername)) deletefile ($temp_dir, $temp_foldername, 1);
 
-    // errors during compressions of files
+    // errors during compression of files
     if ($errorCode && is_array ($output))
     {
       $error_message = implode ("\t", $output);
@@ -6008,8 +6031,19 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
 
       return false; 
     }
-    else return true;
+    // on success
+    else
+    {
+      $errcode = "00645";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|".$errcode."|ZIP file '".$zipfilename."' has been successfully created";
+
+      // save log
+      savelog ($error);
+
+      return true;
+    }
   }
+
   return false;
 }
 
@@ -6116,7 +6150,7 @@ function sec2time ($input)
 function mediasize2frame ($mediawidth, $mediaheight, $framewidth="", $frameheight="", $keepmaxsize=true)
 {
   // new image size cant exceed the original image size
-  if ($mediawidth > 0 && $mediaheight > 0)
+  if (intval ($mediawidth) > 0 && intval ($mediaheight) > 0)
   {
     $mediaratio = $mediawidth / $mediaheight;
     if ($framewidth > 0 && $frameheight > 0) $frameratio = $framewidth / $frameheight;

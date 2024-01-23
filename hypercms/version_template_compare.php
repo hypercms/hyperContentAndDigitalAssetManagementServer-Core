@@ -188,5 +188,6 @@ else showmessage ($hcms_lang['error-occured-no-text-based-content-could-be-found
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

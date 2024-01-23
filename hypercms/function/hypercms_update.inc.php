@@ -2688,6 +2688,39 @@ function update_database_v10212 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v1022 ----------------------------------------------
+// function: update_database_v1022()
+// input: %
+// output: true / false
+
+// description: 
+// Update of table object to version 10.2.2 by creating a new index.
+
+function update_database_v1022 ()
+{
+  global $mgmt_config;
+
+  if (!checksoftwareversion ("10.2.2"))
+  {
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset'], "");
+
+    // create new index for md5 hash
+    $sql = 'CREATE INDEX object_md5 ON object (deleteuser, md5_hash)';
+    $errcode = "50836";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.2.2|updated to version 10.2.2"), "update");
+
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -2745,6 +2778,7 @@ function updates_all ()
     update_database_v1012 ();
     update_database_v1021 ();
     update_database_v10212 ();
+    update_database_v1022 ();
   }
 }
 

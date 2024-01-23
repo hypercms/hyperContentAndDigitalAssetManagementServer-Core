@@ -162,6 +162,8 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
   // get size of user array
   $objects_total = sizeof ($event_array);
 
+  $item_id = 0;
+
   if ($event_array != false && $objects_total > 0)
   {
     // reverse array

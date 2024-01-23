@@ -6164,6 +6164,9 @@ function getclipboard ($output="path", $return_text_id=array())
             // function cutobject, copyobject, and copylinkedobject provide converted path with tailing slash
             $object_path = $location_esc.$page;
 
+            // if folder
+            if (strtolower ($filetype) == "folder") $object_path = $object_path."/.folder";
+
             if (strtolower ($output) == "id")
             {
               $object_id_array[] = rdbms_getobject_id ($object_path);

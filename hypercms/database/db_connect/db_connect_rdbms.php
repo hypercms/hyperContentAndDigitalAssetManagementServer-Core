@@ -333,21 +333,31 @@ function convert_dbcharset ($charset)
 // output: true / false
 
 // description:
-// Removes all rows from tabel contentcount that are older than 24 hours.
+// Removes all rows from table contentcount except the last one.
 
 function rdbms_cleancontentcount ()
 {
   global $mgmt_config;
 
-  // initalize
-  $maxage = 24 * 60 * 60;
-
   $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
-  // clean contentcount
-  $sql = 'DELETE FROM contentcount WHERE time<'.(time() - $maxage);
-  $errcode = "50909";
-  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+  // get contentcount
+  $sql = 'SELECT MAX(id) AS contentcount FROM contentcount';
+  $errcode = "50903";
+  $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "select_pre");
+
+  if ($done && $row = $db->rdbms_getresultrow ("select_pre"))
+  {
+    $pre_contentcount = intval ($row['contentcount']);
+
+    // clean contentcount
+    if ($pre_contentcount > 0)
+    {
+      $sql = 'DELETE FROM contentcount WHERE id<'.$pre_contentcount;
+      $errcode = "50909";
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+    }
+  }
 
   if ($done) return true;
   else return false;
@@ -1465,19 +1475,19 @@ function rdbms_getmedia ($container_id)
   return false;
 }
 
-// ------------------------------------------------ get duplicate file -------------------------------------------------
-// function: rdbms_getduplicate_file()
-// input: publication name [string], MD5 hash of the file content [string]
+// ------------------------------------------------ get duplicate files -------------------------------------------------
+// function: rdbms_getduplicatefiles()
+// input: MD5 hash of the file content [string], publication name [string] (optional)
 // output: object path array / false
 
 // description:
-// Returns the objects with the same file content as array. Objects in the recylce bin are excluded.
+// Returns the objects with the same file content as result array. Objects in the recylce bin are excluded.
 
-function rdbms_getduplicate_file ($site, $md5_hash)
+function rdbms_getduplicatefiles ($md5_hash, $site="")
 {
   global $mgmt_config;
 
-  if ($site != "" && $md5_hash != "")
+  if ($md5_hash != "")
   {
     $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
 
@@ -1486,12 +1496,14 @@ function rdbms_getduplicate_file ($site, $md5_hash)
     $site = $db->rdbms_escape_string ($site);
 
     // get media info
-    $sql = 'SELECT objectpath FROM object WHERE md5_hash="'.$md5_hash.'" AND objectpath LIKE "*comp*/'.$site.'/%" AND deleteuser=""';
+    $sql = 'SELECT hash, object_id, id, objectpath, media FROM object WHERE md5_hash="'.$md5_hash.'" AND deleteuser="" ';
+    if (valid_publicationname ($site)) $sql .= 'AND objectpath LIKE "*comp*/'.$site.'/%" ';
+    $sql .= "GROUP BY id HAVING COUNT(id)=1";
 
     $errcode = "50067";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'main');
 
-    $media = array();
+    $result = array();
 
     if ($done)
     {
@@ -1499,8 +1511,16 @@ function rdbms_getduplicate_file ($site, $md5_hash)
       {
         if (!empty ($row['objectpath']))
         {
-          $row['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
-          $media[] = $row;
+          $hash = $row['hash'];
+          $result[$hash] = array();
+          $result[$hash]['object_id'] = $row['object_id'];
+          $result[$hash]['container_id'] = $row['id'];
+          $result[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+          $result[$hash]['publication'] = getpublication ($result[$hash]['objectpath']);
+          $result[$hash]['location'] = getlocation ($result[$hash]['objectpath']);
+          $result[$hash]['object'] = getobject ($result[$hash]['objectpath']);
+          $result[$hash]['category'] = getcategory ($result[$hash]['publication'], $result[$hash]['objectpath']);
+          $result[$hash]['media'] =  $row['media'];
         }
       }
     }
@@ -1510,10 +1530,309 @@ function rdbms_getduplicate_file ($site, $md5_hash)
 
     $db->rdbms_close();
 
-    if (is_array ($media) && !empty($media)) return $media;
+    if (is_array ($result) && !empty ($result)) return $result;
   }
 
   return false;
+}
+
+// ------------------------------------------------ find all duplicate files -------------------------------------------------
+// function: rdbms_findduplicatefiles()
+// input: location [string,array] (optional), exclude locations/folders [string,array] (optional), maximum search results/hits to return as start,number or total number [string,integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
+// output: object path array / false
+
+// description:
+// Returns the objects with the same file content as array. Objects in the recylce bin are excluded.
+
+function rdbms_findduplicatefiles ($folderpath="", $excludepath="", $maxhits=500, $return_text_id=array(), $count=false)
+{
+  global $mgmt_config;
+
+  $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+  $sql_table = array();
+  $sql_attr = array();
+  $sql_add_attr = "";
+  $sql_where = array();
+  $sql_limit = "";
+
+  // include path
+  if (!empty ($folderpath))
+  {
+    // folder path => consider folderpath only when there is no filenamecheck
+    if (!is_array ($folderpath) && trim ($folderpath) != "")
+    {
+      $folderpath = trim ($folderpath);
+      $folderpath = array ($folderpath);      
+    }
+
+    $sql_temp = array();
+
+    foreach ($folderpath as $path)
+    {
+      if ($path != "")
+      {
+        // convert special characters
+        $path = specialchr_encode ($path, false);
+
+        // escape characters depending on dbtype
+        $path = $db->rdbms_escape_string ($path);
+
+        // replace %
+        $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);
+
+        // where clause for folderpath
+        // search only on the same level of the path
+        if (!empty ($mgmt_config['search_folderpath_level'])) $sql_temp[] = '(obj.objectpath LIKE "'.$path.'%" AND obj.level='.(getobjectpathlevel($path) + 1).')';
+        // all objects that are located in the path
+        else $sql_temp[] = 'obj.objectpath LIKE "'.$path.'%"';
+      }
+    }
+
+    if (is_array ($sql_temp) && sizeof ($sql_temp) > 0) $sql_where['folderpath'] = '('.implode (" OR ", $sql_temp).')';
+  }
+
+  // exclude path
+  if (!empty ($excludepath))
+  {
+    if (!is_array ($excludepath) && trim ($excludepath) != "")
+    {
+      $excludepath = trim ($excludepath);
+      $excludepath = array ($excludepath);
+    }
+
+    $sql_temp = array();
+
+    foreach ($excludepath as $path)
+    {
+      if ($path != "")
+      {
+        // convert special characters
+        $path = specialchr_encode ($path, false);
+
+        // explicitly exclude folders from result
+        if ($path == "/.folder")
+        {
+          // where clause for excludepath
+          $sql_temp[] = 'obj.objectpath NOT LIKE "%'.$path.'"';
+        }
+        else
+        {
+          // escape characters depending on dbtype
+          $path = $db->rdbms_escape_string ($path);
+          // replace %
+          $path = str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $path);
+          // where clause for excludepath
+          $sql_temp[] = 'obj.objectpath NOT LIKE "'.$path.'%"';
+        }
+      }
+    }
+
+    if (is_array ($sql_temp) && sizeof ($sql_temp) > 0) $sql_where['excludepath'] = '('.implode (" AND ", $sql_temp).')';
+  }
+
+  // limits
+  if ($maxhits != "" || intval ($maxhits) > 0)
+  {
+    if (strpos ($maxhits, ",") > 0)
+    {
+      list ($starthits, $endhits) = explode (",", $maxhits);
+      $starthits = intval ($starthits);
+      $endhits = intval ($endhits);
+    }
+    else $maxhits = $db->rdbms_escape_string ($maxhits);
+
+    if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql_limit = 'LIMIT '.intval ($starthits).','.intval ($endhits);
+    elseif (isset ($maxhits) && intval ($maxhits) > 0) $sql_limit = 'LIMIT 0,'.intval ($maxhits);
+  }
+
+  // text IDs
+  if (is_array ($return_text_id) && sizeof ($return_text_id) > 0)
+  {
+    // add object information to the result array
+    if (in_array ("date", $return_text_id) || in_array ("modifieddate", $return_text_id))
+    {
+      $sql_attr[] = "obj.date";
+    }
+
+    if (in_array ("createdate", $return_text_id))
+    {
+      $sql_attr[] = "obj.createdate";
+    }
+
+    if (in_array ("publishdate", $return_text_id))
+    {
+      $sql_attr[] = "obj.publishdate";
+    }
+
+    if (in_array ("user", $return_text_id) || in_array ("owner", $return_text_id))
+    {
+      $sql_attr[] = "obj.user";
+    }
+
+    if (in_array ("filesize", $return_text_id))
+    {
+      $sql_attr[] = "obj.filesize";
+    }
+
+    // add text IDs and content to the result array
+    foreach ($return_text_id as $text_id)
+    {
+      if (substr ($text_id, 0, 5) == "text:")
+      {
+        $sql_add_text_id = true;
+        break;
+      }
+    }
+
+    // add join for textnodes table
+    if (!empty ($sql_add_text_id))
+    {
+      $sql_attr[] = "tng.text_id";
+      $sql_attr[] = "tng.textcontent";
+      if (empty ($sql_table['textnodes'])) $sql_table['textnodes'] = "";
+      if (strpos ($sql_table['textnodes'], " ON obj.id=tng.id ") < 1) $sql_table['textnodes']  .= ' LEFT JOIN textnodes AS tng ON obj.id=tng.id';
+    }
+
+    // add attributes to search query
+    if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
+  }
+
+  // remove empty array elements
+  $sql_table = array_filter ($sql_table);
+  $sql_where = array_filter ($sql_where);
+
+  // create pre SQL statement in order to find duplicate MD5 hashes
+  $sql = 'SELECT obj.md5_hash, COUNT(obj.md5_hash) AS duplicate FROM object AS obj WHERE obj.deleteuser="" ';
+  if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
+  $sql .= 'GROUP BY obj.md5_hash HAVING duplicate > 1 '.$sql_limit;
+
+  $errcode = "50326";
+  $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
+
+  $result_md5_array = array();
+
+  if ($done)
+  {
+    while ($row = $db->rdbms_getresultrow ())
+    {
+      if (!empty ($row['md5_hash']))
+      {
+        $result_md5_array[] = $row['md5_hash'];
+      }
+    }
+  }
+
+  // if duplicate media files exist
+  if (sizeof ($result_md5_array) > 0)
+  {
+    // create main SQL statement in order to exclude connected objects sharing the same container
+    $sql = 'SELECT COUNT(obj.id) AS connected, obj.objectpath, obj.hash, obj.id, obj.media, obj.md5_hash '.$sql_add_attr.' FROM object AS obj ';
+    if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
+    $sql .= 'WHERE obj.md5_hash IN ("'.implode ('", "', $result_md5_array).'") ';
+    if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';
+    $sql .= 'GROUP BY obj.id HAVING connected=1 ORDER BY obj.md5_hash '.$sql_limit;
+
+    $errcode = "50327";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
+
+    // prepare result
+    $objectpath = array();
+
+    if ($done)
+    {
+      while ($row = $db->rdbms_getresultrow ())
+      {
+        if (!empty ($row['hash']) && !empty ($row['objectpath']))
+        {
+          $hash = $row['hash'];
+
+          $objectpath[$hash]['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+          $objectpath[$hash]['publication'] = getpublication ($objectpath[$hash]['objectpath']);
+          $objectpath[$hash]['location'] = getlocation ($objectpath[$hash]['objectpath']);
+          $objectpath[$hash]['object'] = getobject ($objectpath[$hash]['objectpath']);
+          $objectpath[$hash]['category'] = getcategory ($objectpath[$hash]['publication'], $objectpath[$hash]['objectpath']);
+          $objectpath[$hash]['container_id'] =  sprintf ("%07d", $row['id']);
+          $objectpath[$hash]['media'] =  $row['media'];
+          if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
+          if (!empty ($row['createdate'])) $objectpath[$hash]['createdate'] = $row['createdate'];
+          if (!empty ($row['publishdate'])) $objectpath[$hash]['publishdate'] = $row['publishdate'];
+          if (!empty ($row['user'])) $objectpath[$hash]['user'] = $row['user'];
+          if (!empty ($row['filesize'])) $objectpath[$hash]['filesize'] = $row['filesize'];
+          if (!empty ($row['text_id'])) $objectpath[$hash]['text:'.$row['text_id']] = $row['textcontent'];
+
+          // object and location name
+          if (is_array ($return_text_id) && (in_array ("object", $return_text_id) || in_array ("location", $return_text_id)))
+          {
+            // folder
+            if (getobject ($objectpath[$hash]['objectpath']) == ".folder")
+            {
+              $temp_objectpath = getlocationname ($objectpath[$hash]['publication'], getlocation ($objectpath[$hash]['objectpath']), $objectpath[$hash]['category'], "path");
+            }
+            // object
+            else
+            {
+              $temp_objectpath = getlocationname ($objectpath[$hash]['publication'], $objectpath[$hash]['objectpath'], $objectpath[$hash]['category'], "path");
+            }
+
+            $objectpath[$hash]['location'] = getlocation ($temp_objectpath);
+            $objectpath[$hash]['object'] = getobject ($temp_objectpath);
+          }
+
+          if (!empty ($row['media']))
+          {
+            // links
+            if (in_array ("wrapperlink", $return_text_id)) $objectpath[$hash]['wrapperlink'] = $mgmt_config['url_path_cms']."?wl=".$hash;
+            if (in_array ("downloadlink", $return_text_id)) $objectpath[$hash]['downloadlink'] = $mgmt_config['url_path_cms']."?dl=".$hash;
+
+            // thumbnail
+            if (in_array ("thumbnail", $return_text_id))
+            {
+              $mediadir = getmedialocation ($objectpath[$hash]['publication'], $row['media'], "abs_path_media");
+              $media_info = getfileinfo ($objectpath[$hash]['publication'], $row['media'], "comp");
+
+              // try to create the thumbnail if not available
+              if (!empty ($mgmt_config['recreate_preview']) && !file_exists ($mediadir.$objectpath[$hash]['publication']."/".$media_info['filename'].".thumb.jpg"))
+              {
+                createmedia ($objectpath[$hash]['publication'], $mediadir.$objectpath[$hash]['publication']."/", $mediadir.$objectpath[$hash]['publication']."/", $media_info['file'], "", "thumbnail", false, true);
+              }
+              
+              if (is_file ($mediadir.$objectpath[$hash]['publication']."/".$media_info['filename'].".thumb.jpg") && filesize ($mediadir.$objectpath[$hash]['publication']."/".$media_info['filename'].".thumb.jpg") > 100)
+              {
+                $objectpath[$hash]['thumbnail'] = createviewlink ($objectpath[$hash]['publication'], $media_info['filename'].".thumb.jpg");
+              }
+            }
+          }
+        } 
+      }
+    }
+
+    // count the total number of objects of the search result
+    if (!empty ($count))
+    {
+      $sql = 'SELECT COUNT(*) as rowcount, COUNT(obj.id) AS connected, obj.objectpath, obj.hash, obj.id, obj.media, obj.md5_hash '.$sql_add_attr.' FROM object AS obj ';
+      if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';  
+      $sql .= 'WHERE obj.md5_hash IN ("'.implode ('", "', $result_md5_array).'") ';  
+      if (isset ($sql_where) && is_array ($sql_where) && sizeof ($sql_where) > 0) $sql .= 'AND '.implode (' AND ', $sql_where).' ';  
+      $sql .= 'GROUP BY obj.id HAVING connected=1 ORDER BY obj.md5_hash ';
+
+      $errcode = "50327";
+      $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+      if ($done && ($row = $db->rdbms_getresultrow ()))
+      {         
+        if (!empty ($row['rowcount'])) $objectpath['count'] = $row['rowcount']; 
+      }
+    }
+  }
+
+  // save log
+  savelog ($db->rdbms_geterror());
+
+  $db->rdbms_close();
+
+  if (!empty ($objectpath) && is_array ($objectpath) && sizeof ($objectpath) > 0) return $objectpath;
+  else return false;
 }
 
 // ----------------------------------------------- rename object -------------------------------------------------
@@ -1908,7 +2227,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 // input: location [string,array] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,folder,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), file extensions without dot [array] (optional)
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image colors [array,string] (optional), image-type [portrait,landscape,square] (optional), 
-//        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return [integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
+//        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return as start,number or total number [string,integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
 //        log search expression [true/false] (optional), taxonomy level to include [integer] (optional), order by for sorting of the result [string] (optional)
 // output: result array with object hash as 1st key and object information as 2nd key of all found objects / false
 
@@ -2030,13 +2349,14 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
     if ($template != "") $template = $db->rdbms_escape_string ($template);
 
-    if ($maxhits != "")
+    // limits
+    if ($maxhits != "" || intval ($maxhits) > 0)
     {
       if (strpos ($maxhits, ",") > 0)
       {
         list ($starthits, $endhits) = explode (",", $maxhits);
-        $starthits = $db->rdbms_escape_string (trim ($starthits));
-        $endhits = $db->rdbms_escape_string (trim ($endhits));
+        $starthits = intval ($starthits);
+        $endhits = intval ($endhits);
       }
       else $maxhits = $db->rdbms_escape_string ($maxhits);
     }
@@ -3072,10 +3392,10 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       }      
     }
 
-    // count the total number of objects of the searchresults
+    // count the total number of objects of the search result
     if (!empty ($count) && is_array ($objectpath) && sizeof ($objectpath) > 0)
     {
-      $sql = 'SELECT COUNT(DISTINCT obj.hash) as cnt FROM object AS obj ';
+      $sql = 'SELECT COUNT(DISTINCT obj.hash) as rowcount FROM object AS obj ';
       
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
 
@@ -3097,7 +3417,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
       if ($done && ($row = $db->rdbms_getresultrow ()))
       {         
-        if ($row['cnt'] != "") $objectpath['count'] = $row['cnt']; 
+        if (!empty ($row['rowcount'])) $objectpath['count'] = $row['rowcount']; 
       }
     }
 
@@ -3391,7 +3711,7 @@ function rdbms_replacecontent ($folderpath, $object_type="", $date_from="", $dat
 
 // ----------------------------------------------- search user ------------------------------------------------- 
 // function: rdbms_searchuser()
-// input: publication name [string] (optional), user name [string], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
+// input: publication name [string] (optional), user name [string], maximum search results/hits to return as start,number or total number [string,integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -3407,11 +3727,11 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
 
     if ($site != "" && $site != "*Null*") $site = $db->rdbms_escape_string ($site);
     $user = $db->rdbms_escape_string ($user);
-    $maxhits = intval ($maxhits);
 
     $sql_add_attr = "";
     $sql_attr = array();
     $sql_table = array();
+    $sql_limit = "";
 
     if (is_array ($return_text_id) && sizeof ($return_text_id) > 0)
     {
@@ -3462,14 +3782,28 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
 
       // add attributes to search query
       if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
-    }  
+    }
+
+    // limits
+    if ($maxhits != "" || intval ($maxhits) > 0)
+    {
+      if (strpos ($maxhits, ",") > 0)
+      {
+        list ($starthits, $endhits) = explode (",", $maxhits);
+        $starthits = intval ($starthits);
+        $endhits = intval ($endhits);
+      }
+      else $maxhits = $db->rdbms_escape_string ($maxhits);
+
+      if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql_limit = 'LIMIT '.intval ($starthits).','.intval ($endhits);
+      elseif (isset ($maxhits) && intval ($maxhits) > 0) $sql_limit = 'LIMIT 0,'.intval ($maxhits);
+    }
 
     $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
     $sql .= 'WHERE obj.objectpath!="" AND obj.deleteuser="" AND obj.user="'.$user.'" ';
     if ($site != "" && $site != "*Null*") $sql .= 'AND (obj.objectpath LIKE "*page*/'.$site.'/%" OR obj.objectpath LIKE "*comp*/'.$site.'/%") ';
-    $sql .= 'ORDER BY obj.date DESC ';
-    if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
+    $sql .= 'ORDER BY obj.date DESC '.$sql_limit;
 
     $errcode = "50299";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
@@ -3544,7 +3878,7 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
       }
     }
 
-    // count searchresults
+    // count the total number of objects of the search result
     if (!empty ($count))
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as rowcount FROM object AS obj ';
@@ -3557,7 +3891,7 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
 
       if ($done && ($row = $db->rdbms_getresultrow ()))
       {         
-        if ($row['cnt'] != "") $objectpath['count'] = $row['rowcount']; 
+        if (!empty ($row['rowcount'])) $objectpath['count'] = $row['rowcount']; 
       }
     }
 
@@ -3574,7 +3908,7 @@ function rdbms_searchuser ($site="", $user="", $maxhits=300, $return_text_id=arr
 
 // ----------------------------------------------- search recipient ------------------------------------------------- 
 // function: rdbms_searchrecipient()
-// input: publication name [string], sender user name [string], recpient user name or e-mail address [string], from date [date], to date [date], max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
+// input: publication name [string], sender user name [string], recpient user name or e-mail address [string], from date [date], to date [date], maximum search results/hits to return as start,number or total number [string,integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -3607,11 +3941,25 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
     if ($date_from != "") $date_from = $db->rdbms_escape_string ($date_from);
     if ($date_to != "") $date_to = $db->rdbms_escape_string ($date_to);
 
-    $maxhits = intval ($maxhits);
-
     $sql_add_attr = "";
     $sql_attr = array();
     $sql_table = array();
+    $sql_limit = "";
+
+    // limits
+    if ($maxhits != "" || intval ($maxhits) > 0)
+    {
+      if (strpos ($maxhits, ",") > 0)
+      {
+        list ($starthits, $endhits) = explode (",", $maxhits);
+        $starthits = intval ($starthits);
+        $endhits = intval ($endhits);
+      }
+      else $maxhits = $db->rdbms_escape_string ($maxhits);
+
+      if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql_limit = 'LIMIT '.intval ($starthits).','.intval ($endhits);
+      elseif (isset ($maxhits) && intval ($maxhits) > 0) $sql_limit = 'LIMIT 0,'.intval ($maxhits);
+    }
 
     if (is_array ($return_text_id) && sizeof ($return_text_id) > 0)
     {
@@ -3677,9 +4025,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
     if ($date_from != "") $sql .= 'AND rec.date>="'.$date_from.' 00:00:01" ';
     if ($date_to != "") $sql .= 'AND rec.date<="'.$date_to.' 23:59:59" ';
 
-    $sql .= 'ORDER BY rec.date DESC ';
-
-    if ($maxhits > 0) $sql .= 'LIMIT 0,'.intval($maxhits);
+    $sql .= 'ORDER BY rec.date DESC '.$sql_limit;
 
     $errcode = "50251";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
@@ -3754,7 +4100,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
       }
     }
 
-    // count searchresults
+    // count the total number of objects of the search result
     if (!empty ($count))
     {
       $sql = 'SELECT COUNT(DISTINCT obj.objectpath) as rowcount FROM object AS obj ';
@@ -3766,7 +4112,7 @@ function rdbms_searchrecipient ($site, $from_user, $to_user_email, $date_from, $
 
       if ($done && ($row = $db->rdbms_getresultrow ()))
       {         
-        if ($row['cnt'] != "") $objectpath['count'] = $row['rowcount']; 
+        if (!empty ($row['rowcount'])) $objectpath['count'] = $row['rowcount']; 
       }
     }
 
@@ -4403,6 +4749,11 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
         $sql_attr[] = "obj.height";
       }
 
+      if (in_array ("md5_hash", $return_text_id) || in_array ("md5", $return_text_id))
+      {
+        $sql_attr[] = "obj.md5_hash";
+      }
+
       // add text IDs and content to the result array
       foreach ($return_text_id as $text_id)
       {
@@ -4458,6 +4809,10 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           $hash = $row['hash'];
 
           $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+          $objectpath['publication'] = getpublication ($objectpath['objectpath']);
+          $objectpath['location'] = getlocation ($objectpath['objectpath']);
+          $objectpath['object'] = getobject ($objectpath['objectpath']);
+          $objectpath['category'] = getcategory ($objectpath['publication'], $objectpath['objectpath']);
           $objectpath['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
           $objectpath['container_id'] = sprintf ("%07d", $row['id']);
           $objectpath['template'] = $row['template'];
@@ -4468,6 +4823,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           if (!empty ($row['publishdate'])) $objectpath['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath['filesize'] = $row['filesize'];
+          if (!empty ($row['md5_hash'])) $objectpath['md5_hash'] = $row['md5_hash'];
           if (!empty ($row['width'])) $objectpath['width'] = $row['width'];
           if (!empty ($row['height'])) $objectpath['height'] = $row['height'];
           if (!empty ($row['text_id'])) $objectpath['text:'.$row['text_id']] = $row['textcontent'];
@@ -4505,6 +4861,10 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
             $hash = $row['hash'];
 
             $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+            $objectpath['publication'] = getpublication ($objectpath['objectpath']);
+            $objectpath['location'] = getlocation ($objectpath['objectpath']);
+            $objectpath['object'] = getobject ($objectpath['objectpath']);
+            $objectpath['category'] = getcategory ($objectpath['publication'], $objectpath['objectpath']);
             $objectpath['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
             $objectpath['container_id'] = sprintf ("%07d", $row['id']);
             $objectpath['template'] = $row['template'];
@@ -4515,6 +4875,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
             if (!empty ($row['publishdate'])) $objectpath['publishdate'] = $row['publishdate'];
             if (!empty ($row['user'])) $objectpath['user'] = $row['user'];
             if (!empty ($row['filesize'])) $objectpath['filesize'] = $row['filesize'];
+            if (!empty ($row['md5_hash'])) $objectpath['md5_hash'] = $row['md5_hash'];
             if (!empty ($row['width'])) $objectpath['width'] = $row['width'];
             if (!empty ($row['height'])) $objectpath['height'] = $row['height'];
             if (!empty ($row['text_id'])) $objectpath['text:'.$row['text_id']] = $row['textcontent'];
@@ -4525,6 +4886,10 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           $hash = $row['hash'];
 
           $objectpath['objectpath'] = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+          $objectpath['publication'] = getpublication ($objectpath['objectpath']);
+          $objectpath['location'] = getlocation ($objectpath['objectpath']);
+          $objectpath['object'] = getobject ($objectpath['objectpath']);
+          $objectpath['category'] = getcategory ($objectpath['publication'], $objectpath['objectpath']);
           $objectpath['type'] = (substr ($row['objectpath'], -7) == ".folder" ? "folder" : "object");
           $objectpath['container_id'] = sprintf ("%07d", $row['id']);
           $objectpath['template'] = $row['template'];
@@ -4535,6 +4900,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
           if (!empty ($row['publishdate'])) $objectpath['publishdate'] = $row['publishdate'];
           if (!empty ($row['user'])) $objectpath['user'] = $row['user'];
           if (!empty ($row['filesize'])) $objectpath['filesize'] = $row['filesize'];
+          if (!empty ($row['md5_hash'])) $objectpath['md5_hash'] = $row['md5_hash'];
           if (!empty ($row['width'])) $objectpath['width'] = $row['width'];
           if (!empty ($row['height'])) $objectpath['height'] = $row['height'];
           if (!empty ($row['text_id'])) $objectpath['text:'.$row['text_id']] = $row['textcontent'];
@@ -4775,7 +5141,7 @@ function rdbms_getobjects ($container_id="", $template="", $return_text_id=array
 
 // ----------------------------------------------- get deleted objects ------------------------------------------------- 
 // function: rdbms_getdeletedobjects()
-// input: user name [string] (optional), older than date [date] (optional), max. hits [integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional), return sub items [boolean] (optional)
+// input: user name [string] (optional), older than date [date] (optional), maximum search results/hits to return as start,number or total number [string,integer] (optional), text IDs to be returned [array] (optional), count search result entries [boolean] (optional), return sub items [boolean] (optional)
 // output: objectpath array with hashcode as key and path as value / false
 
 // description:
@@ -4845,6 +5211,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
     if (sizeof ($sql_attr) > 0) $sql_add_attr = ", ".implode (", ", $sql_attr);
   } 
 
+  // create SQL statement
   $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media'.$sql_add_attr.' FROM object AS obj ';
 
   if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
@@ -4865,6 +5232,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
   $errcode = "50325";
   $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
 
+  // prepare result
   $objectpath = array();
 
   if ($done)
@@ -4935,19 +5303,15 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
     }
   }
 
-  // count searchresults
+  // count the total number of objects of the search result
   if (!empty ($count))
   {
     $sql = 'SELECT COUNT(obj.hash) as rowcount FROM object AS obj ';
-
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
-
     if ($user != "") $sql .= 'WHERE obj.deleteuser="'.$user.'" ';
     elseif ($subitems == true) $sql .= 'WHERE obj.deleteuser!="" ';
     else $sql .= 'WHERE obj.deleteuser!="" AND obj.deleteuser NOT LIKE "[%" ';
-
     if ($date != "") $sql .= 'AND deletedate<"'.$date.'" ';
-
     $sql .= 'GROUP BY obj.hash';
 
     $errcode = "50327";
@@ -4955,7 +5319,7 @@ function rdbms_getdeletedobjects ($user="", $date="", $maxhits=500, $return_text
 
     if ($done && ($row = $db->rdbms_getresultrow ()))
     {         
-      if ($row['cnt'] != "") $objectpath['count'] = $row['rowcount']; 
+      if (!empty ($row['rowcount'])) $objectpath['count'] = $row['rowcount']; 
     }
   }
 
@@ -6233,7 +6597,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   global $mgmt_config;
 
   // define file name for cache (MD5 hash identifies the input parameters)
-  if ($objectpath != "") $identifier = rdbms_getobject_id ($objectpath); 
+  if ($objectpath != "") $identifier = rdbms_getobject_id ($objectpath);
   elseif (intval ($container_id) > 0) $identifier = intval ($container_id);
   else $identifier = "";
 
@@ -6292,17 +6656,6 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     if ($objectpath != "") $objectpath = $db->rdbms_escape_string ($objectpath);
     if ($user != "") $user = $db->rdbms_escape_string ($user);
 
-    if ($maxhits != "" || intval ($maxhits) > 0)
-    {
-      if (strpos ($maxhits, ",") > 0)
-      {
-        list ($starthits, $endhits) = explode (",", $maxhits);
-        $starthits = $db->rdbms_escape_string (trim ($starthits));
-        $endhits = $db->rdbms_escape_string (trim ($endhits));
-      }
-      else $maxhits = $db->rdbms_escape_string ($maxhits);
-    }
-
     // get object info
     if ($objectpath != "")
     {
@@ -6313,11 +6666,11 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
     }
 
-    $sqlfilesize = "";
-    $sqltable = "";
-    $sqlwhere = "";
-    $sqlgroup = "";
-    $limit = "";
+    $sql_filesize = "";
+    $sql_table = "";
+    $sql_where = "";
+    $sql_group = "";
+    $sql_limit = "";
 
     // include media table for file size
     if (!empty ($return_filesize))
@@ -6325,19 +6678,19 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       // search by objectpath
       if ($objectpath != "")
       {
-        $sqlfilesize = ', SUM(object.filesize) AS filesize';
-        $sqltable = "INNER JOIN object ON dailystat.id=object.id";
-        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.deleteuser="" AND object.objectpath LIKE "'.$location.'%"';
-        else $sqlwhere = 'AND object.deleteuser="" AND object.objectpath="'.$objectpath.'"';
-        $sqlgroup = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
+        $sql_filesize = ', SUM(object.filesize) AS filesize';
+        $sql_table = "INNER JOIN object ON dailystat.id=object.id";
+        if ($object_info['type'] == 'Folder') $sql_where = 'AND object.deleteuser="" AND object.objectpath LIKE "'.$location.'%"';
+        else $sql_where = 'AND object.deleteuser="" AND object.objectpath="'.$objectpath.'"';
+        $sql_group = 'GROUP BY dailystat.date, dailystat.id, dailystat.user';
       }
       // search by container id
       elseif (intval ($container_id) > 0)
       {
-        $sqlfilesize = ', object.filesize AS filesize';
-        $sqltable = "INNER JOIN object ON dailystat.id=object.id";
-        $sqlwhere = 'AND object.deleteuser="" AND dailystat.id='.$container_id;
-        $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
+        $sql_filesize = ', object.filesize AS filesize';
+        $sql_table = "INNER JOIN object ON dailystat.id=object.id";
+        $sql_where = 'AND object.deleteuser="" AND dailystat.id='.$container_id;
+        $sql_group = 'GROUP BY dailystat.date, dailystat.user';
       }
     }
     else
@@ -6345,33 +6698,45 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
       // search by objectpath
       if ($objectpath != "")
       {
-        $sqlfilesize = "";
-        $sqltable = 'INNER JOIN object ON dailystat.id=object.id';
-        if ($object_info['type'] == 'Folder') $sqlwhere = 'AND object.deleteuser="" AND object.objectpath LIKE "'.$location.'%"';
-        else $sqlwhere = 'AND object.deleteuser="" AND object.objectpath="'.$objectpath.'"';
-        $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
+        $sql_filesize = "";
+        $sql_table = 'INNER JOIN object ON dailystat.id=object.id';
+        if ($object_info['type'] == 'Folder') $sql_where = 'AND object.deleteuser="" AND object.objectpath LIKE "'.$location.'%"';
+        else $sql_where = 'AND object.deleteuser="" AND object.objectpath="'.$objectpath.'"';
+        $sql_group = 'GROUP BY dailystat.date, dailystat.user';
       }
       // search by container id
       elseif (intval ($container_id) > 0)
       { 
-        $sqlfilesize = "";
-        $sqltable = '';
-        $sqlwhere = 'AND dailystat.id='.$container_id;
-        $sqlgroup = 'GROUP BY dailystat.date, dailystat.user';
+        $sql_filesize = "";
+        $sql_table = '';
+        $sql_where = 'AND dailystat.id='.$container_id;
+        $sql_group = 'GROUP BY dailystat.date, dailystat.user';
       }
     }
 
-    if ($date_from != "") $sqlwhere .= ' AND dailystat.date>="'.date("Y-m-d", strtotime($date_from)).'"';
-    if ($date_to != "") $sqlwhere .= ' AND dailystat.date<="'.date("Y-m-d", strtotime($date_to)).'"';
-    if ($activity != "") $sqlwhere .= ' AND dailystat.activity="'.$activity.'"';
-    if ($user != "") $sqlwhere .= ' AND dailystat.user="'.$user.'"';
+    if ($date_from != "") $sql_where .= ' AND dailystat.date>="'.date("Y-m-d", strtotime($date_from)).'"';
+    if ($date_to != "") $sql_where .= ' AND dailystat.date<="'.date("Y-m-d", strtotime($date_to)).'"';
+    if ($activity != "") $sql_where .= ' AND dailystat.activity="'.$activity.'"';
+    if ($user != "") $sql_where .= ' AND dailystat.user="'.$user.'"';
 
-    if (empty ($sqlgroup)) $sqlgroup = 'GROUP BY dailystat.id';
+    if (empty ($sql_group)) $sql_group = 'GROUP BY dailystat.id';
 
-    if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $limit = 'LIMIT '.intval ($starthits).','.intval ($endhits);
-    elseif (isset ($maxhits) && intval ($maxhits) > 0) $limit = 'LIMIT 0,'.intval ($maxhits);
+    // limits
+    if ($maxhits != "" || intval ($maxhits) > 0)
+    {
+      if (strpos ($maxhits, ",") > 0)
+      {
+        list ($starthits, $endhits) = explode (",", $maxhits);
+        $starthits = intval ($starthits);
+        $endhits = intval ($endhits);
+      }
+      else $maxhits = $db->rdbms_escape_string ($maxhits);
 
-    $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sqlfilesize.', dailystat.user FROM dailystat '.$sqltable.' WHERE dailystat.id!="" '.$sqlwhere.' '.$sqlgroup.' ORDER BY dailystat.date DESC '.$limit;
+      if (isset ($starthits) && intval ($starthits) >= 0 && isset ($endhits) && intval ($endhits) > 0) $sql_limit = 'LIMIT '.intval ($starthits).','.intval ($endhits);
+      elseif (isset ($maxhits) && intval ($maxhits) > 0) $sql_limit = 'LIMIT 0,'.intval ($maxhits);
+    }
+
+    $sql = 'SELECT dailystat.id, dailystat.date, dailystat.activity, SUM(dailystat.count) AS count'.$sql_filesize.', dailystat.user FROM dailystat '.$sql_table.' WHERE dailystat.id!="" '.$sql_where.' '.$sql_group.' ORDER BY dailystat.date DESC '.$sql_limit;
 
     $errcode = "50039";
     $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
@@ -7195,7 +7560,7 @@ function rdbms_optimizedatabase ()
       }              
     }
 
-    // remove dead datasets
+    // remove dead records
     if (sizeof ($exclude) > 0)
     {
       $sql = 'DELETE object, textnodes, keywords_container, accesslink, task, taxonomy, dailystat, queue, notify 
@@ -7212,6 +7577,18 @@ function rdbms_optimizedatabase ()
 
       $errcode = "50911";
       $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'delete');
+    }
+
+    // remove records in table dailystat which are older than 5 years
+    $delete_years = 5;
+    $year = date ("Y") - $delete_years;
+
+    if (intval ($delete_years) > 0 && intval ($year) > 2000)
+    {
+      $sql = 'DELETE FROM dailystat WHERE YEAR(date)<'.$year;
+
+      $errcode = "50916";
+      $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'delete_dailystat');
     }
 
     // optimize database tables

@@ -63,6 +63,7 @@ CREATE TABLE `object` (
   KEY `object_lat_lng` (`latitude`,`longitude`),
   KEY `object_objectpath` (`objectpath`),
   KEY `object_deleteuser` (`deleteuser`),
+  KEY `object_md5` (`deleteuser`,`md5_hash`),
   FULLTEXT KEY `object_objectpathname` (`objectpathname`),
   FULLTEXT KEY `object_textcontent` (`textcontent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

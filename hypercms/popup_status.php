@@ -360,7 +360,7 @@ if ($authorized == true || $force == "stop")
     {
       // not suitable for EasyEdit
       $add_javascript = "
-    // close popup opened by control content in content frame
+    // reload object view and close popup opened by control content in content frame
     if (window.parent && window.parent.frames['objFrame'])
     {
       // reload object view
@@ -369,14 +369,17 @@ if ($authorized == true || $force == "stop")
       // close popup in content frame
       if (window.parent && typeof window.parent.closePopup == 'function') window.parent.closePopup();
     }
-    // reload objectlist called by objectlist or control objectlist
-    else if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame'] && window.top.frames['workplFrame'].frames['mainFrame'].location.pathname.indexOf('explorer_objectlist.php') > -1)
+    // close popup when called by objectlist or control objectlist
+    else if (window.top.frames['workplFrame'] && window.top.frames['workplFrame'].frames['mainFrame'])
     {
       // deprecated since version 10.1.1
-      // window.top.frames['workplFrame'].frames['mainFrame'].location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+      // if (window.top.frames['workplFrame'].frames['mainFrame'].location.pathname.indexOf('explorer_objectlist.php') > -1)
+      // {
+      //  window.top.frames['workplFrame'].frames['mainFrame'].location='explorer_objectlist.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_orig)."';
+      // }
 
       // close popup in main frame
-      popupclose();
+      if (typeof popupclose == 'function') popupclose();
     }
     ";
     }       

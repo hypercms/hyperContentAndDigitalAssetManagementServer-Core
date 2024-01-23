@@ -21,10 +21,10 @@ $search_expression = getrequest ("search_expression");
 if (empty ($lang) || empty ($_REQUEST['lang'])) $lang = getrequest_esc ("langCode");
 elseif (empty ($lang)) $lang = getrequest_esc ("lang");
 
-// load publication configuration
-if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"))
+// publication management config
+if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php"))
 {
-  $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini"); 
+  require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 }
 
 // publication management config for live system
@@ -62,9 +62,9 @@ if (!valid_locationname ($dir) && !empty ($temp_pagelocation[$site]))
     setsession ('hcms_temp_pagelocation', $temp_pagelocation);
   }
 }
-elseif (valid_locationname ($dir))
+elseif (valid_locationname ($dir) && valid_publicationname ($site))
 {
-  if (!isset ($temp_pagelocation)) $temp_pagelocation = array();
+  if (!isset ($temp_pagelocation) || !is_array ($temp_pagelocation)) $temp_pagelocation = array();
 
   $temp_pagelocation[$site] = $dir;
 
@@ -156,26 +156,31 @@ function submitLink (url)
       if (trim ($search_expression) != "")
       {
         $object_array = rdbms_searchcontent ($dir_esc, "", array("page"), "", "", "", array($search_expression), $search_expression, "", "", "", "", "", "", "", "", 100);
-        
+
         if (is_array ($object_array))
         {
-          foreach ($object_array as $entry)
+          foreach ($object_array as $hash=>$object_item)
           {
-            if ($entry != "" && accessgeneral ($site, $entry, "page"))
+            if (!empty ($object_item['objectpath']))
             {
-              $location = getlocation ($entry);
-              $object = getobject ($entry);
-              $object = correctfile ($location, $object, $user);
+              $entry = $object_item['objectpath'];
               
-              if ($object !== false)
+              if ($hash != "count" && $entry != "" && accessgeneral ($site, $entry, "page"))
               {
-                if ($object == ".folder")
+                $location = getlocation ($entry);
+                $object = getobject ($entry);
+                $object = correctfile ($location, $object, $user);
+                
+                if ($object !== false)
                 {
-                  $entry_dir[] = $location.$object;
-                }
-                else
-                {
-                  $entry_file[] = $location.$object;
+                  if ($object == ".folder")
+                  {
+                    $entry_dir[] = $location.$object;
+                  }
+                  else
+                  {
+                    $entry_file[] = $location.$object;
+                  }
                 }
               }
             }

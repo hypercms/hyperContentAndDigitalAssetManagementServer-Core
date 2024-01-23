@@ -164,8 +164,8 @@ elseif ($action == "user_files")
   // sidebar
   if (!$is_mobile) echo "  <div id=\"sidebarLayer\" style=\"position:fixed; top:".$control_height."px; right:0; bottom:0; width:".$sidebar_width."px; margin:0; padding:0;\"><iframe id=\"sidebarFrame\" name=\"sidebarFrame\" src=\"explorer_preview.php\" frameBorder=\"0\" style=\"width:100%; height:100%; border:0; margin:0; padding:0; overflow:auto;\"></iframe></div>\n";
 }
-// favorites, checked out, recycle bin or access link objects
-elseif ($action == "favorites" || $action == "checkedout" || $action == "clipboard" || $action == "recyclebin" || $action == "linking")
+// favorites, checked out, duplicates, recycle bin or access link objects
+elseif ($action == "favorites" || $action == "checkedout" || $action == "duplicates" || $action == "clipboard" || $action == "recyclebin" || $action == "linking")
 {
   // control
   echo "  <iframe id=\"controlFrame\" name=\"controlFrame\" src=\"control_objectlist_menu.php?virtual=1&from_page=".$action."\" frameborder=\"0\" scrolling=\"".$scrolling."\" style=\"position:fixed; top:0; left:0; width:100%; height:".$control_height."px; border:0; margin:0; padding:0; overflow-x:".$overflow."; overflow-y:hidden; z-index:10;\"></iframe>\n";

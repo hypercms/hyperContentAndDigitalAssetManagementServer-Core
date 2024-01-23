@@ -196,23 +196,58 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
     }
   }
 
-  // --------------------------------- connected copies --------------------------------- 
-  $temp_array = rdbms_getobjects ($container_id);
-
-  if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+  if (!empty ($container_id))
   {
-    $connected_copy = "<a href=\"javascript:void(0);\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=objectlist');\"><span class=\"hcmsHeadlineTiny\">&gt; ".getescapedtext ($hcms_lang['show-where-used'][$lang])."</span></a>";
+    // --------------------------------- connected copies (same content due to same container ID) --------------------------------- 
+    $temp_array = rdbms_getobjects ($container_id);
 
-    $connectedview = "
-    <hr />
-    <table class=\"hcmsTableNarrow\">
-      <tr>
-        <td style=\"width:120px; vertical-align:top;\">".getescapedtext ($hcms_lang['connected-copy'][$lang])."&nbsp;</td><td style=\"vertical-align:top;\">".$connected_copy."</td>
-      </tr>
-    </table>";
+    if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+    {
+      $connectedview = "
+      <hr />
+      <table class=\"hcmsTableNarrow\">
+        <tr>
+          <td style=\"width:120px; vertical-align:top;\">".getescapedtext ($hcms_lang['connected-copy'][$lang])."&nbsp;</td>
+          <td style=\"vertical-align:top;\">
+            <div class=\"hcmsButtonBlue\" onclick=\"parent.openPopup('page_info_container.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=objectlist');\"> 
+              <img src=\"".getthemelocation()."img/button_file_copylinked.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['show-where-used'][$lang])."
+            </div
+          </td>
+        </tr>
+      </table>";
+    }
+
+    // --------------------------------- duplicates (same MD5 hash but differnt container ID) --------------------------------- 
+    if (!empty ($mediafile))
+    { 
+      // get MD5 hash of object
+      $object_info = rdbms_getobject_info ($location_esc.$page, array('md5_hash'));
+
+      if (!empty ($object_info['md5_hash']))
+      {
+        // get duplicate objects
+        $temp_array = rdbms_getduplicatefiles ($object_info['md5_hash']);
+
+        if (is_array ($temp_array) && sizeof ($temp_array) > 1) 
+        {
+          $duplicateview = "
+          <hr />
+          <table class=\"hcmsTableNarrow\">
+            <tr>
+              <td style=\"width:120px; vertical-align:top;\">".getescapedtext ($hcms_lang['check-for-duplicates'][$lang])."&nbsp;</td>
+              <td style=\"vertical-align:top;\">
+                <div class=\"hcmsButtonBlue\" onclick=\"parent.openPopup('page_info_duplicates.php?site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&from_page=objectlist');\">
+                  <img src=\"".getthemelocation()."img/button_file_copy.png\" class=\"hcmsIconList\" /> ".getescapedtext ($hcms_lang['show-where-used'][$lang])." 
+                </div>
+              </td>
+            </tr>
+          </table>";
+        }
+      }
+    }
   }
 
-  //--------------------------------- related assets (only childs) --------------------------------- 
+//--------------------------------- related assets (only childs) --------------------------------- 
   if (!empty ($mgmt_config['relation_source_id']))
   {
     // read content from content container
@@ -312,6 +347,7 @@ if (valid_publicationname ($site) && valid_locationname ($location) && valid_obj
   if (!empty ($metadata)) echo $metadata;
   if (!empty ($linksview)) echo $linksview;
   if (!empty ($connectedview)) echo $connectedview;
+  if (!empty ($duplicateview)) echo $duplicateview;
   if (!empty ($relatedview)) echo $relatedview;
   ?>
   </div>

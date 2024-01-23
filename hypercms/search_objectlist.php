@@ -302,6 +302,7 @@ if (
      $action != "recyclebin" &&
      $action != "favorites" && 
      $action != "checkedout" && 
+     $action != "duplicates" && 
      $action != "clipboard" && 
      ($action != "user_files" && $object_id == "" && $container_id == "") && 
      $action != "recipient" && 
@@ -381,7 +382,7 @@ elseif ($container_id != "")
   $object_array = rdbms_getobjects ($container_id, "", @array_keys ($objectlistcols_reduced));
 }
 // search for expression in content
-elseif ($action == "base_search" || $search_dir != "")
+elseif ($action == "base_search" || $action == "duplicates" || $search_dir != "")
 {
   // object name based search
   if ($search_cat == "file")
@@ -407,10 +408,10 @@ elseif ($action == "base_search" || $search_dir != "")
   if (!is_array ($search_format)) $search_format = "";
 
   // check permissions
-  if ($action == "base_search" || ($cat == "comp" && checkglobalpermission ($site, 'component')) || ($cat == "page" && checkglobalpermission ($site, 'page')))
+  if ($action == "base_search" || $action == "duplicates" || ($cat == "comp" && checkglobalpermission ($site, 'component')) || ($cat == "page" && checkglobalpermission ($site, 'page')))
   {
     // no location provided
-    if ($action == "base_search" && !valid_locationname ($search_dir) && !valid_publicationname ($site)) 
+    if (($action == "base_search" || $action == "duplicates") && !valid_locationname ($search_dir) && !valid_publicationname ($site)) 
     {
       // page access of user
       foreach ($pageaccess as $site_name => $value)
@@ -472,8 +473,13 @@ elseif ($action == "base_search" || $search_dir != "")
       if (checkglobalpermission ($site, 'page')) $search_dir_esc[] = "%page%/".$site."/";
     }
     
+    // find duplicate media files
+    if ($action == "duplicates" && !empty ($siteaccess))
+    {
+      $object_array = rdbms_findduplicatefiles ($search_dir_esc, $exclude_dir_esc, $limit_large, @array_keys ($objectlistcols_reduced), false);
+    }
     // start search and replace
-    if ($setlocalpermission['create'] == 1 && $find_expression != "")
+    elseif ($setlocalpermission['create'] == 1 && $find_expression != "")
     {
       $object_array = rdbms_replacecontent ($search_dir_esc, $search_format, $date_from, $date_to, $find_expression, $replace_expression, $user);
     }

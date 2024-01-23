@@ -537,7 +537,7 @@ if (!empty ($hcms_assetbrowser) && is_file ($mgmt_config['abs_path_cms']."connec
 <?php } ?>
 
 
-<!-- Access Links -->
+<!-- Access Link -->
 <?php if (linking_valid() == true) { ?>
 
   <!-- workplace -->

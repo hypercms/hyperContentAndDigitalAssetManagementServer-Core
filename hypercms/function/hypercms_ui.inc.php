@@ -2045,15 +2045,20 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             if (substr_count ($doc_ext.$hcms_ext['vectorimage'], $file_info['orig_ext'].".") > 0) $annotation_file = $file_info['filename'].".annotation-0.jpg";
             else $annotation_file = $file_info['filename'].'.annotation.jpg';
 
+            // set view case
+            $viewcase = "";
+
             // use original image supported by browsers for viewtype "media_only"
             if ($viewtype == "media_only" && ($file_info['orig_ext'] == ".gif" || (($width_input > 420 || $width_input >= $width_orig) && ($file_info['orig_ext'] == ".avif" || $file_info['orig_ext'] == ".jpg" || $file_info['orig_ext'] == ".jpeg" || $file_info['orig_ext'] == ".png" || $file_info['orig_ext'] == ".webp"))))
             {
               $mediafile = $mediafile_orig;
+              $viewcase = "standardimage";
             }
             // use JPEG version of original RAW or KRITA image for viewtype "media_only"
             elseif ($viewtype == "media_only" && $width_input > 420 && (is_rawimage ($file_info['orig_ext']) || is_kritaimage ($file_info['orig_ext'])) && is_file ($media_root.$mediafile))
             {
               $mediafile = $mediafile;
+              $viewcase = "rawimage";
             }
             // create new image for annotations (only if annotations are enabled and image conversion software and permissions are given)
             elseif (
@@ -2103,10 +2108,15 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 {
                   $mediafile = $result;
                   $previewimage_path = $thumb_root.$result;
+                  $viewcase = "annotationimage";
                 }
               }
               // we use the existing annotation file
-              else $mediafile = $annotation_file;
+              else
+              {
+                $mediafile = $annotation_file;
+                $viewcase = "annotationimage";
+              }
             }
             // create new image file if the new image size is greater than 150% of the width or height of the thumbnail
             elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size['width'] * 1.5 < $width) && ($height > 0 && $thumb_size['height'] * 1.5 < $height) && is_supported ($mgmt_imagepreview, $file_info['orig_ext']))
@@ -2133,11 +2143,16 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   {
                     $mediafile = $result;
                     $previewimage_path = $viewfolder.$result;
+                    $viewcase = "previewimage";
                   }
                 }
               }
               // we use the existing file
-              else $mediafile = $newname;
+              else
+              {
+                $mediafile = $newname;
+                $viewcase = "previewimage";
+              }
 
               if (!empty ($viewfolder.$mediafile)) 
               {
@@ -2154,24 +2169,29 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                 }
               }
             }
-            // stretch view of thumbnail image
-            elseif (!empty ($mediaratio) && ($width > 0 && $thumb_size['width'] * 1.5 < $width) && ($height > 0 && $thumb_size['height'] * 1.5 < $height))
+
+            // if image view was not successful
+            if (empty ($viewcase))
             {
-              $width = ceil ($thumb_size['width'] * 1.5);
-              $height = ceil ($thumb_size['height'] * 1.5);
-              $mediafile = $thumbfile;
-            }
-            // if thumbnail file is smaller than the defined size of a thumbnail due to a smaller original image
-            elseif (!empty ($mediaratio) && $thumb_size['width'] < 180 && $thumb_size['height'] < 180)
-            {
-              $width = $thumb_size['width'];
-              $height = $thumb_size['height'];
-              $mediafile = $thumbfile;
-            }
-            // use thumbnail with requested dimension
-            else
-            {
-              $mediafile = $thumbfile;
+              // stretch view of thumbnail image
+              if (!empty ($mediaratio) && ($width > 0 && $thumb_size['width'] * 1.5 < $width) && ($height > 0 && $thumb_size['height'] * 1.5 < $height))
+              {
+                $width = ceil ($thumb_size['width'] * 1.5);
+                $height = ceil ($thumb_size['height'] * 1.5);
+                $mediafile = $thumbfile;
+              }
+              // if thumbnail file is smaller than the defined size of a thumbnail due to a smaller original image
+              elseif (!empty ($mediaratio) && $thumb_size['width'] < 180 && $thumb_size['height'] < 180)
+              {
+                $width = $thumb_size['width'];
+                $height = $thumb_size['height'];
+                $mediafile = $thumbfile;
+              }
+              // use thumbnail with requested dimension
+              else
+              {
+                $mediafile = $thumbfile;
+              }
             }
 
             if ($width > 0 && $height > 0) $style = "width:".intval($width)."px; height:".intval($height)."px;";
@@ -2734,7 +2754,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
         }
 
         // calculate ratio and reset original width and height
-        if (!empty ($config['width']) && !empty ($config['height']))
+        if (!empty ($config['width']) && !empty ($config['height']) && intval ($config['width']) > 0 && intval ($config['height']) > 0)
         {
           $mediaratio = $config['width'] / $config['height'];
           $mediawidth = $width_orig = $config['width'];
@@ -5271,7 +5291,7 @@ function showvideoplayer ($site, $video_array, $width=854, $height=480, $logo_ur
     $thumb_bar = "";
     $thumb_items = array();
 
-    if (!empty ($container_id) && intval ($container_id) > 0 && is_dir ($media_dir.$site."/".$container_id))
+    if (!empty ($mgmt_config['videoplayerthumbnails']) && !empty ($container_id) && intval ($container_id) > 0 && is_dir ($media_dir.$site."/".$container_id))
     {
       $scandir = scandir ($media_dir.$site."/".$container_id);
 

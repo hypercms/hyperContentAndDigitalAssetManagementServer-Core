@@ -74,7 +74,7 @@ if (is_array ($siteaccess))
     
       $percentage = 0;
       $space_total = 0;
-      $space_used = -1;
+      $space_used = 0;
       $space_free = 0;
     
       // get used storage space

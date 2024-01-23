@@ -5419,7 +5419,25 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
   $session_id = "";
 
   if (valid_locationname ($filepath) && $name != "")
-  { 
+  {
+    // check global daily download limit
+    if (!empty ($mgmt_config['maxdownloadsize_per_day']) && floatval ($mgmt_config['maxdownloadsize_per_day']) > 0)
+    {
+      $download_info = rdbms_externalquery ("SELECT SUM(object.filesize) AS filesize FROM dailystat INNER JOIN object ON dailystat.id=object.id WHERE dailystat.date='".date("Y-m-d")."' AND dailystat.activity='download' GROUP BY dailystat.activity");
+    
+      if (!empty ($download_info[0]['filesize']) && ($download_info[0]['filesize'] / 1024 / 1024) > floatval ($mgmt_config['maxdownloadsize_per_day']))
+      {
+        // log
+        $errcode = "00601";
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|warning|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The daily download limit of ".floatval ($mgmt_config['maxdownloadsize_per_day'])." GB has been reached";
+    
+        savelog ($error);
+    
+        header ("HTTP/1.1 400 Invalid Request", true, 400);
+        exit;
+      }
+    }
+
     // deprectaed: if browser is MS IE then we need to encode it (does not detect IE 11)
     // if (isset ($user_client['msie']) && $user_client['msie'] > 0) $name = rawurlencode ($name);
     // clean name due to issues with special characters in the file name (causes 500 error)
@@ -5545,8 +5563,8 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
       header ("Last-Modified: ".gmdate ('D, d M Y H:i:s', @filemtime ($filepath)) . ' GMT' );
       header ("Accept-Ranges: 0-".$end);
 
-      // partial file download
-      if (isset ($_SERVER['HTTP_RANGE']))
+      // partial file download if supported or file is larger than 500 kB
+      if (isset ($_SERVER['HTTP_RANGE']) && filesize ($filepath) > 500000)
       {
         $c_start = $start;
         $c_end = $end;
@@ -14531,7 +14549,7 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
     if (!empty ($checkduplicates))
     {
       $md5_hash = md5_file ($global_files['Filedata']['tmp_name']);
-      $duplicates = rdbms_getduplicate_file ($site, $md5_hash);
+      $duplicates = rdbms_getduplicatefiles ($md5_hash, $site);
       $links = array();
 
       if ($duplicates != false)

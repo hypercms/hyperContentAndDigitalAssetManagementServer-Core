@@ -173,23 +173,26 @@ if (!empty ($dir) && !empty ($site))
     {
       foreach ($object_array as $hash=>$object_item)
       {
-        $entry = $object_item['objectpath'];
-        
-        if ($hash != "count" && $entry != "" && accessgeneral ($site, $entry, "page"))
+        if (!empty ($object_item['objectpath']))
         {
-          $entry_location = getlocation ($entry);
-          $entry_object = getobject ($entry);
-          $entry_object = correctfile ($entry_location, $entry_object, $user);
+          $entry = $object_item['objectpath'];
           
-          if ($entry_object !== false)
+          if ($hash != "count" && $entry != "" && accessgeneral ($site, $entry, "page"))
           {
-            if ($entry_object == ".folder")
+            $entry_location = getlocation ($entry);
+            $entry_object = getobject ($entry);
+            $entry_object = correctfile ($entry_location, $entry_object, $user);
+            
+            if ($entry_object !== false)
             {
-              $entry_dir[] = $entry_location.$entry_object;
-            }
-            else
-            {
-              $entry_file[] = $entry_location.$entry_object;
+              if ($entry_object == ".folder")
+              {
+                $entry_dir[] = $entry_location.$entry_object;
+              }
+              else
+              {
+                $entry_file[] = $entry_location.$entry_object;
+              }
             }
           }
         }

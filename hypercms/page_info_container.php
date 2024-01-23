@@ -192,7 +192,7 @@ if (is_array ($object_array) && sizeof ($object_array) > 0)
       $found = true;
 
       // location
-      $location_obj_short = str_replace (array("%comp%", "%page%"), array("", ""), $result['convertedlocation']);
+      $location_obj_short = getlocationname ($result['publication'], $result['convertedlocation'], $result['category'], "path");  
         
       if ($file_info['type'] == "Folder")
       {
