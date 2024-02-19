@@ -1,7 +1,7 @@
 (function() {
   var defaults = {
       0: {
-        src: 'example-thumbnail.png'
+        src: ''
       }
     },
     extend = function() {
@@ -167,7 +167,7 @@
       halfWidth = width / 2;
 
       // make sure that the thumbnail doesn't fall off the right side of the left side of the player
-      if ( (left + halfWidth) > right ) {
+      if ((left + halfWidth) > right) {
         left -= (left + halfWidth) - right;
       } else if (left < halfWidth) {
         left = halfWidth;

@@ -2287,7 +2287,7 @@ function update_database_v10073 ()
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   if (!checksoftwareversion ("10.0.7.3"))
@@ -2330,7 +2330,7 @@ function update_database_v10074 ()
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   if (!checksoftwareversion ("10.0.7.4"))
@@ -2368,7 +2368,7 @@ function update_database_v1008 ()
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   if (!checksoftwareversion ("10.0.8"))

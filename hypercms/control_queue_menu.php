@@ -313,7 +313,7 @@ parent.hcms_closeSubMenu();
   <div class="hcmsToolbarBlock">
     <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="parent.frames['mainFrame'].location.reload();">
       <?php echo "<img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_view_refresh.png\" alt=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" title=\"".getescapedtext ($hcms_lang['refresh'][$lang])."\" />"; ?>
-      <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></span>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></span>
     </div>
   </div>
   <div class="hcmsToolbarBlock">

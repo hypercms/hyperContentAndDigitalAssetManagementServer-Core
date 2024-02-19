@@ -331,7 +331,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $mgmt_uncompress, $hcms_ext, $hcms_lang, $lang;
 
-  // initalize
+  // initialize
   $error = array();
   $usedby = "";
 
@@ -987,7 +987,7 @@ function reindexcontent ($site, $container_id_array="")
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   if (valid_publicationname ($site) && !empty ($mgmt_config['abs_path_media']))
@@ -4047,7 +4047,7 @@ function splitmedia ($site, $location_source, $location_dest, $file, $sec=60, $f
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $hcms_ext, $user;
 
-  // initalize
+  // initialize
   $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file) && $sec > 0)
@@ -4220,7 +4220,7 @@ function convertmedia ($site, $location_source, $location_dest, $mediafile, $for
 {
   global $mgmt_config, $mgmt_imagepreview, $mgmt_mediapreview, $mgmt_mediaoptions, $mgmt_imageoptions, $mgmt_maxsizepreview, $mgmt_mediametadata, $mgmt_compress, $hcms_ext;
 
-  // initalize
+  // initialize
   $error = array();
 
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($mediafile) && $format != "")
@@ -5192,7 +5192,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
 {
   global $mgmt_config, $mgmt_docpreview, $mgmt_docoptions, $mgmt_docconvert, $mgmt_maxsizepreview, $hcms_ext, $hcms_lang, $lang, $user;
 
-  // initalize
+  // initialize
   $error = array();
  
   if (valid_publicationname ($site) && valid_locationname ($location_source) && valid_locationname ($location_dest) && valid_objectname ($file))
@@ -5205,7 +5205,7 @@ function createdocument ($site, $location_source, $location_dest, $file, $format
     $location_source = correctpath ($location_source);
     $location_dest = correctpath ($location_dest);
  
-    // for inital conversion request the temp directory will be defined as destination directory by default of the service mediadownload or mediawrapper
+    // for initial conversion request the temp directory will be defined as destination directory by default of the service mediadownload or mediawrapper
     // the converted files however should be placed in the media repository to avoid the recreation of the file over and over again
     if (trim ($location_source) == getmedialocation ($site, $file, "abs_path_media").$site."/" && trim ($location_dest) == trim ($mgmt_config['abs_path_temp']) && strpos ($file, "_hcm") > 0)
     {

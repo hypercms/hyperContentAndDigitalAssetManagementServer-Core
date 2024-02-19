@@ -24,7 +24,7 @@ function importCSVtextcontent ($site, $location, $file_csv, $user, $type="", $de
 {
   global $mgmt_config, $eventsystem;
 
-  // initalize
+  // initialize
   $error = array();
   $row = 1;
   $header = false;
@@ -3409,7 +3409,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
 {
   global $eventsystem, $mgmt_config, $hcms_ext;
 
-  // initalize
+  // initialize
   $error = array();
   
   if (!is_array ($hcms_ext)) require ($mgmt_config['abs_path_cms']."include/format_ext.inc.php");

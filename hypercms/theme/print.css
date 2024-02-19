@@ -1,0 +1,14 @@
+
+/* print */
+
+html, body
+{
+    color: #000000;
+    background-color: #ffffff;
+    height: 99%;
+}
+
+.hcmsInfoBox, .hcmsMessage, .hcmsButtonDownload, .hcmsWorkplaceBar, .hcmsHeadline, .hcmsLoadScreen, .hcmsTranslator
+{
+  display: none;
+}

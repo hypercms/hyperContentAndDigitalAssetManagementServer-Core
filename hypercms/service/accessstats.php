@@ -146,6 +146,9 @@ if (!empty ($location_esc) || !empty ($container_id))
   $upload_total_filesize = 0;
   $upload_total_count = 0;
 
+  // limit of objects to display in popup gallery multiplied by string length of container ID and the separator
+  $max_collection = 200 * 8;
+
   // loop through days of month
   for ($i=1; $i<=date("t", strtotime($date_from)); $i++)
   {
@@ -187,7 +190,13 @@ if (!empty ($location_esc) || !empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($view_axis[$i]['onclick'])) $view_axis[$i]['onclick'] = "window.parent.openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($view_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['views'][$lang])."');";
+      if (!empty ($view_axis[$i]['onclick']))
+      {
+        if (strlen ($view_axis[$i]['onclick']) > $max_collection) $collection = substr ($view_axis[$i]['onclick'], 0, strpos ($view_axis[$i]['onclick'], "|", $max_collection))."...";
+        else $collection = $view_axis[$i]['onclick'];
+
+        $view_axis[$i]['onclick'] = "window.parent.openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($collection, "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['views'][$lang])."');";
+      }
 
       // bar text
       $view_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$view_axis[$i]['value']." ".getescapedtext ($hcms_lang['views'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$view_axis[$i]['text'];
@@ -227,7 +236,13 @@ if (!empty ($location_esc) || !empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($download_axis[$i]['onclick'])) $download_axis[$i]['onclick'] = "window.parent.openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($download_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['downloads'][$lang])."');";
+      if (!empty ($download_axis[$i]['onclick']))
+      {
+        if (strlen ($download_axis[$i]['onclick']) > $max_collection) $collection = substr ($download_axis[$i]['onclick'], 0, strpos ($download_axis[$i]['onclick'], "|", $max_collection))."...";
+        else $collection = $download_axis[$i]['onclick'];
+
+        $download_axis[$i]['onclick'] = "window.parent.openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($collection, "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['downloads'][$lang])."');";
+      }
 
       // bar text
       $download_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$download_axis[$i]['value']." ".$hcms_lang['downloads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$download_axis[$i]['text'];
@@ -267,7 +282,13 @@ if (!empty ($location_esc) || !empty ($container_id))
       }
 
       // link for popup
-      if (!empty ($upload_axis[$i]['onclick'])) $upload_axis[$i]['onclick'] = "window.parent.openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($upload_axis[$i]['onclick'], "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['uploads'][$lang])."');";
+      if (!empty ($upload_axis[$i]['onclick']))
+      {
+        if (strlen ($upload_axis[$i]['onclick']) > $max_collection) $collection = substr ($upload_axis[$i]['onclick'], 0, strpos ($upload_axis[$i]['onclick'], "|", $max_collection))."...";
+        else $collection = $upload_axis[$i]['onclick'];
+
+        $upload_axis[$i]['onclick'] = "window.parent.openPopup('".cleandomain ($mgmt_config['url_path_cms'])."popup_gallery.php?container_id=".url_encode (trim ($collection, "|"))."', '".showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang]).getescapedtext (" ".$hcms_lang['uploads'][$lang])."');";
+      }
 
       // bar text
       $upload_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$upload_axis[$i]['value']." ".$hcms_lang['uploads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$upload_axis[$i]['text'];   

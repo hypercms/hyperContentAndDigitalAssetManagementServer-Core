@@ -21,7 +21,7 @@ function ftp_userlogon ($server, $user, $passwd, $ssl=false)
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   if ($server != "" && $user != "" && $passwd != "")
@@ -93,7 +93,7 @@ function ftp_getfile ($conn_id, $remote_file, $local_file, $passive=true)
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   if ($conn_id != "" && $local_file != "" && $remote_file != "" && ($passive == true || $passive == false))
@@ -129,7 +129,7 @@ function ftp_putfile ($conn_id, $local_file, $remote_file, $passive=true)
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   if ($conn_id != "" && $local_file != "" && $remote_file != "" && ($passive == true || $passive == false))
@@ -169,7 +169,7 @@ function ftp_deletefile ($conn_id, $remote_file, $passive=true)
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $error = array();
 
   if ($conn_id != "" && $remote_file != "" && ($passive == true || $passive == false))

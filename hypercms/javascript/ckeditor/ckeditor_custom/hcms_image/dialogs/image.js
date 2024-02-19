@@ -584,7 +584,7 @@
 								// TODO: We need something better than a fixed size here.
 								style: 'display:inline-block;margin-top:14px;',
 								align: 'center',
-								label: editor.lang.common.browseServer,
+								label: editor.lang.hcms_linkbrowsebuttons.label.Component,
 								hidden: true,
 								// Use scaled dimensions from media_select
 								// Original: filebrowser: 'info:txtUrl'
@@ -1056,16 +1056,29 @@
 					},
 					{
 						type: 'button',
-						id: 'browse',
+						id: 'browse_component',
 						className: 'cke_dialog_image_browse',
 						filebrowser: {
 							action: 'Browse',
 							target: 'Link:txtUrl',
 							url: editor.config.filebrowserImageBrowseLinkUrl
 						},
-						style: 'float:right',
+						style: 'display:inline-block; float:right',
 						hidden: true,
-						label: editor.lang.common.browseServer
+						label: editor.lang.hcms_linkbrowsebuttons.label.Component
+					},
+					{
+						type: 'button',
+						id: 'browse_page',
+						className: 'cke_dialog_image_browse',
+						filebrowser: {
+							action: 'Browse',
+							target: 'Link:txtUrl',
+							url: editor.config.filebrowserLinkBrowsePageUrl
+						},
+						style: 'display:inline-block; float:right',
+						hidden: true,
+						label: editor.lang.hcms_linkbrowsebuttons.label.Page
 					},
 					{
 						id: 'cmbTarget',

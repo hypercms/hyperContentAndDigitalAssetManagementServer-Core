@@ -1718,6 +1718,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <meta charset=\"".$charset."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
   <div class=\"hcmsWorkplaceFrame\">".$viewstore."</div>
@@ -2346,6 +2347,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 <meta charset=\"".getcodepage ($lang)."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+<link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
 </head>
 <body class=\"hcmsWorkplaceGeneric\">
   <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -2790,6 +2792,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 <meta charset=\"".getcodepage ($lang)."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+<link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
 </head>
 <body class=\"hcmsWorkplaceGeneric\">
   <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -3029,6 +3032,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -3202,6 +3206,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=\"hcmsHeadline\">".$hcms_lang['the-tags'][$lang]." [".$tagu."], [".$tagf."], [".$tagl."], [".$tagc."], [".$tagd."] ".$hcms_lang['and-or'][$lang]." [".$tagk."] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
@@ -4101,12 +4106,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
                           foreach ($list_array as $list_entry)
                           {
                             $list_entry = trim ($list_entry);
-                            $end_val = strlen ($list_entry)-1;
+                            $end_val = strlen ($list_entry) - 1;
 
                             if (($start_val = strpos($list_entry, "{")) > 0 && strpos($list_entry, "}") == $end_val)
                             {
-                              $diff_val = $end_val-$start_val-1;
-                              $list_value = substr ($list_entry, $start_val+1, $diff_val);
+                              $diff_val = $end_val-$start_val - 1;
+                              $list_value = substr ($list_entry, $start_val + 1, $diff_val);
                               $list_text = substr ($list_entry, 0, $start_val);
                             }
                             else $list_value = $list_text = $list_entry;
@@ -4696,6 +4701,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -5603,6 +5609,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -6307,6 +6314,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <meta charset=\"".getcodepage ($lang)."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -6443,6 +6451,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <meta charset=\"".$hcms_lang_codepage[$lang]."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   </head>
   <body class=\"hcmsWorkplaceGeneric\">
     <p class=\"hcmsHeadline\">".$hcms_lang['the-tags'][$lang]." [$tags] ".$hcms_lang['and-or'][$lang]." [$tagm] ".$hcms_lang['have-the-same-identification-id'][$lang]."</p>
@@ -7813,7 +7822,8 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           // if no CSS has been defined use system CSS
           if (empty ($line_css)) $line_css .= "
     <link rel=\"stylesheet\" hypercms_href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
-    <link rel=\"stylesheet\" hypercms_href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />";
+    <link rel=\"stylesheet\" hypercms_href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+    <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />";
 
           // ======================================== insert code for component templates =======================================
           if ($buildview == "template")
@@ -8250,6 +8260,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <!-- hyperCMS -->
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   <style>
   .hcmsMapsControls
   {
@@ -10138,13 +10149,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           {
             // pause video
             video[0].pause();
-
-            // set video time
-            setTimeout(function() { video[0].currentTime = time; }, 300);
           }
 
+          // set video time
+          setTimeout(function() { video[0].currentTime = time; }, 200);
+
           // show face
-          $('#hcmsFace' + videoface_id[i]).css ('visibility', 'visible');
+          $('#hcmsFace' + videoface_id[i]).css('visibility', 'visible');
         }
       }
     }
@@ -11043,6 +11054,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 <meta charset=\"".getcodepage ($lang)."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
 <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+<link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
 </head>
 <body class=\"hcmsWorkplaceGeneric\">
   <p class=\"hcmsHeadline\">".getescapedtext ($hcms_lang['please-do-not-use-the-following-special-characters-in-the-content-identification-name'][$lang], $charset, $lang)." '".$id."':<br/>[\]{}()*+?.,\\^$</p>
@@ -11211,6 +11223,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   <meta name=\"robots\" content=\"noindex, nofollow\" />
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
+  <link rel=\"stylesheet\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."theme/print.css\" media=\"print\" />
   <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/main.min.js?v=".getbuildnumber()."\"></script>
   <link  rel=\"stylesheet\" type=\"text/css\" href=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/rich_calendar/rich_calendar.css\" />
   <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/rich_calendar/rich_calendar.min.js\"></script>

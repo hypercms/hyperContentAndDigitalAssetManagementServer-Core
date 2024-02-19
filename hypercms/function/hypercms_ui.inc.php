@@ -3762,7 +3762,9 @@ $(document).ready(function()
     $location_name = getlocationname ($site, $dir, "comp", "path");
 
     $result .= "
-    <span class=\"hcmsHeadline\" style=\"padding:3px 0px 3px 0px; display:block;\">".getescapedtext ($hcms_lang['select-object'][$lang], $hcms_charset, $lang)."</span>
+    <span class=\"hcmsHeadline\" style=\"padding:3px 0px 3px 0px; display:block;\">".getescapedtext ($hcms_lang['select-object'][$lang], $hcms_charset, $lang)."</span>";
+    
+    if (!empty ($location_name)) $result .= "
     <span class=\"hcmsHeadlineTiny\" style=\"padding:3px 0px 3px 0px; display:block;\">".$location_name."</span>";
 
     // file upload
@@ -4997,9 +4999,20 @@ function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600
 
           $element = "<select title=\"".$labelname.": ".getescapedtext ($hcms_lang['edit-text-options'][$lang], $hcms_charset, $lang)."\" id=\"hcms_selectbox_".$hypertagname."_".$id."\" name=\"".$hypertagname."[".$id_orig."]\" style=\"color:#000; background:#FFF; font-family:Verdana,Arial,Helvetica,sans-serif; font-size:12px; font-weight:normal;\">\n";
 
-          foreach ($list_array as $elem)
+          foreach ($list_array as $list_entry)
           {
-            $element .= "  <option value=\"".$elem."\"".($elem == $contentbot ? ' selected ' : '').">".$elem."</option>\n";
+            $list_entry = trim ($list_entry);
+            $end_val = strlen ($list_entry) - 1;
+            
+            if (($start_val = strpos($list_entry, "{")) > 0 && strpos($list_entry, "}") == $end_val)
+            {
+              $diff_val = $end_val - $start_val - 1;
+              $list_value = substr ($list_entry, $start_val + 1, $diff_val);
+              $list_text = substr ($list_entry, 0, $start_val);
+            }
+            else $list_value = $list_text = $list_entry;
+
+            $element .= "  <option value=\"".$list_value."\"".($list_value == $contentbot ? ' selected ' : '').">".$list_text."</option>\n";
           }
 
           $element .= "</select>\n";
@@ -5555,14 +5568,17 @@ function showvideoplayer_head ($secureHref=true, $fullscreen=true, $cleandomain=
     if (!empty ($cleandomain)) $source_url = cleandomain ($mgmt_config['url_path_cms']);
     else $source_url = $mgmt_config['url_path_cms'];
 
-    $return = "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$source_url."javascript/video-js/video-js.css\" rel=\"stylesheet\" />
-  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$source_url."javascript/video-js/videojs.thumbnails.css\" rel=\"stylesheet\">
-  <script src=\"".$source_url."javascript/video-js/video.min.js\"></script>
-  <script type=\"text/javascript\">
-    videojs.options.flash.swf = \"".$source_url."javascript/video-js/video-js.swf\";
-  </script>
-  <script src=\"".$source_url."javascript/video-js/videojs.thumbnails.js\"></script>\n";
-    if ($fullscreen == false) $return .= "  <style> .vjs-fullscreen-control { display:none; } .vjs-default-skin .vjs-volume-control { margin-right:20px; } </style>";
+    $return = "  <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$source_url."javascript/video-js/video-js.css\" rel=\"stylesheet\" />";
+
+    $return .= "
+    <script src=\"".$source_url."javascript/video-js/video.min.js\"></script>";
+
+    if (!empty ($mgmt_config['videoplayerthumbnails'])) $return .= "
+    <link ".(($secureHref) ? "hypercms_" : "")."href=\"".$source_url."javascript/video-js/videojs.thumbnails.css\" rel=\"stylesheet\">
+    <script src=\"".$source_url."javascript/video-js/videojs.thumbnails.js\"></script>";
+
+    if ($fullscreen == false) $return .= "
+    <style> .vjs-fullscreen-control { display:none; } .vjs-default-skin .vjs-volume-control { margin-right:20px; } </style>";
   }
 
   return $return;
@@ -6494,7 +6510,7 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
     $button_id = uniqid();
 
     $result = "
-  <div style=\"".$style."\">
+  <div class=\"hcmsTranslator\" style=\"".$style."\">
     ".getescapedtext ($hcms_lang['translate'][$lang], $charset, $lang)."&nbsp;
     <select id=\"sourceLang_".$id."\" style=\"width:70px; padding-left:2px; padding-right:16px;\">
       <option value=\"\">Automatic</option>";

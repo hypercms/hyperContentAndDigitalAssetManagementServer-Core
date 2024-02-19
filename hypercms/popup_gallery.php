@@ -27,7 +27,9 @@ checkusersession ($user);
 
 // --------------------------------- logic section ----------------------------------
 
+// initialize
 $assets_array = array();
+$thumbnail_size = 140;
 
 // split into array
 if ($object_id != "")
@@ -54,7 +56,7 @@ elseif ($multiobject != "")
 }
 
 // gallery
-$show = showgallery ($assets_array, 140, "open", $user);
+$show = showgallery ($assets_array, $thumbnail_size, "open", $user);
 ?>
 <!DOCTYPE html>
 <html>
@@ -72,6 +74,8 @@ $show = showgallery ($assets_array, 140, "open", $user);
 <!-- content -->
 <?php
 if (!empty ($show)) echo $show;
+
+if (substr ($container_id, -3) == "...") echo "<div style=\"margin:5px; width:".$thumbnail_size."px; height:".$thumbnail_size."px; float:left; display:block; text-align:center; vertical-align:bottom; font-size:120px;\">...</div>";
 ?>
 
 <?php includefooter(); ?>

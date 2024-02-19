@@ -5276,7 +5276,7 @@ function avoidfilecollision ($data="tempdata", $force=false)
 
   if (!empty ($force) || !valid_publicationname ($site) || (isset ($mgmt_config[$site]['crypt_content']) && $mgmt_config[$site]['crypt_content'] == true))
   {
-    // save empty temp file initally (to clear previous data)
+    // save empty temp file initially (to clear previous data)
     savefile ($mgmt_config['abs_path_temp'], "writefile.tmp", "");
 
     // append data to file
@@ -5834,12 +5834,12 @@ function loadcontainer ($container, $type="work", $user="")
 // ----------------------------------------- savecontainer ---------------------------------------------
 // function: savecontainer()
 // input: container file name or container id (working container will be loaded by default) [string], container type [published,work,version] (optional), container content [XML], user name [string], 
-//        save container initally [boolean] (optional)
+//        save container initially [boolean] (optional)
 // output: true / false on error
 // requires: config.inc.php to be loaded before
 
 // description:
-// Saves data into existing content container by default. Only if $init is set to true it will initally save a non existing container.
+// Saves data into existing content container by default. Only if $init is set to true it will initially save a non existing container.
 
 function savecontainer ($container, $type="work", $data="", $user="", $init=false)
 {
@@ -5878,7 +5878,7 @@ function savecontainer ($container, $type="work", $data="", $user="", $init=fals
 
       $location = getcontentlocation ($container_id, 'abs_path_content');
 
-      // get publication from container (the publication where the content has been initally created will be used)
+      // get publication from container (the publication where the content has been initially created will be used)
       $origin = getcontent ($data, "<contentorigin>");
 
       if (!empty ($origin[0])) $site = getpublication ($origin[0]);
@@ -13931,7 +13931,7 @@ function createobject ($site, $location, $page, $template, $user)
               $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Directory for container ".$contentfile." is missing";
             }
 
-            // save container initally since savecontainer only saves data to existing containers
+            // save container initially since savecontainer only saves data to existing containers
             $test = savecontainer ($container_id, "work", $page_box_xml, $user, true);
 
             if ($test == false)
@@ -13940,7 +13940,7 @@ function createobject ($site, $location, $page, $template, $user)
               $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Working container ".$contentfile.".wrk could not be saved";
             }
 
-            // save container initally since savecontainer only saves data to existing containers
+            // save container initially since savecontainer only saves data to existing containers
             $test = savecontainer ($container_id, "published", $page_box_xml, $user, true);
 
             if ($test == false)
@@ -19911,7 +19911,7 @@ function manipulateallobjects ($action, $objectpath_array, $method="", $force="s
       } 
       else $count = 0;
     }
-    // create collection initally
+    // create collection initially
     elseif ($force == "start")
     {
       foreach ($objectpath_array as $objectpath)

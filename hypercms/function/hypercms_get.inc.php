@@ -2738,7 +2738,7 @@ function getwallpaper ($theme="", $version="")
 {
   global $mgmt_config, $is_mobile;
 
-  // initalize
+  // initialize
   $error = array();
   
   // 1. get system wallpaper
@@ -2839,7 +2839,7 @@ function getcontainername ($container)
 {
   global $mgmt_config;
 
-  // initalize
+  // initialize
   $result = array();
   $result['result'] = false;
 
@@ -2922,13 +2922,13 @@ function getcontainername ($container)
 // ------------------------------------- getlocationname ------------------------------------------
 
 // function: getlocationname()
-// input: publication name [string], location path (as absolute path or converted path) [string], category [page,comp], source for name [path,name]
+// input: publication name [string], location path (as absolute path or converted path) [string], category [page,comp] (optional), source for name [path,name]
 // output: location with readable names instead of directory and file names / false on error
 
 // description:
 // This functions create a readable path for the display in the user interface. The created path should not be used as input for any other API functions.
 
-function getlocationname ($site, $location, $cat, $source="path")
+function getlocationname ($site, $location, $cat="", $source="path")
 {
   global $mgmt_config, $siteaccess, $lang, $hcms_lang_codepage;
 
@@ -2947,7 +2947,7 @@ function getlocationname ($site, $location, $cat, $source="path")
     if (getobject ($location) == ".folder") $location = getlocation ($location);
 
     // input is converted location
-    if (substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1 && isset ($mgmt_config[$site]) && is_array ($mgmt_config[$site]))
+    if ((substr_count ($location, "%page%") == 1 || substr_count ($location, "%comp%") == 1) && isset ($mgmt_config[$site]) && is_array ($mgmt_config[$site]))
     {
       if ($site == "") $site = getpublication ($location);
       if ($cat == "") $cat = getcategory ($site, $location);
@@ -2963,9 +2963,8 @@ function getlocationname ($site, $location, $cat, $source="path")
       $location_esc = convertpath ($site, $location, $cat);
       $location_abs = $location;
     }
-    else return false;
 
-    if (valid_publicationname ($site) && $location_esc != "" && $location_abs != "")
+    if (valid_publicationname ($site) && !empty ($location_esc) && !empty ($location_abs))
     {
       // get names from name file pointer
       if ($source == "name")
@@ -3001,14 +3000,22 @@ function getlocationname ($site, $location, $cat, $source="path")
         elseif ($cat == "comp") $root_abs = "%comp%/".$site."/";
         else $root_abs = "";
 
+        // replace
         if ($root_abs != "") $location_name = str_replace ($root_abs, "/".$siteaccess[$site]."/", $location_esc);
+        
+        // remove root variables in case the root element without a publication name has been provided as location
+        $location_name = str_replace (array("%comp%","%page%"), "", $location_esc);
+
+        // correct/remove a single slash if the root element has been provided as lcoation
+        if ($location_name == "/") $location_name = "";
+
         $location_name = specialchr_decode ($location_name);
       }
 
       if ($location_name != "") return $location_name;
     }
   }
-  
+
   return false;
 }
 

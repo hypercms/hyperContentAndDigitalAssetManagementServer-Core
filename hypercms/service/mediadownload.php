@@ -207,7 +207,7 @@ elseif ($objectpath_esc != "")
       $name = $media_info['name'];
       $media_approved = true;
     }
-    // access as default user and show files 
+    // access as default user and show files if ZIP failed due to ZIP file size limitation
     else
     {
       if ($object_id) $accesslink = createaccesslink ($site, "", "", "", $object_id, "hcms_download", "al", 60);

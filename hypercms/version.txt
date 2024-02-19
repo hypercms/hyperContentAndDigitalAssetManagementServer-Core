@@ -7318,7 +7318,7 @@ Release 03/2024
 - Modifications in function rdbms_getduplicatefiles in DB Connect in order to support the object hash, object ID, container ID, publication, location, object name, category, and media name of an object in the result
 - Modifications in function rdbms_getduplicatefiles in DB Connect in order to use the object hash as unique array key for each object in the result
 - Modifications in function rdbms_getduplicatefiles in DB Connect in order to require the objects MD5 hash as the obnly mandatory input, making the pulication name as second optional input parameter
-- Modifications in function uplaodfile in Main API in order to modify the call of function rdbms_getduplicatefiles due to the new order of input parameters
+- Modifications in function uploadfile in Main API in order to modify the call of function rdbms_getduplicatefiles due to the new order of input parameters
 - Modifications in page_info_duplicates in order to modify the call of function rdbms_getduplicatefiles due to the new order of input parameters
 - Modifications in page_info_container in order to use function getlocationname for the readable location path
 - Implementation of the new main configuration parameter $mgmt_config['showclipboard'] in order to enable or disable the objects in the users clipboard 
@@ -7351,9 +7351,25 @@ Release 03/2024
 - Implementation of the new main configuration parameter $mgmt_config['maxdownloadsize_per_day'] in order to set a daily global download limit in GB
 - Modifications in function downloadfile in Main API in order to implement a daily download limit using the new main configuration parameter $mgmt_config['maxdownloadsize_per_day']
 - Modifications in function rdbms_optimizedatabase in DB Connect in order to remove records in table dailystat which are older than 5 years
-- Implementation of the new main configuration parameter $mgmt_config['videoplayerthumbnails'] in order to enable and disable preview thumbnail images in the videoplayer playback bar
+- Implementation of the new main configuration parameter $mgmt_config['videoplayerthumbnails'] in order to enable and disable preview thumbnail images in the playback bar of the videoplayer
 - Modifications in function showvideoplayer in UI API in order to disable the preview thumbnail images in the playback bar
+- Modifications in function showvideoplayer_head in UI API in order to exclude the plugin for thumbnail images in the playback bar
+- Modifications in function showvideoplayer_head in UI API in order to remove the deprecated flash video player support
 - Modifications in function downloadfile in Main API in order to only stream files that are larger than 500 kB
+- Modifications in service accessstats in order to limit the amount of container IDs passed to popup_gallery
+- Modifications in service accessstats in order to pass a more string by providing 3 dots at the end of the container ID string to popup_gallery
+- Modifications in popup_gallery in order to display 3 dots atv the end of the gallery in case 3 dots have been provided at the end of the container ID string
+- Modifications in videojs.thumbnails.js in order to remove the default thumbnail reference
+- Minor modifications in the comments of the system APIs
+- Implementation of the new print CSS in order to create an optimized print design
+- Modifications in function showtranslator in UI API in order to implement the new CSS class hcmsTranslator
+- Modification in the template engine, explorer_objectlist, and search_objectlist in order to implement the new print.css for printing
+- Modifications in function showinlineeditor in UI API in order to implement the support of the display text and values (defined in the optional curly brackets of list entries)
+- Modifications in function getlocationname in Get API in order to set the category input parameter as optional
+- Modifications in function showcompexplorer in UI API in order to verify a location name exists before displaying it
+- Modifications in function showcompexplorer in UI API in order to correct/remove a single slash if the root element has been provided as lcoation
+- Modifications in the CKEditor image plugin in order to support the browsing of assets and pages in the link tab of image properties
+- Modifications in the CKEditor image plugin in order to use the button lables from the linkbrowsebuttons extension (editor.lang.hcms_linkbrowsebuttons.label.Component and editor.lang.hcms_linkbrowsebuttons.label.Page)
 - Update of the update log entry for version 10.2.2 in the installation directory
 - Update of the Users Guide
 - Bug fix: Function getclipboard in Main API did not return folder objects
@@ -7366,5 +7382,7 @@ Release 03/2024
 - Bug fix: The refresh button in frameset_log did not refresh the log list 
 - Bug fix: The Workflow Management control used a wrong div closing tag for the help button
 - Bug fix: The log_list of the Logviewer plugin did not initialize the variable item_id
-- Bug fix: The home box free_storage_per_publication did initialze the variable space_used with the wrong value and leading to a wrong total space if no assets are present in a publication
-- Bug fix: The VIDEOJS thumbnail images plugin caused playback issues when using the playback bar to select a play time (can only be solved by disabling the Plugin) 
+- Bug fix: The Home box free_storage_per_publication did initialze the variable space_used with the wrong value and leading to a wrong total space if no assets are present in a publication
+- Bug fix: The VIDEOJS thumbnail images plugin caused playback issues when using the playback bar to select a play time (can only be solved by disabling the Plugin)
+- Bug fix: control_queue_menu used a wrong text variable key for the refresh button label
+- Bug fix: Function getlocationname in Get API did return the root variable for page or component instead of replacing it
