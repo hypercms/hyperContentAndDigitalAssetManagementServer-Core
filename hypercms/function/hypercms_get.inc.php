@@ -359,11 +359,10 @@ function getlanguageoptions ()
         asort ($result);
         return $result;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ----------------------------------------- getlanguagefile ------------------------------------------
@@ -378,9 +377,9 @@ function getlanguagefile ($lang="en")
   if ($lang != "" && !empty ($mgmt_config['abs_path_cms']))
   {
     if (is_file ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php")) return $lang.".inc.php";
-    else return "en.inc.php";
   }
-  else return "en.inc.php";
+
+  return "en.inc.php";
 }
 
 // ----------------------------------------- getcodepage ------------------------------------------
@@ -402,9 +401,9 @@ function getcodepage ($lang="en")
     if (is_file ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php")) require_once ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php");
 
     if (!empty ($hcms_lang_codepage[$lang])) return $hcms_lang_codepage[$lang];
-    else return "UTF-8";
   }
-  else return "UTF-8";
+
+  return "UTF-8";
 }
 
 // ----------------------------------------- getcalendarlang ------------------------------------------
@@ -424,9 +423,9 @@ function getcalendarlang ($lang="en")
     $lang = strtolower ($lang);
 
     if (in_array ($lang, $lang_supported)) return $lang;
-    else return "en";
   }
-  else return "en";
+
+  return "en";
 }
 
 // ----------------------------------------- getscaytlang ------------------------------------------
@@ -446,9 +445,9 @@ function getscaytlang ($lang="en")
     $lang = strtolower ($lang);
 
     if (!empty ($lang_supported[$lang])) return $lang_supported[$lang];
-    else return "en_US";
   }
-  else return "en_US";
+
+  return "en_US";
 }
 
 // ----------------------------------------- getlabel ------------------------------------------

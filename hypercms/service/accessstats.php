@@ -204,6 +204,7 @@ if (!empty ($location_esc) || !empty ($container_id))
 
     // downloads
     $download_axis[$i]['value'] = 0;
+    $download_axis[$i]['filesize'] = 0;
     $download_axis[$i]['text'] = "";
     $download_axis[$i]['onclick'] = "";
 
@@ -228,7 +229,10 @@ if (!empty ($location_esc) || !empty ($container_id))
               $download_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
             }
           }
-          
+
+          // per day
+          $download_axis[$i]['filesize'] = $download_axis[$i]['filesize'] + $row['totalsize'];
+
           // total
           $download_total_count = $download_total_count + $row['count'];
           $download_total_filesize = $download_total_filesize + $row['totalsize'];
@@ -245,11 +249,12 @@ if (!empty ($location_esc) || !empty ($container_id))
       }
 
       // bar text
-      $download_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$download_axis[$i]['value']." ".$hcms_lang['downloads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$download_axis[$i]['text'];
+      $download_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$download_axis[$i]['value']." ".$hcms_lang['downloads'][$lang]."   \n".number_format (($download_axis[$i]['filesize'] / 1024), 0, ".", " ")." MB   \n".$hcms_lang['users'][$lang].": ".$download_axis[$i]['text'];
     }
     
     // uploads
     $upload_axis[$i]['value'] = 0;
+    $upload_axis[$i]['filesize'] = 0;
     $upload_axis[$i]['text'] = "";
     $upload_axis[$i]['onclick'] = "";
       
@@ -275,6 +280,9 @@ if (!empty ($location_esc) || !empty ($container_id))
             }
           }
 
+          // per day
+          $upload_axis[$i]['filesize'] = $upload_axis[$i]['filesize'] + $row['totalsize'];
+
           // total
           $upload_total_count = $upload_total_count + $row['count'];
           $upload_total_filesize = $upload_total_filesize + $row['totalsize'];
@@ -291,7 +299,7 @@ if (!empty ($location_esc) || !empty ($container_id))
       }
 
       // bar text
-      $upload_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$upload_axis[$i]['value']." ".$hcms_lang['uploads'][$lang]."   \n".$hcms_lang['users'][$lang].": ".$upload_axis[$i]['text'];   
+      $upload_axis[$i]['text'] = showdate ($date_year."-".$date_month."-".$day, "Y-m-d", $hcms_lang_date[$lang])."   \n".$upload_axis[$i]['value']." ".$hcms_lang['uploads'][$lang]."   \n".number_format (($upload_axis[$i]['filesize'] / 1024), 0, ".", " ")." MB   \n".$hcms_lang['users'][$lang].": ".$upload_axis[$i]['text'];   
     }
   }
     

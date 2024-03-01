@@ -75,14 +75,14 @@ function valid_jpeg ($filepath)
 
 // ---------------------------------------- ocr_extractcontent --------------------------------------------
 // function: ocr_extractcontent()
-// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string], user name [string]
+// input: publication name [string], path to multimedia file [string], multimedia file name (file to be indexed) [string], user name [string], page numbers to be scanned by OCR beginning with 0 for first page and seperated by comma [string] (optional)
 // output: extracted content as text string / false
 
 // description:
 // This function extracts the text content of multimedia objects using OCR and returns the text.
 // It is a helper function for function indexcontent. Do not use function ocr_extractcontent directly since it will not support encrypted media files or media files in cloud storages.
 
-function ocr_extractcontent ($site, $location, $file, $user)
+function ocr_extractcontent ($site, $location, $file, $user, $scan_pages="")
 {
   global $mgmt_config, $mgmt_parser, $mgmt_imagepreview, $hcms_lang, $lang;
 
@@ -95,6 +95,14 @@ function ocr_extractcontent ($site, $location, $file, $user)
   {
     // load tesseract language mapping
     if (empty ($tesseract_lang) || !is_array ($tesseract_lang)) require ($mgmt_config['abs_path_cms']."include/tesseract_lang.inc.php");
+
+    // prepare specfific page request
+    if (is_string ($scan_pages) && trim ($scan_pages) != "")
+    {
+      $scan_pages = str_replace (" ", "", trim ($scan_pages));
+      $scan_pages = trim ($scan_pages, ",");
+      $scan_pages_array = explode (",", $scan_pages);
+    }
 
     // add slash if not present at the end of the location string
     $location = correctpath ($location);
@@ -140,31 +148,65 @@ function ocr_extractcontent ($site, $location, $file, $user)
       {
         if (substr_count (strtolower ($ext_image).".", $file_ext.".") > 0)
         {
-          $cmd = $converter." -density 300 \"".shellcmd_encode ($location.$file)."\" -depth 8 -strip -background white -alpha off -auto-level -compress none \"".shellcmd_encode ($temp_dir.$temp_name).".temp-%0d.tiff\"";
+          // convert specific pages
+          if (!empty ($scan_pages_array) && sizeof ($scan_pages_array) > 0)
+          {
+            foreach ($scan_pages_array as $page_no)
+            {
+              if ($page_no != "")
+              {
+                $cmd = $converter." -density 300 \"".shellcmd_encode ($location.$file)."\"[".$page_no."] -depth 8 -strip -background white -alpha off -auto-level -compress none \"".shellcmd_encode ($temp_dir.$temp_name).".temp-".$page_no.".tiff\"";
+                $page_no_last = $page_no;
+
+                // execute and redirect stderr (2) to stdout (1)
+                @exec ($cmd." 2>&1", $output, $errorCode);
+        
+                // on error
+                if (intval ($errorCode) > 0 || !is_file ($temp_dir.$temp_name.".temp-".$page_no.".tiff"))
+                {
+                  $errcode = "20531";
+                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
+                }
+                // on success
+                else
+                {
+                  $location_source = $temp_dir;
+                  $file_source = $temp_name.".temp-".$page_no.".tiff";
+        
+                  // get new file extension
+                  $file_info = getfileinfo ($site, $file_source, "comp");
+                  $file_ext = $file_info['ext']; 
+                }
+              }
+            }
+          }
+          // convert all pages
+          else
+          {
+            $cmd = $converter." -density 300 \"".shellcmd_encode ($location.$file)."\" -depth 8 -strip -background white -alpha off -auto-level -compress none \"".shellcmd_encode ($temp_dir.$temp_name).".temp-%0d.tiff\"";
+
+            // execute and redirect stderr (2) to stdout (1)
+            @exec ($cmd." 2>&1", $output, $errorCode);
+    
+            // on error
+            if (intval ($errorCode) > 0 || !is_file ($temp_dir.$temp_name.".temp-0.tiff"))
+            {
+              $errcode = "20532";
+              $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
+            }
+            // on success
+            else
+            {
+              $location_source = $temp_dir;
+              $file_source = $temp_name.".temp-0.tiff";
+    
+              // get new file extension
+              $file_info = getfileinfo ($site, $file_source, "comp");
+              $file_ext = $file_info['ext']; 
+            }
+          }
+
           break;
-        }
-      }
-
-      if (!empty ($cmd))
-      {
-        // execute and redirect stderr (2) to stdout (1)
-        @exec ($cmd." 2>&1", $output, $errorCode);
-
-        // on error
-        if ($errorCode || !is_file ($temp_dir.$temp_name.".temp-0.tiff"))
-        {
-          $errcode = "20531";
-          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of imagemagick (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
-        }
-        // on success
-        else
-        {
-          $location_source = $temp_dir;
-          $file_source = $temp_name.".temp-0.tiff";
-
-          // get new file extension
-          $file_info = getfileinfo ($site, $file_source, "comp");
-          $file_ext = $file_info['ext']; 
         }
       }
     }
@@ -242,40 +284,47 @@ function ocr_extractcontent ($site, $location, $file, $user)
         if (!empty ($file_ext) && substr_count (strtolower ($ext_parser).".", $file_ext.".") > 0 && trim ($parser) != "")
         {
           // temporary pages/images
-          if (is_file ($temp_dir.$temp_name.".temp-0.tiff"))
+          if (is_file ($temp_dir.$temp_name.".temp-0.tiff") || (!empty ($page_no_last) && is_file ($temp_dir.$temp_name.".temp-".$page_no_last.".tiff")))
           {
             // count pages
             for ($page_count = 0; $page_count <= 10000; $page_count++)
             {
               $temp_file = $temp_name.".temp-".$page_count.".tiff";
 
-              // extract text from image using OCR
-              if (is_file ($temp_dir.$temp_file))
+              // scan all or only specific pages
+              if (empty ($scan_pages) || strpos ("_,".$scan_pages.",", ",".$page_count.",") > 0)
               {
-                // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
-                // using Orientation and script detection (OSD)
-                $cmd = $parser." \"".shellcmd_encode ($temp_dir.$temp_file)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"  ".$lang_options." --psm 1";
-
-                // execute and redirect stderr (2) to stdout (1)
-                @exec ($cmd." 2>&1", $output, $errorCode);
-
-                // on error
-                if ($errorCode || !is_file ($temp_dir.$temp_name.".txt"))
+                // extract text from image using OCR
+                if (is_file ($temp_dir.$temp_file))
                 {
-                  $errcode = "20532";
-                  $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
-                }
-                // on success
-                else
-                {
-                  $file_content .= loadfile_fast ($temp_dir, $temp_name.".txt")." ";
-                }
+                  // create temp text file from TIFF image (file extension for text file will be added by Tesseract)
+                  // using Orientation and script detection (OSD)
+                  $cmd = $parser." \"".shellcmd_encode ($temp_dir.$temp_file)."\" \"".shellcmd_encode ($temp_dir.$temp_name)."\"  ".$lang_options." --psm 1";
 
-                // remove temp file
-                if (!empty ($temp_file) && is_file ($temp_dir.$temp_file)) deletefile ($temp_dir, $temp_file, false);
+                  // execute and redirect stderr (2) to stdout (1)
+                  @exec ($cmd." 2>&1", $output, $errorCode);
+
+                  // remove temp file
+                  unlink ($temp_dir.$temp_file);
+
+                  // on error
+                  if ($errorCode || !is_file ($temp_dir.$temp_name.".txt"))
+                  {
+                    $errcode = "20533";
+                    $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
+                  }
+                  // on success
+                  else
+                  {
+                    $file_content .= loadfile_fast ($temp_dir, $temp_name.".txt")." ";
+                  }
+
+                  // remove temp file
+                  if (!empty ($temp_file) && is_file ($temp_dir.$temp_file)) deletefile ($temp_dir, $temp_file, false);
+                }
+                // no more temp files to scan
+                else break;
               }
-              // no more temp files to scan
-              else break;
             }
           }
           // original source
@@ -291,7 +340,7 @@ function ocr_extractcontent ($site, $location, $file, $user)
             // on error
             if ($errorCode || !is_file ($temp_dir.$temp_name.".txt"))
             {
-              $errcode = "20532";
+              $errcode = "20534";
               $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of tesseract (code:".$errorCode.", command:".$cmd.") failed for file '".$file."' \t".implode ("\t", $output);
             }
             // on success

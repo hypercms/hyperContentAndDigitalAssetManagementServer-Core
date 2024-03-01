@@ -11420,7 +11420,7 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
       else $link = "";
 
       // 1st bar
-      if ($bar_height > 0) $result .= "  <div id=\"bar1_".$i."\" ".$link." title=\"".addslashes($y1_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar1_style."\">".$bar_value."</div>\n";
+      if ($bar_height > 0) $result .= "  <div id=\"bar1_".$i."\" ".$link." title=\"".addslashes($y1_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center; vertical-align:top; z-index:200; ".$bar1_style."\">".$bar_value."</div>\n";
       
       // x-axis values
       $result .= "  <div id=\"xval".$i."\" class=\"hcmsChartXAxis\" style=\"position:absolute; top:".($paper_height + 4)."px; left:".$x_left."px;\">".$x_axis[$key]."</div>\n";
@@ -11447,7 +11447,7 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
         else $link = "";
 
         // 2nd bar
-        if ($bar_height > 0) $result .= "  <div id=\"bar2_".$i."\" ".$link." title=\"".addslashes($y2_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar2_style."\">".$bar_value."</div>\n";
+        if ($bar_height > 0) $result .= "  <div id=\"bar2_".$i."\" ".$link." title=\"".addslashes($y2_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center; vertical-align:top; z-index:200; ".$bar2_style."\">".$bar_value."</div>\n";
         $i++;
       }
     }
@@ -11472,7 +11472,7 @@ function buildbarchart ($paper_name, $paper_width=600, $paper_height=300, $paper
         else $link = "";
 
         // 3rd bar
-        if ($bar_height > 0) $result .= "  <div id=\"bar3_".$i."\" ".$link." title=\"".addslashes($y3_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center;  vertical-align:top; z-index:200; ".$bar3_style."\">".$bar_value."</div>\n";
+        if ($bar_height > 0) $result .= "  <div id=\"bar3_".$i."\" ".$link." title=\"".addslashes($y3_axis[$key]['text'])."\" style=\"position:absolute; width:".$bar_width."px; height:".$bar_height."px; top:".$bar_top."px; left:".$bar_left."px; margin:0; padding:0; border:0; text-align:center; vertical-align:top; z-index:200; ".$bar3_style."\">".$bar_value."</div>\n";
         $i++;
       }
     }

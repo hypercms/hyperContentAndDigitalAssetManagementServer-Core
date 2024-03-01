@@ -2660,7 +2660,7 @@ else
           if (is_file ($mgmt_config['abs_path_data']."/log/".$user.".search.log"))
           {
             $searchlog_array = file ($mgmt_config['abs_path_data']."log/".$user.".search.log");
-          
+
             if ($searchlog_array != false && sizeof ($searchlog_array) > 0)
             {
               echo "
@@ -2707,31 +2707,55 @@ else
                     if (sizeof ($temp_array) > 0) $search_parameter['text'] = implode (", ", $temp_array);
                   }
                   elseif (!empty ($search_expression)) $search_parameter['text'] = ($search_cat == "text" ? getescapedtext ($hcms_lang['text'][$lang]) : getescapedtext ($hcms_lang['location'][$lang]))." ".getescapedtext ($hcms_lang['search-expression'][$lang])." (".$search_expression.")";
-                  
+
                   // file based search
                   $search_format = json_decode ($search_format, true);
-                  
+
                   if (is_array ($search_format) && sizeof ($search_format) > 0) $search_parameter['file'] = getescapedtext ($hcms_lang['file-type'][$lang])." (".implode (", ", $search_format).")";
                   if (!empty ($search_filesize)) $search_parameter['file'] = $search_filesize."KB";
-                  
+
                   // image based search
                   $search_imagecolor = json_decode ($search_imagecolor, true);
-                  
+
+                  // translate colors
+                  if (is_array ($search_imagecolor))
+                  {
+                    $colors = array (
+                      "K"=>$hcms_lang['black'][$lang], 
+                      "W"=>$hcms_lang['white'][$lang],  
+                      "E"=>$hcms_lang['grey'][$lang], 
+                      "R"=>$hcms_lang['red'][$lang], 
+                      "G"=>$hcms_lang['green'][$lang], 
+                      "B"=>$hcms_lang['blue'][$lang], 
+                      "C"=>$hcms_lang['cyan'][$lang], 
+                      "M"=>$hcms_lang['magenta'][$lang], 
+                      "Y"=>$hcms_lang['yellow'][$lang], 
+                      "O"=>$hcms_lang['orange'][$lang], 
+                      "P"=>$hcms_lang['pink'][$lang], 
+                      "N"=>$hcms_lang['brown'][$lang]
+                    );
+
+                    foreach ($search_imagecolor as &$value)
+                    {
+                      if (!empty ($colors[$value])) $value = $colors[$value];
+                    }
+                  }
+
                   if (!empty ($search_imagewidth) || !empty ($search_imageheight)) $search_parameter['imagesize'] = $search_imagewidth.($search_imageheight != "" ? "" : "x".$search_imageheight);
                   if (is_array ($search_imagecolor) && sizeof ($search_imagecolor) > 0) $search_parameter['imagecolor'] = getescapedtext ($hcms_lang['image-color'][$lang])." (".implode (", ", $search_imagecolor).")";
                   if (!empty ($search_imagetype)) $search_parameter['imagetype'] = getescapedtext ($hcms_lang['image-type'][$lang])." (".$search_imagetype.")";
-                  
+
                   // geo location based search
                   if (!empty ($geo_border_sw) && !empty ($geo_border_ne)) $search_parameter['geo'] = getescapedtext ($hcms_lang['geo-location'][$lang])." SW ".$geo_border_sw." NE ".$geo_border_ne."";
-                  
+
                   // specific search for ID
                   if (!empty ($object_id) || !empty ($container_id)) $search_parameter['id'] = getescapedtext ($hcms_lang['object-id-link-id'][$lang])." (".(!empty ($object_id) ? $object_id : $container_id).")";
-                  
+
                   echo "
-                    <option value=\"".$uniqid."\">".htmlspecialchars (implode (", ", $search_parameter))."</option>";
+                  <option value=\"".$uniqid."\">".htmlspecialchars (implode (", ", $search_parameter))."</option>";
                 }
               }
-              
+
               echo "
               </select>
               <img onClick=\"deleteSearch();\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_delete.png\" title=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" alt=\"".getescapedtext ($hcms_lang['delete'][$lang])."\" />
@@ -2745,16 +2769,16 @@ else
         <button type="button" class="hcmsButtonGreen" style="width:100%;" onclick="startSearch('post');"><?php echo getescapedtext ($hcms_lang['start'][$lang]); ?></button>
       </form>
     </div>
-        
+
     <!-- initialize -->
     <script type="text/javascript">
     // load screen
     if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='none';
-    
+
     // navigation tree
     showNav();
     </script>
-    
+
   </body>
 </html>
 <?php 

@@ -7317,7 +7317,7 @@ Release 03/2024
 - Modifications in page_info in order to add the new "check for duplicates" button that calls the new page_info_duplicate
 - Modifications in function rdbms_getduplicatefiles in DB Connect in order to support the object hash, object ID, container ID, publication, location, object name, category, and media name of an object in the result
 - Modifications in function rdbms_getduplicatefiles in DB Connect in order to use the object hash as unique array key for each object in the result
-- Modifications in function rdbms_getduplicatefiles in DB Connect in order to require the objects MD5 hash as the obnly mandatory input, making the pulication name as second optional input parameter
+- Modifications in function rdbms_getduplicatefiles in DB Connect in order to require the objects MD5 hash as the only mandatory input, making the publication name as second optional input parameter
 - Modifications in function uploadfile in Main API in order to modify the call of function rdbms_getduplicatefiles due to the new order of input parameters
 - Modifications in page_info_duplicates in order to modify the call of function rdbms_getduplicatefiles due to the new order of input parameters
 - Modifications in page_info_container in order to use function getlocationname for the readable location path
@@ -7358,7 +7358,7 @@ Release 03/2024
 - Modifications in function downloadfile in Main API in order to only stream files that are larger than 500 kB
 - Modifications in service accessstats in order to limit the amount of container IDs passed to popup_gallery
 - Modifications in service accessstats in order to pass a more string by providing 3 dots at the end of the container ID string to popup_gallery
-- Modifications in popup_gallery in order to display 3 dots atv the end of the gallery in case 3 dots have been provided at the end of the container ID string
+- Modifications in popup_gallery in order to display 3 dots at the end of the gallery in case 3 dots have been provided at the end of the container ID string
 - Modifications in videojs.thumbnails.js in order to remove the default thumbnail reference
 - Minor modifications in the comments of the system APIs
 - Implementation of the new print CSS in order to create an optimized print design
@@ -7367,22 +7367,30 @@ Release 03/2024
 - Modifications in function showinlineeditor in UI API in order to implement the support of the display text and values (defined in the optional curly brackets of list entries)
 - Modifications in function getlocationname in Get API in order to set the category input parameter as optional
 - Modifications in function showcompexplorer in UI API in order to verify a location name exists before displaying it
-- Modifications in function showcompexplorer in UI API in order to correct/remove a single slash if the root element has been provided as lcoation
+- Modifications in function showcompexplorer in UI API in order to correct/remove a single slash if the root element has been provided as location
 - Modifications in the CKEditor image plugin in order to support the browsing of assets and pages in the link tab of image properties
-- Modifications in the CKEditor image plugin in order to use the button lables from the linkbrowsebuttons extension (editor.lang.hcms_linkbrowsebuttons.label.Component and editor.lang.hcms_linkbrowsebuttons.label.Page)
+- Modifications in the CKEditor image plugin in order to use the button labels from the linkbrowsebuttons extension (editor.lang.hcms_linkbrowsebuttons.label.Component and editor.lang.hcms_linkbrowsebuttons.label.Page)
+- Modifications in service accessstats in order to provide the downloaded and uploaded file size in the context info of a bar
+- Modifications in search_objectlist in order to verify the search action and the publication before saving the search parameters
+- Modifications in explorer in order to translate the image colors of a saved search
+- Modifications in function getlanguageoptions, getlanguagefile, getcodepage, getcalendarlang, and getscaytlang in Get API in order to optimize the code
+- Modifications in function ocr_extractcontent in Media API in order to add a new niput parameter and select specific pages from a document that should be scanned
+- Modifications in function ocr_extractcontent in Media API in order to remove the created temporary TIFF files of documents
+- Modifications in function ocr_extractcontent in Media API in order to implement new error codes for logging
+- Modifications in hyperCMs API loader in order to verify that the function getlanguagefile exists
 - Update of the update log entry for version 10.2.2 in the installation directory
 - Update of the Users Guide
 - Bug fix: Function getclipboard in Main API did not return folder objects
 - Bug fix: Function rdbms_getdeletedobjects, rdbms_searchuser, and rdbms_searchrecipient in DB Connect used a wrong name to access the result of the row counter
 - Bug fix: Imagemagick could not convert EPS files without a defined colorspace
 - Bug fix: The status popup has not been closed automatically when using an access link to access the system
-- Bug fix: text_link_explorer did load the liev system publication configuration twice but didn't load the management configuration
+- Bug fix: text_link_explorer did load the live system publication configuration twice but didn't load the management configuration
 - Bug fix: text_link_explorer did not access the objectpath key of the search result and therefore did not display any search results
 - Bug fix: The Czech and Korean language file included a wrong filesize variable name
 - Bug fix: The refresh button in frameset_log did not refresh the log list 
 - Bug fix: The Workflow Management control used a wrong div closing tag for the help button
 - Bug fix: The log_list of the Logviewer plugin did not initialize the variable item_id
-- Bug fix: The Home box free_storage_per_publication did initialze the variable space_used with the wrong value and leading to a wrong total space if no assets are present in a publication
+- Bug fix: The Home box free_storage_per_publication did initialize the variable space_used with the wrong value and leading to a wrong total space if no assets are present in a publication
 - Bug fix: The VIDEOJS thumbnail images plugin caused playback issues when using the playback bar to select a play time (can only be solved by disabling the Plugin)
 - Bug fix: control_queue_menu used a wrong text variable key for the refresh button label
-- Bug fix: Function getlocationname in Get API did return the root variable for page or component instead of replacing it
+- Bug fix: Function getlocationname in Get API did return the root variable for the page or component root instead of replacing it

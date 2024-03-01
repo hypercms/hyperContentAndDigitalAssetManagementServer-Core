@@ -240,7 +240,7 @@ if (valid_publicationname ($site) && is_file ($mgmt_config['abs_path_data']."con
 }
 
 // save search parameters
-if (!empty ($search_save))
+if (!empty ($search_save) && ($action == "base_search" || $action == "recipient") && (empty ($site) || valid_publicationname ($site)))
 {
   $search_values = array (uniqid(), $mgmt_config['today'], $action, $site, $search_dir, $date_from, $date_to, $template, json_encode($search_textnode), $search_expression, $search_cat, json_encode($search_format), $search_filesize, $search_imagewidth, $search_imageheight, json_encode($search_imagecolor), $search_imagetype, $geo_border_sw, $geo_border_ne, $object_id, $container_id);
 

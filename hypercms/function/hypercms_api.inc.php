@@ -187,7 +187,7 @@ if (defined ("SESSION") && constant ("SESSION") == "create" && is_file ($mgmt_co
 // include language file for API functions
 if (empty ($lang)) $lang = "en";
 
-if (!empty ($lang) && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
+if (!empty ($lang) && function_exists ("getlanguagefile") && is_file ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang)))
 {
   require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
 }
