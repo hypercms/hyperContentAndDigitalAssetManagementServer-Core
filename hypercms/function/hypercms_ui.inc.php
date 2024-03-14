@@ -6722,7 +6722,7 @@ function showgallery ($multiobject, $thumbsize=100, $openlink="download", $user=
         // open object
         elseif ($setlocalpermission['root'] == 1)
         {
-          $functioncall = "hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
+          $functioncall = "hcms_openWindow('".$mgmt_config['url_path_cms']."frameset_content.php?ctrlreload=yes&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&token=".$token."', '".$objectinfo['container_id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth("object").", ".windowheight("object").")";
 
           // open on click (parent must be used if function is called from iframe!)
           $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";

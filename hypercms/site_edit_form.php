@@ -557,7 +557,7 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
       <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ($hcms_lang['optical-character-recognition'][$lang]); ?> (OCR)</td>
       <td style="white-space:nowrap; padding-top:8px;">
         <input type="hidden" name="setting[ocr]" value="">
-        
+
         <table class="hcmsTableNarrow hcmsTableNoFlip">
           <tr>
             <td>

@@ -421,7 +421,7 @@ if (!empty ($container_id))
         {
           if (substr_count ($ip, ".") == 3)
           {
-            $user_array[] = "<div style=\"cursor:pointer; color:green; float:left;\" onclick=\"parent.opengeoview('".trim($ip)."');\">".$ip."</div>";
+            $user_array[] = "<a href=\"javascript:void():\" onclick=\"parent.opengeoview('".trim($ip)."');\">".$ip."</a>";
           }
           elseif ($ip != "") $user_array[] = trim($ip);
         }
@@ -436,7 +436,7 @@ if (!empty ($container_id))
         <tr class=\"".$rowcolor."\"><td>".$row['date']." </td><td>".$user." </td><td style=\"text-align:right;\">".$row['count']." </td></tr>";
     }
     
-    echo "</table>";
+    echo "</table><br/>";
   }
   ?>
   </div>

@@ -7351,7 +7351,7 @@ Release 03/2024
 - Implementation of the new main configuration parameter $mgmt_config['maxdownloadsize_per_day'] in order to set a daily global download limit in GB
 - Modifications in function downloadfile in Main API in order to implement a daily download limit using the new main configuration parameter $mgmt_config['maxdownloadsize_per_day']
 - Modifications in function rdbms_optimizedatabase in DB Connect in order to remove records in table dailystat which are older than 5 years
-- Implementation of the new main configuration parameter $mgmt_config['videoplayerthumbnails'] in order to enable and disable preview thumbnail images in the playback bar of the videoplayer
+- Implementation of the new main configuration parameter $mgmt_config['videoplayerthumbnails'] in order to enable and disable preview thumbnail images in the playback bar of the video player
 - Modifications in function showvideoplayer in UI API in order to disable the preview thumbnail images in the playback bar
 - Modifications in function showvideoplayer_head in UI API in order to exclude the plugin for thumbnail images in the playback bar
 - Modifications in function showvideoplayer_head in UI API in order to remove the deprecated flash video player support
@@ -7377,9 +7377,30 @@ Release 03/2024
 - Modifications in function ocr_extractcontent in Media API in order to add a new niput parameter and select specific pages from a document that should be scanned
 - Modifications in function ocr_extractcontent in Media API in order to remove the created temporary TIFF files of documents
 - Modifications in function ocr_extractcontent in Media API in order to implement new error codes for logging
-- Modifications in hyperCMs API loader in order to verify that the function getlanguagefile exists
+- Modifications in hyperCMS API loader in order to verify that the function getlanguagefile exists
+- Modifications in template engine in order to include the vendor string independently from scriptcode in the documents head
+- Modifications in function downloadfile in Main API in order to apply the daily download limit only for downloads
+- Modifications in all design themes in order to reduce the radius of the mouse over button to 3 pixels
+- Modifications in the Report Management module in order to open objects if an object path is provided in the table view of a report
+- Modifications in the Report Management module in order to remove deprecated report script
+- Modifications in function showpiechart, showcolumnchart, showareachart, showtimelinechart of the Report Management API in order to transform the object path to readable names
+- Implementation of the reports Geolocation, MediaType, Metadata, Top10AssetsByActivity, and Top10UsersByActivity in the installation directory
+- Modifications in the Report Management module in order to display readable object path names in the CSV export
+- Modifications in the Report Management module in order to dispay the used search filters after the report title
+- Implementation of a report caching in the Report Management module due to long query execution for a large database
+- Implementation of function suspendsession in the Report Management module 
+- Design modifications in the table view of the Report Management module
+- Modifications in the Report Management module in order to resize the chart when the chart button has been clicked due to issues with resizing the chart when the Home box size has been changed
+- Modifications in page_info_stats in order to use a standard link and link design instead of a DIV tag for the IP geolocation popup 
+- Modifications in function rdbms_externalquery in DB Connect in order to transform the object path based on the value and not the key name
+- Design modifications in Home box all_reports and news in order to replace the plus-minus icon by the new zoom icon
+- Modifications in home screen in order to use a select box for the available home boxes instead of a list of all home boxes
+- Modifications in chat in order to exclude the system user from the user select box
+- Implementation of a thumbnail gallery view in the Report Management module that will be created autoamtically whenever an object path is part of the report
+- Modifications in function showgallery in UI API in order to include the absolute URL for hcms_openWindow (open object on click)
+- Implementation of a thumbnail gallery view in the Report Management module that will be created automatically whenever an object path is part of the report data
 - Update of the update log entry for version 10.2.2 in the installation directory
-- Update of the Users Guide
+- Update of the Users and Report Management Guide
 - Bug fix: Function getclipboard in Main API did not return folder objects
 - Bug fix: Function rdbms_getdeletedobjects, rdbms_searchuser, and rdbms_searchrecipient in DB Connect used a wrong name to access the result of the row counter
 - Bug fix: Imagemagick could not convert EPS files without a defined colorspace
@@ -7394,3 +7415,5 @@ Release 03/2024
 - Bug fix: The VIDEOJS thumbnail images plugin caused playback issues when using the playback bar to select a play time (can only be solved by disabling the Plugin)
 - Bug fix: control_queue_menu used a wrong text variable key for the refresh button label
 - Bug fix: Function getlocationname in Get API did return the root variable for the page or component root instead of replacing it
+- Bug fix: Function rdbms_searchcontent in DB Connect added multiple operators if synonyms are used and "AND" or "OR" have been used in the search expression
+- Bug fix: The transparent design themes included the CSS class hcmsButtonTiny:hover twice with different hover colors

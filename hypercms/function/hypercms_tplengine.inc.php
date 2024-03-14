@@ -8103,16 +8103,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
           }
 
           // =========================================== inject script code ==============================================
-          if (isset ($scriptcode) && $scriptcode != "")
+          if (!empty ($scriptcode))
           {
             // include javascript
-            $vendor = "
-    <meta name=\"keyword\" content=\"hyper Content & Digital Asset Management Server (http://www.hypercms.com/)\" />
-            ";
-
-            if (preg_match ("/<head/i", $viewstore))
+            if (stripos ($viewstore, "<head>") > 0)
             {
-              $viewstore = str_ireplace ("<head>", "<head>".$vendor.$scriptcode, $viewstore);
+              $viewstore = str_ireplace ("<head>", "<head>".$scriptcode, $viewstore);
               // deprecated sinde version 9.0.4: 
               // $viewstore = str_ireplace ("</head>", $scriptcode."</head>", $viewstore);
             }
@@ -8120,6 +8116,16 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
 
             // insert head information into viewstore
             $viewstore = str_replace ($bodytagold, $bodytagnew, $viewstore);
+          }
+
+          // =========================================== inject vendor ==============================================
+          if (stripos ($viewstore, "<head>") > 0)
+          {
+            $vendor = "
+  <meta name=\"keyword\" content=\"hyper Content & Digital Asset Management Server (http://www.hypercms.com/)\" />
+  ";
+
+            $viewstore = str_ireplace ("<head>", "<head>".$vendor, $viewstore);
           }
 
           // ====================================== transform hyperreferences ============================================
@@ -8575,7 +8581,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     var fLength = 0;
     var tLength = arrTbox.length;
 
-    for(i = 0; i < fbox.options.length; i++)
+    for (i = 0; i < fbox.options.length; i++)
     {
       arrLookup[fbox.options[i].text] = fbox.options[i].value;
       if (fbox.options[i].selected && fbox.options[i].value != '')
@@ -8596,7 +8602,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
     tbox.length = 0;
     var c;
 
-    for(c = 0; c < arrFbox.length; c++)
+    for (c = 0; c < arrFbox.length; c++)
     {
       var no = new Option();
       no.value = arrLookup[arrFbox[c]];
@@ -8604,7 +8610,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
       fbox[c] = no;
     }
 
-    for(c = 0; c < arrTbox.length; c++)
+    for (c = 0; c < arrTbox.length; c++)
     {
       var no = new Option();
       no.value = arrLookup[arrTbox[c]];

@@ -156,7 +156,7 @@ function getusersonline ()
   {
     for (var login in usersonline)
     {
-      if (usersonline.hasOwnProperty(login) && login != "<?php echo $user; ?>")
+      if (usersonline.hasOwnProperty(login) && login != "<?php echo $user; ?>" && login != "sys")
       {
         result = result + "    <div class=\"hcmsSelectorItem hcmsInvertHoverColor\" onclick=\"invite('" + login + "');\"><img src=\"<?php echo getthemelocation($hcms_hoverinvertcolors)."img/user.png"; ?>\" class=\"hcmsIconList\" /> <span class=\"\">" + usersonline[login] + "&nbsp;</span></div>\n";
       }

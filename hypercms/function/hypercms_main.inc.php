@@ -5425,7 +5425,7 @@ function downloadfile ($filepath, $name, $force="wrapper", $user="")
     {
       $download_info = rdbms_externalquery ("SELECT SUM(object.filesize) AS filesize FROM dailystat INNER JOIN object ON dailystat.id=object.id WHERE dailystat.date='".date("Y-m-d")."' AND dailystat.activity='download' GROUP BY dailystat.activity");
     
-      if (!empty ($download_info[0]['filesize']) && ($download_info[0]['filesize'] / 1024 / 1024) > floatval ($mgmt_config['maxdownloadsize_per_day']))
+      if (($force == "download" || $force == "noheader") && !empty ($download_info[0]['filesize']) && ($download_info[0]['filesize'] / 1024 / 1024) > floatval ($mgmt_config['maxdownloadsize_per_day']))
       {
         // log
         $errcode = "00601";

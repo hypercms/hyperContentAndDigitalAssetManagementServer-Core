@@ -587,7 +587,7 @@ a.hcmsNavigator
 
 .hcmsButton:hover, .hcmsButtonActive
 {
-  border-radius: 5px;
+  border-radius: 3px;
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFB759), color-stop(1, #FF9100) );
   background: -moz-linear-gradient( center top, #FFB759 5%, #FB9E25 100% );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFB759', endColorstr='#FB9E25');
@@ -616,7 +616,7 @@ a.hcmsNavigator
 
 .hcmsButtonTiny:hover
 {
-  border-radius: 5px;
+  border-radius: 3px;
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFB759), color-stop(1, #FF9100) );
   background: -moz-linear-gradient( center top, #FFB759 5%, #FB9E25 100% );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFB759', endColorstr='#FB9E25');

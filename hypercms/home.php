@@ -179,38 +179,57 @@ video#videoScreen
 // default height for logo spacer
 var spacerheight = 32;
 
-function insertOption (newtext, newvalue)
+function moveBoxEntry (fbox, tbox, tsort=true)
 {
-  var selectbox = document.forms['box_form'].elements['box_array'];
-  newentry = new Option (newtext, newvalue, false, true);
+  var arrFbox = new Array();
+  var arrTbox = new Array();
+  var arrLookup = new Array();
   var i;
-  
-  if (selectbox.length > 0)
-  {  
-    var position = -1;
 
-    for (i=0; i<selectbox.length; i++)
-    {
-      if (selectbox.options[i].selected) position = i;
-      // duplicate entry
-      if (selectbox.options[i].value == newvalue) return false;
-    }
-    
-    if (position != -1)
-    {
-      selectbox.options[selectbox.length] = new Option();
-    
-      for (i=selectbox.length-1; i>position; i--)
-      {
-        selectbox.options[i].text = selectbox.options[i-1].text;
-        selectbox.options[i].value = selectbox.options[i-1].value;
-      }
-      
-      selectbox.options[position+1] = newentry;
-    }
-    else selectbox.options[selectbox.length] = newentry;
+  for (i = 0; i < tbox.options.length; i++)
+  {
+    arrLookup[tbox.options[i].text] = tbox.options[i].value;
+    arrTbox[i] = tbox.options[i].text;
   }
-  else selectbox.options[selectbox.length] = newentry;
+
+  var fLength = 0;
+  var tLength = arrTbox.length;
+
+  for (i = 0; i < fbox.options.length; i++)
+  {
+    arrLookup[fbox.options[i].text] = fbox.options[i].value;
+    if (fbox.options[i].selected && fbox.options[i].value != '')
+    {
+      arrTbox[tLength] = fbox.options[i].text;
+      tLength++;
+    }
+    else
+    {
+      arrFbox[fLength] = fbox.options[i].text;
+      fLength++;
+    }
+  }
+
+  if (tsort == true) arrTbox.sort();
+  fbox.length = 0;
+  tbox.length = 0;
+  var c;
+
+  for (c = 0; c < arrFbox.length; c++)
+  {
+    var no = new Option();
+    no.value = arrLookup[arrFbox[c]];
+    no.text = arrFbox[c];
+    fbox[c] = no;
+  }
+
+  for (c = 0; c < arrTbox.length; c++)
+  {
+    var no = new Option();
+    no.value = arrLookup[arrTbox[c]];
+    no.text = arrTbox[c];
+    tbox[c] = no;
+  }
 }
 
 function moveSelected (select, down)
@@ -243,17 +262,6 @@ function moveSelected (select, down)
   }
 }
 
-function deleteSelected (select)
-{
-  if (select.length > 0)
-  {
-    for(var i=0; i<select.length; i++)
-    {
-      if (select.options[i].selected == true) select.remove(i);
-    }
-  }
-}
-
 function selectAllOptions (select)
 {
   for (var i=0; i<select.options.length; i++)
@@ -264,11 +272,11 @@ function selectAllOptions (select)
 
 function submitHomeBoxes ()
 {
-  var form = document.forms['box_form'];
+  var form = document.forms['homebox_form'];
 
-  if (form.elements['box_array'])
+  if (form.elements['homebox_selected'])
   {
-    var select = form.elements['box_array'];
+    var select = form.elements['homebox_selected'];
     var homeboxes = "|";
 
     if (select.options.length > 0)
@@ -417,7 +425,7 @@ function closePopup ()
 
   <!-- add / remove home boxes menu -->
   <div id="menubox" class="hcmsHomeBox" style="position:fixed; top:36px; right:25px; z-index:200; display:none;">
-    <form id="box_form" name="box_form" action="" method="post">
+    <form id="homebox_form" name="homebox_form" action="" method="post">
       <input type="hidden" name="action" value="save" />
       <input type="hidden" name="homeboxes" value="" />
       <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
@@ -426,38 +434,50 @@ function closePopup ()
         <tr>
           <td style="vertical-align:top; text-align:left;">
             <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['select-object'][$lang]); ?></span>
-            <?php
-            // all available home boxes for selection
-            if (is_array ($homebox_array) && sizeof ($homebox_array) > 0)
-            {
-              foreach ($homebox_array as $homebox_key => $homebox_name)
+            <select multiple name="homebox_select" style="width:250px; height:280px;">
+              <?php
+              // all available home boxes for selection
+              if (is_array ($homebox_array) && sizeof ($homebox_array) > 0)
               {
-                echo "
-                <div onclick=\"insertOption('".$homebox_name."', '".$homebox_key."');\" style=\"display:block; cursor:pointer;\" title=\"".$homebox_name."\"><img src=\"".getthemelocation("night")."img/log_info.png\" class=\"hcmsIconList\" />&nbsp;".showshorttext($homebox_name, 30)."&nbsp;</div>";
+                natcasesort ($homebox_array);
+
+                foreach ($homebox_array as $homebox_key => $homebox_name)
+                {
+                  if (!in_array ($homebox_name, $userbox_array))
+                  {
+                    echo "
+                  <option value=\"".$homebox_key."\">".showshorttext($homebox_name, 30, false)."</option>";
+                  }
+                }
               }
-            }
-            ?>
+              ?>
+              </select>
+          </td>
+          <td class="text-align:center; vertical-align:middle;">
+            <br />
+            <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['homebox_select'], this.form.elements['homebox_selected'], false);">&gt;&gt;</button>
+            <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['homebox_selected'], this.form.elements['homebox_select'], true);">&lt;&lt;</button>
           </td>
           <td style="vertical-align:top; text-align:left;">
             <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
-            <select id="box_array" name="box_array" style="width:250px; min-height:280px;" size="18">
+            <select id="homebox_selected" name="homebox_selected" style="width:250px; height:280px;" size="18">
               <?php
-              // user home boxes
+              // selected user home boxes
               if (is_array ($userbox_array) && sizeof ($userbox_array) > 0)
               {
                 foreach ($userbox_array as $userbox_key => $userbox_name)
                 {
                   echo "
-                  <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 40, false)."</option>";
+                <option value=\"".$userbox_key."\">".showshorttext($userbox_name, 30, false)."</option>";
                 }
               }
               ?>
             </select>
           </td>
           <td style="text-align:left; vertical-align:middle;">
-            <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation("night"); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
-            <img onClick="deleteSelected(document.forms['box_form'].elements['box_array'])" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation("night"); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
-            <img onClick="moveSelected(document.forms['box_form'].elements['box_array'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation("night"); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
+            <img onclick="moveSelected(document.forms['homebox_form'].elements['homebox_selected'], false)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonUp" src="<?php echo getthemelocation("night"); ?>img/button_moveup.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                     
+            <img onclick="moveBoxEntry(document.forms['homebox_form'].elements['homebox_selected'], document.forms['homebox_form'].elements['homebox_select'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation("night"); ?>img/button_delete.png" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" /><br />            
+            <img onclick="moveSelected(document.forms['homebox_form'].elements['homebox_selected'], true)" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDown" src="<?php echo getthemelocation("night"); ?>img/button_movedown.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" /><br />
             <img onclick="submitHomeBoxes();" name="Button" src="<?php echo getthemelocation("night"); ?>img/button_ok.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" onMouseOut="hcms_swapImgRestore()" onMouseOver="hcms_swapImage('Button','','<?php echo getthemelocation(); ?>img/button_ok_over.png',1)" alt="OK" title="OK" />
             </td>
         </tr>

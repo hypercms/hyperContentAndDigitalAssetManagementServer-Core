@@ -616,7 +616,7 @@ a.hcmsNavigator
 .hcmsButton:hover, .hcmsButtonTiny:hover, .hcmsButtonActive
 {
   border: 0;
-  border-radius: 5px;
+  border-radius: 3px;
 	background-color: #8a8a8a;
 }
 

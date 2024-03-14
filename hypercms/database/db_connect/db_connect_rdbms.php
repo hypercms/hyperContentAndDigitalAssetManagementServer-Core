@@ -2362,7 +2362,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     }
 
     // AND/OR operator for the search in texnodes 
-    if (isset ($mgmt_config['search_operator']) && (strtoupper ($mgmt_config['search_operator']) == "AND" || strtoupper ($mgmt_config['search_operator']) == "OR"))
+    if (!empty ($mgmt_config['search_operator']) && (strtoupper ($mgmt_config['search_operator']) == "AND" || strtoupper ($mgmt_config['search_operator']) == "OR"))
     {
       $operator = strtoupper ($mgmt_config['search_operator']);
     }
@@ -2864,9 +2864,8 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
                       // operator
                       if ($temp_operator != "none" && $sql_where_textnodes != "") $sql_where_textnodes .= $temp_operator;
-
                       // use OR for synonyms
-                      if ($r > 0) $sql_where_textnodes .= ' OR ';
+                      elseif ($r > 0) $sql_where_textnodes .= ' OR ';
 
                       // look for exact expression
                       if (!empty ($mgmt_config['search_exact']))
@@ -2922,7 +2921,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
                     if (!empty ($sql_where_textnodes)) $sql_where_textnodes = "(".$sql_where_textnodes.")";
                   }
 
-                  // only one search expression possible -> break out of loop (disabled in version 6.1.35 to support the combination of a general search and detailed search)
+                  // only one search expression possible -> break loop (disabled in version 6.1.35 to support the combination of a general search and detailed search)
                   // break;
                 }
               }
@@ -6601,6 +6600,7 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   elseif (intval ($container_id) > 0) $identifier = intval ($container_id);
   else $identifier = "";
 
+  // define unique file name for the search query
   $filename = md5 ($date_from."|".$date_to."|".$activity."|".$identifier."|".$user."|".$return_filesize).".stat.json";
 
   // initialize
@@ -7755,11 +7755,6 @@ function rdbms_externalquery ($sql, $concat_by="")
 
         while ($row = $db->rdbms_getresultrow ('select'))
         {
-          // transform objectpath in different name variants
-          if (!empty ($row['objectpath'])) $row['objectpath'] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $row['objectpath']);
-          if (!empty ($row['Objectpath'])) $row['Objectpath'] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $row['Objectpath']);
-          if (!empty ($row['Location'])) $row['Location'] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $row['Location']);
-        
           if ($concat_by != "" && !empty ($row[$concat_by]))
           {
             $i = $row[$concat_by];
@@ -7773,11 +7768,29 @@ function rdbms_externalquery ($sql, $concat_by="")
               // if value is number
               elseif (!empty ($result[$i][$key]) && is_numeric ($value)) $result[$i][$key] += $value;
               // if value is string
-              elseif (empty ($result[$i][$key]) && $value != "") $result[$i][$key] .= $value;
+              elseif (empty ($result[$i][$key]) && $value != "")
+              {
+                // transform objectpath
+                if (substr ($value, 0, 7) == "*comp*/" || substr ($value, 0, 7) == "*page*/")
+                {
+                  $value = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $value);
+                }
+
+                $result[$i][$key] .= $value;
+              }
             }
           }
           else
           {
+            // transform objectpath
+            foreach ($row as $key=>$value)
+            {
+              if (substr ($value, 0, 7) == "*comp*/" || substr ($value, 0, 7) == "*page*/")
+              {
+                $row[$key] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $value);
+              }
+            }
+
             $result[$i] = $row;
             $i++;
           }
