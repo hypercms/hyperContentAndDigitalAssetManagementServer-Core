@@ -76,14 +76,22 @@ $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 // check localpermissions for DAM usage only
-if (!checkpublicationpermission ($site) || (!empty ($mgmt_config[$site]['dam']) && empty ($setlocalpermission['root']))) killsession ($user);
+if (!checkpublicationpermission ($site) || (!empty ($mgmt_config[$site]['dam']) && empty ($setlocalpermission['root'])))
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-access-permissions-to-this-object'][$lang], $lang, "");
+  exit;
+}
 // check for general root element access since localpermissions are checked later
 // Attention! variable page can be empty when a new object will be created
 elseif (
          !checkpublicationpermission ($site) || 
          (!valid_objectname ($page) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
          !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat)
-       ) killsession ($user);
+       )
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-access-permissions-to-this-object'][$lang], $lang, "");
+  exit;
+}
 
 // check session of user
 checkusersession ($user);
@@ -109,7 +117,7 @@ if ($view != "")
   if ($view == "cmsview" || $view == "inlineview")
   {
     setsession ('hcms_temp_objectview', $view, true);
-    
+
     // save GUI settings
     if (!empty ($_SESSION['hcms_temp_objectview']) && !empty ($_SESSION['hcms_temp_explorerview']) && isset ($_SESSION['hcms_temp_sidebar']) && !empty ($_SESSION['hcms_user']))
     {

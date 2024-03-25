@@ -300,7 +300,7 @@ if (!empty ($container_id))
         {
           if ($download_axis[$i]['text'] != "") $delimiter = ", ";
           else $delimiter = "";
-   
+
           $download_axis[$i]['value'] = $download_axis[$i]['value'] + $row['count'];
           if (strpos (" ".$download_axis[$i]['text'].",", " ".$row['user'].",") === false) $download_axis[$i]['text'] .= $delimiter.$row['user'];
 
@@ -312,7 +312,7 @@ if (!empty ($container_id))
               $download_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
             }
           }
-          
+
           // total
           $download_total_count = $download_total_count + $row['count'];
           $download_total_filesize = $download_total_filesize + $row['totalsize'];
@@ -325,7 +325,7 @@ if (!empty ($container_id))
       // bar text
       $download_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$download_axis[$i]['value']." ".getescapedtext ($hcms_lang['downloads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$download_axis[$i]['text'];
     }
-    
+
     // uploads
     $upload_axis[$i]['value'] = 0;
     $upload_axis[$i]['text'] = "";
@@ -340,7 +340,7 @@ if (!empty ($container_id))
         {
           if ($upload_axis[$i]['text'] != "") $delimiter = ", ";
           else $delimiter = "";
-                  
+
           $upload_axis[$i]['value'] = $upload_axis[$i]['value'] + $row['count'];
           if (strpos (" ".$upload_axis[$i]['text'].",", " ".$row['user'].",") === false) $upload_axis[$i]['text'] .= $delimiter.$row['user'];
 
@@ -352,7 +352,7 @@ if (!empty ($container_id))
               $upload_axis[$i]['onclick'] .= intval ($row['container_id'])."|";
             }
           }
-     
+
           // total
           $upload_total_count = $upload_total_count + $row['count'];
           $upload_total_filesize = $upload_total_filesize + $row['totalsize'];
@@ -366,7 +366,7 @@ if (!empty ($container_id))
       $upload_axis[$i]['text'] = $date_year."-".$date_month."-".$day."   \n".$upload_axis[$i]['value']." ".getescapedtext ($hcms_lang['uploads'][$lang])."   \n".getescapedtext ($hcms_lang['users'][$lang]).": ".$upload_axis[$i]['text'];   
     }
   }
-    
+
   if (is_array ($view_axis) || is_array ($download_axis) || is_array ($upload_axis))
   {
     $chart = buildbarchart ("chart", $chart_width, $chart_height, 10, 40, $date_axis, $view_axis, $download_axis, $upload_axis, "border:1px solid #666666; background:white;", "background:#6fae30; font-size:10px; cursor:pointer;", "background:#108ae7; font-size:10px; cursor:pointer;", "background:#ff8219; font-size:10px; cursor:pointer;");
@@ -379,7 +379,7 @@ if (!empty ($container_id))
     <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#108ae7; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['downloads'][$lang])." (".number_format ($download_total_count, 0, ".", " ")." Hits / ".number_format (($download_total_filesize / 1024), 0, ".", " ")." MB)"; ?></div>
     <div style="height:16px; margin-top:2px;"><div style="width:16px; height:16px; background:#ff8219; float:left;"></div>&nbsp;<?php echo getescapedtext ($hcms_lang['uploads'][$lang])." (".number_format ($upload_total_count, 0, ".", " ")." Hits / ".number_format (($upload_total_filesize / 1024), 0, ".", " ")." MB)"; ?></div>
   </div>
-  
+
   <div style="margin:10px 0px 0px 40px;">
   <?php
   if (is_array ($result_download)) 
@@ -391,9 +391,9 @@ if (!empty ($container_id))
         <td class=\"hcmsHeadline\" style=\"width:250px; white-space:nowrap;\">".getescapedtext ($hcms_lang['users'][$lang])."/IP </td>
         <td class=\"hcmsHeadline\" style=\"width:30px; white-space:nowrap;\">Hits</td>
       </tr>";
-  
+
     $color = false;
-    
+
     foreach ($result_download as $row)
     {
       // define row color
@@ -407,35 +407,35 @@ if (!empty ($container_id))
         $rowcolor = "hcmsRowData2";
         $color = true;
       }
-      
+
       // ip address
-      if (substr_count ($row['user'], ".") >= 3)
+      if (substr_count ($row['user'], ".") == 3)
       {
         $ip_array = array();
         $user_array = array();
-        
+
         if (strpos ($row['user'], ",") > 0) $ip_array = explode (",", $row['user']);
         else $ip_array[] = trim ($row['user']);
-        
+
         foreach ($ip_array as $ip)
         {
           if (substr_count ($ip, ".") == 3)
           {
-            $user_array[] = "<a href=\"javascript:void():\" onclick=\"parent.opengeoview('".trim($ip)."');\">".$ip."</a>";
+            $user_array[] = "<a href=\"javascript:void(0);\" onclick=\"parent.opengeoview('".trim($ip)."');\">".$ip."</a>";
           }
           elseif ($ip != "") $user_array[] = trim($ip);
         }
-        
+
         if (sizeof ($user_array) > 0) $user = implode ("<div style=\"float:left;\">, </div>", $user_array);
         else $user = "";
       }
       // user name
       else $user = $row['user'];
-      
+
       echo "
         <tr class=\"".$rowcolor."\"><td>".$row['date']." </td><td>".$user." </td><td style=\"text-align:right;\">".$row['count']." </td></tr>";
     }
-    
+
     echo "</table><br/>";
   }
   ?>

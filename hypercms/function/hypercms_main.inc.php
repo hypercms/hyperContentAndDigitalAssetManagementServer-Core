@@ -1642,14 +1642,18 @@ function is_facerecognition ($user)
     // verify standard user
     else
     {
+      $facerecognition_service_access = false;
+
       if (!empty ($mgmt_config['facerecognition_service_users']))
       {
         $facerecognition_service_users = splitstring ($mgmt_config['facerecognition_service_users']);
+
+        if (is_array ($facerecognition_service_users) && in_array ($user, $facerecognition_service_users)) $facerecognition_service_access = true;
       }
-      else $facerecognition_service_users = array();
+      else $facerecognition_service_access = true;
 
       // verify that user is logged in
-      if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && !empty ($facerecognition_service_users) && in_array ($user, $facerecognition_service_users))
+      if (is_file ($mgmt_config['abs_path_data']."session/".$user.".dat") && !empty ($facerecognition_service_access))
       {
         return true;
       }

@@ -1672,8 +1672,8 @@ else
     // show search layer
     function showSearch ()
     {
-      hcms_showFormLayer('search', 0);
-      hcms_hideFormLayer('menu');
+      document.getElementById('search').style.display = 'inline';
+      document.getElementById('menu').style.display = 'none';
       parent.maxSearchFrame();
     }
 
@@ -1681,8 +1681,8 @@ else
     function showNav ()
     {
       window.scrollTo (0, 0);
-      hcms_hideFormLayer('search');
-      hcms_showFormLayer('menu',0);
+      document.getElementById('search').style.display = 'none';
+      document.getElementById('menu').style.display = 'inline';
       parent.maxNavFrame();
     }
 
@@ -2141,9 +2141,6 @@ else
     // onload
     $(document).ready(function ()
     {
-      // initialize search form
-      initializeSearch();
-
       <?php
       // display search form
       if ($explorer_view == "search") echo "showSearch();";
@@ -2204,6 +2201,9 @@ else
       $("#to_user").autocomplete({
         source: user_options
       });
+
+      // initialize search form
+      initializeSearch();
     });
     </script>
   </head>
@@ -2720,24 +2720,9 @@ else
                   // translate colors
                   if (is_array ($search_imagecolor))
                   {
-                    $colors = array (
-                      "K"=>$hcms_lang['black'][$lang], 
-                      "W"=>$hcms_lang['white'][$lang],  
-                      "E"=>$hcms_lang['grey'][$lang], 
-                      "R"=>$hcms_lang['red'][$lang], 
-                      "G"=>$hcms_lang['green'][$lang], 
-                      "B"=>$hcms_lang['blue'][$lang], 
-                      "C"=>$hcms_lang['cyan'][$lang], 
-                      "M"=>$hcms_lang['magenta'][$lang], 
-                      "Y"=>$hcms_lang['yellow'][$lang], 
-                      "O"=>$hcms_lang['orange'][$lang], 
-                      "P"=>$hcms_lang['pink'][$lang], 
-                      "N"=>$hcms_lang['brown'][$lang]
-                    );
-
                     foreach ($search_imagecolor as &$value)
                     {
-                      if (!empty ($colors[$value])) $value = $colors[$value];
+                      $value = getimagecolorname ($value, $lang);
                     }
                   }
 

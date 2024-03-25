@@ -33,7 +33,7 @@ $keywordfile = $mgmt_config['abs_path_data']."config/searchexpressions.php";
 // ------------------------------ permission section --------------------------------
 
 // check plugin permissions
-if (!checkpluginpermission ('', 'searchstats'))
+if (!checkpluginpermission ('', 'searchexpressions'))
 {
   echo showinfopage ($hcms_lang['you-do-not-have-permissions-to-access-this-feature'][$lang], $lang);
   exit;
@@ -179,7 +179,7 @@ if (is_file ($keywordfile))
 <!-- top bar -->
 <?php echo showtopbar ($hcms_lang['search-expression-analysis'][$lang], $lang); ?>
 
-
+<!-- basic search stats (without Report Management module) -->
 <div class="hcmsWorkplaceFrame" style="position:fixed; top:42px; bottom:0; left:0; right:0; overflow:auto;">
   <div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
   <?php

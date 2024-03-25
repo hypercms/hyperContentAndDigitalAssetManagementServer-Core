@@ -8263,6 +8263,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
   <base href=\"".cleandomain ($mgmt_config['url_path_cms'])."\" />
   <meta charset=\"".$charset."\" />
   <meta name=\"robots\" content=\"noindex, nofollow\" />
+  <!-- social media sharing -->
+  <meta property=\"og:url\" content=\"https://www.your-domain.com/your-page.html\" />
+  <meta property=\"og:type\" content=\"website\" />
+  <meta property=\"og:title\" content=\"Your Website Title\" />
+  <meta property=\"og:description\" content=\"Your description\" />
+  <meta property=\"og:image\" content=\"https://www.your-domain.com/path/image.jpg\" />
   <!-- hyperCMS -->
   <link rel=\"stylesheet\" type=\"text/css\" href=\"".getthemelocation()."css/main.css?v=".getbuildnumber()."\" />
   <link rel=\"stylesheet\" href=\"".getthemelocation()."css/".($is_mobile ? "mobile.css" : "desktop.css")."?v=".getbuildnumber()."\" />
@@ -11280,7 +11286,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
   }
   </script>
 </head>
-<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceExplorer\" style=\"height:auto;\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentFrame', 'contentLayer');\"" : "").">
+<body id=\"hcms_htmlbody\" class=\"hcmsWorkplaceGeneric\" style=\"height:auto;\" ".($template != "" ? "onload=\"parent.hcms_showPage('contentFrame', 'contentLayer');\"" : "").">
 
 <!-- load screen --> 
 <div id=\"hcmsLoadScreen\" class=\"hcmsLoadScreen\"></div>

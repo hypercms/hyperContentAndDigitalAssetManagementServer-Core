@@ -42,7 +42,7 @@ if (!$is_mobile && isset ($siteaccess) && is_array ($siteaccess) && is_file ($mg
         </select>
         <img name=\"".$button."\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" src=\"".getthemelocation()."img/button_ok.png\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('".$button."','','".getthemelocation()."img/button_ok_over.png',1)\" title=\"OK\" alt=\"OK\" onClick=\"document.getElementById('report').src=document.getElementById('reportfile').value;\" />   
       </div>
-      <div style=\"float:right;\"><img class=\"hcmsButtonTiny\" style=\"width:22px; height:22px; margin:6px;\" onclick=\"hcms_minMaxLayer('reportviewer');\" src=\"".getthemelocation()."img/edit_drag.png\" alt=\"".getescapedtext ($hcms_lang['enable-fullscreen'][$lang])."\" title=\"".getescapedtext ($hcms_lang['enable-fullscreen'][$lang])."\" /></div>
+      <div style=\"float:right;\"><img class=\"hcmsButtonTiny\" style=\"width:22px; height:22px; margin:6px;\" onclick=\"hcms_minMaxLayer('reportviewer');\" src=\"".getthemelocation("night")."img/button_windowsize.png\" alt=\"".getescapedtext ($hcms_lang['view'][$lang])."\" title=\"".getescapedtext ($hcms_lang['view'][$lang])."\" /></div>
     </div>
     <div style=\"display:block; width:100%; height:calc(100% - 42px); padding:0; margin:0;\">
       <iframe id=\"report\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."empty.php\" style=\"width:100%; height:100%; border:0;\"frameborder=\"0\" seamless=\"seamless\"></iframe>

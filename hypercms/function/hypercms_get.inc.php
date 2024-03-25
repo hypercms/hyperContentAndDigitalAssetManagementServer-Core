@@ -1578,53 +1578,50 @@ function getmetadata ($location, $object, $container="", $separator="\r\n", $tem
       $labels = Null;
 
       // load template and define labels
-      if ($template != "")
+      if (!empty ($site) && !empty ($template))
       {
-        if ($site != "" && $template != "")
+        $result = loadtemplate ($site, $template);
+
+        if (!empty ($result['content']))
         {
-          $result = loadtemplate ($site, $template);
+          $position = array();
 
-          if ($result['content'] != "")
+          $hypertag_array = gethypertag ($result['content'], "text", 0);
+
+          if (is_array ($hypertag_array))
           {
-            $position = array();
+            $labels = array();
+            $i = 1;
 
-            $hypertag_array = gethypertag ($result['content'], "text", 0);
-
-            if (is_array ($hypertag_array))
+            foreach ($hypertag_array as $tag)
             {
-              $labels = array();
-              $i = 1;
+              // get mediatype
+              $mediatype = getattribute ($tag, "mediatype");
 
-              foreach ($hypertag_array as $tag)
+              // verify mediatype for assets only
+              if (!empty ($mediatype) && !empty ($mediafile))
               {
-                // get mediatype
-                $mediatype = getattribute ($tag, "mediatype");
+                $continue = true;
 
-                // verify mediatype for assets only
-                if (!empty ($mediatype) && !empty ($mediafile))
-                {
-                  $continue = true;
+                if (strpos (strtolower ("_".$mediatype), "audio") > 0 && is_audio ($mediafile)) $continue = false;
+                elseif (strpos (strtolower ("_".$mediatype), "image") > 0 && is_image ($mediafile)) $continue = false;
+                elseif ((strpos (strtolower ("_".$mediatype), "document") > 0 || strpos (strtolower ("_".$mediatype), "text") > 0) && is_document ($mediafile)) $continue = false;
+                elseif (strpos (strtolower ("_".$mediatype),"video") > 0 && is_video ($mediafile)) $continue = false;
+                elseif (strpos (strtolower ("_".$mediatype), "compressed") > 0 && is_compressed ($mediafile)) $continue = false;
 
-                  if (strpos (strtolower ("_".$mediatype), "audio") > 0 && is_audio ($mediafile)) $continue = false;
-                  elseif (strpos (strtolower ("_".$mediatype), "image") > 0 && is_image ($mediafile)) $continue = false;
-                  elseif ((strpos (strtolower ("_".$mediatype), "document") > 0 || strpos (strtolower ("_".$mediatype), "text") > 0) && is_document ($mediafile)) $continue = false;
-                  elseif (strpos (strtolower ("_".$mediatype),"video") > 0 && is_video ($mediafile)) $continue = false;
-                  elseif (strpos (strtolower ("_".$mediatype), "compressed") > 0 && is_compressed ($mediafile)) $continue = false;
+                if ($continue == true) continue;
+              }
 
-                  if ($continue == true) continue;
-                }
+              $id = getattribute ($tag, "id");
+              $label = getattribute ($tag, "label");
 
-                $id = getattribute ($tag, "id");
-                $label = getattribute ($tag, "label");
+              if ($id != "")
+              {
+                if ($label != "") $labels[$id] = getlabel ($label, $lang);
+                else $labels[$id] = str_replace ("_", " ", $id);
 
-                if ($id != "")
-                {
-                  if ($label != "") $labels[$id] = getlabel ($label, $lang);
-                  else $labels[$id] = str_replace ("_", " ", $id);
-
-                  $position[$id] = $i;
-                  $i++;
-                }
+                $position[$id] = $i;
+                $i++;
               }
             }
           }
@@ -1633,8 +1630,7 @@ function getmetadata ($location, $object, $container="", $separator="\r\n", $tem
 
 			if (!empty ($contentdata))
       {
-        if (strtolower ($separator) != "array") $metadata = "";
-        else $metadata = array();
+        $metadata = array();
 
         // if labels were defined (labels are not unique)
         if (is_array ($labels) && sizeof ($labels) > 0)
@@ -2110,7 +2106,7 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
   // to add all text IDs use: "text:temp"
   if (empty ($objectlistcols)) $objectlistcols = array("object", "location", "template", "wrapperlink", "downloadlink", "thumbnail", "modifieddate", "createdate", "publisheddate", "owner", "filesize", "width", "height");
 
-  // search is used (excluding cerrtain search filters)
+  // search is used (excluding certain search filters)
   if (is_array ($search))
   {
     foreach ($search as $key=>$value)
@@ -2484,14 +2480,15 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
           $search_filename = $search['filename'];
           $search['filename'] = "*Null*";
         }
-        
+
         $result = rdbms_searchcontent ($search_dir_esc, $exclude_dir_esc, $search['format'], $search['date_modified_from'], $search['date_modified_to'], "", $search['expression_array'], $search['filename'], $search['fileextension'], "", $search['imagewidth'], $search['imageheight'], $search['imagecolor'], $search['imagetype'], $search['geo_border_sw'], $search['geo_border_ne'], $search['limit'], $objectlistcols, true);
 
-        // search for file name in objectpath if the previous query ha less than the max size of the result
+        // search for file name in objectpath if the previous query has less than the max size of the result
         if ($maxresultsize < 1) $maxresultsize = 10;
 
-        if ((empty ($result) || sizeof ($result) < $maxresultsize) && $search['filename'] == "*Null*" && !empty ($search_filename))
+        if ((empty ($result) || sizeof ($result) < $maxresultsize) && $search['filename'] == "*Null*" && !empty ($search_filename) && $search_filename != "*Null*")
         {
+          // reset
           $search['expression_array'] = "";
           $search['filename'] = $search_filename;
 
@@ -3234,7 +3231,7 @@ function getcategory ($site, $location)
 
 function getpublication ($path)
 {
-  if ($path != "")
+  if (trim ($path) != "" && is_string ($path))
   {
     // initialize
     $site = false;
@@ -3278,7 +3275,7 @@ function getpublication ($path)
 
 function getlocation ($path)
 {
-  if (trim ($path) != "")
+  if (trim ($path) != "" && is_string ($path))
   {
     $path = trim ($path);
 
@@ -3311,7 +3308,7 @@ function getlocation ($path)
 
 function getobject ($path)
 {
-  if (trim ($path) != "")
+  if (trim ($path) != "" && is_string ($path))
   {
     $path = trim ($path);
 
@@ -4848,7 +4845,62 @@ function getimagecolorkey ($image)
 
     return $colorkey;
   }
-  else return false;
+  
+  return false;
+}
+
+// ---------------------- getimagecolorname -----------------------------
+// function: getimagecolorname()
+// input: image color key [string], 2-digit language code [string] (optional) 
+// output: color name / false on error
+
+// description:
+// Translates the color key and returns the color name:
+// K...black
+// W...white
+// E...grey
+// R...red
+// G...green
+// B...blue
+// C...cyan
+// M...magenta
+// Y...yellow
+// O...orange
+// P...pink
+// N...brown
+
+function getimagecolorname ($colorkey, $lang="en")
+{
+  global $mgmt_config, $hcms_lang;
+
+  if ($lang != "" && empty ($hcms_lang['black'][$lang]) && !empty ($mgmt_config['abs_path_cms']))
+  {
+    // include language file
+    if (is_file ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php")) require_once ($mgmt_config['abs_path_cms']."language/".$lang.".inc.php");
+  }
+
+  // translate colors
+  if ($colorkey != "" && is_array ($hcms_lang))
+  {
+    $colors = array (
+      "K"=>$hcms_lang['black'][$lang], 
+      "W"=>$hcms_lang['white'][$lang],  
+      "E"=>$hcms_lang['grey'][$lang], 
+      "R"=>$hcms_lang['red'][$lang], 
+      "G"=>$hcms_lang['green'][$lang], 
+      "B"=>$hcms_lang['blue'][$lang], 
+      "C"=>$hcms_lang['cyan'][$lang], 
+      "M"=>$hcms_lang['magenta'][$lang], 
+      "Y"=>$hcms_lang['yellow'][$lang], 
+      "O"=>$hcms_lang['orange'][$lang], 
+      "P"=>$hcms_lang['pink'][$lang], 
+      "N"=>$hcms_lang['brown'][$lang]
+    );
+
+    if (!empty ($colors[$colorkey])) return $colors[$colorkey];
+  }
+
+  return false;
 }
 
 // ---------------------- getimagecolors -----------------------------
@@ -5006,7 +5058,8 @@ function getbrightness ($color)
     // Background Brightness < 130 => Textcolor '#FFFFFF' else '#000000'
     return sqrt ($r * $r * .241 + $g * $g * .691 + $b * $b * .068);
   }
-  else return false;
+  
+  return false;
 }
 
 // --------------------------------------- getmediasize -------------------------------------------
@@ -5173,7 +5226,8 @@ function getmediasize ($filepath)
     // return result
     return $result;
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- getimageinfo -------------------------------------------
@@ -5266,7 +5320,8 @@ function getimageinfo ($filepath)
 
     return $result;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- getpdfinfo -----------------------------
@@ -5368,7 +5423,8 @@ function getpdfinfo ($filepath, $box="MediaBox")
 
     return $result;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- getvideoinfo -----------------------------
@@ -5619,7 +5675,8 @@ function getvideoinfo ($filepath)
 
     return $result;
   }
-  else return false;
+
+  return false;
 }
 
 // --------------------------------------- getbrowserinfo -----------------------------------------------
@@ -5720,7 +5777,8 @@ function getbrowserinfo ()
     // result
     return array ($bname => $version);
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- getcontentlocation -----------------------------

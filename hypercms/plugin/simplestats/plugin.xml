@@ -4,7 +4,7 @@
     <name>Simple Statistics Plugin</name>
     <author>hyperCMS</author>
     <version>1.0</version>
-    <description>Simple Statistics Plugin provides basic statistics.</description>
+    <description>Simple Statistics Plugin provides basic statistics</description>
   </definition>
   <menus>
     <main>

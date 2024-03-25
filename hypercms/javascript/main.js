@@ -597,11 +597,11 @@ function hcms_showPage (id_frame, id_layer)
 
 // -------------------------------- share link functions ---------------------------------
 
-function hcms_sharelinkFacebook (url, title)
+function hcms_sharelinkFacebook (url, title, description)
 {
   if (url != "")
   {
-    var sharelink = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url) + "&t=" + encodeURIComponent(title);
+    var sharelink = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url) + "&title=" + encodeURIComponent(title) + "&quote=" + encodeURIComponent(description) + "&description=" + encodeURIComponent(description);
     hcms_openWindow (sharelink, "", "", 800, 800);
   }
   else return false;
@@ -639,7 +639,7 @@ function hcms_sharelinkLinkedin (url, title, summary, source)
 
 function hcms_sharelinkPinterest (image_url, description)
 {
-  if (image_url != "" && title != "")
+  if (image_url != "" && description != "")
   {
     var sharelink = "https://pinterest.com/pin/create/button/?url=" + encodeURIComponent(hcms_extractDomain (image_url)) + "&media=" + encodeURIComponent(image_url) + "&description=" + encodeURIComponent(description);
     hcms_openWindow (sharelink, "", "", 800, 800);
@@ -659,28 +659,28 @@ function hcms_translateText (sourceText, sourceLang, targetLang)
 
     // wait
     hcms_sleep (500);
-    
+
     // remove html tags
     sourceText = hcms_stripTags (sourceText);
-    
+
     var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
               + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURIComponent(sourceText);
-    
+
     var xmlhttp = new XMLHttpRequest();
 
     // synchronous request
     xmlhttp.open('POST', url, false);
     xmlhttp.send();
-    
+
     var json = xmlhttp.responseText;
-    
+
     // correct empty entries between commas (need to be used twice!)
     json = json.replace(/,,/g, ",\"\",");
     json = json.replace(/,,/g, ",\"\",");
 
     var result = JSON.parse(json);    
     var result = result[0];
-    
+
     for (var i=0; i<result.length; i++)
     {
       if (result[i][0] != "")

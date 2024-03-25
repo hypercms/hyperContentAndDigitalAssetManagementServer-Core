@@ -1786,5 +1786,6 @@ initialize();
 </script>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

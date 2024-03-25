@@ -158,7 +158,7 @@ function recognizeFaces (element)
 
 <!-- popup for preview/live-view (do not used nested fixed positioned div-layers due to MS IE and Edge issue) --> 
 <div id="objectviewLayer" style="display:none;">
-  <div style="position:fixed; right:18px; top:<?php if ($is_mobile) echo "22px"; else echo "40px"; ?>; z-index:9011;">
+  <div style="position:fixed; right:0; top:<?php if ($is_mobile) echo "22px"; else echo "40px"; ?>; z-index:9011;">
     <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
   </div>
   <div class="hcmsWorkplaceGeneric" style="<?php if ($is_mobile) echo '-webkit-overflow-scrolling:touch !important; overflow-y:scroll !important;'; else echo 'overflow:hidden;'; ?> position:fixed; margin:0; padding:0; left:0; top:<?php if ($is_mobile) echo "20px"; else echo "36px"; ?>; right:0; bottom:0; z-index:9010;">

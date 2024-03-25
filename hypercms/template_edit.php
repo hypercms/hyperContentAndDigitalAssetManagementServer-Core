@@ -623,16 +623,16 @@ window.onbeforeunload = function() {
 </script>
 </head>
 
-<body class="hcmsWorkplaceGeneric" onload="<?php echo $add_onload; ?>">
+<body class="hcmsWorkplaceGeneric WorkplaceFrameLayer" style="height:100%;" onload="<?php echo $add_onload; ?>">
 
 <!-- saving --> 
 <div id="savelayer" class="hcmsLoadScreen"></div>
 
 <?php echo showmessage ($show, 650, 70, $lang, "position:fixed; left:10px; top:10px;"); ?>
 
-<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame">
+<div id="WorkplaceFrameLayer" class="hcmsWorkplaceFrame" style="height:calc(100% - 20px);">
 
-<form name="template_edit" action="" method="post">
+<form name="template_edit" style="height:100%;" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
   <input type="hidden" name="template" value="<?php echo $template; ?>" />
   <input type="hidden" name="cat" value="<?php echo $cat; ?>" />
@@ -643,7 +643,7 @@ window.onbeforeunload = function() {
   <input type="hidden" name="preview" value="no" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>">
   
-  <table class="hcmsTableStandard">
+  <table class="hcmsTableStandard" style="width:100%;">
     <tr>
       <td class="hcmsHeadline" style="width:245px;"><?php echo getescapedtext ($pagecomp, $charset, $lang); ?> </td>
       <td><input name="template" type="text" value="<?php echo getescapedtext ($templatename, $charset, $lang); ?>" style="width:220px;" disabled="disabled" /></td>
@@ -674,7 +674,7 @@ window.onbeforeunload = function() {
   </table>
   <hr />
   
-  <table class="hcmsTableNarrow" style="width:100%; height:100%;">
+  <table class="hcmsTableNarrow" style="width:100%;">
   <?php
   if ($cat == "page" || $cat == "comp" || $cat == "meta" || $cat == "inc")
   {
@@ -836,16 +836,15 @@ window.onbeforeunload = function() {
         </div>
       </td>
     </tr>
-    <tr>
-      <td style="text-align:left;">
-        <textarea name="contentfield" style="width:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box; font-size:1em;"><?php echo $contentfield; ?></textarea>
-      </td>
-    </tr>
   </table>
+  <div style="height:calc(100% - 300px);">
+    <textarea name="contentfield" style="width:100%; height:100%; min-height:500px; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box; font-size:1em;"><?php echo $contentfield; ?></textarea>
+  </div>
 </form>
 
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

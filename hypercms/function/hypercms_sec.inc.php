@@ -111,9 +111,9 @@ function rootpermission ($site_name, $site_admin, $permission_str)
     {
       return $rootpermission;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- globalpermission -----------------------------
@@ -250,9 +250,9 @@ function globalpermission ($site_name, $permission_str)
     {
       return $globalpermission;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- localpermission -----------------------------
@@ -311,9 +311,9 @@ function localpermission ($site_name, $permission_str)
     {
       return $localpermission;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------- accessgeneral -------------------------------------------
@@ -405,11 +405,10 @@ function accessgeneral ($site, $location, $cat)
       {
         return true;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------------------- accesspermission -------------------------------------------
@@ -542,11 +541,10 @@ function accesspermission ($site, $location, $cat)
         $result[] = "default";
         return $result;
       }
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- setlocalpermission -----------------------------
@@ -3179,7 +3177,7 @@ function checkuserrequests ($user="sys")
   // set default value
   if (!isset ($mgmt_config['requests_per_minute'])) $mgmt_config['requests_per_minute'] = 1000;
 
-  if ($mgmt_config['requests_per_minute'] > 0)
+  if (intval ($mgmt_config['requests_per_minute']) > 0)
   {
     // hit counter
     if (isset ($_SESSION['hcms_temp_hit_counter']) && $_SESSION['hcms_temp_hit_counter'] > 0)
@@ -3194,18 +3192,24 @@ function checkuserrequests ($user="sys")
     }
 
     // check time after given number of requests
-    if ($_SESSION['hcms_temp_hit_counter'] > $mgmt_config['requests_per_minute'])
+    if (intval ($_SESSION['hcms_temp_hit_counter']) > intval ($mgmt_config['requests_per_minute']))
     {
       // more than given number of requests per minute, this might be a flood attack
       if (time() - $_SESSION['hcms_temp_hit_starttime'] <= 60)
       {
-        // warning
+        // get client IP
         $client_ip = getuserip ();
+
+        // log client ip
+        loguserip ($client_ip, $user);
+
+        // warning
         $errcode = "00109";
         $error[] = $mgmt_config['today']."|hypercms_sec.inc.php|warning|".$errcode."|User '".$user."' with client IP ".$client_ip." is banned due to a possible CSRF attack";
 
         savelog (@$error);
         killsession ($user);
+
         return false;
       }
       else
@@ -3213,11 +3217,13 @@ function checkuserrequests ($user="sys")
         // reset hit counter and time stamp
         $_SESSION['hcms_temp_hit_counter'] = 1;
         $_SESSION['hcms_temp_hit_starttime'] = time();
+
         return true;
       }
     }
   }
-  else return true;
+
+  return true;
 }
 
 // ------------------------- recreateusersession -----------------------------
@@ -3360,7 +3366,8 @@ function allowuserip ($site)
 
     return $result;
   }
-  else return true;
+
+  return true;
 }
 
 // ------------------------- valid_objectname -----------------------------
@@ -3385,6 +3392,7 @@ function valid_objectname ($variable)
       if (substr_count ($variable, "../") > 0) return false;
       if (substr_count ($variable, "\\") > 0) return false;
       if (substr_count ($variable, "\"") > 0) return false;
+
       return true;
     }
     elseif (is_array ($variable))
@@ -3398,10 +3406,10 @@ function valid_objectname ($variable)
       }
 
       if ($result == true) return true;
-      else return false;
     } 
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- valid_locationname -----------------------------
@@ -3486,10 +3494,10 @@ function valid_locationname ($variable)
       }
 
       if ($result == true) return true;
-      else return false;
     } 
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- valid_publicationname -----------------------------
@@ -3531,10 +3539,10 @@ function valid_publicationname ($variable)
       }
 
       if ($result == true) return true;
-      else return false;
     }
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- html_encode -----------------------------
@@ -3638,7 +3646,8 @@ function html_encode ($expression, $encoding="", $js_protection=false)
     if (!empty ($result)) return $result;
     else return $expression;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- html_decode -----------------------------
@@ -3677,7 +3686,8 @@ function html_decode ($expression, $encoding="")
     if (!empty ($expression_esc)) return $expression_esc;
     else return $expression;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- scriptcode_encode -----------------------------
@@ -3705,7 +3715,8 @@ function scriptcode_encode ($content)
 
     return $content;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- scriptcode_extract -----------------------------
@@ -4123,9 +4134,9 @@ function hcms_crypt ($string, $start=0, $length=0)
     $string_encoded = urlencode ($string_encoded);
 
     if ($string_encoded != "") return $string_encoded;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- hcms_encrypt -----------------------------
@@ -4264,9 +4275,9 @@ function hcms_encrypt ($string, $key="", $crypt_level="", $encoding="url")
       // no encoding
       else return $hash;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- hcms_decrypt -----------------------------
@@ -4379,9 +4390,9 @@ function hcms_decrypt ($string, $key="", $crypt_level="", $encoding="url")
     }
 
     if ($hash_decrypted != "") return $hash_decrypted;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createtimetoken -----------------------------
@@ -4409,7 +4420,8 @@ function createtimetoken ($lifetime=0, $secret=4)
 
     return $shiftmode.$timetoken;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- checktimetoken -----------------------------
@@ -4435,9 +4447,9 @@ function checktimetoken ($token, $secret=4)
 
     // check if token is valid
     if ($timestamp >= time() || $timestamp == 0) return true;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createtoken -----------------------------
@@ -4471,7 +4483,8 @@ function createtoken ($user="sys", $lifetime=0, $secret=4)
 
     return $token;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- checktoken -----------------------------
@@ -4495,11 +4508,10 @@ function checktoken ($token, $user="sys", $secret=4)
     if (!empty ($timetoken) && !empty ($token_user))
     {
       if (checktimetoken ($timetoken, $secret) && $user == $token_user) return true;
-      else return false;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createuniquetoken -----------------------------
@@ -4522,9 +4534,9 @@ function createuniquetoken ($length=16)
     }
 
     if ($string != "") return $string;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- createpassword -----------------------------
@@ -4547,9 +4559,9 @@ function createpassword ($length=10)
     }
 
     if ($string != "") return $string;
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ---------------------- rand_secure -----------------------------

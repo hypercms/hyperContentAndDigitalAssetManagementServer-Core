@@ -20,7 +20,6 @@ require_once ("../lang/page.inc.php");
 
 // input parameters
 $site = getrequest_esc ("site", "publicationname");
-$content = getrequest_esc ("content");
 
 // only german and english is supported by plugin
 if ($lang != "en" && $lang != "de") $lang = "en";
@@ -159,15 +158,15 @@ while (@ob_end_flush());
             $ownergroup = accesspermission ($site, $location_esc, $cat);
             $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
             
-            if ($setlocalpermission['root']) $link = "<a href=\"#\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">".$info['name']."</a>";
-            else $link = $info['name'];
+            if ($setlocalpermission['root'] == "1") $onclick = "onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\"";
+            else $onclick = "onclick=\"alert(hcms_entity_decode('".$hcms_lang['you-do-not-have-access-permissions-to-this-object'][$lang]."'));\"";
 
             // define row color
             if ($rowcolor == "hcmsRowData1") $rowcolor = "hcmsRowData2";
             else $rowcolor = "hcmsRowData1";
                
             $show .= "
-        <tr class=\"hcmsButtonTiny ".$rowcolor."\" style=\"cursor:pointer;\" onclick=\"hcms_openWindow('../../../frameset_content.php?site=".url_encode($site)."&ctrlreload=yes&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($object)."', '".$row['id']."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes', ".windowwidth ("object").", ".windowheight ("object").");\">
+        <tr class=\"hcmsButtonTiny ".$rowcolor."\" style=\"cursor:pointer;\" ".$onclick.">
           <td><img src=\"".getthemelocation()."img/".$info['icon']."\" class=\"hcmsIconList\" /> ".$info['name']."</td>
           <td style=\"text-align:right;\">".number_format ($row['count'], 0, ",", ".")."</td>
           <td style=\"text-align:right;\">".number_format (($row['filesize'] / 1024), 0, ",", ".")."</td>

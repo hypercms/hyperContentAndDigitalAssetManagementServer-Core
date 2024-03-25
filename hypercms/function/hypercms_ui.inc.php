@@ -567,6 +567,13 @@ function showtopbar ($show, $lang="en", $close_link="", $close_target="", $indiv
 
   if ($show != "" && strlen ($show) < 600 && $lang != "" && $id != "")
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['close'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
+    // initialize
     $close_button_code = "";
     $individual_button_code = "";
 
@@ -610,6 +617,12 @@ function showtopmenubar ($show, $menu_array, $lang="en", $close_link="", $close_
 
   if ($show != "" && is_array ($menu_array) && strlen ($show) < 600 && $lang != "" && $id != "")
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['close'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     // define close button
     if ($close_link != "")
     {
@@ -708,9 +721,15 @@ function showhomeboxes ($homebox_array)
 function showmessage ($show, $width="580px", $height="80px", $lang="en", $style="", $id="hcms_messageLayer")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang;
- 
+
   if ($show != "" && strlen ($show) < 2400 && $lang != "")
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['close'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     // check mobile setting
     if (!empty ($_SESSION['hcms_mobile'])) $width = "90%";
 
@@ -755,6 +774,12 @@ function showinfopage ($show, $lang="en", $onload="")
 
   if ($show != "" && strlen ($show) < 2400 && $lang != "")
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['information'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     return "<!DOCTYPE html>
 <html>
   <head>
@@ -765,8 +790,8 @@ function showinfopage ($show, $lang="en", $onload="")
   </head>
   <body class=\"hcmsWorkplaceGeneric\" onload=\"".$onload."\">
     <div style=\"padding:20px;\">
-      <img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" /> <span class=\"hcmsHeadline\">Info</span><br \>
-      <div style=\"display:block; padding:0px 0px 0px 32px;\">".$show."</div>
+      <img src=\"".getthemelocation()."img/info.png\" class=\"hcmsButtonSizeSquare\" style=\"vertical-align:middle; margin-top:-6px; \" /> <span class=\"hcmsHeadline\" style=\"font-size:1.6em; line-height:32px;\">".$hcms_lang['information'][$lang]."</span><br \>
+      <div style=\"display:block; padding:4px 0px 0px 34px;\">".$show."</div>
     </div>
   </body>
 </html>";
@@ -789,6 +814,12 @@ function showinfobox ($show, $lang="en", $style="", $id="")
 
   if (!empty ($mgmt_config['showinfobox']) && $show != "" && strlen ($show) < 2400 && $lang != "")
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['close'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     // define unique name for close button
     $close_id = uniqid();
 
@@ -843,6 +874,12 @@ function showhelpbutton ($pdf_name, $enabled=true, $lang="en", $id="hcms_helpBut
   // enabled button
   if (!empty ($help))
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['help'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     $viewer = $pdfjs_path.urlencode($help);
 
     return "
@@ -872,6 +909,12 @@ function showactionicon ($action, $lang="en", $style="width:64px; height:64px;",
 
   if (!empty ($action) && !empty ($lang))
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['cut'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     if ($action == "page_favorites_create") $icon = "<img src=\"".getthemelocation()."img/button_favorites_new.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['add-to-favorites'][$lang])."\" />";
     elseif ($action == "page_favorites_delete") $icon = "<img src=\"".getthemelocation()."img/button_favorites_delete.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['delete-favorite'][$lang])."\" />";
     elseif ($action == "page_lock") $icon = "<img src=\"".getthemelocation()."img/button_file_lock.png\" id=\"".$id."\" style=\"".$style."\" alt=\"".getescapedtext ($hcms_lang['check-out'][$lang])."\" />";
@@ -907,6 +950,12 @@ function showsharelinks ($link, $mediafile, $lang="en", $style="", $id="hcms_sha
  
   if (is_dir ($mgmt_config['abs_path_cms']."connector/") && $link != "" && $lang != "" && $id != "")
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['required-input-is-missing'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     if ($style == "") $style = "width:46px;";
 
     $result = "
@@ -915,7 +964,7 @@ function showsharelinks ($link, $mediafile, $lang="en", $style="", $id="hcms_sha
 
     // Facebook (only images are supported by GET API)
     if (is_image ($mediafile)) $result .= "
-    <img src=\"".getthemelocation()."img/icon_facebook.png\" title=\"Facebook\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkFacebook('".$link."') == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
+    <img src=\"".getthemelocation()."img/icon_facebook.png\" title=\"Facebook\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkFacebook('".$link."', hcms_getcontentByName('textu_Title'), hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
 
     // Twitter (support also videos and audio files as external links via GET API)
     $result .= "
@@ -1010,6 +1059,12 @@ function showobject ($site, $location, $page, $cat="", $name="")
   global $mgmt_config, $hcms_charset, $hcms_lang, $hcms_lang_date, $lang, $user;
 
   $location = deconvertpath ($location, "file");
+
+  // load language if it has not been loaded
+  if (empty ($hcms_lang['owner'][$lang]))
+  {
+    require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+  }
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && is_file ($location.$page))
   {
@@ -1190,6 +1245,12 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
 
   // define media ratio (W/H > ratio) to switch from 360 degree to horizontal panoramic view (wider image => use horizontal degree view)
   $switch_panoview = 3.5;
+
+  // load language if it has not been loaded
+  if (empty ($hcms_lang['text'][$lang]))
+  {
+    require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+  }
 
   // initialize
   $media_root = "";
@@ -4226,6 +4287,12 @@ function showinlineeditor_head ($lang)
 
   if (is_array ($mgmt_config) && $lang != "")
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['close'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     return "
     <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/jquery/jquery.min.js\"></script>
     <script type=\"text/javascript\" src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/signature/jSignature.min.noconflict.js\"></script>
@@ -4416,6 +4483,12 @@ function showinlinedatepicker_head ()
 function showinlineeditor ($site, $hypertag, $id, $contentbot="", $sizewidth=600, $sizeheight=300, $toolbar="Default", $lang="en", $contenttype="", $cat="", $location_esc="", $page="", $contentfile="", $db_connect=0, $token="")
 {
   global $mgmt_config, $publ_config, $hcms_charset, $hcms_lang;
+
+  // load language if it has not been loaded
+  if (empty ($hcms_lang['close'][$lang]))
+  {
+    require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+  }
 
   // add confirm save on changes in inline editor or leave empty string
   // $confirm_save = " && confirm(hcms_entity_decode(\"".getescapedtext ($hcms_lang['do-you-want-to-save-the-changes'][$lang]."\"));";
@@ -6502,6 +6575,12 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
 
   if (valid_publicationname ($site) && $id != "" && ($type == "u" || $type == "f") && !empty ($mgmt_config[$site]['translate']))
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['translate'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     // JS function to be used
     if ($type == "u") $JSfunction = "hcms_translateTextField";
     else $JSfunction = "hcms_translateRichTextField";
@@ -6565,6 +6644,12 @@ function showtranslator ($site, $id, $type, $charset="UTF-8", $lang="en", $style
 function showmapping ($site, $lang="en")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang;
+
+  // load language if it has not been loaded
+  if (empty ($hcms_lang['text'][$lang]))
+  {
+    require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+  }
 
   // load mapping
   if (valid_publicationname ($site))
@@ -6673,9 +6758,17 @@ function showgallery ($multiobject, $thumbsize=100, $openlink="download", $user=
 
   if (is_array ($multiobject) && $thumbsize > 0 && valid_objectname ($user))
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['close'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
+    // initialize
     $count = 0;
     $galleryview = "
     <script src=\"".cleandomain ($mgmt_config['url_path_cms'])."javascript/lazysizes/lazysizes.min.js\" type=\"text/javascript\" async=\"\"></script>";
+    if ($lang == "") $lang = "en";
 
     // create secure token
     $token = createtoken ($user);
@@ -6727,6 +6820,11 @@ function showgallery ($multiobject, $thumbsize=100, $openlink="download", $user=
           // open on click (parent must be used if function is called from iframe!)
           $openobject = "onclick=\"if (window.parent) parent.".$functioncall."; else ".$functioncall.";\"";
         }
+        // no access
+        else
+        {
+          $openobject = "onclick=\"alert(hcms_entity_decode('".$hcms_lang['you-do-not-have-access-permissions-to-this-object'][$lang]."'));\"";
+        }
       }
 
       $fileinfo = getfileinfo ($site, $location_esc.$page, $cat);
@@ -6755,7 +6853,8 @@ function showgallery ($multiobject, $thumbsize=100, $openlink="download", $user=
 
     return $galleryview;
   }
-  else return false;
+  
+  return false;
 }
 
 // ------------------------- showthumbnail -----------------------------
@@ -6855,7 +6954,8 @@ function showthumbnail ($site, $mediafile, $name="", $thumbsize=120, $base64=fal
 
     return $view;
   }
-  else return false;
+  
+  return false;
 }
 
 // ------------------------- showtaxonomytree -----------------------------
@@ -6874,6 +6974,13 @@ function showtaxonomytree ($site="", $container_id=array(), $text_id="", $tagnam
 
   if (valid_publicationname ($site) && (is_numeric ($container_id) || is_array ($container_id)) && $lang != "" && is_array ($mgmt_config) && !empty ($mgmt_config[$site]['taxonomy']))
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['search'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
+    // initialize
     $view = "";
     $tax_id_selected_array = array();
     $childlevels = 10;
@@ -7089,9 +7196,9 @@ function showtaxonomytree ($site="", $container_id=array(), $text_id="", $tagnam
 
       return $view;
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 
 // ------------------------- showworkflowstatus -----------------------------
@@ -7108,6 +7215,12 @@ function showworkflowstatus ($site, $location, $page)
 
   if (is_file ($mgmt_config['abs_path_cms']."workflow/frameset_workflow.php") && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page))
   {
+    // load language if it has not been loaded
+    if (empty ($hcms_lang['name'][$lang]))
+    {
+      require_once ($mgmt_config['abs_path_cms']."language/".getlanguagefile ($lang));
+    }
+
     // convert location
     $cat = getcategory ($site, $location);
     $location = deconvertpath ($location, "file");
@@ -7251,8 +7364,8 @@ function showworkflowstatus ($site, $location, $page)
       </table>";
       }
     }
-    else return false;
   }
-  else return false;
+
+  return false;
 }
 ?>

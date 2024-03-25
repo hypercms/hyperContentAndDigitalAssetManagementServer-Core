@@ -2030,7 +2030,7 @@ function rdbms_deleteobject ($object="", $object_id="")
           $sql = 'DELETE FROM task WHERE object_id='.$row_id['object_id'];
 
           $errcode = "50021";
-          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete9');    
+          $done = $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], 'delete9');
         }
         // delete only the object reference and queue entry
         elseif ($row_id && $num_rows > 1)
@@ -2224,7 +2224,7 @@ function rdbms_deletepublicationtaxonomy ($site, $force=false)
 
 // ----------------------------------------------- search content ------------------------------------------------- 
 // function: rdbms_searchcontent()
-// input: location [string,array] (optional), exclude locations/folders [string,array] (optional), object-type [audio,binary,compressed,document,flash,image,text,video,folder,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
+// input: location [string,array] (optional), exclude locations/folders [string,array] (optional), object-type array [audio,binary,compressed,document,flash,image,text,video,folder,unknown] (optional), filter for start modified date [date] (optional), filter for end modified date [date] (optional), 
 //        filter for template name [string] (optional), search expression [array] (optional), search expression for object/file name [string] (optional), file extensions without dot [array] (optional)
 //        filter for files size in KB in form of [>=,<=]file-size-in-KB (optional), image width in pixel [integer] (optional), image height in pixel [integer] (optional), primary image colors [array,string] (optional), image-type [portrait,landscape,square] (optional), 
 //        SW geo-border [float] (optional), NE geo-border [float] (optional), maximum search results/hits to return as start,number or total number [string,integer] (optional), text IDs to be returned e.g. text:Title [array] (optional), count search result entries [boolean] (optional), 
@@ -2258,7 +2258,16 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     $object_type = array("image", "video", "flash");
   }
 
+  // AND/OR operator for the search in texnodes 
+  if (!empty ($mgmt_config['search_operator']) && (strtoupper ($mgmt_config['search_operator']) == "AND" || strtoupper ($mgmt_config['search_operator']) == "OR"))
+  {
+    $operator = strtoupper ($mgmt_config['search_operator']);
+  }
+  else $operator = "AND";
+
   // initialize
+  $search_expression_log = array();
+  $search_full_log = array();
   $sql_table = array();
   $sql_table['taxonomy'] = "";
   $sql_table['textnodes'] = "";
@@ -2269,6 +2278,81 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
   $sql_expr_advanced = array();
   $sql_where_textnodes = "";
   $sql_order_by = "";
+
+  // full search log (exclude taxonomy and metadata-hierarchy navigation)
+  if (!empty ($mgmt_config['search_log']) && (empty ($expression_array[0]) || (strpos ("_".$expression_array[0], "%taxonomy%/") < 1 && strpos ("_".$expression_array[0], "%hierarchy%/") < 1)))
+  {
+    $expressions = "";
+    $temp_array = array();
+
+    // prepare search expressions for log
+    if (is_array ($expression_array))
+    {
+      foreach ($expression_array as $key => $expression)
+      {
+        if (trim ($expression) != "" && is_string ($expression) && strlen ($expression))
+        {
+          // translate keyword
+          if (strpos ("_".$expression, "%keyword%/") > 0)
+          {
+            $keyword_id = getobject ($expression);
+
+            if ($keyword_id > 0) $expression = rdbms_getkeyword ($keyword_id);
+          }
+
+          // clean expression by escaping |
+          $temp_array[] = str_replace("|", "&#124;", $key."=>".$expression);
+        }
+      }
+
+      $expressions = implode (" ".$operator." ", $temp_array);
+    }
+
+    // prepare arrays for log
+    if (is_array ($object_type)) $log_object_type = implode (",", $object_type);
+    else $log_object_type = $object_type;
+
+    if (is_array ($fileextension)) $log_fileextension = implode (",", $fileextension);
+    else $log_fileextension = $fileextension;
+
+    if (is_array ($imagecolor)) $log_imagecolor = implode (",", $imagecolor);
+    else $log_imagecolor = $imagecolor;
+
+    // prepare image width
+    if ($imagewidth == "1024-9000000") $log_imagewidth = "large";
+    elseif ($imagewidth == "640-1024") $log_imagewidth = "medium";
+    elseif ($imagewidth == "0-640") $log_imagewidth = "small";
+    else $log_imagewidth = $imagewidth;
+
+    // prepare publications
+    $log_sites = array();
+
+    if (!empty ($folderpath))
+    {
+      if (is_string ($folderpath))
+      {
+        $temp = getpublication ($folderpath);
+        $log_sites[$temp] = $temp;
+      }
+      elseif (is_array ($folderpath) && sizeof ($folderpath) > 0)
+      {
+        foreach ($folderpath as $temp)
+        {
+          $temp = getpublication ($temp);
+          $log_sites[$temp] = $temp;
+        }
+      }
+    }
+    // publication memberships of user
+    else
+    {
+      if (getsession ("hcms_siteaccess")) $log_sites = getsession ("hcms_siteaccess");
+      else $log_sites = array();
+    }
+
+    // clean expressions by escaping | for log
+    $search_full_log[] = $mgmt_config['today']."|".str_replace("|", "&#124;", $user).":".str_replace("|", "&#124;", implode (",", array_keys ($log_sites)))."|".$expressions."|".str_replace("|", "&#124;", $expression_filename)."|".str_replace("|", "&#124;", $log_object_type)."|".str_replace("|", "&#124;", $date_from)."|".str_replace("|", "&#124;", $date_to)."|".str_replace("|", "&#124;", $template)."|".str_replace("|", "&#124;", $log_fileextension)."|".str_replace("|", "&#124;", $filesize)."|".str_replace("|", "&#124;", $log_imagewidth)."|".str_replace("|", "&#124;", $imageheight)."|".str_replace("|", "&#124;", $log_imagecolor)."|".str_replace("|", "&#124;", $imagetype)."|".str_replace("|", "&#124;", $geo_border_sw)."|".str_replace("|", "&#124;", $geo_border_ne);
+  }
 
   // if hierarchy URL has been provided
   if (!empty ($expression_array[0]) && strpos ("_".$expression_array[0], "%hierarchy%/") > 0)
@@ -2361,13 +2445,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       else $maxhits = $db->rdbms_escape_string ($maxhits);
     }
 
-    // AND/OR operator for the search in texnodes 
-    if (!empty ($mgmt_config['search_operator']) && (strtoupper ($mgmt_config['search_operator']) == "AND" || strtoupper ($mgmt_config['search_operator']) == "OR"))
-    {
-      $operator = strtoupper ($mgmt_config['search_operator']);
-    }
-    else $operator = "AND";
-
     if (!empty ($folderpath))
     {
       // folder path => consider folderpath only when there is no filenamecheck
@@ -2459,7 +2536,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       }
       
       if (empty ($temp_array[' AND ']) && empty ($temp_array[' OR '])) $temp_array['none'][0] = $expression_filename;
-      
+
       foreach ($temp_array as $temp_operator => $temp2_array)
       {
         foreach ($temp2_array as $temp_expression)
@@ -2506,7 +2583,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           if ($temp_operator != "none" && trim ($sql_where['filename']) != "") $sql_where['filename'] .= $temp_operator;
 
           // LIKE search does not use stopwords or wildcards supported by MATCH AGAINST
-          // But LIKE also is not able to use the fulltext index or any index if a wildcard is used at the beginning and will therefore be slower
+          // But LIKE is also not able to use the fulltext index or any index if a wildcard is used at the beginning and will therefore be slower
           if (strtolower ($mgmt_config['search_query_match']) == "like")
           {
             // must be case insensitive
@@ -2594,7 +2671,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
       $i_tn = 1;
 
       reset ($expression_array);
-      $expression_log = array();
 
       foreach ($expression_array as $key => $expression)
       {
@@ -2603,10 +2679,11 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
         // define search log entry
         if (!empty ($mgmt_config['search_log']) && $expression != "" && is_string ($expression) && strlen ($expression) < 800 && !is_numeric (trim ($expression)) && strpos ("_".$expression, "%taxonomy%/") < 1 && strpos ("_".$expression, "%keyword%/") < 1)
         {
-          // clean expression replace | with space
+          // clean expression by replacing | with space
           $expression = str_replace ("|", " ", strip_tags($expression));
 
-          $expression_log[] = $mgmt_config['today']."|".str_replace("|", "&#124;", $user)."|".str_replace("|", "&#124;", $expression);
+          // clean expressions by escaping |
+          $search_expression_log[] = $mgmt_config['today']."|".str_replace("|", "&#124;", $user)."|".str_replace("|", "&#124;", $expression);
         }
 
         // extract type from text ID
@@ -2931,9 +3008,6 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
 
         $i++;
       }
-
-      // save search expression in search expression log
-      if (!empty ($search_log)) savelog ($expression_log, "search");
 
       // remove empty array elements
       $sql_expr_advanced = array_filter ($sql_expr_advanced);
@@ -3389,6 +3463,13 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           }
         }
       }      
+    }
+
+    // save search logs
+    if (!empty ($search_log))
+    {
+      savelog ($search_expression_log, "search");
+      savelog ($search_full_log, "search-full");
     }
 
     // count the total number of objects of the search result
@@ -4194,6 +4275,44 @@ function rdbms_getcontent ($site, $container_id, $text_ids=array(), $type="", $u
   }
 
   return false;
+}
+
+// ----------------------------------------------- get keyword ------------------------------------------------- 
+// function: rdbms_getkeyword()
+// input: keyword ID [integer]
+// output: keyword name as string / false
+
+// description:
+// Select a single keyword in the database.
+
+function rdbms_getkeyword ($id)
+{
+  global $mgmt_config;
+
+  $result = array();
+
+  $db = new hcms_db($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);
+
+  $sql = 'SELECT keyword FROM keywords WHERE keyword_id='.intval($id);
+
+  $errcode = "50540";
+  $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today']);
+
+  if ($done && $row = $db->rdbms_getresultrow ())
+  {
+    if (is_keyword ($row['keyword']))
+    {
+      $result = $row['keyword'];
+    }
+  }
+
+  // save log
+  savelog ($db->rdbms_geterror());
+
+  $db->rdbms_close();
+ 
+  if (!empty ($result)) return $result;
+  else return false;
 }
 
 // ----------------------------------------------- get keywords ------------------------------------------------- 
@@ -6472,7 +6591,7 @@ function rdbms_insertdailystat ($activity, $container_id, $user="", $include_all
 {
   global $mgmt_config;
 
-  if ($activity != "" && (is_array ($container_id) || intval ($container_id) > 0) && ($user != "sys" || $activity == "upload"))
+  if ($activity != "" && (is_array ($container_id) || intval ($container_id) > 0))
   {
     $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset']);    
 

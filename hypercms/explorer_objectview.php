@@ -250,16 +250,6 @@ function centercontainer ()
     // calculate margins
     var marginleft = Math.floor((screenwidth - mediawidth) / 2);
     var margintop = Math.floor((screenheight - mediaheight) / 2);
-    
-    // set margins
-    if (marginleft > 0) document.getElementById('container').style.marginLeft = marginleft+"px";
-    else document.getElementById('container').style.marginLeft = "10px";
-    
-    if (margintop > 0) document.getElementById('container').style.marginTop = margintop+"px";
-    else document.getElementById('container').style.marginTop = "30px";
-    
-    document.getElementById('container').style.marginRight = "0px";
-    document.getElementById('container').style.marginBottom = "0px";
   }
   else
   {
@@ -356,7 +346,7 @@ function hcms_rightArrowEvent ()
 </script>
 </head>
 
-<body class="hcmsWorkplaceObjectlist" onload="centercontainer(); initialize();">
+<body class="hcmsWorkplaceObjectlist" style="width:100%; height:100%;" onload="centercontainer(); initialize();">
 
 <!-- toolbar -->
 <div id="toolbar" style="position:fixed; top:5px; left:5px; text-align:left; z-index:30;">
@@ -400,7 +390,7 @@ function hcms_rightArrowEvent ()
   <img class="hcmsButtonTinyBlank hcmsButtonSizeSquare" style="margin:16px;" src="<?php echo getthemelocation(); ?>img/button_arrow_left.png" />
 </div>
 
-<div id="container" style="position:fixed; top:0px; left:0px; right:0px; bottom:0px; margin:-1900px 0px 0px 0px; padding:0px; z-index:10;">
+<div id="container" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); margin:0; padding:0; z-index:10;">
   <?php if (!empty ($objectview)) echo $objectview; ?>
 </div>
 

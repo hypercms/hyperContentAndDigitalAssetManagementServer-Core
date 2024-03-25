@@ -47,14 +47,22 @@ $ownergroup = accesspermission ($site, $location, $cat);
 $setlocalpermission = setlocalpermission ($site, $ownergroup, $cat);
 
 // check local permissions for DAM usage only
-if (!empty ($mgmt_config[$site]['dam']) && $setlocalpermission['root'] != 1) killsession ($user);
+if (!empty ($mgmt_config[$site]['dam']) && $setlocalpermission['root'] != 1)
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-access-permissions-to-this-object'][$lang], $lang, "");
+  exit;
+}
 // check for general root element access since local permissions are checked later
 // Attention! variable page can be empty when a new object will be created
 elseif (
          !checkpublicationpermission ($site) || 
          (!valid_objectname ($page) && ($setlocalpermission['root'] != 1 || $setlocalpermission['create'] != 1)) || 
          !valid_publicationname ($site) || !valid_locationname ($location) || !valid_objectname ($cat)
-       ) killsession ($user);
+       )
+{
+  echo showinfopage ($hcms_lang['you-do-not-have-access-permissions-to-this-object'][$lang], $lang, "");
+  exit;
+}
        
 // check session of user
 checkusersession ($user);

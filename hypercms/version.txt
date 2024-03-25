@@ -7307,7 +7307,7 @@ Release 01/2024
 Version 10.2.2
 Release 03/2024
 - Function rdbms_getduplicate_file in DB Connect has been renamed to rdbms_getduplicatefiles
-- Modifcations in function uploadfile in Main API in order to rename function rdbms_getduplicate_file to rdbms_getduplicatefiles
+- Modifications in function uploadfile in Main API in order to rename function rdbms_getduplicate_file to rdbms_getduplicatefiles
 - Implementation of the new function rdbms_findduplicatefiles in DB Connect in order to find all existing duplicate media files
 - Modifications in search_objectlist in order to implement the new function rdbms_findduplicatefiles
 - Modifications in explorer in order to add the new "check for duplicates" item in the desktop tree
@@ -7386,7 +7386,7 @@ Release 03/2024
 - Modifications in function showpiechart, showcolumnchart, showareachart, showtimelinechart of the Report Management API in order to transform the object path to readable names
 - Implementation of the reports Geolocation, MediaType, Metadata, Top10AssetsByActivity, and Top10UsersByActivity in the installation directory
 - Modifications in the Report Management module in order to display readable object path names in the CSV export
-- Modifications in the Report Management module in order to dispay the used search filters after the report title
+- Modifications in the Report Management module in order to display the used search filters after the report title
 - Implementation of a report caching in the Report Management module due to long query execution for a large database
 - Implementation of function suspendsession in the Report Management module 
 - Design modifications in the table view of the Report Management module
@@ -7396,11 +7396,54 @@ Release 03/2024
 - Design modifications in Home box all_reports and news in order to replace the plus-minus icon by the new zoom icon
 - Modifications in home screen in order to use a select box for the available home boxes instead of a list of all home boxes
 - Modifications in chat in order to exclude the system user from the user select box
-- Implementation of a thumbnail gallery view in the Report Management module that will be created autoamtically whenever an object path is part of the report
+- Implementation of a thumbnail gallery view in the Report Management module that will be created automatically whenever an object path is part of the report
 - Modifications in function showgallery in UI API in order to include the absolute URL for hcms_openWindow (open object on click)
 - Implementation of a thumbnail gallery view in the Report Management module that will be created automatically whenever an object path is part of the report data
+- Implementation of a new window size icon for all design themes
+- Design modification of the sidebar icon in all design themes
+- Modifications in main.js in order to update the social media share functions
+- Modifications in template engine in order to support additional input parameters for the social media share functions
+- Modifications in REST function download in the REST API of the Connector module in order to exclude the content as XML-Node "textcollection" and use the content provided by function getmetadata as JSON string
+- Modifications in SOAP function download_object in the SOAP API of the Connector module in order to exclude the content as XML-Node "textcollection" and use the content provided by function getmetadata as JSON string
+- Modifications in function getmetadata in Get API in order to verify the variables for publication and template and optimize the code
+- Implementation of the geolocation support for users IP addresses in the Report Management module by implementation of a new popup layer and local JS function opengeoview and closepopup
+- Design modifications in the Report Editor of the Report Management module in order to enable a fullscreen report preview
+- Code optimization in page_info_stats
+- Modifications in function buildsearchform in the template engine in order to replace the CSS class of the body by class hcmsWorkplaceGeneric
+- Design modifications in frameset_content in order to position the close button to the right side without any margin
+- Modifications in the Report Management module in order to exclude objects path and thumbnails of objects without the users access permission which can't be opened and a message will be displayed instead
+- Modifications in control_content_menu and page_view in order to display a message instead of calling killsession in case the user has no access permission to the requested object
+- Modifications in function showinfopage in UI API in order to use the language text variable for "information" instead of info and to display the title in a larger font size
+- Modifications in the simple statistics Plugin in order to only open objects with access permission for the user
+- Implementation of the new Report Plugin in order to access all existing reports for all publications
+- Modifications in explorer_objectview in order to center the view container by CSS transform instead of margin (view will be centered when using the browser zoom)
+- Implementation of the new full search log in function rdbms_searchcontent in DB Connect
+- Modifications in function rdbms_searchcontent in DB Connect in order to move the search operator logic before the new full search log entry
+- Modifications in function rdbms_searchcontent in DB Connect in order to move saving of the search logs before the verification of the search results
+- Implementation of the new search statistics and charts for dates, times, users, expressions, file names, object types, primary colors, image sizes, and geo locations in the new search statistics Plugin (requires the Report Management API)
+- Renamed the old search statistics Plugin to search expressions Plugin
+- Implementation of the function getimagecolorname in Get API in order to translate the color key to a color name
+- Implementation of the function getimagecolorname in explorer
+- Modifications in explorer in order to replace the JS functions hcms_showFormLayer and hcms_hideFormLayer in the local Js functions showSearch and showNav by standard JS functions to display and hide the layers
+- Modifications in function showgeolocationchart in Report Management API in order to verify the geo coordinates of the data array before using them for the center location of the map
+- Modifications in function showgeolocationchart in Report Management API in order to implement the new JS function drawRectangle to draw a rectangle on the map on click event and display it for one second (used to display a search area on the map)
+- Modifications in function showgeolocationchart in Report Management API in order to support JS function calls beside URL on click event
+- Implementation of the new function rdbms_getkeyword in DB Connect in order to select a single keyword by its ID
+- Modifications in function rdbms_searchcontent in DB Connect in order use function rdbms_getkeyword to translate the requested keyword search for the log entry
+- Modifications in function rdbms_searchcontent in DB Connect in order to exclude taxonomy navigation log entries
+- Modifications in function checkuserrequest in Security API in order to log the client IP in case of an CSRF attack
+- Modifications in various functions in the Security API in order to return false only once at the end of the execution of the function
+- Modifications in various functions in the UI API in order to load the language file in case the requested language is not available
+- Modifications in control_objectlist_menu in order to use the text for "export" for the button label instead of the longer version for the CSV export
+- Implementation of the new chart icon and table icon for all design themes
+- Modifications in the Report Management module in order to use the standard toolbar icons for the report actions instead of buttons
+- Modifications in the function getpublication, getlocation, and getobject in Get API in order to verify that the input path is of type string
+- Modifications in function showcolunchart, showareachart, showtimelinechart, and showgeolocationchart in the Report Management API in order to use function isset instead of empty and display zero values in the chart as well
+- Modifications in the CSS class hcmsButtonLabel in all design themes in order to set the height and line-height to 32px due to incorrect alignment with text labels
+- Modifications in function rdbms_insertdailystat in DB Connect in order to remove the system user condition and track the activities of the system user as well
+- Design modifications in template_edit in order to adjust the height of the text area to the maximum height 
 - Update of the update log entry for version 10.2.2 in the installation directory
-- Update of the Users and Report Management Guide
+- Update of the Users, Report Management, and Connector Guide
 - Bug fix: Function getclipboard in Main API did not return folder objects
 - Bug fix: Function rdbms_getdeletedobjects, rdbms_searchuser, and rdbms_searchrecipient in DB Connect used a wrong name to access the result of the row counter
 - Bug fix: Imagemagick could not convert EPS files without a defined colorspace
@@ -7417,3 +7460,9 @@ Release 03/2024
 - Bug fix: Function getlocationname in Get API did return the root variable for the page or component root instead of replacing it
 - Bug fix: Function rdbms_searchcontent in DB Connect added multiple operators if synonyms are used and "AND" or "OR" have been used in the search expression
 - Bug fix: The transparent design themes included the CSS class hcmsButtonTiny:hover twice with different hover colors
+- Bug fix: The Pinterest social media share function in main.js verified a wrong input parameter name
+- Bug fix: Function getobjectlist in Get API did not verify the filename search parameter value for the alternative file name search after the content search
+- Bug fix: Function getmetadata in Get API initialize the metadata variable as string if the separator input has been not requested as an array
+- Bug fix: Function is_facerecognition in Main API did exclude users that are not listed in the main configuration setting $mgmt_config['facerecognition_service_users']
+- Bug fix: The search form in explorer used search parameters from deactivated search panels after switching between the navigation tree and search form since the JS functions hcms_showFormLayer and hcms_hideFormLayer disabled all input elements
+- Bug fix: The JS function hcms_drawChart has not been verified by the local Js function resizeChart before the function call

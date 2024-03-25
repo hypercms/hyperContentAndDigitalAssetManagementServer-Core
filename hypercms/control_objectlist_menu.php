@@ -1756,7 +1756,7 @@ else
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" onclick=\"submitToSelf('export');\"> 
         <img class=\"hcmsIconList\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_export_page.png\" alt=\"".getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang])."\" title=\"".getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang])."\" />
-        <span class=\"\">".getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang])."</span>
+        <span class=\"\">".getescapedtext ($hcms_lang['export'][$lang])."</span>
       </div>";
     }
     ?>

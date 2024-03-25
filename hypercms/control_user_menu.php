@@ -622,7 +622,7 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
 
           $inherit_db = inherit_db_read ();          
           $site_array = array();
-          
+
           if ($inherit_db != false && sizeof ($inherit_db) > 0)
           {
             foreach ($inherit_db as $inherit_db_record)
