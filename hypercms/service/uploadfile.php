@@ -209,23 +209,23 @@ if ($token != "" && checktoken ($token, $user))
   }
 
   // additional text content
-  if (!empty ($result['object']) && is_array ($text_array) && sizeof ($text_array) > 0)
+  if (!empty ($result['objectpath']) && is_array ($text_array) && sizeof ($text_array) > 0)
   {
-    $objects = link_db_getobject ($result['object']);
-    
+    $objects = link_db_getobject ($result['objectpath']);
+
     if (is_array ($objects) && sizeof ($objects) > 0)
     {
       foreach ($objects as $temp_path)
       {
         if ($temp_path != "")
         {
-          $temp_info = getobjectinfo ($site, getlocation ($temp_path), getobject ($temp_path), $user);
-          $temp_contentdata = getobjectcontainer ($site, getlocation ($temp_path), getobject ($temp_path), $user, "work");
+          $temp_info = getobjectinfo (getpublication ($temp_path), getlocation ($temp_path), getobject ($temp_path), $user);
           $temp_container_id = $temp_info['container_id'];
+          $temp_contentdata = loadcontainer ($temp_container_id, "work", $user);
           
           // set text in container
-          $temp_contentdata = settext ($site, $temp_contentdata, $temp_container_id.".xml", $text_array, "u", "no", $user, $user);
-          
+          $temp_contentdata = settext (getpublication ($temp_path), $temp_contentdata, $temp_container_id.".xml", $text_array, "u", "no", $user, $user);
+
           // save working xml content container file
           if (!empty ($temp_contentdata)) $savefile = savecontainer ($temp_container_id, "work", $temp_contentdata, $user);
         }

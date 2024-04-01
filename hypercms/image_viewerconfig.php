@@ -249,12 +249,12 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     </div>
     <hr />
 
-    <strong><?php echo getescapedtext ($hcms_lang['html-body-segment'][$lang]); ?></strong> (<?php echo getescapedtext ($hcms_lang['character-set'][$lang])." ".strtoupper (getcodepage ($lang)); ?>)<br />
+    <strong><?php echo getescapedtext ($hcms_lang['html-body-segment'][$lang]); ?></strong> (<?php echo getescapedtext ($hcms_lang['character-set'][$lang])." ".strtoupper (getcodepage ($lang)); ?>)</strong> <br />
     <?php echo getescapedtext ($hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang]); ?><br /><br />
-    <?php echo getescapedtext ($hcms_lang['image'][$lang]); ?><br/>
+    <strong> <?php echo getescapedtext ($hcms_lang['image'][$lang]); ?> <img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" class="hcmsButtonTiny hcmsIconList" onclick="hcms_copyToClipboard(document.getElementById('codesegment').innerHTML);" alt="<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?>" /><br/>
     <textarea id="codesegment" style="height:140px; width:98%" wrap="VIRTUAL"></textarea><br/><br/>
     <?php if (!$is_mobile) { ?>
-    <?php echo getescapedtext ("360 ".$hcms_lang['image'][$lang]); ?><br/>
+    <?php echo getescapedtext ("360 ".$hcms_lang['image'][$lang]); ?> <img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" class="hcmsButtonTiny hcmsIconList" onclick="hcms_copyToClipboard(document.getElementById('codesegment360').innerHTML);" alt="<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?>" /><br/>
     <textarea id="codesegment360" style="height:140px; width:98%" wrap="VIRTUAL"></textarea><br/>
     <?php } ?>
     <hr />
@@ -274,5 +274,6 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

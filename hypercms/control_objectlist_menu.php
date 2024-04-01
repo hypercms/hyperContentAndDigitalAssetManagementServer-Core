@@ -1102,6 +1102,31 @@ else
     </div> 
   </div>
 
+  <?php if (!empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && !empty ($mgmt_config['db_connect_rdbms'])) { ?>
+  <div class="hcmsToolbarBlock"> 
+  <?php    
+    // Send Mail Button
+    if ($from_page != "recyclebin" && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1)
+    {
+      echo "
+      <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" ";
+        if (!empty ($mgmt_config['message_newwindow'])) echo "onclick=\"submitToWindow('user_sendlink.php', '', 'sendlink', 'location=no,menubar=no,toolbar=no,titlebar=no,scrollbars=yes,resizable=no', 540, 800);\" ";
+        else echo "onclick=\"submitToFrame('user_sendlink.php', 'sendlink');\" ";
+        echo " title=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" alt=\"".getescapedtext ($hcms_lang['send-mail-link'][$lang])."\" />";
+    }
+    else
+    {
+      echo "
+      <div class=\"hcmsButtonOff hcmsInvertColor\">
+        <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_sendlink.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />";
+    }
+    ?>
+      <span class="hcmsButtonLabel"><?php echo getescapedtext($hcms_lang['send'][$lang]); ?></span>
+    </div>
+  </div>
+  <?php } ?>
+
   <div class="hcmsToolbarBlock"> 
     <?php
     // Create new objects
@@ -1695,7 +1720,7 @@ else
 
     <?php    
     // Send Mail Button
-    if (($multiobject_count > 0 || $page != "") && $from_page != "recyclebin" && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && !empty ($mgmt_config['db_connect_rdbms']))
+    if (($multiobject_count > 0 || $page != "") && !$is_mobile && $from_page != "recyclebin" && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && !empty ($mgmt_config['db_connect_rdbms']))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" ";
@@ -1709,6 +1734,7 @@ else
       </div>";
     }
     ?>
+
     <?php
     // Send to Chat Button
     if ($multiobject_count <= 1 && $page != "" && $from_page != "recyclebin" && $setlocalpermission['root'] == 1 && !empty ($mgmt_config['chat']))

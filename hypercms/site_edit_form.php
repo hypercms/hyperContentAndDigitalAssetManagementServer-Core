@@ -694,6 +694,14 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
     </tr>
     <?php } ?>
 
+    <!-- OpenAI API key -->
+    <tr> 
+      <td style="white-space:nowrap; vertical-align:top; padding-top:8px;"><?php echo getescapedtext ("OpenAI API Key"); ?> </td>
+      <td style="white-space:nowrap; vertical-align:top;">
+        <input type="text" name="setting[openai_appkey]" style="width:350px;" value="<?php echo @$mgmt_config[$site_name]['openai_appkey']; ?>" <?php if ($preview == "yes") echo "disabled=\"disabled\""; ?> />
+      </td>
+    </tr>
+
     <!-- publication target -->
     <tr> 
       <td style="white-space:nowrap; vertical-align:top;" colspan="2"><hr /></td>

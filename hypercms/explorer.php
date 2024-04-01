@@ -1706,6 +1706,26 @@ else
       document.getElementById('unsetcolors').checked = false;
     }
 
+    // switch templates in the template select box of the advanced search form
+    function switchTemplates ()
+    {
+      var selectbox_site = document.forms['searchform_advanced'].elements['site'];
+      var site = selectbox_site.options[selectbox_site.selectedIndex].value;
+      var selectbox_template = document.forms['searchform_advanced'].elements['template'];
+      
+      // skip first select option
+      for (var i=1; i<=selectbox_template.options.length; i++)
+      {
+        if (selectbox_template.options[i])
+        {
+          var option = selectbox_template.options[i];
+
+          if (site != "" && option.value.indexOf(site+"/") == -1) option.style.display = "none";
+          else option.style.display = "inline";
+        }
+      }
+    }
+
     // load advanced search form
     function loadForm ()
     {
@@ -2302,7 +2322,7 @@ else
           </div>
           <div id="searchPublicationLayer" style="padding-bottom:3px;">
             <img src="<?php echo getthemelocation(); ?>img/button_filter.png" class="hcmsIconList" style="vertical-align:middle;" /><label for="publication" class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?></label><br />
-            <select id="publication" name="site" style="width:<?php echo $width_searchfield; ?>px;">
+            <select id="publication" name="site" style="width:<?php echo $width_searchfield; ?>px;" onchange="switchTemplates();">
               <option value=""><?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></option>
               <?php
               if (!empty ($siteaccess) && is_array ($siteaccess))
@@ -2350,7 +2370,7 @@ else
         <div id="advancedLayer" style="display:none; clear:right;">
           <label for="template"><?php echo getescapedtext ($hcms_lang['based-on-template'][$lang]); ?></label><br />
           <select id="template" name="template" style="width:<?php echo $width_searchfield; ?>px;" onChange="loadForm();">
-            <option value="">&nbsp;</option>
+            <option value=""><?php echo getescapedtext ($hcms_lang['select'][$lang]); ?></option>
           <?php
           if (!empty ($siteaccess) && is_array ($siteaccess))
           {
@@ -2421,7 +2441,7 @@ else
           ?>
           </select><br />
           <iframe id="contentFrame" name="contentFrame" width="0" height="0" frameborder="0"  style="width:0; height:0; frameborder:0;"></iframe> 
-          <div class="hcmsWorkplaceObjectlist" style="box-sizing:border-box; border:1px solid #000000; width:<?php echo $width_searchfield; ?>px; height:200px; padding:2px; overflow:auto;">
+          <div class="hcmsWorkplaceObjectlist" style="box-sizing:border-box; border:1px solid #000000; width:<?php echo $width_searchfield; ?>px; height:420px; padding:2px; overflow:auto;">
             <div id="contentLayer"></div>
           </div>
           <div style="margin-top:5px;">

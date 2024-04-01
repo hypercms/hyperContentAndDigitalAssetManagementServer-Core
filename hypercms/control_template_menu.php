@@ -392,7 +392,7 @@ parent.hcms_closeSubMenu();
   </div>
   <div class="hcmsToolbarBlock">
     <?php
-    if (!empty ($mgmt_config[$site]['taxonomy']) && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
+    if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"parent.frames['mainFrame'].location='media_taxonomy.php?site=".url_encode($site)."'; resettemplate();\">
@@ -410,7 +410,7 @@ parent.hcms_closeSubMenu();
     }
     ?>
     <?php
-    if (!empty ($mgmt_config[$site]['taxonomy']) && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
+    if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"parent.frames['mainFrame'].location='media_taxonomy_import.php?site=".url_encode($site)."'; resettemplate();\">
@@ -428,7 +428,7 @@ parent.hcms_closeSubMenu();
     }
     ?>
     <?php
-    if (!empty ($mgmt_config[$site]['taxonomy']) && checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
+    if (checkglobalpermission ($site, 'tpl') && checkglobalpermission ($site, 'tpledit'))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"location.href='?action=export&site=".url_encode($site)."&cat=".url_encode($cat)."&token=".$token_new."'; resettemplate();\">

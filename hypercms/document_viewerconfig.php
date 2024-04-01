@@ -165,11 +165,12 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
     </div>
     <hr />
 
-    <strong><?php echo getescapedtext ($hcms_lang['html-body-segment'][$lang]); ?></strong> (<?php echo getescapedtext ($hcms_lang['character-set'][$lang])." ".strtoupper (getcodepage ($lang)); ?>)<br />
-    <?php echo getescapedtext ($hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang]); ?><br /><br />
+    <?php echo getescapedtext ($hcms_lang['mark-and-copy-the-code-from-the-text-area-box-keys-ctrl-a-and-ctrl-c-for-copy-or-right-mouse-button-copy'][$lang]); ?><br/><br/>
+    <strong> <?php echo getescapedtext ($hcms_lang['html-body-segment'][$lang]); ?></strong> (<?php echo getescapedtext ($hcms_lang['character-set'][$lang])." ".strtoupper (getcodepage ($lang)); ?>) 
+    <img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" class="hcmsButtonTiny hcmsIconList" onclick="hcms_copyToClipboard(document.getElementById('codesegment').innerHTML);" alt="<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?>" /><br /><br />
     <textarea id="codesegment" style="height:140px; width:98%" wrap="VIRTUAL"></textarea>
     <hr />
-    <strong><?php echo getescapedtext ($hcms_lang['link'][$lang]); ?></strong><br/><br />
+    <strong><?php echo getescapedtext ($hcms_lang['link'][$lang]); ?></strong> <img src="<?php echo getthemelocation(); ?>img/button_file_copy.png" class="hcmsButtonTiny hcmsIconList" onclick="hcms_copyToClipboard(document.getElementById('viewerlink').innerHTML);" alt="<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['copy'][$lang]); ?>" /><br/><br />
     <textarea id="viewerlink" style="height:120px; width:98%" wrap="VIRTUAL"></textarea>
     <hr />
   </div>
@@ -183,5 +184,6 @@ echo showtopbar ($hcms_lang['media-player-configuration'][$lang], $lang, $mgmt_c
 </div>
 
 <?php includefooter(); ?>
+
 </body>
 </html>

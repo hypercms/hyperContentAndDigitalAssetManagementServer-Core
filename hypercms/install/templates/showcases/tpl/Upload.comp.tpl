@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template>
 <name>Upload</name>
-<user>admin</user>
+<user>demoadmin</user>
 <category>comp</category>
 <extension>php</extension>
 <application>php</application>
@@ -59,7 +59,7 @@ scriptend]
         <tr>
         </tr>
         <tr>
-          <td>&nbsp;</td><td><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></td>
+          <td> </td><td><button class="hcmsButtonGreen" type="button" onClick="location.reload();" >generate code</button></td>
         </tr>
       </table>
       <p>Please do not forget to publish this page after changing the parameters!</p>
@@ -70,7 +70,7 @@ scriptend]
 
   if ($compinfo['published'])
   {
-    $embed_code = "<iframe id='frame_".$uniqid."' src='".cleandomain ($mgmt_config['url_path_cms'])."?wl=".$hash."' frameborder='0' style='border:0; width:".$uploadWidth."px; height:".$uploadHeight."px; overflow:hidden;'></iframe>";
+    $embed_code = "<iframe id='frame_".$uniqid."' src='".$mgmt_config['url_path_cms']."?wl=".$hash."' frameborder='0' style='border:0; width:".$uploadWidth."px; height:".$uploadHeight."px; overflow:hidden;'></iframe>";
   }
   else
   {
@@ -125,7 +125,7 @@ $location_esc = convertpath ($site, $location, $cat);
 // publication management config
 if (valid_publicationname ($site)) require ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
 
-// logon
+// logon with hash code
 if (!empty ($userhash) && empty ($user))
 {
   $login_result = userlogin ("", "", $userhash, "", "");
@@ -172,7 +172,7 @@ if (isset ($mgmt_config[$site]['storage_limit']) && $mgmt_config[$site]['storage
   if (!is_file ($filesize_mem) || (filemtime ($filesize_mem) + 86400) < time())
   {  
     // this function might require some time for the result in case of large databases
-    $filesize = rdbms_getfilesize ("", "%comp%/".$site."/", false);
+    $filesize = rdbms_getfilesize ("", "%comp%/".$site."/");
     savefile ($mgmt_config['abs_path_temp'], $site.".filesize.dat", $filesize['filesize']);
   }
   else $filesize['filesize'] = loadfile ($mgmt_config['abs_path_temp'], $site.".filesize.dat");
@@ -204,7 +204,7 @@ if (!empty ($site) && !empty ($location)) createfolder ($site, $location_esc, $n
 <link rel="stylesheet" href="[hyperCMS:scriptbegin echo getthemelocation($themename)."css/".($is_mobile ? "mobile.css" : "desktop.css"); scriptend]" />
 <link rel="stylesheet" href="<?php echo getthemelocation($themename); ?>css/jquery-fileupload.css" />
 
-<script src="%url_hypercms%/javascript/main.min.js" type="text/javascript"></script>
+<script src="%url_hypercms%/javascript/main.js" type="text/javascript"></script>
 
 <!-- JQuery -->
 <script src="%url_hypercms%/javascript/jquery/jquery.min.js" type="text/javascript"></script>
@@ -284,7 +284,7 @@ $(document).ready(function ()
   function buildButtons (data)
   {      
     // Build the Submit Button
-    var submit = $('<div>&nbsp;</div>');
+    var submit = $('<div> </div>');
     submit.hide()
           .addClass('file_submit')
           .click( function() {
@@ -298,7 +298,7 @@ $(document).ready(function ()
           });
     
     // Button to cancel Download
-    var cancel = $('<div>&nbsp;</div>');
+    var cancel = $('<div> </div>');
     cancel.prop('title', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .prop('alt', hcms_entity_decode('<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>'))
           .addClass('hcmsButtonClose hcmsButtonSizeSquare file_cancel')
@@ -531,7 +531,7 @@ $(document).ready(function ()
       var text = '<div style="margin-bottom:-2px; padding:0; width:160px; font-size:11px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"><?php echo getescapedtext ($hcms_lang['the-file-is-being-processed'][$lang]); ?></div>';
     }    else
     {
-      var text = '&nbsp;';
+      var text = ' ';
     }
     
     elem.css('width', progress+'%').html(text);
@@ -709,14 +709,14 @@ window.onbeforeunload = function() {
     
     <div id="selectedFiles"></div>
     
-    <div style="padding:5px;"><span id="status">0</span>&nbsp;<?php echo getescapedtext ($hcms_lang['files-uploaded'][$lang]); ?></div>
+    <div style="padding:5px;"><span id="status">0</span> <?php echo getescapedtext ($hcms_lang['files-uploaded'][$lang]); ?></div>
     
     <div>
       <div class="row">
-        <input type="text" name="text[name]" value="" placeholder="<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>" style="width:400px; margin:1px 0px;" />
+        <input type="text" name="text[Creator]" value="" placeholder="<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>" style="width:400px; margin:4px 0px;" />
       </div>
       <div class="row">
-        <input type="text" name="text[email]" value="" placeholder="<?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>" style="width:400px; margin:1px 0px;" />
+        <input type="text" name="text[E-Mail]" value="" placeholder="<?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>" style="width:400px; margin:4px 0px;" />
       </div>
       <?php if (!empty ($enableUnzip) && $uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>
       <div class="row">
@@ -732,7 +732,7 @@ window.onbeforeunload = function() {
         <input type="hidden" name="checkduplicates" id="checkduplicates" value="1" />
       <?php } ?>
       <div style="margin:10px 0px 10px 0px;">
-        <img src="<?php echo getthemelocation($themename); ?>img/info.png" class="hcmsButtonSizeSquare" align="absmiddle" />
+        <img src="<?php echo getthemelocation($themename); ?>img/info.png" class="hcmsIconList" align="absmiddle" />
         <?php echo getescapedtext ($hcms_lang['you-can-drag-drop-files-into-the-window'][$lang]); ?>
       </div>
       <div style="margin:0px 0px 10px 0px;">

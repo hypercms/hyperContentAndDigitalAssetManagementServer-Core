@@ -7644,6 +7644,7 @@ function createpublication ($site_name, $user="sys")
 // gs_analyze_video ... Enable automatted video tagging [boolean]
 // gs_speech2text ... Enable automatted speech to text translation for video and audio files [boolean]
 // gs_speech2text_langcode ... language code to be used for Google Speech2Text Cloud service (en-US) [string]
+// openai_appkey ... OpenAI API key [string]
 // url_publ_page ... URL to page root on publication server [string]
 // abs_publ_page ... absolute path to page root on publication server [string]
 // url_publ_rep ... URL to repository root on publication server [string]
@@ -7960,6 +7961,10 @@ function editpublication ($site_name, $setting, $user="sys")
     if (array_key_exists('gs_speech2text_langcode', $setting)) $gs_speech2text_langcode_new = trim ($setting['gs_speech2text_langcode']);
     else $gs_speech2text_langcode_new = "";
 
+    // set OpenAI API key
+    if (array_key_exists('openai_appkey', $setting)) $openai_appkey_new = trim ($setting['openai_appkey']);
+    else $openai_appkey_new = "";
+
     // AD Domain controllers
     if (is_array ($setting) && array_key_exists ('ldap_servers', $setting) && $setting['ldap_servers'] != "")
     {
@@ -8168,6 +8173,9 @@ function editpublication ($site_name, $setting, $user="sys")
 // Enabled languages for translation service
 \$mgmt_config['".$site_name."']['translate'] = \"".str_replace ("\"", "", $translate_new)."\";
 
+";
+
+$site_mgmt_config .= "
 // Enable OCR languages
 // Enabled languages for OCR
 \$mgmt_config['".$site_name."']['ocr'] = \"".str_replace ("\"", "", $ocr_new)."\";
@@ -8208,6 +8216,10 @@ function editpublication ($site_name, $setting, $user="sys")
 // Set user notification if an error or warning has been logged
 \$mgmt_config['".$site_name."']['eventlog_notify'] = \"".str_replace ("\"", "", $eventlognotify_new)."\";
 
+";
+
+// only if the connector module is installed
+if (is_dir ($mgmt_config['abs_path_cms']."connector/")) $site_mgmt_config .= "
 // Google Cloud API Key file
 \$mgmt_config['".$site_name."']['gs_access_json'] = \"".str_replace ("\"", "'", $gs_access_json_file_new)."\";
 // Google Vision
@@ -8219,6 +8231,10 @@ function editpublication ($site_name, $setting, $user="sys")
 // Google Speech-to-Text language code
 \$mgmt_config['".$site_name."']['gs_speech2text_langcode'] = \"".str_replace ("\"", "'", $gs_speech2text_langcode_new)."\";
 ";
+
+  $site_mgmt_config .= "
+// OpenAI API Key
+\$mgmt_config['".$site_name."']['openai_appkey'] = \"".str_replace ("\"", "'", $openai_appkey_new)."\";";
 
   // only if the a auth connector has been defined and the connector file does exist
   if (

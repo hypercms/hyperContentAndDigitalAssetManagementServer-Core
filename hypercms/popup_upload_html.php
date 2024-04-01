@@ -299,7 +299,7 @@ $(document).ready(function ()
   // Function that makes the div contain a message instead of file informations
   function buildFileMessage (data, text, success)
   {
-    // Empty the div before
+    // Empty the div before xxx
     data.context.empty();
     
     // apply the correct css for this div
@@ -311,8 +311,12 @@ $(document).ready(function ()
       data.context.addClass('file_error');
     
     // Build name field and buttons
+    var file = data.files[0];
     var name = getFileNameSpan(data.files[0].name);
     var buttons = buildButtons(data);
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
     
     // Build message field
     msg = $('<div style="width:227px; font-size:11px;"></div>');
@@ -321,6 +325,7 @@ $(document).ready(function ()
        
     // Add everything to the context
     data.context.append(name)
+                .append(path)
                 .append(msg)
                 .append(buttons);
   }
@@ -387,12 +392,12 @@ $(document).ready(function ()
   function buildFileUpload (data)
   {
     var div = data.context;
-    var file = data.files[0];
     
     // Empty the div before
     div.empty();
                
     // Name field
+    var file = data.files[0];
     var name = getFileNameSpan(file.name);
 
     // Path field
@@ -759,15 +764,20 @@ $(document).ready(function ()
     else data.context.addClass('file_error');
     
     // Build name field and buttons
+    var file = data.files[0];
     var name = getFileNameSpan(data.files[0].name);
-    var buttons = buildDropboxButtons( data );
-    
+    var buttons = buildDropboxButtons(data);
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
+
     // Build message field
     msg = $('<div style="width:227px; font-size:11px;"></div>');
     msg.html(hcms_entity_decode(text)).addClass('inline file_message');
        
     // Add everything to the context
     data.context.append(name)
+                .append(path)
                 .append(msg)
                 .append(buttons);
   }
@@ -776,13 +786,16 @@ $(document).ready(function ()
   function buildDropboxFileUpload (data)
   {
     var div = data.context;
-    var file = data.files[0];
     
     // Empty the div before
     div.empty();
-               
+
     // Name field
+    var file = data.files[0];
     var name = getFileNameSpan(file.name);
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
         
     // Size field
     var size = $('<div></div>');
@@ -797,6 +810,7 @@ $(document).ready(function ()
 
     // Main Div                
     div.append(name)
+        .append(path)
        .append(size)
        .append(progress)
        .append(buttons)
@@ -865,6 +879,13 @@ $(document).ready(function ()
   {
     // Empty the div before
     data.context.empty();
+
+    // Name field
+    var file = data.files[0];
+    var name = getFileNameSpan(file.name);
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
     
     // apply the correct css for this div
     data.context.removeClass('file_normal')
@@ -883,6 +904,7 @@ $(document).ready(function ()
        
     // Add everything to the context
     data.context.append(name)
+                .append(path)
                 .append(msg)
                 .append(buttons);
   }
@@ -891,14 +913,17 @@ $(document).ready(function ()
   function buildDropboxFileUpload (data)
   {
     var div = data.context;
-    var file = data.files[0];
-    
+
     // Empty the div before
     div.empty();
                
     // Name field
+    var file = data.files[0];
     var name = getFileNameSpan(file.name);
-        
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
+
     // Size field
     var size = $('<div></div>');
     size.text(bytesToSize(file.size))
@@ -913,6 +938,7 @@ $(document).ready(function ()
 
     // Main Div                
     div.append(name)
+       .append(path)
        .append(size)
        .append(progress)
        .append(buttons)
@@ -1071,6 +1097,13 @@ $(document).ready(function ()
     // Empty the div before
     data.context.empty();
 
+    // Name field
+    var file = data.files[0];
+    var name = getFileNameSpan(file.name);
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
+
     // apply the correct css for this div
     data.context.removeClass('file_normal');
 
@@ -1088,6 +1121,7 @@ $(document).ready(function ()
        
     // Add everything to the context
     data.context.append(name)
+                .append(path)
                 .append(msg)
                 .append(buttons);
   }
@@ -1142,6 +1176,13 @@ $(document).ready(function ()
     // Empty the div before
     data.context.empty();
 
+    // Name field
+    var file = data.files[0];
+    var name = getFileNameSpan(file.name);
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
+
     // apply the correct css for this div
     data.context.removeClass('file_normal');
 
@@ -1159,6 +1200,7 @@ $(document).ready(function ()
 
     // Add everything to the context
     data.context.append(name)
+                .append(path)
                 .append(msg)
                 .append(buttons);
   }
@@ -1173,7 +1215,11 @@ $(document).ready(function ()
     div.empty();
 
     // Name field
+    var file = data.files[0];
     var name = getFileNameSpan(file.name);
+
+    // Path field
+    var path = $('<input type="hidden" name="filepath[' + file.name + ']" value="' + file.webkitRelativePath + '" />');
 
     // Size field
     var size = $('<div></div>');
@@ -1189,6 +1235,7 @@ $(document).ready(function ()
 
     // Main Div                
     div.append(name)
+       .append(path)
        .append(size)
        .append(progress)
        .append(buttons)

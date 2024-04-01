@@ -45,6 +45,10 @@ function hcms_copyToClipboard (str)
 {
   if (navigator && navigator.clipboard && navigator.clipboard.writeText)
   {
+    // transform escaped < and >
+    str = str.replace(/&lt;/g, '<');
+    str = str.replace(/&gt;/g, '>');
+
     navigator.clipboard.writeText(str).then(function() {
       console.log('Copied text to clipboard');
     }, function(error) {
@@ -602,6 +606,7 @@ function hcms_sharelinkFacebook (url, title, description)
   if (url != "")
   {
     var sharelink = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url) + "&title=" + encodeURIComponent(title) + "&quote=" + encodeURIComponent(description) + "&description=" + encodeURIComponent(description);
+    console.log('Share with Facebook');
     hcms_openWindow (sharelink, "", "", 800, 800);
   }
   else return false;
@@ -609,19 +614,10 @@ function hcms_sharelinkFacebook (url, title, description)
 
 function hcms_sharelinkTwitter (url, text)
 {
-  if (url != "" && text != "")
-  {
-    var sharelink = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&source=hypercms&related=hypercms&url=" + encodeURIComponent(url);
-    hcms_openWindow (sharelink, "", "", 800, 800);
-  }
-  else return false;
-}
-
-function hcms_sharelinkGooglePlus (url)
-{
   if (url != "")
   {
-    var sharelink = "https://plus.google.com/share?url=" + encodeURIComponent(url);
+    var sharelink = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&source=hypercms&related=hypercms&url=" + encodeURIComponent(url);
+    console.log('Share with Twitter/X');
     hcms_openWindow (sharelink, "", "", 800, 800);
   }
   else return false;
@@ -629,9 +625,10 @@ function hcms_sharelinkGooglePlus (url)
 
 function hcms_sharelinkLinkedin (url, title, summary, source)
 {
-  if (url != "" && title != "")
+  if (url != "")
   {
     var sharelink = "https://www.linkedin.com/shareArticle?mini=true&url=" + encodeURIComponent(url) + "&title=" + encodeURIComponent(title) + "&summary=" + encodeURIComponent(summary) + "&source=" + encodeURIComponent(source);
+    console.log('Share with Linkedin');
     hcms_openWindow (sharelink, "", "", 800, 800);
   }
   else return false;
@@ -639,9 +636,10 @@ function hcms_sharelinkLinkedin (url, title, summary, source)
 
 function hcms_sharelinkPinterest (image_url, description)
 {
-  if (image_url != "" && description != "")
+  if (image_url != "")
   {
     var sharelink = "https://pinterest.com/pin/create/button/?url=" + encodeURIComponent(hcms_extractDomain (image_url)) + "&media=" + encodeURIComponent(image_url) + "&description=" + encodeURIComponent(description);
+    console.log('Share with Pinterest');
     hcms_openWindow (sharelink, "", "", 800, 800);
   }
   else return false;

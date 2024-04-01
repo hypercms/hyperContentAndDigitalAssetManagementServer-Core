@@ -234,8 +234,11 @@ $mgmt_config['chat'] = true;
 // Define if the chat should be "public" for all users of the same publication of "private" (only invited users can see the messages)
 $mgmt_config['chat_type'] = "public";
 
-// Define support user name for chat that will always be present for chat or leave empty
+// Define a user name that will always be present in the chat or leave empty
 $mgmt_config['chat_support'] = "";
+
+// Define a user name for general e-mail support or leave empty
+$mgmt_config['email_support'] = "";
 
 // Define chat update interval in ms
 $mgmt_config['chat_update_interval'] = 1600;
@@ -274,7 +277,7 @@ $mgmt_config['showbuttonlabel'] = true;
 $mgmt_config['showsimilar'] = false;
 
 // Enable (true) or disable (false) the display of the users clipboard objects in the desktop tree 
-$mgmt_config['showclipboard'] = true;
+$mgmt_config['showclipboard'] = false;
 
 // Define alternative logo (URL notation) for top frame.
 $mgmt_config['logo_top'] = "";
@@ -585,7 +588,7 @@ $mgmt_config['maxfilesize'] = 0;
 
 // ZIP File
 // Maximum file size to be compressed in ZIP file in MB. Set value to 0 to disable limit.
-$mgmt_config['maxzipsize'] = 0;
+$mgmt_config['maxzipsize'] = 16000;
 
 // Downloads per day
 // Maximum size in GB of all downloaded media files per day. Set value to 0 to disable limit.
@@ -1170,7 +1173,7 @@ $mgmt_config['ldap_sync_publications_mapping'] = array();
 $mgmt_config['ldap_sync_groups_mapping'] = array();
 
 // Signature template
-// If the user data should be used to create a signature for the  e-mails you can use the following template.
+// If the user data should be used to create a signature for the e-mails you can use the following template.
 // Leave empty or comment if you don't want to use the signature template.
 // Use %firstname%, $lastname%, %email%, and %phone% for the provided user data from LDAP/AD.
 $mgmt_config['ldap_user_signature'] = "Best regards

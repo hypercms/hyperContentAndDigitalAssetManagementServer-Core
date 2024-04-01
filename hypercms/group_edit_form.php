@@ -807,12 +807,11 @@ function hcms_saveEvent ()
         <?php
         foreach ($mgmt_plugin as $temp_name => $temp_array)
         {
-          if (!empty ($rowcolor) && $rowcolor == 1) $rowcolor = 2;
-          else $rowcolor = 1;
-
           // display only active plugins
           if (!empty ($temp_array['active']))
           {
+            if (!empty ($rowcolor) && $rowcolor == 1) $rowcolor = 2;
+            else $rowcolor = 1;
     ?>
     <tr class="hcmsRowData<?php echo $rowcolor; ?>">
       <td style="white-space:nowrap;"><label><input type="checkbox" name="plugin[]" value="<?php echo $temp_name; ?>" <?php if (in_array ($temp_name, $plugin)) echo "checked=\"checked\""; ?> <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> /> <?php echo $temp_array['name']; ?></td>

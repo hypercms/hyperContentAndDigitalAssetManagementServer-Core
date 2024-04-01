@@ -7625,7 +7625,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $viewstore = tpl_getobjectview ($unique_id.".pageview.php", $pageview_parameter, $viewstore, "php");
 
               // empty response
-              if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
+              if (empty ($viewstore)) $viewstore = "PHP/Template script error: View of the response is empty";
 
               // reopen session file
               revokesession ("", "", $session_id);
@@ -7656,7 +7656,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $viewstore = tpl_getobjectview ($unique_id.".pageview.".$templateext, $pageview_parameter, $viewstore, $templateext);
 
               // empty response
-              if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
+              if (empty ($viewstore)) $viewstore = $application." error: View of the response is empty";
 
               // reopen session file
               revokesession ("", "", $session_id);
@@ -7701,10 +7701,13 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               suspendsession ();
 
               // execute code of generator (e.g. create a PDF file)
+              // force HTTP execution/call due to issues with the file content when executed locally
+              $mgmt_config['tplengine_localexecute'] = false;
+
               $viewstore_save = tpl_getobjectview ($unique_id.".generate.php", $pageview_parameter, $viewstore, "php");
 
               // empty response
-              if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
+              if (empty ($viewstore_save)) $viewstore = "Publish error: View of the response is empty";
 
               // reopen session file
               revokesession ("", "", $session_id);
@@ -7713,12 +7716,12 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $viewstore = errorhandler ($viewstore_buffer, $viewstore_save, $unique_id.".generate.php");
 
               // on success, save it to the media repository
-              if ($viewstore == $viewstore_save)
+              if (!empty ($viewstore_save) && $viewstore == $viewstore_save)
               {
                 $mediadir = getmedialocation ($site, $mediafile, "abs_path_media").$site."/";
 
                 // save media file
-                $result_save = savefile ($mediadir, $mediafile, $viewstore);
+                $result_save = savefile ($mediadir, $mediafile, $viewstore_save);
 
                 // create thumbnail
                 createmedia ($site, $mediadir, $mediadir, $mediafile, "", "thumbnail", true, true);
@@ -7766,7 +7769,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
               $viewstore = tpl_getobjectview ($unique_id.".pageview.php", $pageview_parameter, $viewstore, "php");
 
               // empty response
-              if (empty ($viewstore)) $viewstore = "ERROR: View of the response is empty";
+              if (empty ($viewstore)) $viewstore = "Page/Component publish error: View of the response is empty";
 
               // reopen session file
               revokesession ("", "", $session_id);
@@ -10754,9 +10757,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
         // include share links for image and video files
         if (is_dir ($mgmt_config['abs_path_cms']."connector/") && !empty ($mgmt_config[$site]['sharesociallink']) && empty ($recognizefaces_service) && $mediafile != "" && (is_image ($mediafile) || is_video ($mediafile) || is_audio ($mediafile)) && $buildview != "formlock")
         {
-          $sharelink = createwrapperlink ($site, $location, $page, "comp");
-
-          $viewstore .= showsharelinks ($sharelink, $mediafile, $lang, "position:fixed; top:50px; right:12px; width:46px;");
+          $viewstore .= showsharelinks ($site, $location, $page, $mediafile, $lang, "position:fixed; top:50px; right:12px; width:46px;");
         }
 
         // ----------------------------------- workflow status -----------------------------------
@@ -11138,8 +11139,15 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
                 // template variable %publication%
                 if (@substr_count ($list, "%publication%") > 0 && !empty ($siteaccess) && is_array ($siteaccess) && sizeof ($siteaccess) > 0)
                 { 
-                  natcasesort ($siteaccess);
-                  $list = str_replace ("%publication%", implode ("|", array_keys ($siteaccess)), $list);
+                  asort ($siteaccess, SORT_NATURAL);
+                  $temp_array = array();
+
+                  foreach ($siteaccess as $key => $value)
+                  {
+                    if ($key != "" && $value != "") $temp_array[] = $value."{".$key."}";
+                  }
+
+                  $list = str_replace ("%publication%", implode ("|", $temp_array), $list);
                 }
 
                 // get list entries
@@ -11291,8 +11299,9 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
 <!-- load screen --> 
 <div id=\"hcmsLoadScreen\" class=\"hcmsLoadScreen\"></div>
 
-".(trim ($title) != "" ? "<p class=\"hcmsHeadline\">".$title."</p>" : "")."
-".($report != "" ? "<form action=\"".cleandomain ($mgmt_config['url_path_cms'])."report/\" methode=\"post\" style=\"padding:4px;\" onsubmit=\"if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';\">\n <input type=\"hidden\" name=\"reportname\" value=\"".$report."\" />" : "")."
+".(trim ($title) != "" ? "<div class=\"hcmsHeadline\">".$title."</div>" : "")."
+".($report != "" ? "<form action=\"".cleandomain ($mgmt_config['url_path_cms'])."report/report_view.php\" methode=\"get\" target=\"hcmsReportFrame\" style=\"padding:4px;\" onsubmit=\"if (document.getElementById('hcmsLoadScreen')) document.getElementById('hcmsLoadScreen').style.display='inline';\">
+  <input type=\"hidden\" name=\"reportname\" value=\"".$report."\" />" : "")."
     ";
 
     if (isset ($formitem) && is_array ($formitem))
@@ -11308,7 +11317,7 @@ function buildsearchform ($site="", $template="", $report="", $ownergroup="", $c
     }
 
     if ($report != "") $viewstore .= "<br />
-    <button class=\"hcmsButtonGreen\">".getescapedtext ($hcms_lang['forward'][$lang])."</button>
+    <button class=\"hcmsButtonGreen\" onclick=\"if (document.getElementById('hcmsReportFrame')) document.getElementById('hcmsReportFrame').src='".cleandomain ($mgmt_config['url_path_cms'])."loading.php';\">".getescapedtext ($hcms_lang['create'][$lang])."</button>
   ";
 
   $viewstore .= "

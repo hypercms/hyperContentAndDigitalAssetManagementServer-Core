@@ -755,7 +755,7 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
             // if the mailserver config entry is empty, the email address of the user will be used for FROM
             $mail_header = "";
 
-            if (!empty ($email_from) && $mgmt_config[$site]['mailserver'] == "")
+            if (!empty ($email_from) && empty ($mgmt_config[$site]['mailserver']))
             {
               $mailer->From = $email_from;
               $mailer->FromName = $realname_from;

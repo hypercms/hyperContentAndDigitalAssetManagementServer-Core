@@ -938,17 +938,17 @@ function showactionicon ($action, $lang="en", $style="width:64px; height:64px;",
 
 // --------------------------------------- showsharelinks -------------------------------------------
 // function: showsharelinks ()
-// input: link to share [string], media file name [string], language code [string] (optional), additional style definitions of div-layer [string] (optional), ID of div-layer [string] (optional)
+// input: publication name [string], absolute or relative location path [string], object name [string], media file name [string], language code [string] (optional), additional style definitions of div-layer [string] (optional), ID of div-layer [string] (optional)
 // output: message in div layer / false on error
 
 // description:
 // Returns the presenation of share links of social media platforms
 
-function showsharelinks ($link, $mediafile, $lang="en", $style="", $id="hcms_shareLayer")
+function showsharelinks ($site, $location, $page, $mediafile, $lang="en", $style="", $id="hcms_shareLayer")
 {
   global $mgmt_config, $hcms_charset, $hcms_lang_codepage, $hcms_lang;
  
-  if (is_dir ($mgmt_config['abs_path_cms']."connector/") && $link != "" && $lang != "" && $id != "")
+  if (is_dir ($mgmt_config['abs_path_cms']."connector/") && valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($page) && $lang != "" && $id != "")
   {
     // load language if it has not been loaded
     if (empty ($hcms_lang['required-input-is-missing'][$lang]))
@@ -958,29 +958,42 @@ function showsharelinks ($link, $mediafile, $lang="en", $style="", $id="hcms_sha
 
     if ($style == "") $style = "width:46px;";
 
+    $location_esc = convertpath ($site, $location, "comp");
+    $location = deconvertpath ($location_esc, "file");
+
+    // wrapper link for sharing
+    $link = createwrapperlink ($site, $location, $page, "comp");
+
+    // Youtube upload (not for portals)
+    $portal = getsession ("hcms_portal");
+
     $result = "
   <div id=\"".$id."\" class=\"hcmsInfoBox\" style=\"".$style."\">".
     getescapedtext ($hcms_lang['share'][$lang])."<br />";
 
     // Facebook (only images are supported by GET API)
     if (is_image ($mediafile)) $result .= "
-    <img src=\"".getthemelocation()."img/icon_facebook.png\" title=\"Facebook\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkFacebook('".$link."', hcms_getcontentByName('textu_Title'), hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
+    <img src=\"".getthemelocation()."img/icon_facebook.png\" title=\"Facebook\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"if (hcms_sharelinkFacebook('".$link."', hcms_getcontentByName('textu_Title'), hcms_getcontentByName('textu_Description'))) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
 
     // Twitter (support also videos and audio files as external links via GET API)
     $result .= "
-    <img src=\"".getthemelocation()."img/icon_twitter.png\" title=\"Twitter\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkTwitter('".$link."', hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
+    <img src=\"".getthemelocation()."img/icon_twitter.png\" title=\"Twitter / X\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"if (hcms_sharelinkTwitter('".$link."', hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
 
     // LinkedIn (only images are supported by GET API)
     if (is_image ($mediafile)) $result .= "
-    <img src=\"".getthemelocation()."img/icon_linkedin.png\" title=\"LinkedIn\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkLinkedin('".$link."', hcms_getcontentByName('textu_Title'), hcms_getcontentByName('textu_Description'), hcms_getcontentByName('Creator')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
+    <img src=\"".getthemelocation()."img/icon_linkedin.png\" title=\"LinkedIn\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"if (hcms_sharelinkLinkedin('".$link."', hcms_getcontentByName('textu_Title') == false, hcms_getcontentByName('textu_Description'), hcms_getcontentByName('Creator'))) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
 
     // Pinterest (only images are supported by GET API)
     if (is_image ($mediafile)) $result .= "
-    <img src=\"".getthemelocation()."img/icon_pinterest.png\" title=\"Pinterest\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkPinterest('".$link."', hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
+    <img src=\"".getthemelocation()."img/icon_pinterest.png\" title=\"Pinterest\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"if (hcms_sharelinkPinterest('".$link."', hcms_getcontentByName('textu_Description')) == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />";
 
-    // Google+ (support also videos and audio files as external links via GET API)
-    // $result .= "
-    // <img src=\"".getthemelocation()."img/icon_googleplus.png\" title=\"Google+\" class=\"hcmsButton\" onclick=\"if (hcms_sharelinkGooglePlus('".$link."') == false) alert('".getescapedtext ($hcms_lang['required-input-is-missing'][$lang])."');\" /><br />
+    // Youtube upload (only videos are supported)
+    if (is_video ($mediafile) && !empty ($mgmt_config['youtube_oauth2_client_id']) && !empty ($mgmt_config[$site]['youtube']) && empty ($portal))
+    {
+      $result .= "
+    <img src=\"".getthemelocation()."img/icon_youtube.png\" title=\"Youtube\" class=\"hcmsButton hcmsButtonSizeSquare\" onclick=\"parent.openPopup('".$mgmt_config['url_path_cms']."connector/youtube/index.php?site=".url_encode($site)."&page=".url_encode($page)."&location=".url_encode($location_esc)."');\" /><br />";
+    }
+
     $result .= "
   </div>";
 
@@ -3388,7 +3401,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           {
             $downloads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;">
-                <button class="hcmsButtonBlue" style="width:100%; margin:0;" onclick="'.$download_link.'">
+                <button class="hcmsButtonBlue" style="width:100%; margin:0; border-radius:0;" onclick="'.$download_link.'">
                   <img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'
                 </button>
               </td>';
@@ -3400,7 +3413,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
             {		
               $youtube_uploads['original'] = '
               <td class="hcmsHeadlineTiny" style="text-align:left;"> 
-                <button type="button" name="media_youtube" class="hcmsButtonGreen" style="width:100%; margin:0;" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&location='.url_encode(getrequest_esc('location')).'");\'>
+                <button type="button" name="media_youtube" class="hcmsButtonGreen" style="width:100%; margin:0; border-radius:0;" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&location='.url_encode(getrequest_esc('location')).'");\'>
                   <img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'
                 </button>
               </td>';
@@ -3507,7 +3520,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                   {
                     $downloads[$media_extension] = '
                       <td class="hcmsHeadlineTiny hcms'.strtoupper($media_extension).'" style="text-align:left;">
-                        <button class="hcmsButtonBlue" style="width:100%; margin:0;" onclick="'.$download_link.'">
+                        <button class="hcmsButtonBlue" style="width:100%; margin:0; border-radius:0;" onclick="'.$download_link.'">
                           <img src="'.getthemelocation().'img/button_file_download.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['download'][$lang], $hcms_charset, $lang).'
                         </button>
                       </td>'; 
@@ -3519,7 +3532,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
                     {	
                       $youtube_uploads[$media_extension] = '
                       <td class="hcmsHeadlineTiny hcms'.strtoupper($media_extension).'" style="text-align:left;"> 
-                        <button type="button" name="media_youtube" class="hcmsButtonGreen" style="width:100%; margin:0;" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'>
+                        <button type="button" name="media_youtube" class="hcmsButtonGreen" style="width:100%; margin:0; border-radius:0;" onclick=\'parent.openPopup("'.$mgmt_config['url_path_cms'].'connector/youtube/index.php?site='.url_encode($site).'&page='.url_encode($page).'&path='.url_encode($site."/".$video_thumbfile).'&location='.url_encode(getrequest_esc('location')).'");\'>
                           <img src="'.getthemelocation().'img/button_file_upload.png" class="hcmsIconList" /> '.getescapedtext ($hcms_lang['youtube'][$lang], $hcms_charset, $lang).'
                         </button>
                       </td>';

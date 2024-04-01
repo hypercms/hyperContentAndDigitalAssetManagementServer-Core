@@ -6463,4 +6463,74 @@ function mergepdf ($source, $dest)
   }
   else return false;
 }
+
+// -------------------------------------- createAIimage -----------------------------------------
+// function: createAIimage ()
+// input: publication name [string], image description for the text-to-image AI generator [string], image size [WxH] (optional), AI model name [string] (optional), number of images to generate [integer] (optional)
+// output: result array / false on error
+
+// description:
+// Function to generate images using OpenAI’s DALL-E
+
+function createAIimage ($site, $inputtext, $size="1024x1024", $model="dall-e-3", $number=1)
+{
+  global $mgmt_config;
+
+  if (valid_publicationname ($site) && !empty ($mgmt_config[$site]['openai_appkey']))
+  {
+    // initialize
+    $result = array();
+
+    // OpenAI API key
+    $api_key = $mgmt_config[$site]['openai_appkey'];
+
+    // set the DALL-E API endpoint
+    $api_endpoint = "https://api.openai.com/v1/images/generations";
+
+    // prepare the data for the API request
+    $data = [
+      'prompt' => $inputtext,
+      'size' => $size,
+      'model' => $model,
+      'n' => $number
+    ];
+
+    // initialize cURL session
+    $ch = curl_init ($api_endpoint);
+
+    // set cURL options
+    curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt ($ch, CURLOPT_POST, true);
+    curl_setopt ($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt ($ch, CURLOPT_HTTPHEADER, [
+      'Content-Type: application/json',
+      'Authorization: Bearer '.$api_key,
+    ]);
+
+    // execute the cURL request
+    $response = curl_exec ($ch);
+
+    // close cURL session
+    curl_close ($ch);
+
+    // decode the JSON response
+    $responseData = json_decode ($response, true);
+
+    // full response data as array
+    $result['data'] = $responseData['data'];
+
+    // get the generated image URL
+    if (!empty ($responseData['data'][0]['url'])) $result['url'] = $responseData['data'][0]['url'];
+
+    // get image contents
+    if (!empty ($result['url'])) $result['content'] = file_get_contents ($result['url']);
+
+    // output the image or perform further processing
+    if (!empty ($result['url'])) $result['img_tag'] = "<img src=\"".$result['url']."\" alt=\"Generated Image\" />";
+
+    return $result;
+  }
+
+  return false;
+}
 ?>

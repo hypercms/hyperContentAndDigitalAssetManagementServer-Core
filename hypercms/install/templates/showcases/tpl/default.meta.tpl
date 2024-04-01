@@ -9,7 +9,8 @@
 [hyperCMS:textu id='Description' label='Description' infotype='meta' height='90']
 [hyperCMS:textu id='Keywords' label='Keywords' infotype='meta' height='90']
 [hyperCMS:textu id='Copyright' label='Copyright' infotype='meta' height='30']
-[hyperCMS:textu id='Creator' label='Creator' infotype='meta' height='30']
+[hyperCMS:textu id='Creator' label='Creator name' infotype='meta' height='30']
+[hyperCMS:textu id='E-Mail' label='Creator e-mail' infotype='meta' height='30']
 [hyperCMS:textd id='License' infotype='meta' label='License valid till']
 [hyperCMS:textc id='FTP' value='Yes' infotype='meta' label='FTP Publish' groups='Administrator;admin']
 

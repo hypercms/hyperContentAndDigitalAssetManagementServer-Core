@@ -2655,12 +2655,12 @@ function getobjectpathname ($objectpath)
 function getobjectcontainer ($site, $location, $object, $user, $type="work")
 {
   global $mgmt_config;
-
+  
   // deconvert location
   if (is_string ($location) && (substr_count ($location, "%page%") > 0 || substr_count ($location, "%comp%") > 0))
   {
     $cat = getcategory ($site, $location);
-    $location = deconvertpath ($location, $cat);
+    $location = deconvertpath ($location, "file");
   }
 
   // if object includes special characters
@@ -2698,7 +2698,7 @@ function getobjectcontainer ($site, $location, $object, $user, $type="work")
 
       $data = loadcontainer ($container, $type, $user);
 
-      if ($data != false && $data != "") return $data;
+      if (!empty ($data)) return $data;
     }
   }
   

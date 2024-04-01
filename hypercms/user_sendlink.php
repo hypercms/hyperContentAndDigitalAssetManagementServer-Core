@@ -59,11 +59,11 @@ $token_new = createtoken ($user);
   function show_cal (el, field_id, format, time)
   {
     if (cal_obj) return;
-    
+
     cal_field = field_id;
     cal_format = format;
     var datefield = document.getElementById(field_id);
-  
+
   	cal_obj = new RichCalendar();
   	cal_obj.start_week_day = 1;
   	cal_obj.show_time = time;
@@ -591,7 +591,8 @@ $token_new = createtoken ($user);
     {
       $mail_success = array_unique ($mail_success);
       
-      $show .= "<strong>".getescapedtext ($hcms_lang['e-mail-was-sent-successfully-to-'][$lang])."</strong><br />\n".implode (", ", html_encode ($mail_success))."<br />\n";
+      if (empty ($hcms_portal)) $show .= "<strong>".getescapedtext ($hcms_lang['e-mail-was-sent-successfully-to-'][$lang])."</strong><br />\n".implode (", ", html_encode ($mail_success))."<br />\n";
+      else $show .= "<strong>".getescapedtext ($hcms_lang['e-mail-was-sent-successfully-to-'][$lang])." support</strong>\n";
     }
           
     // mail error message
@@ -607,7 +608,7 @@ $token_new = createtoken ($user);
     }
           
     // links
-    if (($download_type == 'download') && !empty ($mail_links) && is_array ($mail_links))
+    if (empty ($hcms_portal) && $download_type == 'download' && !empty ($mail_links) && is_array ($mail_links))
     {
       $show .= "<br /><strong>Links</strong>";
       
@@ -640,6 +641,12 @@ $token_new = createtoken ($user);
       <!-- queue ID of existing mail message -->
       <input type="hidden" name="queue_id" value="<?php if (!empty ($queue_id)) echo $queue_id; ?>" />
 
+    <?php if (!empty ($hcms_portal)) { ?>
+      <!-- support recipient --> 
+      <input type="hidden" name="user_login[]" id="user_login_<?php if (!empty ($mgmt_config['email_support'])) echo $mgmt_config['email_support']; else echo "admin"; ?>" value="<?php if (!empty ($mgmt_config['email_support'])) echo $mgmt_config['email_support']; else echo "admin"; ?>"/>
+
+    <?php } else { ?>
+      <!-- Tabs -->
       <div id="LayerMenu" class="hcmsTabContainer" style="position:absolute; z-index:10; left:0px; top:40px; min-width:380px;">
         <div id="tab1" class="hcmsTabActive">
           <a id="menu-Recipient" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','show','LayerGroup','hide','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?></a>
@@ -674,7 +681,7 @@ $token_new = createtoken ($user);
               <td>
                 <div style="overflow:auto; max-height:120px;" id="emails">
                 <?php
-                // email addresses of non-existig users saved in queue message
+                // email addresses of non-existing users saved in queue message
                 if (!empty ($email_to) && is_array ($email_to))
                 {
                   foreach ($email_to as $temp_email)
@@ -839,10 +846,11 @@ $token_new = createtoken ($user);
         </div>
 
       </div>
+      <hr/>
+    <?php } ?>
      
-      <div id="LayerMail" style="position:absolute; z-index:5; visibility:visible; left:0px; top:275px; padding-left:6px;">
+      <div id="LayerMail" style="position:absolute; z-index:5; visibility:visible; left:0px; top:<?php if (empty ($hcms_portal)) echo "275px"; else echo "42px"; ?>; padding-left:6px;">
       
-        <hr/>
         <!-- Mail Message -->  
         <table class="hcmsTableNarrow">
           <tr>
@@ -902,8 +910,12 @@ $token_new = createtoken ($user);
         </table>
         <hr/>
 
-      <?php if ($page != "" || is_array ($multiobject_array)) { ?>
         <!-- Links -->
+        <?php if (!empty ($hcms_portal)) { ?>
+          <input type="hidden" name="download_type" id="type_download" value="download" />
+
+        <?php } elseif ($page != "" || is_array ($multiobject_array)) { ?>
+        
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-files-as'][$lang]); ?></span>
           <img onClick="switchSelector('linkLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -926,8 +938,10 @@ $token_new = createtoken ($user);
           </table>
         </div>
         <hr/>
+        <?php } ?>
 
         <!-- Formats -->
+        <?php if (empty ($hcms_portal)) { ?>
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?></span>
           <img onClick="switchSelector('formatsLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
@@ -1052,7 +1066,9 @@ $token_new = createtoken ($user);
           <div style="clear:both;"></div>
         </div>
         <hr/>
+        <?php } ?>
 
+        <?php if (empty ($hcms_portal)) { ?>
         <!-- Validity -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['period-of-validity'][$lang]); ?></span>
@@ -1070,8 +1086,9 @@ $token_new = createtoken ($user);
           </table>
         </div>
         <hr/>
+        <?php } ?>
         
-        <?php if (checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?>
+        <?php if (empty ($hcms_portal) && checkrootpermission ('desktoptaskmgmt') && is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?>
         <!-- Tasks -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-new-task'][$lang]); ?></span>
@@ -1105,12 +1122,10 @@ $token_new = createtoken ($user);
         <hr/> 
         <?php } ?>
 
-      <?php } ?>
-
         <table class="hcmsTableNarrow">
           <tr>
             <td>
-              <?php if (is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?>
+              <?php if (empty ($hcms_portal) && is_file ($mgmt_config['abs_path_cms']."task/task_list.php")) { ?>
               <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-e-mail'][$lang]); ?> </span><br/>
               <label><input type="checkbox" name="email_ondate" id="email_ondate" value="yes" onclick="enablefield('email_date', this.checked);" <?php if ($email_ondate == "yes") echo "checked=\"checked\""; ?>/> <?php echo getescapedtext ($hcms_lang['on-date'][$lang]); ?></label> <input type="text" name="email_date" id="email_date" readonly="readonly" style="width:140px;" value="<?php echo showdate ($email_date, "Y-m-d H:i", "Y-m-d H:i"); ?>" /><img id="email_datepicker" src="<?php echo getthemelocation(); ?>img/button_datepicker.png" onclick="show_cal(this, 'email_date', '%Y-%m-%d %H:%i', true); document.getElementById('email_ondate').checked=true; enablefield('email_date', true);" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['select-date'][$lang]); ?>" />
               <?php } else { ?>

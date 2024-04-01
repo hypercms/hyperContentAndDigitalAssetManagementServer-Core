@@ -7444,6 +7444,7 @@ Release 03/2024
 - Design modifications in template_edit in order to adjust the height of the text area to the maximum height 
 - Update of the update log entry for version 10.2.2 in the installation directory
 - Update of the Users, Report Management, and Connector Guide
+- Removed the global plugin configuration file from the install directory
 - Bug fix: Function getclipboard in Main API did not return folder objects
 - Bug fix: Function rdbms_getdeletedobjects, rdbms_searchuser, and rdbms_searchrecipient in DB Connect used a wrong name to access the result of the row counter
 - Bug fix: Imagemagick could not convert EPS files without a defined colorspace
@@ -7466,3 +7467,48 @@ Release 03/2024
 - Bug fix: Function is_facerecognition in Main API did exclude users that are not listed in the main configuration setting $mgmt_config['facerecognition_service_users']
 - Bug fix: The search form in explorer used search parameters from deactivated search panels after switching between the navigation tree and search form since the JS functions hcms_showFormLayer and hcms_hideFormLayer disabled all input elements
 - Bug fix: The JS function hcms_drawChart has not been verified by the local Js function resizeChart before the function call
+
+Version 10.2.3
+Release 06/2024
+- Implementation of the new main configuration setting $mgmt_config['email_support'] to define a recipient user for support via e-mail
+- Modifications in user_sendlink in order to enable portal visitors to send e-mails to the support user defined in the new main configuration setting $mgmt_config['email_support']
+- Modifications in control_objectlist_menu in order to add the send mail-link feature to the toolbar besides the existing action in the sub menu 
+- Modifications in control_objectlist_menu in order to enable the feature send mail-link without object references (linked assets)
+- Modifications in service uploadfile in order to replace function getobjectcontainer by loadcontainer since the container ID is available
+- Implementation of the new Youtube share link in the share button bar (besided the existing Youtube upload buttons for videos)
+- Modifications in function showsharelinks in UI API in order to replace the wrapper link as input by the publication, location and object
+- Modifications in template engine in order to support the new input parameters of function showsharelinks
+- Modifications in the Youtube Connector of the Connector module in order to correct the optional input parameter variables for the content
+- Modifications in the search statictics Plugin in order to display the maximum amount of result entries for some charts
+- Modifications in control_template_menu in order to enable the taxononmy access, import, and export if the taxonomy browsing and search feature is not enabled for the publication
+- Modifications in explorer in order to change the height for the advanced search form to 420 px
+- Modifications in explorer in order to add the select expression to the select box for the templates to the advanced search
+- Implementation of the new local JS function switchTemplates in explorer in order to show or hide the templates of the advanced search based on the selected publication
+- Modifications in JS function hcms_sharelinkFacebook, hcms_sharelinkTwitter, hcms_sharelinkLinkedin, and hcms_sharelinkPinterest in order to only require the share link as mandatory input
+- Modifications in JS function hcms_sharelinkFacebook, hcms_sharelinkTwitter, hcms_sharelinkLinkedin, and hcms_sharelinkPinterest in order to log the access in the browser console
+- Modifications in function showsharelinks in UI API in order to add the CSS class hcmsButtonSizeSquare to all share icons
+- Removed deprecated JS function hcms_sharelinkGooglePlus form main.js
+- Replaced the old Twitter icon by the new X icon in all design themes
+- Modifications in JS function hcms_copyToClipboard in main.js in order to transform escaped < and >
+- Modifications in image_viewerconfig in order to implement copy buttons for the created code segments using the JS function hcms_copyToClipboard
+- Modifications in document_viewerconfig in order to implement copy buttons for the created code segments using the JS function hcms_copyToClipboard
+- Implementation of the new function analyzeSQLattributes in the Report Management API
+- Modifications in function buildsearchform in the template engine in order to support a target for the display of the report and to display the loading screen
+- Modifications in function buildsearchform in the template engine in order to use the publication display names for the text of the publication select box
+- Implementation of the new report_view in order to display the requested report 
+- Modifications in the all_reports Home box in order to display the report when a report has been selected
+- Modifications in the Report Management Plugin in order to display the report when a report has been selected
+- Modifications in the Report Management API in order to set the font color for the different chart types to black
+- Implementation of the new function createAIimage in Media API to generate images using OpenAI’s DALL-E
+- Modifications in site_edit_form in order to implement the new OpenAI API key
+- Modifications in function editpublication in Main API in order to implement the new OpenAI API key
+- Modifications in the main configuration in the install directory in order to disable the display of the current clipboard objects in the explorer
+- Implementation of the new component template AIimageCreator in the install directory (can be used to create images using the DALL-E API)
+- Modifications in function buildview in the template engine in order to verify the content of the Document Generator
+- Modifications in function buildview in the template engine in order to set the main configuration setting $mgmt_config['tplengine_localexecute'] to false due to issues with the file content when executed locally
+- Updates in language files
+- Bug fix: Service uploadfile used object instead of objectpath from the result of function uploadfile and therefore was not able to save the optional text from the request in the objects
+- Bug fix: Function getobjectcontainer in Get API used a wrong parameter for call of function deconvertpath
+- Bug fix: popup_upload_html did not add the filepath used for the upload of directories if an error occured
+- Bug fix: group_edit_form did not set the row colors for each Plugin correctly
+- Bug fix: Function editpublication in Main API did not include the OCR language settings in the publication configuration if the Connector module was not present
