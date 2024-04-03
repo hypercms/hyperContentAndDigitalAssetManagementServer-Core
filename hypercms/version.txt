@@ -7506,7 +7506,14 @@ Release 06/2024
 - Implementation of the new component template AIimageCreator in the install directory (can be used to create images using the DALL-E API)
 - Modifications in function buildview in the template engine in order to verify the content of the Document Generator
 - Modifications in function buildview in the template engine in order to set the main configuration setting $mgmt_config['tplengine_localexecute'] to false due to issues with the file content when executed locally
+- Modifications in createtable.sql in order to add the new index accesslink_object_id to table accesslink
+- Implementation of the new function update_database_v1023 in the Update API in order to create the new index accesslink_object_id for table accesslink
+- Modifications in function update_all in Update API in order to add the new function update_database_v1023
+- Modifications in service sendmail in order to verify the provided multiobjects
+- Modifications in user_sendlink sendmail in order to verify the provided multiobjects
+- Modifications in control_objectlist_menu in order to activate the send button in the toolbar only if an object or multiple objects have been selected 
 - Updates in language files
+- Update of the Administrators Guide
 - Bug fix: Service uploadfile used object instead of objectpath from the result of function uploadfile and therefore was not able to save the optional text from the request in the objects
 - Bug fix: Function getobjectcontainer in Get API used a wrong parameter for call of function deconvertpath
 - Bug fix: popup_upload_html did not add the filepath used for the upload of directories if an error occured

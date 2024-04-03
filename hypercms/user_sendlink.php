@@ -565,7 +565,7 @@ $token_new = createtoken ($user);
       else $multiobject_array[0] = $location_esc.$page;
     }
     
-    echo showgallery ($multiobject_array, 140, "open", $user);
+    if (isset ($multiobject_array) && is_array ($multiobject_array)) echo showgallery ($multiobject_array, 140, "open", $user);
     ?>
     </div>
   </div>
@@ -914,7 +914,7 @@ $token_new = createtoken ($user);
         <?php if (!empty ($hcms_portal)) { ?>
           <input type="hidden" name="download_type" id="type_download" value="download" />
 
-        <?php } elseif ($page != "" || is_array ($multiobject_array)) { ?>
+        <?php } elseif ($page != "" || (isset ($multiobject_array) && is_array ($multiobject_array))) { ?>
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-files-as'][$lang]); ?></span>

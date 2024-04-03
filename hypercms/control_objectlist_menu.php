@@ -1102,11 +1102,11 @@ else
     </div> 
   </div>
 
-  <?php if (!empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && !empty ($mgmt_config['db_connect_rdbms'])) { ?>
+  <?php if (!$is_mobile && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && !empty ($mgmt_config['db_connect_rdbms'])) { ?>
   <div class="hcmsToolbarBlock"> 
   <?php    
     // Send Mail Button
-    if ($from_page != "recyclebin" && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1)
+    if (($multiobject_count > 0 || $folder != "" || $page != "") && $from_page != "recyclebin" && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1)
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" ";
@@ -1720,7 +1720,7 @@ else
 
     <?php    
     // Send Mail Button
-    if (($multiobject_count > 0 || $page != "") && !$is_mobile && $from_page != "recyclebin" && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && !empty ($mgmt_config['db_connect_rdbms']))
+    if (($multiobject_count > 0 || $folder != "" || $page != "") && $from_page != "recyclebin" && !empty ($mgmt_config['smtp_host']) && !empty ($mgmt_config[$site]['sendmail']) && $setlocalpermission['root'] == 1 && $setlocalpermission['sendlink'] == 1 && !empty ($mgmt_config['db_connect_rdbms']))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor hcmsSubMenuItem\" ";

@@ -254,6 +254,8 @@ else
 if (valid_objectname ($user))
 {
   // get object IDs
+  $multiobject_id = "";
+
   if (!empty ($page) || !empty ($multiobject_array))
   { 
     // transform single object to multi object
@@ -920,7 +922,7 @@ elseif ($action == "sendmail" && valid_objectname ($user) && checktoken ($token,
 $allow_attachment = true;
 $allow_download = true;
 
-if ($page != "" || is_array ($multiobject_array))
+if ($page != "" || (isset ($multiobject_array) && is_array ($multiobject_array)))
 {
   // we only check components
   if ($cat == "comp")

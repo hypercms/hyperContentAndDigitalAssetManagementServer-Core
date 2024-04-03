@@ -16,7 +16,8 @@ CREATE TABLE `accesslink` (
   `user` varchar(600) BINARY DEFAULT NULL,
   `deathtime` int(11) DEFAULT NULL,
   `formats` varchar(510) DEFAULT NULL,
-  PRIMARY KEY (`hash`)
+  PRIMARY KEY (`hash`),
+  KEY `accesslink_object_id` (`object_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 DROP TABLE IF EXISTS `object`;
