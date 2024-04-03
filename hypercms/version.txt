@@ -7509,6 +7509,7 @@ Release 06/2024
 - Modifications in createtable.sql in order to add the new index accesslink_object_id to table accesslink
 - Implementation of the new function update_database_v1023 in the Update API in order to create the new index accesslink_object_id for table accesslink
 - Modifications in function update_all in Update API in order to add the new function update_database_v1023
+- Update of the update log entry for version 10.2.3 in the installation directory
 - Modifications in service sendmail in order to verify the provided multiobjects
 - Modifications in user_sendlink sendmail in order to verify the provided multiobjects
 - Modifications in control_objectlist_menu in order to activate the send button in the toolbar only if an object or multiple objects have been selected 
