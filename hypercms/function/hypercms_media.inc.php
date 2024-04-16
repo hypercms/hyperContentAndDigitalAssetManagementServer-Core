@@ -6084,7 +6084,7 @@ function zipfiles ($site, $multiobject_array, $destination="", $zipfilename="", 
     else
     {
       $errcode = "00645";
-      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|".$errcode."|ZIP file '".$zipfilename."' has been successfully created";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|information|".$errcode."|ZIP file '".$destination.$zipfilename."' has been successfully created by user '".$user."'";
 
       // save log
       savelog ($error);

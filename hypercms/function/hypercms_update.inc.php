@@ -2721,6 +2721,39 @@ function update_database_v1022 ()
   else return false;
 }
 
+// ------------------------------------------ update_database_v1023 ----------------------------------------------
+// function: update_database_v1023()
+// input: %
+// output: true / false
+
+// description: 
+// Update of table accesslink to version 10.2.3 by creating a new index.
+
+function update_database_v1023 ()
+{
+  global $mgmt_config;
+
+  if (!checksoftwareversion ("10.2.3"))
+  {
+    // connect to MySQL
+    $db = new hcms_db ($mgmt_config['dbconnect'], $mgmt_config['dbhost'], $mgmt_config['dbuser'], $mgmt_config['dbpasswd'], $mgmt_config['dbname'], $mgmt_config['dbcharset'], "");
+
+    // create new index for md5 hash
+    $sql = 'CREATE INDEX accesslink_object_id ON accesslink (object_id)';
+    $errcode = "50837";
+    $db->rdbms_query ($sql, $errcode, $mgmt_config['today']);
+
+    // save log
+    savelog (array($mgmt_config['today']."|hypercms_update.inc.php|information|10.2.3|updated to version 10.2.3"), "update");
+
+    savelog ($db->rdbms_geterror());
+    $db->rdbms_close();
+
+    return true;
+  }
+  else return false;
+}
+
 // ------------------------------------------ updates_all ----------------------------------------------
 // function: updates_all()
 // input: %
@@ -2779,6 +2812,7 @@ function updates_all ()
     update_database_v1021 ();
     update_database_v10212 ();
     update_database_v1022 ();
+    update_database_v1023 ();
   }
 }
 

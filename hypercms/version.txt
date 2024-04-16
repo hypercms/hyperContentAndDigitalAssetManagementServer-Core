@@ -7512,7 +7512,12 @@ Release 06/2024
 - Update of the update log entry for version 10.2.3 in the installation directory
 - Modifications in service sendmail in order to verify the provided multiobjects
 - Modifications in user_sendlink sendmail in order to verify the provided multiobjects
-- Modifications in control_objectlist_menu in order to activate the send button in the toolbar only if an object or multiple objects have been selected 
+- Modifications in control_objectlist_menu in order to activate the send button in the toolbar only if an object or multiple objects have been selected
+- Modifications in function zipfiles in Media API in order to add the absolut path and usert name to the log entry on success
+- Modifications in function rdbms_optimizedatabase in DB Connect in order to optimize table accesslink, dailystat, keywords_container, notify, project, task, and queue
+- Modifications in daily job in order to execute function rdbms_optimizedatabase on the first day of each month
+- Removed the main configuration setting $mgmt_config['rdbms_optimize'] from the main configuration file in the install directory
+- Modifications in function link_db_save in Link API in order to verify that the link database array exists
 - Updates in language files
 - Update of the Administrators Guide
 - Bug fix: Service uploadfile used object instead of objectpath from the result of function uploadfile and therefore was not able to save the optional text from the request in the objects

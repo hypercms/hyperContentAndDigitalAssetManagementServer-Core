@@ -7704,32 +7704,72 @@ function rdbms_optimizedatabase ()
 
     if (intval ($delete_years) > 0 && intval ($year) > 2000)
     {
-      $sql = 'DELETE FROM dailystat WHERE YEAR(date)<'.$year;
+      $sql = 'DELETE FROM dailystat WHERE YEAR(date)<'.intval ($year);
 
-      $errcode = "50916";
+      $errcode = "50912";
       $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'delete_dailystat');
     }
 
     // optimize database tables
     $sql = 'OPTIMIZE TABLE object';
 
-    $errcode = "50912";
+    $errcode = "50913";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_object');
 
     $sql = 'OPTIMIZE TABLE textnodes';
 
-    $errcode = "50913";
+    $errcode = "50914";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_textnodes');
 
     $sql = 'OPTIMIZE TABLE keywords';
 
-    $errcode = "50914";
+    $errcode = "50915";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_keywords');
+
+    $sql = 'OPTIMIZE TABLE keywords_container';
+
+    $errcode = "50916";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_keywords_container');
     
     $sql = 'OPTIMIZE TABLE taxonomy';
 
-    $errcode = "50915";
+    $errcode = "50917";
     $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_taxonomy');
+
+    $sql = 'OPTIMIZE TABLE dailystat';
+
+    $errcode = "50918";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_dailystat');
+
+    $sql = 'OPTIMIZE TABLE accesslink';
+
+    $errcode = "50919";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_accesslink');
+
+    $sql = 'OPTIMIZE TABLE recipient';
+
+    $errcode = "50920";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_recipient');
+
+    $sql = 'OPTIMIZE TABLE project';
+
+    $errcode = "50921";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_project');
+
+    $sql = 'OPTIMIZE TABLE task';
+
+    $errcode = "50922";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_task');
+
+    $sql = 'OPTIMIZE TABLE queue';
+
+    $errcode = "50923";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_queue');
+
+    $sql = 'OPTIMIZE TABLE notify';
+
+    $errcode = "50924";
+    $done = $db->rdbms_query($sql, $errcode, $mgmt_config['today'], 'optimize_notify');
     
     // save log
     savelog ($db->rdbms_geterror());

@@ -1036,11 +1036,6 @@ $mgmt_config['dbcharset'] = "utf8";
 // Log queries and their executing time in logs/sql.log (true) or do not log (false).
 $mgmt_config['rdbms_log'] = false;
 
-// Optimize database
-// Optimize the database automatically once per year on 1st of January (true) or not (false).
-// It is recommended to create a backup of the database before the execution of the job.
-$mgmt_config['rdbms_optimize'] = false;
-
 // --------------------------------- SMTP Mail System Configuration -----------------------------------
 
 // SMTP parameters for sending e-mails via a given SMTP server

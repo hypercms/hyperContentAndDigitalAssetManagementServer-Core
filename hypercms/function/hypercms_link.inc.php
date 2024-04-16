@@ -349,7 +349,7 @@ function link_db_save ($site, $link_db, $user)
         }
       }
 
-      if (is_array ($link_db_array)) 
+      if (!empty ($link_db_array) && is_array ($link_db_array)) 
       {
         $link_db_data = implode ("\n", $link_db_array);
 

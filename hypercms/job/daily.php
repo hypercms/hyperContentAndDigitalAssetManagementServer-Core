@@ -285,8 +285,8 @@ if (is_file ("../config/config.inc.php"))
 
         // ------------------------------------------- DATABASE OPTIMIZATION -------------------------------------------
 
-        // optimize database on 1st of January each year
-        if (!empty ($mgmt_config['rdbms_optimize']) && date("m-d") == "01-01") rdbms_optimizedatabase ();
+        // optimize database on 1st day of each month
+        if (date("d") == "01") rdbms_optimizedatabase ();
 
       }
     }
