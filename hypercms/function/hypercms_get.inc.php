@@ -2563,6 +2563,27 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
             // transform to readable path
             if ($readable_objectpath == true) $result[$hash]['objectpath'] = "%".$temp_cat ."%".getlocationname ($temp_site, $result[$hash]['objectpath'], $temp_cat, "path");
 
+            // provide dates as UNIX timestanp
+            if (!empty ($result[$hash]['createdate']))
+            {
+              $timestamp = strtotime ($result[$hash]['createdate']);
+              $result[$hash]['createdate_unix'] = $timestamp;
+
+              // convert to UTC
+              date_default_timezone_set ("UTC");
+              $result[$hash]['createdate_utc'] = date ("Y-m-d H:i:s", $timestamp);
+            }
+
+            if (!empty ($result[$hash]['date']))
+            {
+              $timestamp = strtotime ($result[$hash]['date']);
+              $result[$hash]['date_unix'] = $timestamp;
+
+              // convert to UTC
+              date_default_timezone_set ("UTC");
+              $result[$hash]['date_utc'] = date ("Y-m-d H:i:s", $timestamp);
+            }
+
             // add permissions for valid result row
             if ((!empty ($setlocalpermission['root']) || $return_all_levels == true || $return_site_access == true) && is_file ($temp_location.$temp_object))
             {

@@ -7475,12 +7475,12 @@ Release 06/2024
 - Modifications in control_objectlist_menu in order to add the send mail-link feature to the toolbar besides the existing action in the sub menu 
 - Modifications in control_objectlist_menu in order to enable the feature send mail-link without object references (linked assets)
 - Modifications in service uploadfile in order to replace function getobjectcontainer by loadcontainer since the container ID is available
-- Implementation of the new Youtube share link in the share button bar (besided the existing Youtube upload buttons for videos)
+- Implementation of the new Youtube share link in the share button bar (besides the existing Youtube upload buttons for videos)
 - Modifications in function showsharelinks in UI API in order to replace the wrapper link as input by the publication, location and object
 - Modifications in template engine in order to support the new input parameters of function showsharelinks
 - Modifications in the Youtube Connector of the Connector module in order to correct the optional input parameter variables for the content
-- Modifications in the search statictics Plugin in order to display the maximum amount of result entries for some charts
-- Modifications in control_template_menu in order to enable the taxononmy access, import, and export if the taxonomy browsing and search feature is not enabled for the publication
+- Modifications in the search statistics Plugin in order to display the maximum amount of result entries for some charts
+- Modifications in control_template_menu in order to enable the taxonomy access, import, and export if the taxonomy browsing and search feature is not enabled for the publication
 - Modifications in explorer in order to change the height for the advanced search form to 420 px
 - Modifications in explorer in order to add the select expression to the select box for the templates to the advanced search
 - Implementation of the new local JS function switchTemplates in explorer in order to show or hide the templates of the advanced search based on the selected publication
@@ -7513,15 +7513,21 @@ Release 06/2024
 - Modifications in service sendmail in order to verify the provided multiobjects
 - Modifications in user_sendlink sendmail in order to verify the provided multiobjects
 - Modifications in control_objectlist_menu in order to activate the send button in the toolbar only if an object or multiple objects have been selected
-- Modifications in function zipfiles in Media API in order to add the absolut path and usert name to the log entry on success
+- Modifications in function zipfiles in Media API in order to add the absolut path and user name to the log entry on success
 - Modifications in function rdbms_optimizedatabase in DB Connect in order to optimize table accesslink, dailystat, keywords_container, notify, project, task, and queue
 - Modifications in daily job in order to execute function rdbms_optimizedatabase on the first day of each month
 - Removed the main configuration setting $mgmt_config['rdbms_optimize'] from the main configuration file in the install directory
 - Modifications in function link_db_save in Link API in order to verify that the link database array exists
+- The wallpaper service will no longer support requests without version information (effects all versions before 7.0.6)
+- Added .heic file extension for the support of HEIC images to the main configuration file in the install directory
+- Implementation of the new function insertimagetext2pdf in Media API in order to insert an image and texts into an existing page of a PDF file
+- Design modifications in function importxmlfiles in Im/Export API of the Connector module
+- Modifications in function getobjectlist in Get API in order to provide the create and modfified date as UNIX timestamp as well using the names "date_unix" and "createdate_unix"
+- Modifications in function getobjectlist in Get API in order to provide the create and modfified date in UTC (universal time) as well using the names "date_utc" and "createdate_utc" 
 - Updates in language files
-- Update of the Administrators Guide
+- Update of the Administrator and Connector Guide
 - Bug fix: Service uploadfile used object instead of objectpath from the result of function uploadfile and therefore was not able to save the optional text from the request in the objects
 - Bug fix: Function getobjectcontainer in Get API used a wrong parameter for call of function deconvertpath
-- Bug fix: popup_upload_html did not add the filepath used for the upload of directories if an error occured
+- Bug fix: popup_upload_html did not add the filepath used for the upload of directories on error
 - Bug fix: group_edit_form did not set the row colors for each Plugin correctly
 - Bug fix: Function editpublication in Main API did not include the OCR language settings in the publication configuration if the Connector module was not present

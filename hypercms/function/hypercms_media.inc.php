@@ -6464,6 +6464,197 @@ function mergepdf ($source, $dest)
   else return false;
 }
 
+// -------------------------------------- insertimagetext2pdf -----------------------------------------
+// function: insertimagetext2pdf ()
+// input: source pdf file [string], destination pdf file [string], source image array with keys ('image' path,'left' in px,'bottom' in px,'resize' to WxH frame in px or zoom in %) [array], source text array with subkeys (text,left px,bottom px) [array], 
+//        page number [integer], page size like A4 or Letter [string] (optional), density in dpi [integer] (optional), font size in px [integer] (optional)
+// output: true / false on error
+
+// description:
+// Inserts an image and texts to a pdf file as overlay.
+// Requires pdftk and Imagemagick.
+
+function insertimagetext2pdf ($source_pdf, $dest_pdf, $source_image, $source_text, $page, $page_size="A4", $density=144, $font_size=12)
+{
+  global $mgmt_config;
+   
+  if (is_file ($source_pdf) && $dest_pdf != "" && intval ($page) > 0)
+  {  
+    $temp_file = uniqid();
+
+    // dump pdf
+    $cmd = "pdftk \"".str_replace ("\~", "~", escapeshellcmd ($source_pdf))."\" dump_data";
+
+    // execute
+    exec ($cmd, $output, $errorCode);
+
+    if ($errorCode)
+    {
+      $errcode = "10680";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of pdftk failed to dump PDF file (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
+    }
+
+    // get page count
+    if (is_array ($output)) $output = implode ("\n", $output);
+
+    if (strpos ($output, "NumberOfPages:") > 0)
+    {
+      list ($pre, $post) = explode ("NumberOfPages: ", $output);
+      if (!empty ($post)) $pagecount = substr ($post, 0, strpos ($post, "\n"));
+
+      if (empty ($pagecount)) return false;
+    }
+
+    // pull out single page
+    $cmd = "pdftk A=\"".str_replace ("\~", "~", escapeshellcmd ($source_pdf))."\" cat A".intval($page)." output \"".$DIR_temp.$temp_file."-page.pdf\"";
+
+    // execute
+    exec ($cmd, $error_array, $errorCode);
+
+    if ($errorCode)
+    {
+      $errcode = "10681";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of pdftk failed to pull out a single page of the PDF file (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
+    }
+
+    if (!is_file ($mgmt_config['abs_path_temp'].$temp_file."-page.pdf")) return false;
+
+    // create pdf with image positioned from lower left corner
+    if (is_array ($source_image) && sizeof ($source_image) > 1)
+    {
+      // The default A4 page dimensions are 595 × 842 points
+      $cmd = "/usr/bin/convert -units PixelsPerInch \"".str_replace ("\~", "~", escapeshellcmd ($source_image['image']))."\" -gravity southwest ".(!empty ($source_image['resize']) ? "-resize ".intval($source_image['resize']) : "")." -transparent white -page ".strtolower($page_size)."-".intval($source_image['left'])."-".intval($source_image['bottom'])." ".(!empty ($density) ? "-density ".intval($density) : "")." -quality 98 \"".$DIR_temp.$temp_file."-sig.pdf\"";
+
+      // execute
+      exec ($cmd, $error_array, $errorCode);
+
+      if ($errorCode)
+      {
+        $errcode = "10682";
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of convert failed to insert image in the PDF file (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
+      }
+
+      if (!is_file ($mgmt_config['abs_path_temp'].$temp_file."-sig.pdf")) return false;
+
+      // stamp single page
+      $cmd = "pdftk \"".$mgmt_config['abs_path_temp'].$temp_file."-page.pdf\" stamp \"".$mgmt_config['abs_path_temp'].$temp_file."-sig.pdf\" output \"".$mgmt_config['abs_path_temp'].$temp_file."-pagesig.pdf\"";
+
+      // execute
+      exec ($cmd, $error_array, $errorCode);
+
+      if ($errorCode)
+      {
+        $errcode = "10683";
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of pdftk failed to overlay the PDF files (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
+      }
+
+      // remove files
+      if (is_file ($mgmt_config['abs_path_temp'].$temp_file."-sig.pdf")) unlink ($mgmt_config['abs_path_temp'].$temp_file."-sig.pdf");
+      if (is_file ($mgmt_config['abs_path_temp'].$temp_file."-page.pdf")) unlink ($mgmt_config['abs_path_temp'].$temp_file."-page.pdf");
+
+      if (!is_file ($mgmt_config['abs_path_temp'].$temp_file."-pagesig.pdf")) return false;
+    }
+
+    // add text to pdf positioned from lower left corner
+    if (is_array ($source_text) && sizeof ($source_text) > 1)
+    {
+      $text = "";
+
+      foreach ($source_text as $temp_text)
+      {
+        $text .= "text ".intval($temp_text['left']).",".intval($temp_text['bottom'])." '".$temp_text['text']."' ";
+      }
+     
+      // create blank pdf file
+      if (!is_file ($mgmt_config['abs_path_temp']."blank.pdf"))
+      {
+        $cmd = "/usr/bin/convert xc:none -page ".strtoupper($page_size)." \"".$mgmt_config['abs_path_temp']."blank.pdf\"";
+
+        // execute
+        exec ($cmd, $error_array, $errorCode);
+
+        if ($errorCode)
+        {
+          $errcode = "10684";
+          $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of convert failed to create a blank PDF file (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
+
+          return false;
+        }
+      }
+
+      $cmd = "/usr/bin/convert ".(!empty ($density) ? "-density ".intval($density) : "")." \"".$mgmt_config['abs_path_temp']."blank.pdf\" -gravity southwest -pointsize ".intval($font_size)." -fill \"#000000\" -draw \"".$text."\" \"".$mgmt_config['abs_path_temp'].$temp_file."-pagetext.pdf\"";
+
+      // execute
+      exec ($cmd, $error_array, $errorCode);
+
+      if ($errorCode)
+      {
+        $errcode = "10685";
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of convert failed to insert text in the PDF file (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
+      }
+
+      if (!is_file ($mgmt_config['abs_path_temp'].$temp_file."-pagetext.pdf")) return false;
+
+      // stamp single page (in order to keep source pdf with text)
+      $cmd = "pdftk \"".$mgmt_config['abs_path_temp'].$temp_file."-pagesig.pdf\" stamp \"".$mgmt_config['abs_path_temp'].$temp_file."-pagetext.pdf\" output \"".$mgmt_config['abs_path_temp'].$temp_file."-pagesig2.pdf\"";
+
+      // execute
+      exec ($cmd, $error_array, $errorCode);
+
+      if ($errorCode)
+      {
+        $errcode = "10686";
+        $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of pdftk failed to overlay the PDF files (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
+      }
+
+      // remove files
+      if (is_file ($mgmt_config['abs_path_temp'].$temp_file."-pagetext.pdf")) unlink ($mgmt_config['abs_path_temp'].$temp_file."-pagetext.pdf");
+
+      if (!is_file ($mgmt_config['abs_path_temp'].$temp_file."-pagesig2.pdf")) return false;
+      else rename ($mgmt_config['abs_path_temp'].$temp_file."-pagesig2.pdf", $mgmt_config['abs_path_temp'].$temp_file."-pagesig.pdf");
+    }
+
+    // combine pdf files to original pdf
+    // Mit dem folgenden Befehl werden die Seiten 1 bis 7 des Dokuments datei1.pdf und die Seiten 1 bis 5 des Dokuments datei2.pdf sowie anschließend noch die 8. Seite von datei1.pdf zur Datei zusammen.pdf zusammengefügt:
+    // pdftk A=datei1.pdf B=datei2.pdf cat A1-7 B1-5 A8 output zusammen.pdf 
+
+    $start1 = ($page == 1 ? "" : "A1");
+    $start2 = ($page <= 2 ? "" : $page - 1);
+
+    $end1 = ($page == $pagecount ? "" : "A".($page + 1));
+    $end2 = ($page > $pagecount - 2 ? "" : $pagecount);
+
+    $cat = "";
+
+    if ($start1 != "" && $start2 != "") $cat = $start1."-".$start2;
+    elseif ($start1 != "") $cat = $start1;
+
+    $cat .= " B1 ";
+
+    if ($end1 != "" && $end2 != "") $cat .= $end1."-".$end2;
+    elseif ($end1 != "") $cat .= $end1;
+
+    $cmd = "pdftk A=\"".str_replace ("\~", "~", escapeshellcmd ($source_pdf))."\" B=\"".$mgmt_config['abs_path_temp'].$temp_file."-pagesig.pdf\" cat ".$cat." output \"".str_replace ("\~", "~", escapeshellcmd ($dest_pdf))."\"";
+
+    // execute
+    exec ($cmd, $error_array, $errorCode);
+
+    if ($errorCode) savetolog (date ("Y-m-d H:i:s").";insertimage2pdf error:$errorCode, Command:$cmd, Error:".implode (" ", $error_array));
+    {
+      $errcode = "10687";
+      $error[] = $mgmt_config['today']."|hypercms_media.inc.php|error|".$errcode."|Execution of pdftk failed to combine pages into one PDF file (code:".$errorCode.", command:".$cmd.") \t".implode ("\t", $output);
+    }
+
+    // remove file
+    if (is_file ($mgmt_config['abs_path_temp'].$temp_file."-pagesig.pdf")) unlink ($mgmt_config['abs_path_temp'].$temp_file."-pagesig.pdf");
+
+    if (!is_file ($dest_pdf) || $errorCode) return false;
+    else return true;
+  }
+  else return false;
+}
+
+
 // -------------------------------------- createAIimage -----------------------------------------
 // function: createAIimage ()
 // input: publication name [string], image description for the text-to-image AI generator [string], image size [WxH] (optional), AI model name [string] (optional), number of images to generate [integer] (optional)
