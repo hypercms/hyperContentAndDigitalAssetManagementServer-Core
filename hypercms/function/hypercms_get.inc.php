@@ -2570,8 +2570,10 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
               $result[$hash]['createdate_unix'] = $timestamp;
 
               // convert to UTC
+              $timezone = date_default_timezone_get ();
               date_default_timezone_set ("UTC");
               $result[$hash]['createdate_utc'] = date ("Y-m-d H:i:s", $timestamp);
+              date_default_timezone_set ($timezone);
             }
 
             if (!empty ($result[$hash]['date']))
@@ -2580,8 +2582,10 @@ function getobjectlist ($site="", $location="", $folderhash="", $search=array(),
               $result[$hash]['date_unix'] = $timestamp;
 
               // convert to UTC
+              $timezone = date_default_timezone_get ();
               date_default_timezone_set ("UTC");
               $result[$hash]['date_utc'] = date ("Y-m-d H:i:s", $timestamp);
+              date_default_timezone_set ($timezone);
             }
 
             // add permissions for valid result row
