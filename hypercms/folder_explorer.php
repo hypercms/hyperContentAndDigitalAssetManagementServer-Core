@@ -173,7 +173,7 @@ function sendOption(folder_name, folder_location)
                   echo "
         <tr>
           <td style=\"text-align:left; white-space:nowrap;\"><a href=\"".$_SERVER['PHP_SELF']."?cat=".url_encode($cat)."&dir=".url_encode($dir_esc.$folder)."/&site=".url_encode($site)."\"><img src=\"".$icon."\" class=\"hcmsIconList\" /> ".showshorttext($folder_name, 24, false)."</a></td>
-          <td style=\"width:20px; text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" title=\"OK\" alt=\"OK\" /></a></td>
+          <td style=\"width:20px; text-align:right; white-space:nowrap;\"><a href=\"javascript:void(0);\" onclick=\"sendOption('".$location_name.$folder_name."/', '".$dir_esc.$folder."/');\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" title=\"OK\" alt=\"OK\" /></a></td>
         </tr>";
                 }
               }

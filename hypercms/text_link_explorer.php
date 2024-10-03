@@ -260,7 +260,7 @@ function submitLink (url)
             {
               echo "
             <tr>
-              <td><a href=\"javascript:void(0);\" onClick=\"submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 44, false)."</a></td>
+              <td><a href=\"javascript:void(0);\" onclick=\"submitLink('".$file_url."');\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 44, false)."</a></td>
             </tr>";
             }
           }

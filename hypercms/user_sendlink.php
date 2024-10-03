@@ -552,7 +552,7 @@ $token_new = createtoken ($user);
   <!-- preview (do not used nested fixed positioned div-layers due to MS IE and Edge issue) --> 
   <div id="objectviewLayer" style="display:none;">
     <div style="position:fixed; right:5px; top:45px; z-index:8001;">
-      <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="closePopup();" />
+      <img name="hcms_mediaClose" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_mediaClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closePopup();" />
     </div>
     <div id="objectview" class="hcmsWorkplaceExplorer" style="overflow:auto; position:fixed; margin:0; padding:0; left:0; top:40px; right:0; bottom:0; z-index:8000;">
     <?php
@@ -649,13 +649,13 @@ $token_new = createtoken ($user);
       <!-- Tabs -->
       <div id="LayerMenu" class="hcmsTabContainer" style="position:absolute; z-index:10; left:0px; top:40px; min-width:380px;">
         <div id="tab1" class="hcmsTabActive">
-          <a id="menu-Recipient" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','show','LayerGroup','hide','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?></a>
+          <a id="menu-Recipient" href="#" onclick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','show','LayerGroup','hide','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['recipients'][$lang]); ?></a>
         </div>
         <div id="tab2" class="hcmsTabPassive">
-          <a id="menu-Group" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','show','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?></a>
+          <a id="menu-Group" href="#" onclick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','show','LayerSettings','hide'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['user-group'][$lang]); ?></a>
         </div>
         <div id="tab3" class="hcmsTabPassive">
-          <a id="menu-Settings" href="#" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabActive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','hide','LayerSettings','show'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?><span id="attention_settings" style="color:red; font-weight:bold; visibility:hidden;">!</span></a>
+          <a id="menu-Settings" href="#" onclick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabActive'); hcms_elementbyIdStyle('tab4','hcmsTabPassive'); showHideLayers('LayerRecipient','hide','LayerGroup','hide','LayerSettings','show'); close_selector();" title="<?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['settings'][$lang]); ?><span id="attention_settings" style="color:red; font-weight:bold; visibility:hidden;">!</span></a>
         </div>
       </div>
 
@@ -918,7 +918,7 @@ $token_new = createtoken ($user);
         
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['send-files-as'][$lang]); ?></span>
-          <img onClick="switchSelector('linkLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onclick="switchSelector('linkLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>        
         <div id="linkLayer" style="clear:right;">
           <table class="hcmsTableNarrow">
@@ -926,11 +926,11 @@ $token_new = createtoken ($user);
               <td>
                 <table class="hcmsTableNarrow">
                   <?php if ($allow_download) { ?>
-                  <tr><td style="white-space:nowrap;"><label><input type="checkbox" name="download_type" id="type_download" onclick="selectLinkType(this.id); initLinkType();" value="download" <?php if ($download_type == "download" || ($download_type == "" && ($mgmt_config['maillink'] == "download" || $mgmt_config['maillink'] == ""))) echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['download-link'][$lang]); ?></label>&nbsp;</td><td style="white-space:nowrap;"><div class="hcmsButtonTiny" onClick="switchSelector('formatsLayer')"> <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
+                  <tr><td style="white-space:nowrap;"><label><input type="checkbox" name="download_type" id="type_download" onclick="selectLinkType(this.id); initLinkType();" value="download" <?php if ($download_type == "download" || ($download_type == "" && ($mgmt_config['maillink'] == "download" || $mgmt_config['maillink'] == ""))) echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['download-link'][$lang]); ?></label>&nbsp;</td><td style="white-space:nowrap;"><div class="hcmsButtonTiny" onclick="switchSelector('formatsLayer')"> <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                   <?php } ?>
-                  <tr><td style="white-space:nowrap;"><label><input type="checkbox" name="download_type" id="type_access" onclick="selectLinkType(this.id); initLinkType();" value="link" <?php if ($download_type == "link" || ($download_type == "" && $mgmt_config['maillink'] == "access")) echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?></label>&nbsp;</td><td style="white-space:nowrap;"><div class="hcmsButtonTiny" onClick="switchSelector('formatsLayer');">  <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
+                  <tr><td style="white-space:nowrap;"><label><input type="checkbox" name="download_type" id="type_access" onclick="selectLinkType(this.id); initLinkType();" value="link" <?php if ($download_type == "link" || ($download_type == "" && $mgmt_config['maillink'] == "access")) echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['access-link'][$lang]); ?></label>&nbsp;</td><td style="white-space:nowrap;"><div class="hcmsButtonTiny" onclick="switchSelector('formatsLayer');">  <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                   <?php if ($allow_attachment) { ?>
-                  <tr><td style="white-space:nowrap;"><label><input type="checkbox" name="download_type" id="type_attachment" onclick="selectLinkType(this.id); initLinkType();" value="attachment" <?php if ($download_type == "attachment") echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['attachment'][$lang]); ?></label>&nbsp;</td><td style="white-space:nowrap;"><div class="hcmsButtonTiny" onClick="switchSelector('formatsLayer')">  <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
+                  <tr><td style="white-space:nowrap;"><label><input type="checkbox" name="download_type" id="type_attachment" onclick="selectLinkType(this.id); initLinkType();" value="attachment" <?php if ($download_type == "attachment") echo "checked=\"checked\""; ?> />&nbsp;<?php echo getescapedtext ($hcms_lang['attachment'][$lang]); ?></label>&nbsp;</td><td style="white-space:nowrap;"><div class="hcmsButtonTiny" onclick="switchSelector('formatsLayer')">  <img src="<?php echo getthemelocation()."img/button_history_forward.png"; ?>" class="hcmsIconList" /> <?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?>&nbsp;</div></td></tr>
                   <?php } ?>
                 </table>
               </td>
@@ -944,7 +944,7 @@ $token_new = createtoken ($user);
         <?php if (empty ($hcms_portal)) { ?>
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['download-formats'][$lang]); ?></span>
-          <img onClick="switchSelector('formatsLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onclick="switchSelector('formatsLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>        
         <div id="formatsLayer" style="position:absolute; visibility:hidden; height:0px; max-width:<?php echo $css_width_selectbox; ?>; clear:right; scrolling:auto;">
           <div style="padding:0px 6px 4px 0px; float:left;">
@@ -1072,7 +1072,7 @@ $token_new = createtoken ($user);
         <!-- Validity -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['period-of-validity'][$lang]); ?></span>
-          <img onClick="switchSelector('validityLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onclick="switchSelector('validityLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>        
         <div id="validityLayer" style="position:absolute; visibility:hidden; height:0px; clear:right;">
           <table class="hcmsTableStandard">
@@ -1092,7 +1092,7 @@ $token_new = createtoken ($user);
         <!-- Tasks -->
         <div style="display:block; margin-bottom:3px;">
           <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['create-new-task'][$lang]); ?></span>
-          <img onClick="switchSelector('taskLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+          <img onclick="switchSelector('taskLayer')" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
         </div>        
         <div id="taskLayer" style="position:absolute; visibility:hidden; height:0px; clear:right;">
           <table class="hcmsTableStandard">

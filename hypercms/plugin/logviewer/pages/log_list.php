@@ -131,21 +131,21 @@ function initialize ()
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; bottom:32px; width:100%; z-index:1; visibility:visible;">
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:105px;">
+      <td id="c1" onclick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:105px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['type'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:120px;">
+      <td id="c2" onclick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:120px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['datetime'][$lang]); ?>&nbsp;
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:180px;">
+      <td id="c3" onclick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:180px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['source'][$lang]); ?>&nbsp;
       </td>
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:55px;">
+      <td id="c4" onclick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:55px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['code'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead">
+      <td id="c5" onclick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead">
         &nbsp;<?php echo getescapedtext ($hcms_lang['description'][$lang]); ?>&nbsp;
       </td>
     </tr>
@@ -223,7 +223,7 @@ if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile.".l
         }
 
         echo "
-  <tr id=\"g".$items_id."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onClick=\"submitToWindow ('".html_encode($date)."', '".html_encode($source)."', '".html_encode($type)."', '".html_encode($errorcode)."', '".html_encode($description)."');\">
+  <tr id=\"g".$items_id."\" style=\"text-align:left; vertical-align:top; cursor:pointer;\" onclick=\"submitToWindow ('".html_encode($date)."', '".html_encode($source)."', '".html_encode($type)."', '".html_encode($errorcode)."', '".html_encode($description)."');\">
     <td id=\"h".$items_id."_0\" class=\"hcmsCol1 hcmsCell\" style=\"width:105px;\"><img src=\"".getthemelocation()."img/".$icon."\" class=\"hcmsIconList\"> ".$type_name."</td>";
 
         if (!$is_mobile) echo "

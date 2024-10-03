@@ -1642,7 +1642,7 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><div style=\"width:90%;
       <hr />
       <div style="display:block; margin-bottom:3px;">
         <span class="hcmsHeadline"><?php echo getescapedtext ($hcms_lang['options'][$lang]); ?></span>
-        <img onClick="activateOptions()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
+        <img onclick="activateOptions()" class="hcmsButtonTiny" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" style="float:right; width:31px; height:16px;" alt="+/-" title="+/-" />
       </div>
       <div id="optionsLayer" <?php if ($is_mobile) echo "class=\"hcmsTextSmall\""; ?> style="position:relative; z-index:10; display:block; box-sizing:border-box; overflow:hidden; <?php if ($uploadmode != "single") echo "height:0px;"; else "height:80px;"; ?> clear:right;">
         <?php if ($uploadmode == "multi" && is_array ($mgmt_uncompress) && sizeof ($mgmt_uncompress) > 0) { ?>

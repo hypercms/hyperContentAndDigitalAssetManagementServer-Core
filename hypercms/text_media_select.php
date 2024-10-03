@@ -250,7 +250,7 @@ if (!empty ($mediafile))
       <tr>
         <td style=\"vertical-align:middle;\">
           ".$hcms_lang['confirm-selection'][$lang].":&nbsp;
-          <img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onClick=\"submitMedia();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonOK','','".getthemelocation()."img/button_ok_over.png',1)\" name=\"ButtonOK\" alt=\"OK\" title=\"OK\" />
+          <img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsButtonTinyBlank hcmsButtonSizeSquare\" onclick=\"submitMedia();\" onMouseOut=\"hcms_swapImgRestore()\" onMouseOver=\"hcms_swapImage('ButtonOK','','".getthemelocation()."img/button_ok_over.png',1)\" name=\"ButtonOK\" alt=\"OK\" title=\"OK\" />
         </td>
       </tr>
     </table>

@@ -122,10 +122,10 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
           else $temp_object_name = $file_info['name'];
   
           // open on double click
-          $openObject = "onDblClick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($temp_site)."&cat=".url_encode($temp_cat)."&location=".url_encode($temp_location_esc)."&page=".url_encode($temp_object)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"";
+          $openObject = "ondblclick=\"hcms_openWindow('frameset_content.php?ctrlreload=yes&site=".url_encode($temp_site)."&cat=".url_encode($temp_cat)."&location=".url_encode($temp_location_esc)."&page=".url_encode($temp_object)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', ".windowwidth("object").", ".windowheight("object").");\"";
           
           // onclick for marking objects
-          $selectclick = "onClick=\"hcms_selectObject(this.id, event);\"";
+          $selectclick = "onclick=\"hcms_selectObject(this.id, event);\"";
           
           // set context
           $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('".$temp_site."', '".$temp_cat."', '".$temp_location_esc."', '".$temp_object."', '".$temp_object_name."', '".$file_info['type']."', '".$queue_user."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
@@ -174,10 +174,10 @@ if (is_array ($queue_array) && sizeof ($queue_array) > 0)
         $temp_object_name = $file_info['name'];
         
         // open on double click
-        $openObject = "onDblClick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&queue_id=".url_encode($queue_id)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', 600, 900);\"";
+        $openObject = "ondblclick=\"hcms_openWindow('user_sendlink.php?mailfile=".url_encode($mailfile)."&queue_id=".url_encode($queue_id)."&token=".$token."', '".$queue_id."', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=no,resizable=yes,status=no', 600, 900);\"";
         
         // onclick for marking objects
-        $selectclick = "onClick=\"hcms_selectObject(this.id, event);\"";
+        $selectclick = "onclick=\"hcms_selectObject(this.id, event);\"";
         
         // set context
         $hcms_setObjectcontext = "style=\"display:block;\" onMouseOver=\"hcms_setQueuecontext('', '".$temp_cat."', '', '".$mailfile."', '".$temp_object_name."', 'mail', '".$queue_user."', '".$queue_id."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
@@ -322,11 +322,11 @@ function initialize ()
       <table class="hcmsTableStandard" style="width:100%;">
         <tr>
           <td style="white-space:nowrap;">
-            <a href="javascript:void(0);" id="href_edit" onClick="if (buttonaction ('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
+            <a href="javascript:void(0);" id="href_edit" onclick="if (buttonaction ('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
             <hr />
-            <a href="javascript:void(0);" id="href_delete" onClick="if (buttonaction ('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+            <a href="javascript:void(0);" id="href_delete" onclick="if (buttonaction ('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
             <hr />
-            <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+            <a href="javascript:void(0);" id="href_refresh" onclick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
           </td>
         </tr>    
       </table>
@@ -338,23 +338,23 @@ function initialize ()
 <div id="detailviewLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible;">
   <table id="objectlist_head" cols="6" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:180px;">
+      <td id="c1" onclick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:180px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:100px;">
+      <td id="c2" onclick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:100px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['publication'][$lang]); ?>&nbsp;
       </td>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:200px;">
+      <td id="c3" onclick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:200px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['location'][$lang]); ?>&nbsp;
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:140px;">
+      <td id="c4" onclick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:140px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['date'][$lang]); ?>&nbsp;
       </td>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead" style="width:140px;">
+      <td id="c5" onclick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead" style="width:140px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['action'][$lang]); ?>&nbsp;
       </td>
-      <td id="c6" onClick="hcms_sortTable(5);" class="hcmsTableHeader hcmsHead">
+      <td id="c6" onclick="hcms_sortTable(5);" class="hcmsTableHeader hcmsHead">
         &nbsp;<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>

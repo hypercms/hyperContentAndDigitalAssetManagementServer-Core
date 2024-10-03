@@ -394,7 +394,7 @@ function closePopup ()
 <div id="popupLayer" class="hcmsHomeBox" style="position:fixed; left:50%; bottom:0px; z-index:-1; overflow:hidden; width:0px; height:0px; visibility:hidden;">
   <div style="display:block; padding-bottom:5px;">
     <div id="popupTitle" class="hcmsHeadline" style="float:left; margin:6px;"></div>
-    <div style="float:right;"><img name="closedailystatsviewer" src="<?php echo getthemelocation("night"); ?>img/button_close.png" onClick="closePopup();" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closedailystatsviewer','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" /></div>
+    <div style="float:right;"><img name="closedailystatsviewer" src="<?php echo getthemelocation("night"); ?>img/button_close.png" onclick="closePopup();" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closedailystatsviewer','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" /></div>
   </div>
   <div style="width:100%; height:calc(100% - 42px);">
     <iframe id="popupViewer" src="<?php echo $mgmt_config['url_path_cms']; ?>loading.php" style="width:100%; height:100%; border:1px solid #000000;"></iframe>
@@ -419,8 +419,8 @@ function closePopup ()
 <?php if (!$is_mobile && checkrootpermission ('desktop') && checkrootpermission ('desktopsetting')) { ?>
   <!-- plus/minus button -->
   <div id="plusminus" style="position:fixed; top:12px; right:28px; z-index:200;">
-    <img id="button_plusminus" onClick="switchInfo('menubox');" class="hcmsButtonTiny" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
-    <img id="button_fullscreen" onClick="switchFullscreen();" class="hcmsButtonTiny" style="width:22px; height:22px;" src="<?php echo getthemelocation(); ?>img/edit_drag.png" alt="<?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]); ?>" />
+    <img id="button_plusminus" onclick="switchInfo('menubox');" class="hcmsButtonTiny" style="width:43px; height:22px;" src="<?php echo getthemelocation(); ?>img/button_plusminus.png" alt="+/-" title="+/-" />
+    <img id="button_fullscreen" onclick="switchFullscreen();" class="hcmsButtonTiny" style="width:22px; height:22px;" src="<?php echo getthemelocation(); ?>img/edit_drag.png" alt="<?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['enable-fullscreen'][$lang]); ?>" />
   </div>
 
   <!-- add / remove home boxes menu -->
@@ -455,8 +455,8 @@ function closePopup ()
           </td>
           <td class="text-align:center; vertical-align:middle;">
             <br />
-            <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['homebox_select'], this.form.elements['homebox_selected'], false);">&gt;&gt;</button>
-            <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['homebox_selected'], this.form.elements['homebox_select'], true);">&lt;&lt;</button>
+            <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onclick="moveBoxEntry(this.form.elements['homebox_select'], this.form.elements['homebox_selected'], false);">&gt;&gt;</button>
+            <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onclick="moveBoxEntry(this.form.elements['homebox_selected'], this.form.elements['homebox_select'], true);">&lt;&lt;</button>
           </td>
           <td style="vertical-align:top; text-align:left;">
             <span class="hcmsHeadline" style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>

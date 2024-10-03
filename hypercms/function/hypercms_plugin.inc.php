@@ -17,7 +17,8 @@
 function plugin_getdefaultconf ()
 {
   $return = array();
-  // Per default all plugins are inactive
+
+  // per default all plugins are inactive
   $return['active'] = false;
 
   return $return;
@@ -314,7 +315,8 @@ function plugin_generatedefinition ($arrayName, $array)
 
     return $return;
   }
-  else return false;
+  
+  return false;
 }
 
 // --------------------------------------- plugin_saveconfig -------------------------------------------

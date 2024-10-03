@@ -193,7 +193,7 @@ if (empty ($conn_id))
       <tr>
         <td>&nbsp;</td>   
         <td>
-          <button class="hcmsButtonGreen" style="width:160px;" onClick="document.forms['login'].submit();">Log in</button>
+          <button class="hcmsButtonGreen" style="width:160px;" onclick="document.forms['login'].submit();">Log in</button>
         </td>
       </tr>         
     </table>
@@ -314,8 +314,8 @@ else
     </table>
 
     <div class="hcmsWorkplaceObjectlist" style="position:fixed; left:0; bottom:0; width:100%; padding:10px;"> 
-      <button type="button" class="hcmsButtonGreen" onClick="submitfiles();"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></button>
-      <button type="button" class="hcmsButtonOrange" onClick="ftp_logout();"><?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></button>
+      <button type="button" class="hcmsButtonGreen" onclick="submitfiles();"><?php echo getescapedtext ($hcms_lang['select-files'][$lang]); ?></button>
+      <button type="button" class="hcmsButtonOrange" onclick="ftp_logout();"><?php echo getescapedtext ($hcms_lang['logout'][$lang]); ?></button>
     </div>
     
   </form>

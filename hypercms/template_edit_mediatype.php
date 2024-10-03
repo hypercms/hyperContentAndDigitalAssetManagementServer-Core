@@ -29,7 +29,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE html>
 <html>
@@ -80,8 +80,8 @@ function applyconstraints ()
       </tr>    
       <tr>
         <td style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
-        <td style="white-space:nowrap; vertical-align:top;"><input name="apply" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['assign'][$lang]); ?>" onClick="applyconstraints();" />
-        <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();" /></td>
+        <td style="white-space:nowrap; vertical-align:top;"><input name="apply" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['assign'][$lang]); ?>" onclick="applyconstraints();" />
+        <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onclick="self.close();" /></td>
       </tr>  
     </table>
   </form>

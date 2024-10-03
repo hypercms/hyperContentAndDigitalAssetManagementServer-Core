@@ -278,7 +278,7 @@ echo showmessage ($show, 600, 70, $lang, "position:fixed; left:10px; top:50px;")
           }
           ?>
         </select>
-        <img onClick="deletehierarchy()" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+        <img onclick="deletehierarchy()" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
         <hr />
       </td>
     </tr>

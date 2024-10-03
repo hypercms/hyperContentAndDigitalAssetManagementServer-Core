@@ -54,13 +54,13 @@ else $css_iphone = "";
   <!-- tabs -->
   <div id="tabLayer" class="hcmsTabContainer hcmsWorkplaceControl" style="position:fixed; visibility:visible; left:0; right:0; top:0; z-index:10;">
     <div id="tab1" class="hcmsTabActive">
-      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_displayLayers('editLayer','','show', 'versionLayer','','hide', 'infoLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['template'][$lang]); ?></a>
+      <a href="javascript:void(0);" onclick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_displayLayers('editLayer','','show', 'versionLayer','','hide', 'infoLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['template'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['template'][$lang]); ?></a>
     </div>
     <div id="tab2" class="hcmsTabPassive">
-      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); document.getElementById('mainFrame2').src='version_template.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>'; hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_displayLayers('editLayer','','hide', 'versionLayer','','show', 'infoLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['version'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></a>
+      <a href="javascript:void(0);" onclick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); document.getElementById('mainFrame2').src='version_template.php?site=<?php echo $site; ?>&cat=<?php echo $cat; ?>&template=<?php echo $template; ?>'; hcms_elementbyIdStyle('tab3','hcmsTabPassive'); hcms_displayLayers('editLayer','','hide', 'versionLayer','','show', 'infoLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['version'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['version'][$lang]); ?></a>
     </div>
     <div id="tab3" class="hcmsTabPassive">
-      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabActive'); hcms_displayLayers('editLayer','','hide', 'versionLayer','','hide', 'infoLayer','','show');" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['information'][$lang]); ?></a>
+      <a href="javascript:void(0);" onclick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_elementbyIdStyle('tab3','hcmsTabActive'); hcms_displayLayers('editLayer','','hide', 'versionLayer','','hide', 'infoLayer','','show');" title="<?php echo getescapedtext ($hcms_lang['information'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['information'][$lang]); ?></a>
     </div>
   </div>
 

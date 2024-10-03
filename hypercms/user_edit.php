@@ -722,8 +722,8 @@ if (!empty ($login))
             </td>
             <td style=\"text-align:center; vertical-align:middle;\">
               <br />
-              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"hcms_moveFromToSelect(this.form.elements['list1'], this.form.elements['list2'], true)\" value=\"&gt;&gt;\" />
-              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"hcms_moveFromToSelect(this.form.elements['list2'], this.form.elements['list1'], true)\" value=\"&lt;&lt;\" />
+              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onclick=\"hcms_moveFromToSelect(this.form.elements['list1'], this.form.elements['list2'], true)\" value=\"&gt;&gt;\" />
+              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onclick=\"hcms_moveFromToSelect(this.form.elements['list2'], this.form.elements['list1'], true)\" value=\"&lt;&lt;\" />
             </td>
             <td>
               ".getescapedtext ($hcms_lang['assigned-to-group'][$lang])."<br />
@@ -740,7 +740,7 @@ if (!empty ($login))
               echo "</select>
             </td>
             <td style=\"width:32px; text-align:left; vertical-align:middle;\">
-              <img onClick=\"editGroup();\" src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />
+              <img onclick=\"editGroup();\" src=\"".getthemelocation()."img/button_edit.png\" class=\"hcmsButtonTiny hcmsButtonSizeSquare\" alt=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" title=\"".getescapedtext ($hcms_lang['edit'][$lang])."\" />
             </td>
           </tr>
         </table>
@@ -800,8 +800,8 @@ if (!empty ($login))
             </td>
             <td style=\"width:50px; text-align:center; vertical-align:middle;\">
               <br />
-              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"hcms_moveFromToSelect(this.form.elements['list1'], this.form.elements['list2'], true)\" value=\"&gt;&gt;\" />
-              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onClick=\"hcms_moveFromToSelect(this.form.elements['list2'], this.form.elements['list1'], true)\" value=\"&lt;&lt;\" />
+              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onclick=\"hcms_moveFromToSelect(this.form.elements['list1'], this.form.elements['list2'], true)\" value=\"&gt;&gt;\" />
+              <input type=\"button\" class=\"hcmsButtonBlue\" style=\"width:40px; margin:5px; display:block;\" onclick=\"hcms_moveFromToSelect(this.form.elements['list2'], this.form.elements['list1'], true)\" value=\"&lt;&lt;\" />
             </td>
             <td>
               ".getescapedtext ($hcms_lang['assigned-to-publication'][$lang])."<br />
@@ -869,8 +869,8 @@ if (!empty ($login))
           </td>
           <td style="width:50px; text-align:center; vertical-align:middle;">
             <br />
-            <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="hcms_moveFromToSelect(this.form.elements['list3'], this.form.elements['list4'], false)" value="&gt;&gt;" />
-            <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="hcms_moveFromToSelect(this.form.elements['list4'], this.form.elements['list3'], false)" value="&lt;&lt;" />
+            <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onclick="hcms_moveFromToSelect(this.form.elements['list3'], this.form.elements['list4'], false)" value="&gt;&gt;" />
+            <input type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onclick="hcms_moveFromToSelect(this.form.elements['list4'], this.form.elements['list3'], false)" value="&lt;&lt;" />
           </td>
           <td>
           <span style="padding:3px 0px 3px 0px; display:block;"><?php echo getescapedtext ($hcms_lang['selected-object'][$lang]); ?></span>
@@ -886,8 +886,8 @@ if (!empty ($login))
             </select>
           </td>
           <td style="width:32px; text-align:left; vertical-align:middle;">
-            <img onClick="hcms_moveSelected(document.forms['userform'].elements['list4'], false);" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                             
-            <img onClick="hcms_moveSelected(document.forms['userform'].elements['list4'], true);" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" />
+            <img onclick="hcms_moveSelected(document.forms['userform'].elements['list4'], false);" src="<?php echo getthemelocation(); ?>img/button_moveup.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-up'][$lang]); ?>" /><br />                             
+            <img onclick="hcms_moveSelected(document.forms['userform'].elements['list4'], true);" src="<?php echo getthemelocation(); ?>img/button_movedown.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['move-down'][$lang]); ?>" />
           </td>
         </tr>
       </table>

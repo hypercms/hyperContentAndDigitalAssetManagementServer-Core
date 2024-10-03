@@ -304,7 +304,7 @@ echo showmessage ($show, 500, 70, $lang, "position:fixed; left:20px; top:100px;"
               </select>
             </td>
             <td style="text-align:center; vertical-align:middle; padding:2px;">
-              <img onClick="deleteSelected(document.forms['notification_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+              <img onclick="deleteSelected(document.forms['notification_area'].elements['folder']);" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" title="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" alt="<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
             </td>
           </tr>
         </table>

@@ -3366,7 +3366,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
     } 
 
     // build main SQL statement
-    $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media, obj.template, obj.workflowstatus'.$sql_add_attr.$sql_relevance_str.' FROM object AS obj ';
+    $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.media, obj.md5_hash, obj.template, obj.workflowstatus'.$sql_add_attr.$sql_relevance_str.' FROM object AS obj ';
 
     if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
 
@@ -3404,6 +3404,7 @@ function rdbms_searchcontent ($folderpath="", $excludepath="", $object_type="", 
           $objectpath[$hash]['container_id'] = sprintf ("%07d", $row['id']);
           $objectpath[$hash]['template'] = $row['template'];
           $objectpath[$hash]['media'] = $row['media'];
+          $objectpath[$hash]['md5'] = $row['md5_hash'];
           $objectpath[$hash]['workflowstatus'] = $row['workflowstatus'];
 
           if (!empty ($row['date'])) $objectpath[$hash]['date'] = $row['date'];
@@ -4900,19 +4901,19 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
     {
       if (is_numeric ($object_identifier))
       {
-        $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media'.$sql_add_attr.' FROM object AS obj ';
+        $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media, obj.md5_hash'.$sql_add_attr.' FROM object AS obj ';
         if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
         $sql .= 'WHERE obj.deleteuser="" AND obj.object_id='.intval($object_identifier).' LIMIT 1';
       }
       elseif (strpos ("_".$object_identifier, "%comp%/") > 0 || strpos ("_".$object_identifier, "%page%/") > 0)
       {
-        $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media'.$sql_add_attr.' FROM object AS obj ';
+        $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media, obj.md5_hash'.$sql_add_attr.' FROM object AS obj ';
         if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
         $sql .= 'WHERE obj.deleteuser="" AND obj.objectpath="'.str_replace (array("%page%/", "%comp%/"), array("*page*/", "*comp*/"), $object_identifier).'" LIMIT 1';
       }
       else
       {
-        $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media'.$sql_add_attr.' FROM object AS obj ';
+        $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media, obj.md5_hash'.$sql_add_attr.' FROM object AS obj ';
         if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
         $sql .= 'WHERE obj.deleteuser="" AND obj.hash="'.$object_identifier.'" LIMIT 1';
       }
@@ -4952,7 +4953,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
     // try table accesslink
     if ((!is_array ($objectpath) || sizeof ($objectpath) < 1) && !is_numeric ($object_identifier))
     {
-      $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media, al.deathtime, al.formats'.$sql_add_attr.' FROM accesslink AS al INNER JOIN object AS obj ON al.object_id=obj.object_id ';
+      $sql = 'SELECT obj.objectpath, obj.hash, obj.id, obj.template, obj.media, obj.md5_hash, al.deathtime, al.formats'.$sql_add_attr.' FROM accesslink AS al INNER JOIN object AS obj ON al.object_id=obj.object_id ';
       if (isset ($sql_table) && is_array ($sql_table) && sizeof ($sql_table) > 0) $sql .= implode (' ', $sql_table).' ';
       $sql .= 'WHERE obj.deleteuser="" AND al.hash="'.$object_identifier.'" LIMIT 1';
 
@@ -4988,6 +4989,7 @@ function rdbms_getobject_info ($object_identifier, $return_text_id=array())
             $objectpath['template'] = $row['template'];
             $objectpath['hash'] = $row['hash'];
             $objectpath['media'] = $row['media'];
+            $objectpath['md5'] = $row['md5_hash'];
             if (!empty ($row['date'])) $objectpath['date'] = $row['date'];
             if (!empty ($row['createdate'])) $objectpath['createdate'] = $row['createdate'];
             if (!empty ($row['publishdate'])) $objectpath['publishdate'] = $row['publishdate'];

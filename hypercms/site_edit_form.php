@@ -531,8 +531,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
             </td>
             <td class="text-align:center; vertical-align:middle;">
               <br />
-              <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['list1'], this.form.elements['list2'], 1000)">&gt;&gt;</button>
-              <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['list2'], this.form.elements['list1'], 1000)">&lt;&lt;</button>
+              <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onclick="moveBoxEntry(this.form.elements['list1'], this.form.elements['list2'], 1000)">&gt;&gt;</button>
+              <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onclick="moveBoxEntry(this.form.elements['list2'], this.form.elements['list1'], 1000)">&lt;&lt;</button>
             </td>
             <td>
               <?php echo getescapedtext ($hcms_lang['selected-languages'][$lang]); ?><br />
@@ -589,8 +589,8 @@ if (checkrootpermission ('site') && checkrootpermission ('siteedit'))
             </td>
             <td class="text-align:center; vertical-align:middle;">
               <br />
-              <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['ocr1'], this.form.elements['ocr2'], 3);">&gt;&gt;</button>
-              <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onClick="moveBoxEntry(this.form.elements['ocr2'], this.form.elements['ocr1'], 1000);">&lt;&lt;</button>
+              <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onclick="moveBoxEntry(this.form.elements['ocr1'], this.form.elements['ocr2'], 3);">&gt;&gt;</button>
+              <button type="button" class="hcmsButtonBlue" style="width:40px; margin:5px; display:block;" onclick="moveBoxEntry(this.form.elements['ocr2'], this.form.elements['ocr1'], 1000);">&lt;&lt;</button>
             </td>
             <td>
               <?php echo getescapedtext ($hcms_lang['selected-languages'][$lang]); ?><br />

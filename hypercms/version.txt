@@ -7513,7 +7513,7 @@ Release 06/2024
 - Modifications in service sendmail in order to verify the provided multiobjects
 - Modifications in user_sendlink sendmail in order to verify the provided multiobjects
 - Modifications in control_objectlist_menu in order to activate the send button in the toolbar only if an object or multiple objects have been selected
-- Modifications in function zipfiles in Media API in order to add the absolut path and user name to the log entry on success
+- Modifications in function zipfiles in Media API in order to add the absolute path and user name to the log entry on success
 - Modifications in function rdbms_optimizedatabase in DB Connect in order to optimize table accesslink, dailystat, keywords_container, notify, project, task, and queue
 - Modifications in daily job in order to execute function rdbms_optimizedatabase on the first day of each month
 - Removed the main configuration setting $mgmt_config['rdbms_optimize'] from the main configuration file in the install directory
@@ -7531,3 +7531,16 @@ Release 06/2024
 - Bug fix: popup_upload_html did not add the filepath used for the upload of directories on error
 - Bug fix: group_edit_form did not set the row colors for each Plugin correctly
 - Bug fix: Function editpublication in Main API did not include the OCR language settings in the publication configuration if the Connector module was not present
+
+Version 10.2.4
+Release 10/2024
+- Modifications in function rdbms_searchcontent in DB Connect in order to query and include the MD5 hash of an asset (will be passed through to function getobjectlist in the Get API)
+- Modifications in function rdbms_getobject_info in DB Connect in order to query and include the MD5 hash of an asset (will be passed through to function getobjectlist in the Get API)
+- Modifications in the Standard design theme
+- Modifications in function uploadfile in Main API in order to set the md5 hash of an updated file of an asset immediately after upload in case a queue entry is used to execute function createmedia (required for the new LinkRUI Plugin) 
+- Modifications in function uploadfile in Main API in order to remove the use of the uploaded file as thumbnail as fallback in case the thumbnail could not be created
+- Modifications in function uploadfile in Main API in order to remove unnecessary savelog calls
+- Modifications in function uploadfile in Main API in order to create a new log entry if a files content has been updated
+- Minor code modifications in the Plugin API, UI API, and template engine
+- Minor code modifications in several system components
+- Minor code modifications in showcase templates in the install directory

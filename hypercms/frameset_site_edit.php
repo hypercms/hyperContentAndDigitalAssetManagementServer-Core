@@ -52,10 +52,10 @@ else $css_iphone = "";
   <!-- tabs -->
   <div id="tabLayer" class="hcmsTabContainer hcmsWorkplaceControl" style="position:fixed; visibility:visible; left:0; right:0; top:0; z-index:10;">
     <div id="tab1" class="hcmsTabActive">
-      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_displayLayers('settingsLayer','','show', 'inheritanceLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?></a>
+      <a href="javascript:void(0);" onclick="hcms_elementbyIdStyle('tab1','hcmsTabActive'); hcms_elementbyIdStyle('tab2','hcmsTabPassive'); hcms_displayLayers('settingsLayer','','show', 'inheritanceLayer','','hide');" title="<?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['configuration'][$lang]); ?></a>
     </div>
     <div id="tab2" class="hcmsTabPassive">
-      <a href="javascript:void(0);" onClick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_displayLayers('settingsLayer','','hide', 'inheritanceLayer','','show');" title="<?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?></a>
+      <a href="javascript:void(0);" onclick="hcms_elementbyIdStyle('tab1','hcmsTabPassive'); hcms_elementbyIdStyle('tab2','hcmsTabActive'); hcms_displayLayers('settingsLayer','','hide', 'inheritanceLayer','','show');" title="<?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?>"><?php echo getescapedtext ($hcms_lang['inheritance'][$lang]); ?></a>
     </div>
   </div>
 

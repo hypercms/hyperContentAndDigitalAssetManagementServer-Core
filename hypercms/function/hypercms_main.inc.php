@@ -14832,17 +14832,24 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                 if (!empty ($result_upload['result']))
                 {
                   // add createmedia command to queue
-                  if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$temp_dir."\", \"".getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/"."\", \"".$file_name.$file_ext."\", \"jpg\", \"thumbnail\", true, true);", $user);
-                  // create preview
-                  else $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail", true, true);
-
-                  // if thumbnail creation failed use uploaded image as thumbnail image
-                  if ($result_createthumb == false)
+                  if (!empty ($createmedia_in_background))
                   {
-                    @copy ($temp_dir.$media_update, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/".$file_name.".thumb.jpg");
+                    createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$temp_dir."\", \"".getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/"."\", \"".$file_name.$file_ext."\", \"jpg\", \"thumbnail\", true, true);", $user);
+                  }
+                  // create preview
+                  else
+                  {
+                    $result_createthumb = createmedia ($site, $temp_dir, getmedialocation ($site, $file_name.".jpg", "abs_path_media").$site."/", $file_name.$file_ext, "jpg", "thumbnail", true, true);
 
+                    // if thumbnail creation failed use uploaded image as thumbnail image
+                    // deprecated since version 10.2.4
+                    // if ($result_createthumb == false)
+                    // {
+                    //  @copy ($temp_dir.$media_update, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/".$file_name.".thumb.jpg");
+                    //
                     // remote client
-                    remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/", "", $file_name.".thumb.jpg", "");
+                    //  remoteclient ("save", "abs_path_media", $site, getmedialocation ($site, $file_name.".thumb.jpg", "abs_path_media").$site."/", "", $file_name.".thumb.jpg", "");
+                    //}
                   }
                 }
                 // on error
@@ -14852,9 +14859,6 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
 
                   $errcode = "20512";
                   $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The thumbnail file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
-        
-                  // write log
-                  savelog ($error);
                 }
 
                 // delete temporary directory
@@ -14922,6 +14926,9 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               // get converted location
               $location_conv = convertpath ($site, $location, $cat);
 
+              // get md5 hash to update in database (required by LinkRUI plugin)
+              if (!empty ($createmedia_in_background)) $md5_hash = md5_file ($global_files['Filedata']['tmp_name']);
+
               // save new multimedia file
               $result_save = uploadhandler ($global_files['Filedata']['tmp_name'], $symlinktarget_path, $is_remote_file);
 
@@ -14930,14 +14937,15 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               {
                 $errcode = "20513";
                 $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."The updated file '".$global_files['Filedata']['tmp_name']."' for object '".$location_esc.$page."' could not be copied to the server";
-      
-                // write log
-                savelog ($error);
               }
             }
 
             if ($result_save == true)
             {
+              // log entry on success
+              $errcode = "00501";
+              $error[] = date('Y-m-d H:i')."|hypercms_main.inc.php|information|".$errcode."|".($is_webdav ? "WebDAV: " : "")."A new file version for object '".$location_esc.$page."' has been uploaded";
+
               // update symbolic link
               if (is_link ($media_root.$media_orig)) 
               {
@@ -14993,18 +15001,35 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
                   $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".$imageformat;
                   
                   // add createmedia command to queue
-                  if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"original\", false, true);", $user);
+                  if (!empty ($createmedia_in_background))
+                  {
+                    createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"original\", false, true);", $user);
+
+                    // immediate update of the MD5 hash is not possible since the files content will be modified
+                  }
                   // convert image
-                  else createmedia ($site, $media_root, $media_root, $media_update, "", "original", false, true);
+                  else
+                  {
+                    createmedia ($site, $media_root, $media_root, $media_update, "", "original", false, true);
+                  }
                 }
               }
               // create preview (thumbnail for images, previews for video/audio files)
               else
               {
                 // add createmedia command to queue
-                if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"origthumb\", true, true);", $user);
+                if (!empty ($createmedia_in_background))
+                {
+                  createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$media_root."\", \"".$media_root."\", \"".$media_update."\", \"\", \"origthumb\", true, true);", $user);
+                    
+                  // update md5 hash immediately after file upload of a new version (for support of the LinkRUI plugin)
+                  rdbms_setmedia ($container_id, "", "", "", "", "", "", "", "", "", $md5_hash);
+                }
                 // create preview
-                else createmedia ($site, $media_root, $media_root, $media_update, "", "origthumb", true, true);
+                else
+                {
+                  createmedia ($site, $media_root, $media_root, $media_update, "", "origthumb", true, true);
+                }
               }
 
               // remote client for uploaded original image
@@ -15019,9 +15044,15 @@ function uploadfile ($site, $location, $cat, $global_files, $page="", $unzip="",
               else unindexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
 
               // add indexcontent command to queue
-              if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "indexcontent (\"".$site."\", \"".$media_root."\", \"".$media_update."\", \"".$container_id."\", \"\", \"". $user."\");", $user);
+              if (!empty ($createmedia_in_background))
+              {
+                createqueueentry ("execute", $location_esc.$page, date("Y-m-d H:i:s"), 0, "indexcontent (\"".$site."\", \"".$media_root."\", \"".$media_update."\", \"".$container_id."\", \"\", \"". $user."\");", $user);
+              }
               // index content
-              else indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
+              else
+              {
+                indexcontent ($site, $media_root, $media_update, $contentfile, "", $user);
+              }
 
               // remove face detection data
               $contentdata = loadcontainer ($contentfile, "work", $user);
@@ -15306,7 +15337,10 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
                   $mgmt_imageoptions[$formats]['original'] = "-s ".$imagewidth."x".$imageheight." -f ".str_replace (".", "", $media_ext);
                   
                   // add createmedia command to queue
-                  if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$$file, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$medialocation."\", \"".$medialocation."\", \"".$mediafile."\", \"".str_replace (".", "", $media_ext)."\", \"original\", false, true);", $user);
+                  if (!empty ($createmedia_in_background))
+                  {
+                    createqueueentry ("execute", $location_esc.$$file, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$medialocation."\", \"".$medialocation."\", \"".$mediafile."\", \"".str_replace (".", "", $media_ext)."\", \"original\", false, true);", $user);
+                  }
                   // convert image
                   else createmedia ($site, $medialocation, $medialocation, $mediafile, str_replace (".", "", $media_ext), "original", false, true);
                 }
@@ -15317,7 +15351,10 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
           else
           {
             // add createmedia command to queue
-            if (!empty ($createmedia_in_background)) createqueueentry ("execute", $location_esc.$file, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$medialocation."\", \"".$medialocation."\", \"".$mediafile."\", \"\", \"origthumb\", true, true);", $user);
+            if (!empty ($createmedia_in_background)) 
+            {
+              createqueueentry ("execute", $location_esc.$file, date("Y-m-d H:i:s"), 0, "createmedia (\"".$site."\", \"".$medialocation."\", \"".$medialocation."\", \"".$mediafile."\", \"\", \"origthumb\", true, true);", $user);
+            }
             // create preview
             else createmedia ($site, $medialocation, $medialocation, $mediafile, "", "origthumb", true, true);
           }

@@ -29,7 +29,7 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // write and close session (non-blocking other frames)
-if (session_id() != "") session_write_close();
+suspendsession ();
 ?>
 <!DOCTYPE html>
 <html>
@@ -79,8 +79,8 @@ function applylanguage ()
       <tr>
         <td style="white-space:nowrap; vertical-align:top;">&nbsp;</td>
         <td style="white-space:nowrap; vertical-align:top;">
-          <input name="language_values" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['apply'][$lang]); ?>" onClick="applylanguage();" />
-          <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onClick="self.close();" />
+          <input name="language_values" type="button" id="apply" value="<?php echo getescapedtext ($hcms_lang['apply'][$lang]); ?>" onclick="applylanguage();" />
+          <input name="cancel" type="button" id="cancel" value="<?php echo getescapedtext ($hcms_lang['cancel'][$lang]); ?>" onclick="self.close();" />
         </td>
       </tr>      
     </table>

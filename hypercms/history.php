@@ -206,8 +206,8 @@ if ($date_template != "") list ($year_template, $month_template, $day_template) 
   </table>
   
   <div style="margin-top:12px;">
-    <button type="button" name="ButtonSet" class="hcmsButtonGreen" style="width:98%; margin:4px 0px;" onClick="submitform();"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?></button>
-    <button type="button" name="ButtonClean" class="hcmsButtonOrange" style="width:98%; margin:4px 0px;" onClick="cleandate();"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?></button>
+    <button type="button" name="ButtonSet" class="hcmsButtonGreen" style="width:98%; margin:4px 0px;" onclick="submitform();"><?php echo getescapedtext ($hcms_lang['set-date-for-the-journey'][$lang]); ?></button>
+    <button type="button" name="ButtonClean" class="hcmsButtonOrange" style="width:98%; margin:4px 0px;" onclick="cleandate();"><?php echo getescapedtext ($hcms_lang['clean-date-exit'][$lang]); ?></button>
   </style>
 
 </form>

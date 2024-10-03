@@ -183,10 +183,10 @@ function initialize ()
   <table class="hcmsTableNarrow" style="width:100%;">
     <tr>
       <td style="width:38px; height:38px; text-align:left; white-space:nowrap;">
-        <img src="<?php echo getthemelocation(); ?>img/button_user_new.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:3px;" onClick="hcms_switchSelector('select_user');" alt="<?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?>" />
+        <img src="<?php echo getthemelocation(); ?>img/button_user_new.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:3px;" onclick="hcms_switchSelector('select_user');" alt="<?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['invite-online-user'][$lang]); ?>" />
         <div id="select_user" class="hcmsSelector" style="position:absolute; top:32px; left:5px; visibility:hidden; z-index:999; max-width:280px; max-height:300px; overflow:auto; overflow-x:hidden; overflow-y:auto; white-space:nowrap;"></div>
         <?php if (!empty ($mgmt_config['chat_type']) && strtolower ($mgmt_config['chat_type']) == "private") { ?>
-        <img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:3px;" onClick="uninvite();" alt="<?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>" />
+        <img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" class="hcmsButtonTiny hcmsButtonSizeSquare" style="padding:3px;" onclick="uninvite();" alt="<?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['remove-user'][$lang]); ?>" />
         <?php } ?>
       </td>
       <td class="hcmsHeadline" style="text-align:center;">
@@ -194,7 +194,7 @@ function initialize ()
       </td>
       <td style="width:38px; text-align:center;">
         <?php if (!$is_mobile) { ?>
-        <img name="closechat" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closechat','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onClick="parent.hcms_openChat();" />
+        <img name="closechat" src="<?php echo getthemelocation(); ?>img/button_close.png" class="hcmsButtonTiny hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('closechat','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="parent.hcms_openChat();" />
         <?php } ?>
       </td>
     </tr>

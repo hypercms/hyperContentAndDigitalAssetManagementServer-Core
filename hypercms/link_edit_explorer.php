@@ -274,8 +274,8 @@ if (!empty ($dir) && !empty ($site))
         {
           echo "
       <tr>
-        <td style=\"text-align:left; white-space:nowrap;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 24, false)."</a></td>
-        <td style=\"width:20px; text-align:right;\"><a href=\"javascript:void(0);\" onClick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
+        <td style=\"text-align:left; white-space:nowrap;\"><a href=\"javascript:void(0);\" onclick=\"sendInput('".$file_name."', '".$file_path."')\" title=\"".$file_name."\"><img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /> ".showshorttext($file_info['name'], 24, false)."</a></td>
+        <td style=\"width:20px; text-align:right;\"><a href=\"javascript:void(0);\" onclick=\"sendInput('".$file_name."', '".$file_path."')\"><img src=\"".getthemelocation()."img/button_ok.png\" class=\"hcmsIconList\" alt=\"OK\" title=\"OK\" /></a></td>
       </tr>";
         }
       }

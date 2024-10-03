@@ -253,12 +253,12 @@ if (!empty ($object_array) && is_array ($object_array) && sizeof ($object_array)
         // open on double click
         if (checkrootpermission ('user') && checkrootpermission ('useredit') || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) 
         {
-          $openUser = "onDblClick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes', 560, 880);\"";
+          $openUser = "ondblclick=\"hcms_openWindow('user_edit.php?site=".url_encode($site)."&group=".url_encode($group)."&login=".url_encode($object_array['login'][$key])."&token=".$token."', '', 'location=no,menubar=no,toolbar=no,titlebar=no,status=yes,scrollbars=yes,resizable=yes', 560, 880);\"";
         }
         else $openUser = "";
 
         // onclick for marking objects
-        $selectclick = "onClick=\"hcms_selectObject('".$items_id."', event);\" ";
+        $selectclick = "onclick=\"hcms_selectObject('".$items_id."', event);\" ";
         $setContext = "style=\"display:block;\" onMouseOver=\"hcms_setUsercontext('".$site."', '".$object_array['login'][$key]."', '".$token."');\" onMouseOut=\"hcms_resetContext();\" ";
 
         $listview .= "
@@ -385,15 +385,15 @@ function initialize ()
             <?php $tblrow = 1;  
             if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('useredit')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'useredit'))) { 
             ?>
-            <a href="javascript:void(0);" id="href_edit" onClick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
+            <a href="javascript:void(0);" id="href_edit" onclick="if (buttonaction('edit')) hcms_createContextmenuItem ('edit');"><img src="<?php echo getthemelocation(); ?>img/button_user_edit.png" id="img_edit" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['edit'][$lang]); ?></a><br />     
             <hr />
             <?php }
             if ((!valid_publicationname ($site) && checkrootpermission ('user') && checkrootpermission ('userdelete')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user') && checkglobalpermission ($site, 'userdelete'))) {
             ?>
-            <a href="javascript:void(0);" id="href_delete" onClick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
+            <a href="javascript:void(0);" id="href_delete" onclick="if (buttonaction('delete')) hcms_createContextmenuItem ('delete');"><img src="<?php echo getthemelocation(); ?>img/button_user_delete.png" id="img_delete" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['delete'][$lang]); ?></a><br />
             <hr />        
             <?php } ?>   
-            <a href="javascript:void(0);" id="href_refresh" onClick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
+            <a href="javascript:void(0);" id="href_refresh" onclick="document.location.reload();"><img src="<?php echo getthemelocation(); ?>img/button_view_refresh.png" id="img_refresh" class="hcmsIconOn hcmsIconList" />&nbsp;<?php echo getescapedtext ($hcms_lang['refresh'][$lang]); ?></a>
           </td>
         </tr>    
       </table>
@@ -405,21 +405,21 @@ function initialize ()
 <div id="detailviewLayer" style="position:fixed; top:0px; left:0px; bottom:32px; width:100%; z-index:1; visibility:visible; overflow-x:hidden; overflow-y:hidden;">
   <table id="objectlist_head" cols="5" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr>
-      <td id="c1" onClick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:140px;">
+      <td id="c1" onclick="hcms_sortTable(0);" class="hcmsTableHeader hcmsHead" style="width:140px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['user'][$lang]); ?>&nbsp;
       </td>
-      <td id="c2" onClick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:160px;">
+      <td id="c2" onclick="hcms_sortTable(1);" class="hcmsTableHeader hcmsHead" style="width:160px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;
       </td>
       <?php if (!$is_mobile) { ?>
-      <td id="c3" onClick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:300px;">
+      <td id="c3" onclick="hcms_sortTable(2);" class="hcmsTableHeader hcmsHead" style="width:300px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['e-mail'][$lang]); ?>&nbsp;
       </td> 
-      <td id="c4" onClick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:120px;">
+      <td id="c4" onclick="hcms_sortTable(3);" class="hcmsTableHeader hcmsHead" style="width:120px;">
         &nbsp;<?php echo getescapedtext ($hcms_lang['date-created'][$lang]); ?>&nbsp;
       </td>
       <?php } ?>
-      <td id="c5" onClick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead">
+      <td id="c5" onclick="hcms_sortTable(4);" class="hcmsTableHeader hcmsHead">
         &nbsp;<?php echo getescapedtext ($hcms_lang['status'][$lang]); ?>&nbsp;
       </td>
     </tr>

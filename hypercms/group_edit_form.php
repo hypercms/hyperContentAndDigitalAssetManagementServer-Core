@@ -420,7 +420,7 @@ function hcms_saveEvent ()
 
   <table class="hcmsTableStandard" style="width:100%;">
     <tr>
-      <td style="white-space:nowrap;"><label><input type="checkbox" name="selectall" onClick="checkMark();" />
+      <td style="white-space:nowrap;"><label><input type="checkbox" name="selectall" onclick="checkMark();" />
       <?php echo getescapedtext ($hcms_lang['select-all'][$lang]); ?></label></td>
     </tr>
     <tr> 
@@ -689,7 +689,7 @@ function hcms_saveEvent ()
     </tr>
     <tr class="<?php if (!empty ($mgmt_config[$site]['sendmail'])) echo "hcmsRowData1 hcmsAssets"; ?>">
       <td style="white-space:nowrap;">
-        <div class="hcmsButtonTiny" style="white-space:nowrap;" onClick="goToAccess('comp');"><img class="hcmsIconList" src="<?php echo getthemelocation(); ?>img/folder_comp.png" name="go_compaccess" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+        <div class="hcmsButtonTiny" style="white-space:nowrap;" onclick="goToAccess('comp');"><img class="hcmsIconList" src="<?php echo getthemelocation(); ?>img/folder_comp.png" name="go_compaccess" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['access-to-folders'][$lang]); ?></div>
       </td>
     </tr>
@@ -748,7 +748,7 @@ function hcms_saveEvent ()
     </tr>
     <tr class="<?php if ($mgmt_config[$site]['sendmail']) echo "hcmsRowData1 hcmsPages"; ?>">
       <td style="white-space:nowrap;">
-        <div class="hcmsButtonTiny" onClick="goToAccess('page');"><img class="hcmsIconList" src="<?php echo getthemelocation(); ?>img/folder_page.png" name="go_pageaccess" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
+        <div class="hcmsButtonTiny" onclick="goToAccess('page');"><img class="hcmsIconList" src="<?php echo getthemelocation(); ?>img/folder_page.png" name="go_pageaccess" alt="<?php echo getescapedtext ($hcms_lang['grantdisable'][$lang]); ?>" <?php if ($preview=="yes") echo "disabled=\"disabled\""; ?> />
         <?php echo getescapedtext ($hcms_lang['access-to-folders'][$lang]); ?></div>
       </td>
     </tr>

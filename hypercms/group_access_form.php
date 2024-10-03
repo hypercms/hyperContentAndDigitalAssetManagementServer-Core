@@ -263,7 +263,7 @@ function hcms_saveEvent ()
                 </select>
               </td>
               <td style="text-align:center; vertical-align:middle; padding:2px;">
-                <img onClick="deleteSelected();" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
+                <img onclick="deleteSelected();" class="hcmsButtonTiny hcmsButtonSizeSquare" name="ButtonDelete" src="<?php echo getthemelocation(); ?>img/button_delete.png" alt="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" title="<?php getescapedtext ($hcms_lang['delete'][$lang]); ?>" />
               </td>
             </tr>
           </table>
