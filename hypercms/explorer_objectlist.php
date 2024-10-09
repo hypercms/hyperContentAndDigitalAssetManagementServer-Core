@@ -246,7 +246,7 @@ if (is_array ($folder_array) && sizeof ($folder_array) > 0)
         // skip rows for paging
         if (!empty ($mgmt_config['explorer_paging']) && $items_row < $start) continue;
 
-        // required for Js table sort
+        // required for JS table sort
         $items_id++;
 
         // convert location
@@ -1166,14 +1166,37 @@ function sendtochat (text)
   top.sendtochat (text);
 }
 
+function savesort (i, is_number)
+{
+  if (i >= 0)
+  {
+    // save column sort
+    localStorage.setItem('sortCol<?php echo $site.$cat; ?>_index', i);
+    localStorage.setItem('sortCol<?php echo $site.$cat; ?>_isnumber', is_number);
+    if (hcms_lastSort) localStorage.setItem('sortCol<?php echo $site.$cat; ?>_lastsort', hcms_lastSort);
+  }
+}
+
 function initsizecols ()
 {
+  var colsort_index, colsort_isnumber;
   var colwidth;
 
+  // column sort
+  colsort_index = localStorage.getItem('sortCol<?php echo $site.$cat; ?>_index');
+  colsort_isnumber = localStorage.getItem('sortCol<?php echo $site.$cat; ?>_isnumber');
+  hcms_lastSort = localStorage.getItem('sortCol<?php echo $site.$cat; ?>_lastsort');
+
+  if (colsort_index >= 0)
+  {
+    hcms_sortTable (colsort_index, colsort_isnumber);
+  }
+
+  // column width
   for (i = 0; i < <?php if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat])) echo sizeof ($objectlistcols[$site][$cat]) + 1; else echo 1;  ?>; i++)
   {
     // get column width
-    colwidth = localStorage.getItem('Col<?php echo $site.$cat; ?>'+i);
+    colwidth = localStorage.getItem('widthCol<?php echo $site.$cat; ?>'+i);
 
     // set width of table header columns
     $('#c'+i).width(colwidth);
@@ -1196,7 +1219,7 @@ function resizecols ()
     $('.hcmsCol'+i).width(colwidth);
 
     // save column width
-    localStorage.setItem('Col<?php echo $site.$cat; ?>'+i, colwidth);
+    localStorage.setItem('widthCol<?php echo $site.$cat; ?>'+i, colwidth);
   }
 }
 
@@ -1205,7 +1228,7 @@ function resetcols ()
   for (i = 0; i < <?php if (!empty ($objectlistcols[$site][$cat]) && is_array ($objectlistcols[$site][$cat])) echo sizeof ($objectlistcols[$site][$cat]) + 1; else echo 1;  ?>; i++)
   {
     // save column width
-    localStorage.removeItem('Col<?php echo $site.$cat; ?>'+i);
+    localStorage.removeItem('widthCol<?php echo $site.$cat; ?>'+i);
   }
 }
 
@@ -1456,7 +1479,7 @@ function initialize ()
 <div id="tableHeadLayer" style="position:fixed; top:0; left:0; margin:0; padding:0; width:100%; z-index:2; visibility:visible; overflow-x:hidden; overflow-y:hidden;">
   <table id="objectlist_head" style="border-collapse:collapse; border:0; border-spacing:0; padding:0; width:100%; height:20px;"> 
     <tr onmouseover="hcms_setColumncontext();">
-      <td id="c0" onclick="hcms_sortTable(0); toggleview('');" class="hcmsTableHeader hcmsHead" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
+      <td id="c0" onclick="hcms_sortTable(0, false); savesort(0, false); toggleview('');" class="hcmsTableHeader hcmsHead" style="width:280px;">&nbsp;<?php echo getescapedtext ($hcms_lang['name'][$lang]); ?>&nbsp;</td>
     <?php
     if (!$is_mobile)
     {
@@ -1469,7 +1492,7 @@ function initialize ()
           if ($i < sizeof ($objectlistcols[$site][$cat])) $style_td = "width:125px;";
           else $style_td = "";
 
-          $sortnumeric = "";
+          $sortnumeric = ", false";
           
           if ($active == 1)
           {
@@ -1513,7 +1536,7 @@ function initialize ()
             }
             
             echo "
-      <td id=\"c".$i."\" onclick=\"hcms_sortTable(".$i.$sortnumeric."); toggleview('');\" class=\"hcmsTableHeader hcmsHead\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
+      <td id=\"c".$i."\" onclick=\"hcms_sortTable(".$i.$sortnumeric."); savesort(".$i.$sortnumeric."); toggleview('');\" class=\"hcmsTableHeader hcmsHead\" style=\"".$style_td."\">&nbsp;".$title."&nbsp;</td>";
 
             $i++;
           }

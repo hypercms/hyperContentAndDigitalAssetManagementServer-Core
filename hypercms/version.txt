@@ -7544,3 +7544,6 @@ Release 10/2024
 - Minor code modifications in the Plugin API, UI API, and template engine
 - Minor code modifications in several system components
 - Minor code modifications in showcase templates in the install directory
+- Implementation of a memory feature for the sort of the selected table row in the object or gallery view
+- Implementation of the new local JS function savesort in explorer_objectlist in order to save the user settings for the detail and gallery view sort function per publication, category, and table column
+- Modifications in the local JS function initsizecols in explorer_objectlist in order to load the user settings for the detail and gallery view sort function per publication, category, and table column
