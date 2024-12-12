@@ -6728,10 +6728,39 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
   $dailystat = array();
   $cached = false;
 
+  // get object info
+  if ($objectpath != "")
+  {
+    $site = getpublication ($objectpath);
+    $cat = getcategory ($site, $objectpath);
+    $object_info = getfileinfo ($site, $objectpath, $cat);
+    $objectpath = str_replace ('%', '*', $objectpath);
+    if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
+  }
+
   // define automatic cache timeout
   if ((is_string ($cache_timeout) && strtolower ($cache_timeout) == "auto"))
   {
+    // default timeout of 1 hour
     $cache_timeout = 60*60*1;
+
+    // for folders (collection of objects)
+    if ($objectpath != "" && $object_info['type'] == 'Folder')
+    {
+      $dailystat_size = rdbms_externalquery ("SELECT count(*) AS count FROM dailystat");
+
+      // dynamic timeout
+      if (!empty ($dailystat_size[0]['count']))
+      {
+        $size = $dailystat_size[0]['count'];
+
+        // timeout in seconds based on the size of the dataset
+        if ($size < 1000000) $cache_timeout = 60*60*1;
+        elseif ($size < 2000000) $cache_timeout = 60*60*4;
+        elseif ($size < 3000000)  $cache_timeout = 60*60*8;
+        else $cache_timeout = 60*60*16; 
+      }
+    }
   }
 
   // use permanent cache if the date range start with the 1st of a month and ends before today (cached results of the past)
@@ -6776,16 +6805,6 @@ function rdbms_getmediastat ($date_from="", $date_to="", $activity="", $containe
     if (intval ($container_id) > 0) $container_id = intval ($container_id);
     if ($objectpath != "") $objectpath = $db->rdbms_escape_string ($objectpath);
     if ($user != "") $user = $db->rdbms_escape_string ($user);
-
-    // get object info
-    if ($objectpath != "")
-    {
-      $site = getpublication ($objectpath);
-      $cat = getcategory ($site, $objectpath);
-      $object_info = getfileinfo ($site, $objectpath, $cat);
-      $objectpath = str_replace ('%', '*', $objectpath);
-      if (getobject ($objectpath) == ".folder") $location = getlocation ($objectpath);
-    }
 
     $sql_filesize = "";
     $sql_table = "";

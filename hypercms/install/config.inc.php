@@ -331,6 +331,9 @@ $mgmt_config['recyclebin'] = false;
 // Delete objects from recycle bin permanently after certain amount of days or 0 for never.
 $mgmt_config['recycledays'] = 5;
 
+// Autocomplete using a filter/search from the begin (begin) or somewhere in the name or e-mail of the recipients (any).
+$mgmt_config['autocomplete_userfilter'] = "any";
+
 // Define screen/viewport sizes for screen and mobile browser emulation.
 $mgmt_config['screensize'] = array();
 // Notebook/desktop screen sizes
@@ -631,6 +634,9 @@ $mgmt_config['contentversions_all'] = false;
 
 // Max. number of versions to be saved (0 means no limit).
 $mgmt_config['contentversions_max'] = 0;
+
+// Automatically check the versioning of objects (true) or not (false)
+$mgmt_config['contentversions_checked'] = true;
 
 // Public Download
 // Allow access to download and wrapper links without logon session (true) or not (false).

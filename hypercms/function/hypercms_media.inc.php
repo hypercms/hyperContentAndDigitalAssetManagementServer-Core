@@ -6657,7 +6657,8 @@ function insertimagetext2pdf ($source_pdf, $dest_pdf, $source_image, $source_tex
 
 // -------------------------------------- createAIimage -----------------------------------------
 // function: createAIimage ()
-// input: publication name [string], image description for the text-to-image AI generator [string], image size [WxH] (optional), AI model name [string] (optional), number of images to generate [integer] (optional)
+// input: publication name [string], image description for the text-to-image AI generator [string], image size [WxH] (optional), AI model name [string] (optional), 
+//        number of images to generate [integer] (optional)
 // output: result array / false on error
 
 // description:

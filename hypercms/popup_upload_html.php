@@ -1662,9 +1662,9 @@ echo showtopbar ("<div id=\"topbarLayer\">".$title."<br/><div style=\"width:90%;
         </div>
         <?php } ?>
         <?php if ($cat == "comp" && $uploadmode == "single") { ?>
-          <?php if (empty ($mgmt_config['contentversions']) || $mgmt_config['contentversions'] == true) { ?>
+          <?php if (!empty ($mgmt_config['contentversions'])) { ?>
         <div class="row">
-          <label><input type="checkbox" name="versioning" id="versioning" value="1" checked="checked" /> <?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?></label>
+          <label><input type="checkbox" name="versioning" id="versioning" value="1" <?php if (!empty ($mgmt_config['contentversions_checked']) || !isset ($mgmt_config['contentversions_checked'])) echo "checked=\"checked\""; ?> /> <?php echo getescapedtext ($hcms_lang['keep-existing-file-as-old-version'][$lang]); ?></label>
         </div>
           <?php } ?> 
         <div class="row">
