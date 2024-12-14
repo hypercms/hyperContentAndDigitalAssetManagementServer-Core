@@ -7557,5 +7557,16 @@ Release 01/2025
 - Modifications popup_upload_html in order to use the new main configuration setting $mgmt_config['contentversions_checked'] for the versioning checkbox of single assets
 - Implementation of the access statictics chache timeout based on the size of the dataset stored in table dailystat for a selection of objects (folder)
 - Modifications in function rdbms_getmediastat in DB Connect in order to query the size of table dailystat and define the auto timeout for a selection of objects (folder)
+- Removed the users time zone settings from frameset_main used by the digital clock in the user info popup layer
+- Implementation of the users time zone settings in the API loader
+- Implementation of the new local JS function serverClock in the Home screen in order to implement a central server time clock for the Home boxes 
+- Implementation of the new digital_clock Home box
+- Implementation of the new local JS function showAnalogClock in the analog_clock Home box
+- Implementation of the new local JS function showDigitalClock in the digital_clock Home box
+- Modifications of the analog_clock and new digital_clock Home box in order to set the server time based on the user time zone
+- Modifications of the analog_clock and new digital_clock Home box in order to set the server date using a local JS function based on the user time zone instead of a static date provided by the server
+- Modifications in servertime.class
+- Design modifications in analog_clock and new digital_clock Home box
+- Modifications in analog_clock and new digital_clock Home box in order to display the box title "server-time"
 - Bug fix: Modifications popup_upload_html in order to verify that the main configuration setting $mgmt_config['contentversions'] is set to true and remove the checkbox if the setting is not present
 - Bug fix: JS Function hcms_bubbleSort in main.js did not verify _left and _right variables before the comparison of their values

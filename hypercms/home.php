@@ -179,6 +179,17 @@ video#videoScreen
 // default height for logo spacer
 var spacerheight = 32;
 
+// init
+var serverdate = new Date("<?php echo date('M, d Y H:i:s'); ?>");
+
+function serverClock ()
+{
+  var seconds = serverdate.getSeconds();
+  serverdate.setSeconds(seconds + 1);
+}
+
+setInterval (serverClock, 1000);
+
 function moveBoxEntry (fbox, tbox, tsort=true)
 {
   var arrFbox = new Array();

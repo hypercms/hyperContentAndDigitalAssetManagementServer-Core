@@ -78,12 +78,6 @@ hcms_permission['minnavframe'] = false;
 <?php echo showdynamicCSS ($hcms_themeinvertcolors, $hcms_hoverinvertcolors, $hcms_mainnavigation, true); ?>
 </style>
 <?php
-// set time zone for user
-if (!empty ($_SESSION['hcms_timezone']) && $_SESSION['hcms_timezone'] != "standard")
-{
-  date_default_timezone_set ($_SESSION['hcms_timezone']);
-}
-  
 $servertime = new servertime;
 $servertime->InstallClockHead();
 ?>

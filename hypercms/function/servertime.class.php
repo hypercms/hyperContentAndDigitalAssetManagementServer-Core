@@ -35,13 +35,13 @@ class servertime
   # This function is to be used in the <head> section of the page.
   function InstallClockHead ()
   {
-    echo "\n<script type=\"text/javascript\">\n<!--\n";
+    echo "\n<script type=\"text/javascript\">\n";
 
     # Here is where the server time comes into the script:
     # date() is a php function which runs on the server, giving exactly
     # the time the server has.
     #
-    echo 'var digital = new Date( "'.date('M, d Y H:i:s').'");'; // <-- this is the trick!
+    echo 'var digital = new Date("'.date('M, d Y H:i:s').'");'; // <-- this is the trick!
 
     echo "\n\nfunction writeLayer(layerID,txt)".
     "\n{\n  if(document.getElementById)\n  {\n".
@@ -52,7 +52,7 @@ class servertime
     "    document.layers[layerID].document.write(txt);\n".
     "    document.layers[layerID].document.close();\n  }\n}\n"; 
  
-   echo "\n//-->\n</script>\n";
+   echo "\n</script>\n";
  
    $this->ok_head = true; // Check later
  
@@ -62,12 +62,12 @@ class servertime
   function InstallClock ()
   {
     # To have it work with NS 4.7 the style "position:absolute" MUST be given (knito)
-    $klasse = strlen( trim( $this->divclass ) ) > 0 ? " class='".$this->divclass."'" : '';
-    $style  = strlen( trim( $this->divstyle ) ) > 0 ? " style='".$this->divstyle."'" : '';
+    $klasse = strlen(trim( $this->divclass)) > 0 ? " class='".$this->divclass."'" : '';
+    $style  = strlen(trim( $this->divstyle)) > 0 ? " style='".$this->divstyle."'" : '';
 
     echo "<".$this->divtag." id='".$this->divid."'".$style.$klasse.">".$this->title."</".$this->divtag.">";
 
-    if( $this->ok_head == false )
+    if ($this->ok_head == false)
     {
       die("InstallClockHead() is missing");
     }
@@ -79,7 +79,7 @@ class servertime
   # This function is to be used at the end of the <body> section of the page.
   function InstallClockBody ()
   {
-    echo "\n<script language='JavaScript' type='text/javascript'>\n<!--\n".
+    echo "\n<script language='JavaScript' type='text/javascript'>\n".
     "function clock()\n{\n".
     "  var year = digital.getFullYear();\n".
     "  var month = digital.getMonth() + 1;\n".
@@ -97,13 +97,13 @@ class servertime
 
     echo "  writeLayer( '".$this->divid."', dispTime );\n".
     "  setTimeout(\"clock()\", 60000);\n}\n\n".
-    "clock();\n//-->\n</script>\n";
+    "clock();\n</script>\n";
 
-    if( $this->ok_head == false )
+    if ($this->ok_head == false )
     {
       die("InstallClockHead() is missing");
     }
-    if( $this->ok_clock == false )
+    if ($this->ok_clock == false )
     {
       die("InstallClock() is missing");
     }

@@ -198,4 +198,10 @@ if (!empty ($is_mobile))
   $mgmt_config['object_newwindow'] = true;
   $mgmt_config['facerecognition'] = false;
 }
+
+// set time zone for user
+if (!empty ($_SESSION['hcms_timezone']) && $_SESSION['hcms_timezone'] != "standard")
+{
+  date_default_timezone_set ($_SESSION['hcms_timezone']);
+}
 ?>
