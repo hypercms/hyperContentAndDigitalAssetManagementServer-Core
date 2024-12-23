@@ -7555,7 +7555,7 @@ Release 01/2025
 - Modifications in the Black design theme
 - Implementation of the new main configuration setting $mgmt_config['contentversions_checked'] in order to check the versioning of objects or uncheck them by default
 - Modifications popup_upload_html in order to use the new main configuration setting $mgmt_config['contentversions_checked'] for the versioning checkbox of single assets
-- Implementation of the access statictics chache timeout based on the size of the dataset stored in table dailystat for a selection of objects (folder)
+- Implementation of the access statictics cache timeout based on the size of the dataset stored in table dailystat for a selection of objects (folder)
 - Modifications in function rdbms_getmediastat in DB Connect in order to query the size of table dailystat and define the auto timeout for a selection of objects (folder)
 - Removed the users time zone settings from frameset_main used by the digital clock in the user info popup layer
 - Implementation of the users time zone settings in the API loader
@@ -7568,5 +7568,18 @@ Release 01/2025
 - Modifications in servertime.class
 - Design modifications in analog_clock and new digital_clock Home box
 - Modifications in analog_clock and new digital_clock Home box in order to display the box title "server-time"
+- Modifications in function insertimagetext2pdf in Media API in order to define and support the image gravity parameter for images
+- Modifications in function insertimagetext2pdf in Media API in order to remove the conversion of the resize parameter of an image to an integer value
+- Implementation of the new Report GeolocationOfAssets in the install directory
+- Implementation of the new Report TopAssetsByFilesize in the install directory
+- Design modifications in popup_message in order to align the message form
+- Modifications in template engine in order the resize the iframe for the task list of an object
+- Modifications in function rdbms_createtask in DB Connect in order to convert the planned effort always to an integer value by removing the not-empty condition
 - Bug fix: Modifications popup_upload_html in order to verify that the main configuration setting $mgmt_config['contentversions'] is set to true and remove the checkbox if the setting is not present
 - Bug fix: JS Function hcms_bubbleSort in main.js did not verify _left and _right variables before the comparison of their values
+- Bug fix: The local JS function creaetSQL of the Report Management module did not correctly remove the unchecked attribute object.objectpathname
+- Bug fix: The Report Management module did not correctly check or uncheck the attribute object.objectpath
+- Bug fix: Function insertimagetext2pdf in Media API did not support values of the resize parameter in the form of WxH and a percentage value
+- Bug fix: The CSS class name for the Worfklow accept button was not correct in control_content_menu
+- Bug fix: Function rdbms_createtask in DB Connect did not convert the planned and actual efforts to a float value
+- Bug fix: Function rdbms_settask in DB Connect did not convert the planned and actual efforts to a float value

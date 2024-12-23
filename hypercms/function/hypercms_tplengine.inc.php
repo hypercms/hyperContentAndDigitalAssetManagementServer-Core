@@ -10749,7 +10749,7 @@ function buildview ($site, $location, $page, $user, $buildview="template", $ctrl
             $viewstore .= "
       <div class=\"hcmsFormRowLabel\">
         <b>".getescapedtext ($hcms_lang['my-tasks'][$lang], $charset, $lang)."</b><br/>
-        <iframe src=\"".$mgmt_config['url_path_cms']."task/task_service.php?object_id=".$object_id."\" frameBorder=\"0\" scrolling=\"auto\" style=\"min-width:620px; max-width:1240px; width:calc(100% - 60px); height:108px; border:0; margin:4px 0px 2px -2px; padding:0; overflow:auto;\"></iframe>
+        <iframe src=\"".$mgmt_config['url_path_cms']."task/task_service.php?object_id=".$object_id."\" frameBorder=\"0\" scrolling=\"auto\" style=\"min-width:620px; max-width:1240px; width:calc(100% - 60px); height:112px; border:0; margin:4px 0px 2px -2px; padding:0; overflow:auto;\"></iframe>
       </div>";
           }
         }

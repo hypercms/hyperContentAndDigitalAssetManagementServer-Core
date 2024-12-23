@@ -6466,13 +6466,16 @@ function mergepdf ($source, $dest)
 
 // -------------------------------------- insertimagetext2pdf -----------------------------------------
 // function: insertimagetext2pdf ()
-// input: source pdf file [string], destination pdf file [string], source image array with keys ('image' path,'left' in px,'bottom' in px,'resize' to WxH frame in px or zoom in %) [array], source text array with subkeys (text,left px,bottom px) [array], 
+// input: source pdf file [string], destination pdf file [string], source image array with keys ('image' path,'gravity' [NorthWest North NorthEast West Center East SouthWest South SouthEast],'left' in px,'bottom' in px,'resize' to WxH frame in px or zoom in %) [array], source text array with subkeys (text,left px,bottom px) [array], 
 //        page number [integer], page size like A4 or Letter [string] (optional), density in dpi [integer] (optional), font size in px [integer] (optional)
 // output: true / false on error
 
 // description:
 // Inserts an image and texts to a pdf file as overlay.
 // Requires pdftk and Imagemagick.
+// The density has not effect on the dpi of the rasterized image that will be converted to a PDF file.
+// In order to create a PDF with a higher resolution, the page format need to be increased, e.g. from a4 to a1 with repositioning of the image and its size.
+// The gravity option of ImageMagick has no effect and should be left to "SouthWest". 
 
 function insertimagetext2pdf ($source_pdf, $dest_pdf, $source_image, $source_text, $page, $page_size="A4", $density=144, $font_size=12)
 {
@@ -6522,8 +6525,11 @@ function insertimagetext2pdf ($source_pdf, $dest_pdf, $source_image, $source_tex
     // create pdf with image positioned from lower left corner
     if (is_array ($source_image) && sizeof ($source_image) > 1)
     {
+      // set default gravity 
+      if (empty ($source_image['gravity'])) $source_image['gravity'] = "southwest";
+
       // The default A4 page dimensions are 595 × 842 points
-      $cmd = "/usr/bin/convert -units PixelsPerInch \"".str_replace ("\~", "~", escapeshellcmd ($source_image['image']))."\" -gravity southwest ".(!empty ($source_image['resize']) ? "-resize ".intval($source_image['resize']) : "")." -transparent white -page ".strtolower($page_size)."-".intval($source_image['left'])."-".intval($source_image['bottom'])." ".(!empty ($density) ? "-density ".intval($density) : "")." -quality 98 \"".$DIR_temp.$temp_file."-sig.pdf\"";
+      $cmd = "/usr/bin/convert -units PixelsPerInch \"".str_replace ("\~", "~", escapeshellcmd ($source_image['image']))."\" -gravity ".$source_image['gravity']." ".(!empty ($source_image['resize']) ? "-resize ".$source_image['resize'] : "")." -transparent white -page ".strtolower($page_size)."-".intval($source_image['left'])."-".intval($source_image['bottom'])." ".(!empty ($density) ? "-density ".intval($density) : "")." -quality 98 \"".$DIR_temp.$temp_file."-sig.pdf\"";
 
       // execute
       exec ($cmd, $error_array, $errorCode);

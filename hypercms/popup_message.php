@@ -146,7 +146,7 @@ $token_new = createtoken ($user);
     cal_obj.user_onclose_handler = cal_on_close;
     cal_obj.user_onautoclose_handler = cal_on_autoclose;
     cal_obj.parse_date(datefield.value, cal_format);
-    cal_obj.show_at_element(datefield, "adj_right-top");
+    cal_obj.show_at_element(datefield, "adj_left-top");
   }
 
   // user defined onchange handler
@@ -185,7 +185,7 @@ $token_new = createtoken ($user);
   ?>
 
   <!-- content -->
-  <div class="hcmsWorkplaceFrame" style="display:block; width:420px; margin:20px auto;">
+  <div class="hcmsWorkplaceFrame">
     <form name="message" method="post" action="">
       <input type="hidden" name="action" value="<?php echo $action; ?>">      
       <input type="hidden" name="location" value="<?php echo $location; ?>">

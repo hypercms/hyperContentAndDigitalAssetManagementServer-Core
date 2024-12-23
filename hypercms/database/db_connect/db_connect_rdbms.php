@@ -7051,7 +7051,7 @@ function rdbms_createtask ($object_id, $project_id=0, $from_user="", $to_user=""
     $taskname = $db->rdbms_escape_string (strip_tags ($taskname));
     if ($description != "") $description = $db->rdbms_escape_string (strip_tags ($description));
     if ($priority != "") $priority = $db->rdbms_escape_string (strtolower (strip_tags ($priority)));
-    if ($planned != "") $planned = $db->rdbms_escape_string (correctnumber ($planned));
+    $planned = floatval (correctnumber ($planned));
     if ($dependency != "") $dependency = $db->rdbms_escape_string (strip_tags ($dependency));
 
     // set user if not defined
@@ -7111,9 +7111,9 @@ function rdbms_settask ($task_id, $object_id="*Leave*", $project_id="*Leave*", $
     if ($taskname != "*Leave*" && $taskname != "") $sql_update[] = 'task="'.$db->rdbms_escape_string (strip_tags ($taskname)).'"';
     if ($description != "*Leave*") $sql_update[] = 'description="'.$db->rdbms_escape_string (strip_tags ($description)).'"';
     if ($priority != "*Leave*" && $priority != "") $sql_update[] = 'priority="'.$db->rdbms_escape_string (strtolower (strip_tags ($priority))).'"';
-    if ($status != "*Leave*" && intval ($status) >= 0) $sql_update[] = 'status="'.intval ($status).'"';
-    if ($planned != "*Leave*" && floatval ($planned) >= 0) $sql_update[] = 'planned="'.correctnumber($planned).'"';
-    if ($actual != "*Leave*" && floatval ($actual) >= 0) $sql_update[] = 'actual="'.correctnumber($actual).'"';
+    if ($status != "*Leave*" && intval ($status) >= 0) $sql_update[] = 'status='.intval ($status).'';
+    if ($planned != "*Leave*" && floatval ($planned) >= 0) $sql_update[] = 'planned='.floatval (correctnumber($planned)).'';
+    if ($actual != "*Leave*" && floatval ($actual) >= 0) $sql_update[] = 'actual='.floatval (correctnumber($actual)).'';
     if ($dependency != "*Leave*") $sql_update[] = 'dependency="'.$db->rdbms_escape_string (strip_tags ($dependency)).'"';
 
     // insert

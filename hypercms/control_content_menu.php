@@ -766,7 +766,7 @@ else
       {
         echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"if (locklayer == false) openPopup('popup_message.php?action=accept&site=".url_encode($site)."&cat=".url_encode($cat)."&location=".url_encode($location_esc)."&page=".url_encode($page)."&wf_token=".url_encode($wf_token)."&token=".$token_new."');\">
-        <img class=\"cmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" alt=\"".getescapedtext ($hcms_lang['accept-and-forward'][$lang])."\" title=\"".getescapedtext ($hcms_lang['accept-and-forward'][$lang])."\" />
+        <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_workflow_accept.png\" alt=\"".getescapedtext ($hcms_lang['accept-and-forward'][$lang])."\" title=\"".getescapedtext ($hcms_lang['accept-and-forward'][$lang])."\" />
         <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['accept'][$lang])."</span>
       </div>";
       }
