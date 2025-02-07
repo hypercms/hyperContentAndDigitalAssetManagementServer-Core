@@ -4009,12 +4009,12 @@ $(document).ready(function()
       {
         foreach ($scandir as $comp_entry)
         {
-          if ($comp_entry != "" && $comp_entry != "." && $comp_entry != ".." && !is_hiddenfile ($comp_entry))
+          if ($comp_entry != "" && $comp_entry != "." && $comp_entry != "..")
           {
             if ($dir != $mgmt_config['abs_path_comp'] || ($dir == $mgmt_config['abs_path_comp'] && ($mgmt_config[$site]['inherit_comp'] == true && is_array ($parent_array) && in_array ($comp_entry, $parent_array)) || $comp_entry == $site))
             {
               // folders
-              if (is_dir ($dir.$comp_entry))
+              if (is_dir ($dir.$comp_entry) && !is_hiddendir ($comp_entry))
               {
                 // remove _gsdata_ directory created by Cyberduck
                 if ($comp_entry == "_gsdata_")
@@ -4027,7 +4027,7 @@ $(document).ready(function()
                 }
               }
               // files
-              elseif (is_file ($dir.$comp_entry) && $comp_entry != ".folder")
+              elseif (is_file ($dir.$comp_entry) && !is_hiddenfile ($comp_entry))
               {
                 $comp_entry_file[] = $dir_esc.$comp_entry;
               }

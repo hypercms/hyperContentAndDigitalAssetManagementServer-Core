@@ -1052,6 +1052,32 @@ function is_tempfile ($path)
   return false;
 }
 
+// -------------------------------------- is_hiddendir -------------------------------------------
+// function: is_hiddendir()
+// input: directory name or path [string]
+// output: true if file is a hidden file / false
+
+// description:
+// This function checks if the provided directory name is a hidden one that should not be displayed
+
+function is_hiddendir ($path)
+{
+  global $mgmt_config;
+
+  if ($path != "")
+  {
+    // extract the file name and compare only lower case
+    $object = trim (strtolower (getobject ($path)));
+
+    // object in recycle bin
+    if (substr ($object, -8) == ".recycle") return true;
+    // folder file
+    if ($object == ".folder") return true;
+  }
+  
+  return false;
+}
+
 // -------------------------------------- is_hiddenfile -------------------------------------------
 // function: is_hiddenfile()
 // input: file name or path [string]
@@ -1064,23 +1090,19 @@ function is_hiddenfile ($path)
 {
   global $mgmt_config;
 
-  // patterns
-  $hiddenfile_patterns = array (
-    '/^.*\.recycle$/',    // object in recycle bin
-    '/^.folder$/', // folder file
-    '/^.htaccess$/', // Apache htaccess file
-    '/^web.config$/' // MS IIS web.config file
-  );
-
-  if ($path != "" && is_array ($hiddenfile_patterns))
+  if ($path != "")
   {
-    // extract the file name
-    $object = getobject ($path);
+    // extract the file name and compare only lower case
+    $object = trim (strtolower (getobject ($path)));
 
-    foreach ($hiddenfile_patterns as $pattern)
-    {
-      if (preg_match ($pattern, $object)) return true;
-    }
+    // object in recycle bin
+    if (substr ($object, -8) == ".recycle") return true;
+    // folder file
+    if ($object == ".folder") return true;
+    // Apache htaccess file
+    if ($object == ".htaccess") return true;
+    // MS IIS web.config file
+    if ($object == "web.config") return true;
   }
   
   return false;
@@ -15868,7 +15890,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
         $test = false;
 
         $errcode = "10220";
-        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exists in ".$location_esc;
+        $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exist in ".$location_esc;
       }
     }
     elseif ($action == "page_paste")
@@ -15968,7 +15990,7 @@ function manipulateobject ($site, $location, $page, $pagenew, $user, $action, $c
               $test = false;
       
               $errcode = "10210";
-              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exists in ".$location_source_esc;
+              $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|".($is_webdav ? "WebDAV: " : "")."Folder or object '".$temp_page."' does not exist in ".$location_source_esc;
             }
           }
         }
@@ -22163,7 +22185,7 @@ function sendresetpassword ($login, $type="passwordreset", $instance="")
   $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
   $usernode = selectcontent ($userdata, "<user>", "<login>", $login);
 
-  // if user node does not exists
+  // if user node does not exist
   if (empty ($usernode[0]))
   {
     return $hcms_lang['the-user-information-cant-be-accessed'][$lang];
@@ -22269,7 +22291,7 @@ function sendloginrequest ($login, $instance="")
   $userdata = loadfile ($mgmt_config['abs_path_data']."user/", "user.xml.php");
   $usernode = selectcontent ($userdata, "<user>", "<login>", $login);
 
-  // if user node does not exists
+  // if user node does not exist
   if (empty ($usernode[0]))
   {
     return $hcms_lang['the-user-information-cant-be-accessed'][$lang];
