@@ -7596,4 +7596,9 @@ Release 03/2025
 - Modifications in explorer_objectlist in order to replace function is_hiddenfile by is_hiddendir for directories and is_hiddenfile for files
 - Modifications in link_edit_explorer and text_link_explorer in order to replace function is_hiddenfile by is_hiddendir for directories and is_hiddenfile for files
 - Modifications in function showcompexplorer in UI API in order to replace function is_hiddenfile by is_hiddendir for directories and is_hiddenfile for files
+- Modifications in format_mime.inc in order to add the file extension m4v with mime-type "video/mp4"
+- Modifications in function showmedia in UI API in order to add the video file extension .m4v as video source if the original video is an .m4v file
+- Modifications in media_playerconfig in order to add the video file extension .m4v as video source if the original video is an .m4v file
+- Modifications in function insertimagetext2pdf in Media API in order to verify the text and image input
 - Bug fix: Function is_hiddenfile in Main API did not only exclude the .folder files and caused explorer_objectlist to hide folders containing one letter before "folder" as the folder name
+- Bug fix: Function insertimagetext2pdf in Media API did not provide the correct file name if no image has been inserted into the PDF file

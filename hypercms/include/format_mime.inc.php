@@ -66,6 +66,7 @@ $mimetype['.lha'] = "application/octet-stream";
 $mimetype['.lsp'] = "application/x-lisp";
 $mimetype['.lzh'] = "application/octet-stream";
 $mimetype['.m'] = "text/plain";
+$mimetype['.m4v'] = "video/mp4";
 $mimetype['.man'] = "application/x-troff-man";
 $mimetype['.me'] = "application/x-troff-me";
 $mimetype['.mesh'] = "model/mesh";

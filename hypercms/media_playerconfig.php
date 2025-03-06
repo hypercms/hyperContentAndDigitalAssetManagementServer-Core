@@ -146,7 +146,7 @@ if ($config && is_array ($config))
 
   // create view link for 360 image viewer / video player
   // use original file if it is an MP4 video and the preview video is only available
-  if ($preview == true && substr_count (".mp4.", $file_info['ext'].".") > 0 && (is_file ($media_root.$mediafile) || is_cloudobject ($media_root.$mediafile)))
+  if ($preview == true && substr_count (".mp4.m4v.", $file_info['ext'].".") > 0 && (is_file ($media_root.$mediafile) || is_cloudobject ($media_root.$mediafile)))
   {
     $video_file = $mediafile;
   }

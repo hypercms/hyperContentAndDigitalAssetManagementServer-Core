@@ -2808,7 +2808,7 @@ function showmedia ($mediafile, $medianame, $viewtype, $id="", $width="", $heigh
           // add original file as well if it is an MP4, WebM or OGG/OGV (supported formats by most of the browsers)
           if ($width > 854 || (sizeof ($config['mediafiles']) < 1 && $width <= 854))
           {
-            if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
+            if (strpos ($mediafile_orig, ".config.") == 0 && substr_count (".mp4.m4v.ogg.ogv.webm.", $file_info['orig_ext'].".") > 0 && (is_file ($thumb_root.$mediafile_orig) || is_cloudobject ($thumb_root.$mediafile_orig)))
             {
               if (!is_array ($config['mediafiles'])) $config['mediafiles'] = array();
               $temp = $site."/".$mediafile_orig.";".getmimetype ($mediafile_orig);
