@@ -6763,7 +6763,7 @@ function showmapping ($site, $lang="en")
 // output: gallery view / false
 
 // description:
-// Presents all objects in a gallery with their thumbnails.
+// Presents all objects in a gallery using thumbnails.
 
 function showgallery ($multiobject, $thumbsize=100, $openlink="download", $user="sys")
 {

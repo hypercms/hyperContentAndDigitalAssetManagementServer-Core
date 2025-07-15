@@ -6523,7 +6523,7 @@ function insertimagetext2pdf ($source_pdf, $dest_pdf, $source_image, $source_tex
     if (!is_file ($mgmt_config['abs_path_temp'].$temp_file."-page.pdf")) return false;
 
     // create pdf with image positioned from lower left corner
-    if !empty ($source_image) && (is_array ($source_image) && sizeof ($source_image) > 1)
+    if (!empty ($source_image) && is_array ($source_image) && sizeof ($source_image) >= 1)
     {
       // set default gravity 
       if (empty ($source_image['gravity'])) $source_image['gravity'] = "southwest";
@@ -6565,15 +6565,8 @@ function insertimagetext2pdf ($source_pdf, $dest_pdf, $source_image, $source_tex
     }
 
     // add text to pdf positioned from lower left corner
-    if (!empty ($source_text) && is_array ($source_text) && sizeof ($source_text) > 1)
+    if (!empty ($source_text) && is_array ($source_text) && sizeof ($source_text) >= 1)
     {
-      $text = "";
-
-      foreach ($source_text as $temp_text)
-      {
-        $text .= "text ".intval($temp_text['left']).",".intval($temp_text['bottom'])." '".$temp_text['text']."' ";
-      }
-     
       // create blank pdf file
       if (!is_file ($mgmt_config['abs_path_temp']."blank.pdf"))
       {
@@ -6589,6 +6582,14 @@ function insertimagetext2pdf ($source_pdf, $dest_pdf, $source_image, $source_tex
 
           return false;
         }
+      }
+      
+      // prepare text
+      $text = "";
+
+      foreach ($source_text as $temp_text)
+      {
+        $text .= "text ".intval($temp_text['left']).",".intval($temp_text['bottom'])." '".$temp_text['text']."' ";
       }
 
       $cmd = "/usr/bin/convert ".(!empty ($density) ? "-density ".intval($density) : "")." \"".$mgmt_config['abs_path_temp']."blank.pdf\" -gravity southwest -pointsize ".intval($font_size)." -fill \"#000000\" -draw \"".$text."\" \"".$mgmt_config['abs_path_temp'].$temp_file."-pagetext.pdf\"";

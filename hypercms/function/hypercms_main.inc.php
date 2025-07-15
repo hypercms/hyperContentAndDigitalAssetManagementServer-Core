@@ -18613,6 +18613,7 @@ function publishobject ($site, $location, $page, $user)
           $error[] = $mgmt_config['today']."|hypercms_main.inc.php|error|".$errcode."|Object reference in link management is missing for container $container used by $location$page"; 
 
           // define current object for publishing
+          $object_array = array();
           $object_array[0]['publication'] = $site;
           $object_array[0]['location'] = $location;
           $object_array[0]['object'] = $page;
@@ -18623,9 +18624,8 @@ function publishobject ($site, $location, $page, $user)
         // one object reference were found in container
         elseif (is_array ($object_array) && sizeof ($object_array) == 1)
         {
-          $object_array = null;
-
           // redefine current object for publishing
+          $object_array = array();
           $object_array[0]['publication'] = $site;
           $object_array[0]['location'] = $location;
           $object_array[0]['object'] = $page;
@@ -18961,6 +18961,12 @@ function publishobject ($site, $location, $page, $user)
               ".$hcms_lang['you-do-not-have-permissions-to-publish-the-item'][$lang]."\n";
             }
           } 
+        }
+
+        // insert object in database if it is missing
+        if ($link_db_correct == false)
+        {
+          rdbms_createobject ($container_id, $location_esc.$page, $template, $media, $container, $user, "", "", (!empty ($media) ? true : false));
         }
 
         // correct link management database if it is corrupt

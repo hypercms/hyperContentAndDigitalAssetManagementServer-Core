@@ -7602,3 +7602,10 @@ Release 03/2025
 - Modifications in function insertimagetext2pdf in Media API in order to verify the text and image input
 - Bug fix: Function is_hiddenfile in Main API did not only exclude the .folder files and caused explorer_objectlist to hide folders containing one letter before "folder" as the folder name
 - Bug fix: Function insertimagetext2pdf in Media API did not provide the correct file name if no image has been inserted into the PDF file
+
+Version 10.2.7
+Release 07/2025
+- Modifications in function insertimagetext2pdf in Media API in order to support a single text or image
+- Modifications in function publishobject in Main API in order to initialize the fallback object in case function getconnectedobject returned no object
+- Modifications in function publishobject in Main API in order to recreate a missing object using function rdbms_createobject
+- Bug fix: Function insertimagetext2pdf in Media API did not support an input text or image array with only one element
