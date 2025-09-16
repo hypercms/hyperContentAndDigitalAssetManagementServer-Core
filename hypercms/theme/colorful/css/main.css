@@ -310,7 +310,14 @@ a.hcmsLink
 {
   margin: 0;
   padding: 0;
-  background-color: #87b0f2;
+  background-color: #5994E8;
+}
+
+.hcmsWorkplaceControlSub
+{
+  margin: 0;
+  padding: 0;
+  background-color: #5994E8;
 }
 
 .hcmsToolbar

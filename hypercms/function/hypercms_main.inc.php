@@ -15229,6 +15229,9 @@ function createmediaobject ($site, $location, $file, $path_source_file, $user, $
   $error = array();
   $result = array();
   $result['message'] = "";
+  
+  // set default language
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && valid_locationname ($location) && valid_objectname ($file) && accessgeneral ($site, $location, "comp") && $path_source_file != "" && !is_tempfile ($file))
   {
@@ -15457,6 +15460,9 @@ function createmediaobjects ($site, $location_source, $location_destination, $us
   // initialize
   $error = array();
   $result = array();
+
+  // set default language
+  if (empty ($lang)) $lang = "en";
 
   if (valid_publicationname ($site) && $location_source != "" && valid_locationname ($location_destination))
   {
@@ -18970,7 +18976,7 @@ function publishobject ($site, $location, $page, $user)
         }
 
         // correct link management database if it is corrupt
-        if ($link_db_correct == false && $mgmt_config[$site]['linkengine'] == true)
+        if ($link_db_correct == false && $mgmt_config[$site]['linkengine'] == true && !empty ($link_db_entry))
         {
           $link_db_data = loadlockfile ($user, $mgmt_config['abs_path_data']."link/", $site.".link.dat", 10);
 

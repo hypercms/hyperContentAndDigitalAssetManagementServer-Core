@@ -967,7 +967,7 @@ else
 </div>
 
 <!-- toolbar -->
-<div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
+<div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile, 42); ?>">
   <div class="hcmsToolbarBlock">
     <?php
     // parent folder of current location
@@ -1303,8 +1303,8 @@ else
 
 
 <!-- Download select menu -->
-<div id="downloadselectLayer" class="hcmsWorkplaceControl" style="position:fixed; left:0px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:0px;"; ?> width:100%; <?php if (!$is_mobile) echo "height:64px;"; else echo "height:100%;"; ?> padding:0; margin:0; z-index:1; display:none; overflow:auto;">
-  <div style="position:fixed; right:2px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:2px;"; ?> width:32px; height:32px; z-index:91;">
+<div id="downloadselectLayer" class="hcmsWorkplaceControlSub" style="position:fixed; left:0px; <?php if (!$is_mobile) echo "top:38px;"; else echo "top:0px;"; ?> width:100%; <?php if (!$is_mobile) echo "height:64px;"; else echo "height:100%;"; ?> padding:0; margin:0; z-index:1; display:none; overflow:auto;">
+  <div style="position:fixed; right:2px; <?php if (!$is_mobile) echo "top:38px;"; else echo "top:2px;"; ?> width:32px; height:32px; z-index:91;">
     <img name="hcms_downloadselectLayerClose" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_downloadselectLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeSubMenu('downloadselectLayer');" />
   </div>
 
@@ -1421,8 +1421,8 @@ else
 
 
 <!-- Create new objects menu -->
-<div id="createLayer" class="hcmsWorkplaceControl" style="position:fixed; left:0px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:0px;"; ?> width:100%; <?php if (!$is_mobile) echo "height:64px;"; else echo "height:100%;"; ?> padding:0; margin:0; z-index:1; display:none; overflow:auto;">
-  <div style="position:fixed; right:2px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:2px;"; ?> width:32px; height:32px; z-index:91;">
+<div id="createLayer" class="hcmsWorkplaceControlSub" style="position:fixed; left:0px; <?php if (!$is_mobile) echo "top:38px;"; else echo "top:0px;"; ?> width:100%; <?php if (!$is_mobile) echo "height:64px;"; else echo "height:100%;"; ?> padding:0; margin:0; z-index:1; display:none; overflow:auto;">
+  <div style="position:fixed; right:2px; <?php if (!$is_mobile) echo "top:38px;"; else echo "top:2px;"; ?> width:32px; height:32px; z-index:91;">
     <img name="hcms_createLayerClose" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_createLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeSubMenu('createLayer');" />
   </div>
 
@@ -1472,8 +1472,8 @@ else
 
 
 <!-- Other actions menu for selected objects -->
-<div id="actionsLayer" class="hcmsWorkplaceControl" style="position:fixed; left:0px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:0px;"; ?> width:100%; <?php if (!$is_mobile) echo "height:64px;"; else echo "height:100%;"; ?> padding:0; margin:0; z-index:1; display:none; overflow:auto;">
-  <div style="position:fixed; right:2px; <?php if (!$is_mobile) echo "top:36px;"; else echo "top:2px;"; ?> width:32px; height:32px; z-index:91;">
+<div id="actionsLayer" class="hcmsWorkplaceControlSub" style="position:fixed; left:0px; <?php if (!$is_mobile) echo "top:38px;"; else echo "top:0px;"; ?> width:100%; <?php if (!$is_mobile) echo "height:64px;"; else echo "height:100%;"; ?> padding:0; margin:0; z-index:1; display:none; overflow:auto;">
+  <div style="position:fixed; right:2px; <?php if (!$is_mobile) echo "top:38px;"; else echo "top:2px;"; ?> width:32px; height:32px; z-index:91;">
     <img name="hcms_actionsLayerClose" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_close.png" class="hcmsButtonTinyBlank hcmsButtonSizeSquare" alt="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['close'][$lang]); ?>" onMouseOut="hcms_swapImgRestore();" onMouseOver="hcms_swapImage('hcms_actionsLayerClose','','<?php echo getthemelocation(); ?>img/button_close_over.png',1);" onclick="closeSubMenu('actionsLayer');" />
   </div>
 

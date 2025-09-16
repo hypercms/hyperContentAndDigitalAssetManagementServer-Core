@@ -219,7 +219,7 @@ a.hcmsLink
 
 .hcmsWorkplaceTop
 {
-  background-color: #528044;
+  background-color: #404040;
 }
 
 .hcmsLogoTop
@@ -309,9 +309,14 @@ a.hcmsLink
 {
   margin: 0;
   padding: 0;
-  background-color: #787878;
-  background-image: url('../img/backgrd_control.jpg');
-  background-repeat: repeat;
+  background-color: #595959;
+}
+
+.hcmsWorkplaceControlSub
+{
+  margin: 0;
+  padding: 0;
+  background-color: #595959;
 }
 
 .hcmsToolbar

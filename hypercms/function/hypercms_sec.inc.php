@@ -1198,7 +1198,10 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               foreach ($temp_user_sites as $temp_site)
               {
                 // publication management config
-                if (valid_publicationname ($temp_site) && empty ($mgmt_config[$temp_site]['ldap_servers'])) require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+                if (valid_publicationname ($temp_site) && empty ($mgmt_config[$temp_site]['ldap_servers']) && is_file ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php"))
+                {
+                  require_once ($mgmt_config['abs_path_data']."config/".$temp_site.".conf.php");
+                }
 
                 // verify mandatory settings
                 if (!empty ($mgmt_config[$temp_site]['ldap_servers']) && !empty ($mgmt_config[$temp_site]['ldap_base_dn']))
@@ -1533,7 +1536,7 @@ function userlogin ($user="", $passwd="", $hash="", $objref="", $objcode="", $ig
               }
 
               // access permissions to plugins
-              if ($user != "hcms_download" && file_exists ($mgmt_config['abs_path_data']."config/plugin.global.php"))
+              if ($user != "hcms_download" && is_file ($mgmt_config['abs_path_data']."config/plugin.global.php"))
               {
                 require_once ($mgmt_config['abs_path_data']."config/plugin.global.php");
 
@@ -3326,7 +3329,7 @@ function checkusersession ($user="sys", $CSRF_detection=true)
 // requires config.inc.php
 
 // description:
-// Verifies if the client IP is in the range of valid IPs and logs IP addresses with no access.
+// Verifies if the clients IP is in the range of valid IPs and logs IP addresses with no access.
 
 function allowuserip ($site)
 {
@@ -3336,7 +3339,10 @@ function allowuserip ($site)
   $error = array();
 
   // publication management config
-  if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['allow_ip'])) require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  if (valid_publicationname ($site) && !isset ($mgmt_config[$site]['allow_ip']) && is_file ($mgmt_config['abs_path_data']."config/".$site.".conf.php")) 
+  {
+    require_once ($mgmt_config['abs_path_data']."config/".$site.".conf.php");
+  }
 
   // check ip access
   if (valid_publicationname ($site) && isset ($mgmt_config[$site]['allow_ip']) && $mgmt_config[$site]['allow_ip'] != "")
