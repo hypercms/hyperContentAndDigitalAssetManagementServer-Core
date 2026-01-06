@@ -1,0 +1,46 @@
+/* Mobile Edition */
+
+html, body, table
+{
+  font-size: 17px;
+}
+
+input, select, textarea, button, .hcmsTextArea
+{
+  font-size: 17px;
+  margin: 2px 2px 2px 0px;
+  padding: 4px 2px;
+}
+
+.hcmsHeadline 
+{  
+  font-size: 17px; 
+}
+
+.hcmsHeadlineTiny 
+{  
+  font-size: 17px; 
+}
+
+.hcmsTextSmall 
+{  
+  font-size: 12px; 
+}
+
+.hcmsToolbar
+{
+  height: 34px;
+  padding: 2px;
+}
+
+.hcmsToolbarBlock
+{
+  padding-right: 1px;
+  margin-right: 1px;
+}
+
+.hcmsIconList
+{
+  width: 18px;
+  height: 18px;
+}

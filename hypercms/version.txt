@@ -7622,3 +7622,12 @@ Release 09/2025
 - Modifications in function allowuserip in Security API in order to verify that the publication configuration file exists before reading the file
 - Modifications in function userlogin in Security API in order to verify that the publication configuration file exists before reading the file
 - Bug fix: The toolbar of control_content_menu did not use the full available height
+
+Version 10.2.9
+Release 01/2026
+- Modifications in the Face Management Plugin in order to exclude the defined publications from the process status
+- Implementation of the new Dark design theme
+- Replacement of the Black design theme by the Dark design theme
+- Update of the user manuals
+- Bug fix: The Face Management Plugin only displayed the status of the face recognition process only in the Mobile Edition
+- Bug fix: The Face Management Plugin included all media types in the queries for the process status and not only images and videos
