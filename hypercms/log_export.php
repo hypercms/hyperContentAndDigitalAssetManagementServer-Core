@@ -17,6 +17,7 @@ require ("function/hypercms_api.inc.php");
 
 // input parameters
 $site = getrequest ("site", "publicationname");
+$login = getrequest ("login", "objectname");
 
 // ------------------------------ permission section --------------------------------
 
@@ -29,7 +30,8 @@ checkusersession ($user);
 // --------------------------------- logic section ----------------------------------
 
 // file name of event log
-if (valid_publicationname ($site)) $logfile = $site.".publication.log";
+if (valid_objectname ($login)) $logfile = $login.".user.log";
+elseif (valid_publicationname ($site)) $logfile = $site.".publication.log";
 else $logfile = "event.log";
 
 if ($logfile != "" && is_file ($mgmt_config['abs_path_data']."log/".$logfile))

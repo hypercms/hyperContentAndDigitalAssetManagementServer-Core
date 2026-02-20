@@ -19,6 +19,7 @@ require ("function/hypercms_api.inc.php");
 // input parameters
 $site = getrequest ("site", "publicationname");
 $action = getrequest ("action");
+$login = getrequest ("login", "objectname");
 $eventlog_notify = getrequest_esc ("eventlog_notify");
 $token = getrequest ("token");
 
@@ -47,7 +48,8 @@ if ((checkrootpermission ('site') || checkrootpermission ('user') || (valid_publ
   // clear event log
   if ($action == "clear")
   {
-    if (valid_publicationname ($site)) $result = deletelog ($site.".publication");
+    if (valid_objectname ($login)) $result = deletelog ($login.".user");
+    elseif (valid_publicationname ($site)) $result = deletelog ($site.".publication");
     else $result = deletelog ();
   
     $add_onload .= $result['add_onload'];
@@ -118,8 +120,14 @@ function warning_delete()
   check = confirm(hcms_entity_decode("<?php echo getescapedtext ($hcms_lang['are-you-sure-you-want-to-remove-all-events'][$lang]); ?>"));
 
   if (check == true)
-  {  
+  {
+    <?php if (valid_objectname ($login)) { ?>
+    document.location='<?php echo "frameset_log.php?action=clear&login=".url_encode($login)."&token=".$token_new; ?>';
+    <?php } elseif (valid_publicationname ($site)) { ?>
     document.location='<?php echo "frameset_log.php?action=clear&site=".url_encode($site)."&token=".$token_new; ?>';
+    <?php } else { ?>
+    document.location='<?php echo "frameset_log.php?action=clear&token=".$token_new; ?>';
+    <?php } ?>
   }
 }
 
@@ -163,7 +171,7 @@ parent.hcms_closeSubMenu();
   <!-- toolbar -->
   <div class="hcmsToolbar hcmsWorkplaceControl" style="<?php echo gettoolbarstyle ($is_mobile); ?>">
     <div class="hcmsToolbarBlock">
-      <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="location='log_export.php?site=<?php echo url_encode ($site); ?>';">
+      <div class="hcmsButton hcmsHoverColor hcmsInvertColor" onclick="location='log_export.php?site=<?php echo url_encode ($site); ?>&login=<?php echo $login; ?>';">
         <img class="hcmsButtonSizeSquare hcmsFloatLeft" id="media_export" src="<?php echo getthemelocation($hcms_themeinvertcolors); ?>img/button_export_page.png" alt="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" title="<?php echo getescapedtext ($hcms_lang['export-list-comma-delimited'][$lang]); ?>" />
         <span class="hcmsButtonLabel"><?php echo getescapedtext ($hcms_lang['export'][$lang]); ?></span>
       </div>
@@ -211,13 +219,14 @@ parent.hcms_closeSubMenu();
   </div>
 </div>
 <div id="mainLayer" style="position:fixed; top:78px; right:0; bottom:0; left:0; margin:0; padding:0;">
-  <iframe id="mainFrame" name="mainFrame" src="log_list.php?site=<?php echo $site; ?>" frameBorder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
+  <iframe id="mainFrame" name="mainFrame" src="log_list.php?site=<?php echo $site; ?>&login=<?php echo $login; ?>" frameBorder="0" scrolling="no" style="width:100%; height:100%; border:0; margin:0; padding:0; overflow:hidden;"></iframe>
 </div>
 
 <!-- notify users (overwrite z-index for tagit selectbox) -->
 <div id="notificationLayer" class="hcmsMessage" style="position:fixed; left:5px; top:3px; z-index:99; width:<?php if ($is_mobile) echo "95%"; else echo "650px"; ?>; visibility:hidden;">
 <form name="registrationform" action="" method="post">
   <input type="hidden" name="site" value="<?php echo $site; ?>" />
+  <input type="hidden" name="login" value="<?php echo $login; ?>" />
   <input type="hidden" name="action" value="notification" />
   <input type="hidden" name="token" value="<?php echo $token_new; ?>" />
   

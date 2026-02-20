@@ -527,7 +527,7 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
     ?>
     <?php
     // get user files
-    if ((!$multiobject || $multiobject_count <= 1) && $mgmt_config['db_connect_rdbms'] != "" && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
+    if ((!$multiobject || $multiobject_count <= 1) && !empty ($mgmt_config['db_connect_rdbms']) && $login != "" && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
     {
       echo "
       <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"parent.location='frameset_objectlist.php?site=".url_encode($site)."&login=".url_encode($login)."&action=user_files';\">
@@ -543,6 +543,29 @@ echo showmessage ($show, 660, 65, $lang, "position:fixed; left:5px; top:5px;");
         <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/button_user_files.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
         <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['created-objects-of-user'][$lang])."</span>
       </div>";
+    }
+    ?>
+    <?php
+    if (!empty ($mgmt_config['user_log']))
+    {
+      // get user log file
+      if ((!$multiobject || $multiobject_count <= 1) && $login != "" && is_file ($mgmt_config['abs_path_data']."log/".$login.".user.log") && ((!valid_publicationname ($site) && checkrootpermission ('user')) || (valid_publicationname ($site) && checkglobalpermission ($site, 'user'))))
+      {
+        echo "
+        <div class=\"hcmsButton hcmsHoverColor hcmsInvertColor\" onclick=\"parent.location='frameset_log.php?login=".url_encode($login)."';\">
+          <img class=\"hcmsButtonSizeSquare hcmsFloatLeft\" ".
+          "src=\"".getthemelocation($hcms_themeinvertcolors)."img/event.png\" alt=\"".getescapedtext ($hcms_lang['system-events'][$lang])."\" title=\"".getescapedtext ($hcms_lang['system-events'][$lang])."\" />
+          <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['system-events'][$lang])."</span>
+        </div>";
+      }
+      else
+      {
+        echo "
+        <div class=\"hcmsButtonOff hcmsInvertColor\">
+          <img src=\"".getthemelocation($hcms_themeinvertcolors)."img/event.png\" class=\"hcmsButtonSizeSquare hcmsFloatLeft\" />
+          <span class=\"hcmsButtonLabel\">".getescapedtext ($hcms_lang['system-events'][$lang])."</span>
+        </div>";
+      }
     }
     ?>
   </div>

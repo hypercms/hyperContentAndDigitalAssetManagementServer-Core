@@ -7628,6 +7628,28 @@ Release 01/2026
 - Modifications in the Face Management Plugin in order to exclude the defined publications from the process status
 - Implementation of the new Dark design theme
 - Replacement of the Black design theme by the Dark design theme
-- Update of the user manuals
+- Update of all user manuals
 - Bug fix: The Face Management Plugin only displayed the status of the face recognition process only in the Mobile Edition
 - Bug fix: The Face Management Plugin included all media types in the queries for the process status and not only images and videos
+
+Version 10.2.10
+Release 04/2026
+- Modifications in the Installation Guide
+- Modifications in the readme files
+- Implementation of the new main configuration setting $mgmt_config['search_exclude_users'] in the main configuration in the instal directory in order to exclude users from the search query log
+- Modifications in function savelog in Main API in oder to support the new main configuration setting $mgmt_config['search_exclude_users']
+- Implementation of a user log viewer feature in the user administration
+- Modifications in function deletelog in the Main API in order to support the users log 
+- Modifications in control_user_menu in order to verify the users log an present the button for the log viewer
+- Modifications in frameset_log in order to support the new input parameter and controls for the users log
+- Modifications in log_list in order to support the new input parameter and controls for the display of the users log
+- Modifications in log_export in order to support the new input parameter and controls for the export of the users log
+- Update of the Administrators Guide
+- Implementation of the new main configuration setting $mgmt_config['cleandailystat'] in the main configuration in the instal directory in order to define the maximum years the access statistic records should be kept
+- Modifications in function rdbms_optimizedatabase in DB Connect in order to use the new main configuration setting $mgmt_config['cleandailystat'] and set the default value to 10
+- Modifications in function getcontent, geticontent, getxmlcontent, getxmlicontent, selectcontent, selecticontent, selectxmlcontent, and selectxmlicontent in XML API in order to set an empty value in case the XML closing tag has not been found in the XML document
+- Modifications in function rdbms_createqueueentry in DB Connect in order to validate the input in case of a provided object ID 
+- Modifications in function rdbms_createqueueentry in DB Connect in order to create a log entry in case the object could not be found or added to the queue
+- Bug fix: Function deletelog in the Main API did not initialite the login and site variable before extraction from the log name
+- Bug fix: Several XML get and select functions returned the string from the XML start tag to the end of the XML document in case the XML closing tag was not present
+- Bug fix: frameset_log did not include the main log when the delete log action has been executed

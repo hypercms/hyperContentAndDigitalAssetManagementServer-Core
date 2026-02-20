@@ -6032,7 +6032,10 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
 
     // get object ID
     if (substr_count ($object, "%page%/") > 0 || substr_count ($object, "%comp%/") > 0) $object_id = rdbms_getobject_id ($object);
-    else $object_id = $object;
+    // object ID provided
+    elseif (intval ($object) > 0) $object_id = $object;
+    // invalid value
+    else $object_id = false;
 
     if ($object_id != false)
     {
@@ -6074,6 +6077,14 @@ function rdbms_createqueueentry ($action, $object, $date, $published_only, $cmd,
       $db->rdbms_close();
 
       return $done;
+    }
+    else
+    {
+      $errcode = "00114";
+      $error[] = $mgmt_config['today']."|db_connect_rdbms.inc.php|warning|".$errcode."|The object '".$object."' could not be added to the queue";
+
+      // save log
+      savelog ($error);
     }
   }
 
@@ -7720,7 +7731,9 @@ function rdbms_optimizedatabase ()
     }
 
     // remove records in table dailystat which are older than 5 years
-    $delete_years = 5;
+    if (!empty ($mgmt_config['cleandailystat']) && intval ($mgmt_config['cleandailystat']) > 0) $delete_years = $mgmt_config['cleandailystat'];
+    else $delete_years = 10;
+
     $year = date ("Y") - $delete_years;
 
     if (intval ($delete_years) > 0 && intval ($year) > 2000)

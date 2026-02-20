@@ -193,32 +193,35 @@ function getcontent ($xmldata, $starttagname, $unescape_content=false)
       if ($i != -1 && $record != "")
       {
         if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode ($endtagname, $record);
-        else $content_record = $record;
+        else $content_record = "";
 
-        // manipulate xml-string if wild card character is used for attribute
-        if ($wildcard == true) 
+        if ($content_record != "")
         {
-          $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
+          // manipulate xml-string if wild card character is used for attribute
+          if ($wildcard == true) 
+          {
+            $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
+          }
+
+          // remove CDATA and leave code in CDATA section as it is
+          if (substr (trim ($content_record), 0, 9) == "<![CDATA[" && substr (trim ($content_record), strlen (trim ($content_record))-3, 3) == "]]>")
+          {
+            $content_record = trim ($content_record);
+            $content_record = substr ($content_record, 9, strlen ($content_record)-12);
+
+            // unescape CDATA section (in template content) inside correct CDATA section
+            $content_record = str_replace ("&lt;![CDATA[", "<![CDATA[", $content_record); 
+            $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
+          }
+
+          // unescape characters & < > if not tag is used in the content
+          if (!empty ($unescape_content) && strpos ("_".$content_record, "<") < 1 && strpos ("_".$content_record, ">") < 1)
+          {
+            $content_record = str_replace ("&amp;", "&", $content_record);
+            $content_record = str_replace ("&lt;", "<", $content_record);
+            $content_record = str_replace ("&gt;", ">", $content_record);
+          }
         }
-
-        // remove CDATA and leave code in CDATA section as it is
-        if (substr (trim ($content_record), 0, 9) == "<![CDATA[" && substr (trim ($content_record), strlen (trim ($content_record))-3, 3) == "]]>")
-        {
-          $content_record = trim ($content_record);
-          $content_record = substr ($content_record, 9, strlen ($content_record)-12);
-
-          // unescape CDATA section (in template content) inside correct CDATA section
-          $content_record = str_replace ("&lt;![CDATA[", "<![CDATA[", $content_record); 
-          $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
-        }
-
-        // unescape characters & < > if not tag is used in the content
-        if (!empty ($unescape_content) && strpos ("_".$content_record, "<") < 1 && strpos ("_".$content_record, ">") < 1)
-        {
-          $content_record = str_replace ("&amp;", "&", $content_record);
-          $content_record = str_replace ("&lt;", "<", $content_record);
-          $content_record = str_replace ("&gt;", ">", $content_record);
-        } 
 
         $result_set[$i] = $content_record;
       }
@@ -287,31 +290,34 @@ function geticontent ($xmldata, $starttagname, $unescape_content=false)
       if ($i != -1 && $record != "")
       {
         if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode (strtolower ($endtagname), $record);
-        else $content_record = $record;
+        else $content_record = "";
 
-        // manipulate xml-string if wild card character is used for attribute
-        if ($wildcard == true) 
+        if ($content_record != "")
         {
-          $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
-        }
+          // manipulate xml-string if wild card character is used for attribute
+          if ($wildcard == true) 
+          {
+            $content_record = substr ($content_record, strpos ($content_record, ">") + 1);
+          }
 
-        // remove CDATA and leave code in CDATA section as it is
-        if (substr (trim ($content_record), 0, 9) == "<![CDATA[" && substr (trim ($content_record), strlen (trim ($content_record))-3, 3) == "]]>")
-        {
-          $content_record = trim ($content_record);
-          $content_record = substr ($content_record, 9, strlen ($content_record)-12);
+          // remove CDATA and leave code in CDATA section as it is
+          if (substr (trim ($content_record), 0, 9) == "<![CDATA[" && substr (trim ($content_record), strlen (trim ($content_record))-3, 3) == "]]>")
+          {
+            $content_record = trim ($content_record);
+            $content_record = substr ($content_record, 9, strlen ($content_record)-12);
 
-          // unescape CDATA section (in template content) inside correct CDATA section
-          $content_record = str_replace ("&lt;![CDATA[", "<![CDATA[", $content_record); 
-          $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
-        }
+            // unescape CDATA section (in template content) inside correct CDATA section
+            $content_record = str_replace ("&lt;![CDATA[", "<![CDATA[", $content_record); 
+            $content_record = str_replace ("]]&gt;", "]]>", $content_record); 
+          }
 
-        // unescape characters & < > if not tag is used in the content
-        if (!empty ($unescape_content) && strpos ("_".$content_record, "<") < 1 && strpos ("_".$content_record, ">") < 1)
-        {
-          $content_record = str_replace ("&amp;", "&", $content_record);
-          $content_record = str_replace ("&lt;", "<", $content_record);
-          $content_record = str_replace ("&gt;", ">", $content_record);
+          // unescape characters & < > if not tag is used in the content
+          if (!empty ($unescape_content) && strpos ("_".$content_record, "<") < 1 && strpos ("_".$content_record, ">") < 1)
+          {
+            $content_record = str_replace ("&amp;", "&", $content_record);
+            $content_record = str_replace ("&lt;", "<", $content_record);
+            $content_record = str_replace ("&gt;", ">", $content_record);
+          }
         }
 
         $result_set[$i] = $content_record;
@@ -375,7 +381,7 @@ function getxmlcontent ($xmldata, $starttagname)
       if ($i > -1 && $record != "")
       {
         if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode ($endtagname, $record);
-        else $content_record = $record;
+        else $content_record = "";
 
         $result_set[$i] = $starttagname.$content_record.$endtagname;
       }
@@ -444,7 +450,7 @@ function getxmlicontent ($xmldata, $starttagname)
       if ($i > -1 && $record != "")
       {
         if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode (strtolower ($endtagname), $record); 
-        else $content_record = $record;
+        else $content_record = "";
 
         $result_set[$i] = $starttagname_.$content_record.$endtagname;
       }
@@ -536,7 +542,7 @@ function selectcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
         if ($i != -1 && $record != "")
         {
           if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode ($endtagname, $record);
-          else $content_record = $record;
+          else $content_record = "";
 
           // get value of condtag
           $currentvalue_array = getcontent ($content_record, $startcondtag);
@@ -700,7 +706,7 @@ function selecticontent ($xmldata, $starttagname, $startcondtag, $condvalue)
         if ($i != -1 && $record != "")
         {
           if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode (strtolower ($endtagname), $record);
-          else $content_record = $record;
+          else $content_record = "";
 
           // get value of condtag
           $currentvalue_array = geticontent ($content_record, $startcondtag);
@@ -861,7 +867,7 @@ function selectxmlcontent ($xmldata, $starttagname, $startcondtag, $condvalue)
         if ($i != -1 && $record != "")
         {
           if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode ($endtagname, $record);
-          else $content_record = $record;
+          else $content_record = "";
 
           // get value of candtag
           $currentvalue_array = getcontent ($content_record, $startcondtag);
@@ -1027,7 +1033,7 @@ function selectxmlicontent ($xmldata, $starttagname, $startcondtag, $condvalue)
         if ($i != -1 && $record != "")
         {
           if (substr_count ($record, $endtagname) > 0) list ($content_record, $rest) = explode (strtolower ($endtagname), $record);
-          else $content_record = $record;
+          else $content_record ="";
 
           // get value of candtag
           $currentvalue_array = geticontent ($content_record, $startcondtag);

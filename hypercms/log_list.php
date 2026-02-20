@@ -17,6 +17,7 @@ require ("function/hypercms_api.inc.php");
 
 // input parameters
 $site = getrequest ("site", "publicationname");
+$login = getrequest ("login", "objectname");
 $start = getrequest ("start", "numeric", 0);
 
 // ------------------------------ permission section --------------------------------
@@ -47,7 +48,8 @@ if (is_numeric ($start)) $end = $start + $mgmt_config['explorer_list_maxitems'];
 else $end = $mgmt_config['explorer_list_maxitems'];
 
 // file name of event log
-if (valid_publicationname ($site)) $logfile = $site.".publication";
+if (valid_objectname ($login)) $logfile = $login.".user";
+elseif (valid_publicationname ($site)) $logfile = $site.".publication";
 else $logfile = "event";
 ?>
 <!DOCTYPE html>

@@ -243,13 +243,13 @@ $mgmt_config['email_support'] = "";
 // Define chat update interval in ms
 $mgmt_config['chat_update_interval'] = 1600;
 
-// Enable (true) or disbale (false) preview thumbnail images in the video players playback bar
+// Enable (true) or disable (false) preview thumbnail images in the video players playback bar
 $mgmt_config['videoplayerthumbnails'] = false;
 
-// Enable (true) or disbale (false) markers for images and videos, and annotations for images and documents
+// Enable (true) or disable (false) markers for images and videos, and annotations for images and documents
 $mgmt_config['annotation'] = false;
 
-// Enable (true) or disbale (false) face detection and recognition for images and videos
+// Enable (true) or disable (false) face detection and recognition for images and videos
 $mgmt_config['facerecognition'] = false;
 
 // Define URL of your system using a different subdomain or domain in order to run the service indepenendtly (non-blocking).
@@ -670,6 +670,9 @@ $mgmt_config['search_query_match'] = "match";
 // Maximum number of search results per page/request
 $mgmt_config['search_max_results'] = 300;
 
+// Exclude the search queries of users from the search log, use "," as delimiter 
+$mgmt_config['search_exclude_users'] = "";
+
 // Strong Passwords
 // Enable (true) or disable (false) strong passwords for users.
 // If enabled, passwords will be checked regarding minimum security requirements.
@@ -803,6 +806,10 @@ $mgmt_config['storagefactor'] = 1.15;
 // Enable (true) or disable (false) the function cleandomain to convert the URL to a relative path.
 // Only disable the function if you are using hyperCMS function in an external webapplication that sends requests to the hyperCMS server. 
 $mgmt_config['cleandomain'] = true;
+
+// Remove old access statistic records
+// Remove records in table dailystat which are older than a number of years (only the year will be used for the comparison of the records date)
+$mgmt_config['cleandailystat'] = 10;
 
 // ------------------------------------ Executable Linking -------------------------------------
 

@@ -21250,14 +21250,25 @@ function savelog ($error, $logfile="event")
   $archive_size = 100;
 
   // prepare main configuration setting
+  // exclude users from automated notifications
   if (!empty ($mgmt_config['notify_exclude_users']))
   {
     $notify_exclude_users = splitstring ($mgmt_config['notify_exclude_users']);
   }
   else $notify_exclude_users = array();
 
+  // exclude users from search query log
+  if (!empty ($mgmt_config['search_exclude_users']))
+  {
+    $search_exclude_users = splitstring ($mgmt_config['search_exclude_users']);
+  }
+  else $search_exclude_users = array();
+
   // do not log events of the system user
   if (!empty ($user) && $user == "sys" && !empty ($notify_exclude_users) && in_array ("sys", $notify_exclude_users)) return true;
+
+  // do not log the search query of defined users
+  if (strpos ("_".$logfile, "search") > 0 && !empty ($user) && !empty ($search_exclude_users) && in_array ($user, $search_exclude_users)) return true;
 
   // verify event logging based on log level
   if (empty ($mgmt_config['loglevel']) || strtolower ($mgmt_config['loglevel']) == "all")  $log_event = true;
@@ -21427,6 +21438,8 @@ function deletelog ($logname="")
   $result = array();
   $add_onload = "";
   $show = "";
+  $login = "";
+  $site = "";
 
   // set default language
   if (empty ($lang)) $lang = "en";
@@ -21441,10 +21454,13 @@ function deletelog ($logname="")
 
     if ($test == true)
     {
-      if (strpos ($logname, ".") > 0) $site = substr ($logname, 0, strpos ($logname, "."));
+      // users log
+      if (strpos ($logname, ".user") > 0) $login = substr ($logname, 0, strpos ($logname, "."));
+      // publication log
+      elseif (strpos ($logname, ".publication") > 0) $site = substr ($logname, 0, strpos ($logname, "."));
       else $site = "";
 
-      $add_onload = "frames['mainFrame'].location='log_list.php?site=".url_encode($site)."'; ";
+      $add_onload = "frames['mainFrame'].location='log_list.php?site=".url_encode($site)."&login=".url_encode($login)."'; ";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['cleared-all-events-from-list'][$lang]."</span>\n";
 
       $errcode = "00821";
