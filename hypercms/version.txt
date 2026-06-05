@@ -7633,7 +7633,7 @@ Release 01/2026
 - Bug fix: The Face Management Plugin included all media types in the queries for the process status and not only images and videos
 
 Version 10.2.10
-Release 04/2026
+Release 03/2026
 - Modifications in the Installation Guide
 - Modifications in the readme files
 - Implementation of the new main configuration setting $mgmt_config['search_exclude_users'] in the main configuration in the instal directory in order to exclude users from the search query log
@@ -7650,6 +7650,16 @@ Release 04/2026
 - Modifications in function getcontent, geticontent, getxmlcontent, getxmlicontent, selectcontent, selecticontent, selectxmlcontent, and selectxmlicontent in XML API in order to set an empty value in case the XML closing tag has not been found in the XML document
 - Modifications in function rdbms_createqueueentry in DB Connect in order to validate the input in case of a provided object ID 
 - Modifications in function rdbms_createqueueentry in DB Connect in order to create a log entry in case the object could not be found or added to the queue
-- Bug fix: Function deletelog in the Main API did not initialite the login and site variable before extraction from the log name
-- Bug fix: Several XML get and select functions returned the string from the XML start tag to the end of the XML document in case the XML closing tag was not present
+- Bug fix: Function deletelog in the Main API did not initialize the login and site variable before extraction from the log name
+- Bug fix: The XML get and select functions returned the string from the XML start tag to the end of the XML document in case the XML closing tag was not present
 - Bug fix: frameset_log did not include the main log when the delete log action has been executed
+
+Version 10.2.11
+Release 06/2026
+- Modifications in service mediadownload in order to verify an external user name provided by the request
+- Modifications in function convertpath in Main API in order to verify the management variable for the publication
+- Modifications in function followlink in Template Engine in order to verify that the publication INI-file exists
+- Modifications in the frameset_media in order to display the template media explorer when opening the template media navigation item
+- Modifications in funtion createmediacat, renamemediacat, deletemediacat, uploadtomediacat, and deletefrommediacat in the Main API in order to add an onload JS code on success
+- Implementation of the new JS function hcms_goToURL in main.js and main.min.js in order to open URLs in the specified targets
+- Modifications in control_user_menu, media_delete, and media_edit_explorer in order to migrate to the new JS function hcms_goToURL

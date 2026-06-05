@@ -360,12 +360,6 @@ function submitTo (url, action, target, features, width, height)
   form.submit();
 }
 
-function goToURL()
-{ 
-  var i, args=goToURL.arguments; document.returnValue = false;
-  for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
-}
-
 // init
 parent.hcms_closeSubMenu(undefined, 580);
 </script>

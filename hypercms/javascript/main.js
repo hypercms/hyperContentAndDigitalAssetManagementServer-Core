@@ -327,6 +327,20 @@ function hcms_extractDomain (url)
   else return false;
 }
 
+// ------------------------ go to URLs in specified target ----------------------------
+
+function hcms_goToURL ()
+{
+  var i, args=hcms_goToURL.arguments;
+
+  document.returnValue = false;
+
+  for (i=0; i<(args.length-1); i+=2)
+  {
+    eval(args[i]+".location='"+args[i+1]+"'");
+  }
+}
+
 // ------------------------ verify remote file ----------------------------
 
 function hcms_remoteFileExists (url)
@@ -2070,7 +2084,7 @@ function hcms_stripHTML (_str)
   return _str;
 }
 
-// sort table array hcms_detailview by column number _c
+// sort table array hcms_detailview by column number c
 function hcms_bubbleSort (c, _ud, _isNumber)
 {
   for (var i=0; i < hcms_detailview.length; i++)
@@ -2095,11 +2109,11 @@ function hcms_bubbleSort (c, _ud, _isNumber)
         _left = parseInt(_left) || 0;
         _right = parseInt(_right) || 0;
 
-        if (_ud && (_left-_right > 0)) _yes = true;
-        if (!_ud && (_left-_right < 0)) _yes = true;
+        if (_ud && (_left - _right > 0)) _yes = true;
+        if (!_ud && (_left - _right < 0)) _yes = true;
       }
       // string
-      else
+      else if (_left && _right)
       {
         if (_ud && _left.toLowerCase() > _right.toLowerCase()) _yes = true;
         if (!_ud && _left.toLowerCase() < _right.toLowerCase()) _yes = true;
@@ -2134,7 +2148,7 @@ function hcms_sortTable (_c, _isNumber)
   if (typeof hcms_unselectAll === 'function') hcms_unselectAll();
   if (typeof hcms_resetContext === 'function') hcms_resetContext();
 
-  hcms_is_gallery = eval (document.getElementById("t0"));  
+  hcms_is_gallery = eval (document.getElementById("t0"));
 
   // detailed view table
   if (hcms_detailview.length <= 0)
@@ -2156,18 +2170,18 @@ function hcms_sortTable (_c, _isNumber)
       _i++;
     }
   }
-  
+
   // thumbnail view table
   if (hcms_galleryview.length <= 0 && hcms_is_gallery)
   {
     _o = null;
     _i = 0;
-    
+
     while (_o = document.getElementById("t"+_i))
     {
       hcms_galleryview[_i] = _o.innerHTML;
       _i++;
-    } 
+    }
   } 
 
   // sort both tables the same way

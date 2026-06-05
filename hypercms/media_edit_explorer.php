@@ -79,13 +79,6 @@ function sendInput(file)
   parent.frames['controlFrame2'].document.forms['media'].elements['mediafile'].value = file;
   parent.frames['controlFrame2'].document.forms['media'].elements['media_name'].value = file;
 }
-
-function goToURL()
-{
-  var i, args=goToURL.arguments;
-  document.returnValue = false;
-  for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
-}
 </script>
 </head>
 
@@ -244,7 +237,7 @@ if ($sender == "search")
 
           if ($file_info != false && $file != "Null_media.png")
           {
-            echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /><a href=\"javascript:void(0);\" onclick=\"sendInput('".$site."/".$file."'); goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".showshorttext($file_info['name'], 24, false)."</a><br />\n";
+            echo "<img src=\"".getthemelocation()."img/".$file_info['icon']."\" class=\"hcmsIconList\" /><a href=\"javascript:void(0);\" onclick=\"sendInput('".$site."/".$file."'); hcms_goToURL('parent.frames[\'mainFrame2\']','media_view.php?site=".url_encode($site)."&mediacat=tpl&mediafile=".url_encode($site."/".$file)."'); return document.returnValue;\"> ".showshorttext($file_info['name'], 24, false)."</a><br />\n";
           }
 
           $c++;

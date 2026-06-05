@@ -367,7 +367,7 @@ if (valid_locationname ($media) && ((hcms_crypt ($media) == $token && ($user != 
       }
 
       // reset user if a user ID has been provided by the request
-      if (!empty ($extuser)) $user = $extuser;
+      if (!empty ($extuser) && valid_objectname ($extuser)) $user = $extuser;
 
       // stream file content
       downloadfile ($media_root.$media, $name, "download", $user);

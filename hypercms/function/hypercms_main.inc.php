@@ -2180,7 +2180,7 @@ function convertpath ($site, $path, $cat="", $specialchr_decode=false)
       if ($cat == "") $cat = getcategory ($site, $path);
 
       // convert path
-      if (strtolower ($cat) == "page" && is_array ($mgmt_config[$site])) 
+      if (strtolower ($cat) == "page" && !empty ($mgmt_config[$site]) && is_array ($mgmt_config[$site])) 
       {
         // URL can be with our without http://domain
         $path_page_url = trim ($mgmt_config[$site]['url_path_page']);
@@ -12081,7 +12081,7 @@ function createmediacat ($site, $mediacat_name)
 
     if ($savefile != false)
     {
-      $add_onload = "";
+      $add_onload = "hcms_goToURL('parent.frames[\'mainFrame\']','".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_media.php?site=".$site."&action=mediafile_preview&mediacat=tpl'); return document.returnValue; ";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['media-category-was-created'][$lang]."</span><br />\n";
     }
     else
@@ -12199,7 +12199,7 @@ function renamemediacat ($site, $mediacat_name_curr, $mediacat_name)
 
     if ($savefile != false)
     {
-      $add_onload = "";
+      $add_onload = "hcms_goToURL('parent.frames[\'mainFrame\']','".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_media.php?site=".$site."&action=mediafile_preview&mediacat=tpl'); return document.returnValue; ";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-media-category-was-successfully-renamed'][$lang]."</span>\n";
     }
     else
@@ -12294,7 +12294,7 @@ function deletemediacat ($site, $mediacat_name)
 
     if ($savefile != false)
     {
-      $add_onload = "";
+      $add_onload = "hcms_goToURL('parent.frames[\'mainFrame\']','".cleandomain ($mgmt_config['url_path_cms'])."frameset_edit_media.php?site=".$site."&action=mediafile_preview&mediacat=tpl'); return document.returnValue; ";
       $show = "<span class=\"hcmsHeadline\">".$hcms_lang['the-media-category-was-deleted'][$lang]."</span>\n";
     }
     else
@@ -12505,7 +12505,7 @@ function deletefrommediacat ($site, $mediafile)
         // remote client
         remoteclient ("delete", "abs_path_media", $site, $mediadir, "", $mediafile, "");
       
-        $add_onload = "goToURL('parent.frames[\'mainFrame2\']','".cleandomain ($mgmt_config['url_path_cms'])."empty.php'); return document.returnValue; ";
+        $add_onload = "hcms_goToURL('parent.frames[\'mainFrame\']','".cleandomain ($mgmt_config['url_path_cms'])."empty.php'); return document.returnValue; ";
 
         $show = $hcms_lang['the-selected-media-file-was-removed'][$lang];
       }

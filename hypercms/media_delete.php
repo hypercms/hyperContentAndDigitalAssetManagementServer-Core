@@ -70,13 +70,6 @@ function warning_media_delete ()
   }
   else return false;
 }
-
-function goToURL ()
-{
-  var i, args=goToURL.arguments;
-  document.returnValue = false;
-  for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
-}
 </script>
 </head>
 
