@@ -883,7 +883,7 @@ function followlink ($site, $follow)
   if (valid_publicationname ($site) && $follow != "")
   {
     // load ini
-    $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
+    if (is_file ($mgmt_config['abs_path_rep']."config/".$site.".ini")) $publ_config = parse_ini_file ($mgmt_config['abs_path_rep']."config/".$site.".ini");
 
     // absolute link (hardcoded)
     if (substr_count ($follow, "://") > 0)
