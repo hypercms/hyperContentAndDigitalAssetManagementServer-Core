@@ -815,7 +815,7 @@ function indexcontent ($site, $location, $file, $container="", $container_conten
       if ($file_ext != "" && substr_count (strtolower ($hcms_ext['audio'].$hcms_ext['image'].$hcms_ext['video']).".", $file_ext.".") > 0)
       {
         // function setmetadata provides metadata in the content container without saving the container
-        $container_content_temp = setmetadata ($site, "", "", $file, "", $container_content, $user, false);
+        $container_content_temp = setmetadata ($site, "", "", $file, array(), $container_content, $user, false);
  
         if (!empty ($container_content_temp)) $container_content = $container_content_temp;
       } 

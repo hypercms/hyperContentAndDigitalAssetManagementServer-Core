@@ -4,6 +4,8 @@
 // setting the protocol
 $url_protocol = (!empty($_SERVER['HTTPS'])) ? 'https://' : 'http://';
 
+$config = array();
+
 // location of index file
 $config['indexfile'] = "%abs_path_rep%/search/index/".$site.".dat";
 // CSS style class for the div container of the tiel bar and all results
@@ -38,6 +40,8 @@ $config['exclude_path'] = "/_";
 $config['search_log'] = "%abs_path_rep%/search/index/".$site.".log";
 
 // ---------------------------- text entries for different languages -----------------------------------
+
+$text = array();
 
 $text[0]['de'] = "Treffer";
 $text[0]['en'] = "hits";

@@ -170,13 +170,13 @@ if ($object_id != "" && !empty ($mgmt_config['db_connect_rdbms']))
 
 // ---------------------------------- define media -----------------------------------
 // get media from crypted video string
-if ($dm != "")
+if (!empty ($dm))
 {
   $media = hcms_decrypt ($dm);
   $media_approved = true;  
 }
 // get media from object path
-elseif ($objectpath_esc != "")
+elseif (!empty ($objectpath_esc))
 {
   $site = getpublication ($objectpath_esc);
   $cat = getcategory ($site, $objectpath_esc);
@@ -204,7 +204,7 @@ elseif ($objectpath_esc != "")
     {
       $media = $zip_filename.".zip";
       $media_info = getfileinfo ($site, getobject ($location).".zip", $cat);
-      $name = $media_info['name'];
+      if (!empty ($media_info['name'])) $name = $media_info['name'];
       $media_approved = true;
     }
     // access as default user and show files if ZIP failed due to ZIP file size limitation
@@ -254,7 +254,7 @@ if (empty ($name))
   if ($objectpath_esc != "") $media_info = getfileinfo ($site, $objectpath_esc, $cat);
   else $media_info = getfileinfo ($site, getobject ($media), "comp");
   
-  $name = $media_info['name'];
+  if (!empty ($media_info['name'])) $name = $media_info['name'];
 }
 
 // ---------------------------------- download file -----------------------------------

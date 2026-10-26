@@ -4783,7 +4783,7 @@ function rdbms_getobject ($object_identifier)
         $row = $db->rdbms_getresultrow ("select2");
 
         // if time of death for link is set
-        if ($row['deathtime'] > 0)
+        if (!empty ($row['deathtime']) && $row['deathtime'] > 0)
         {
           // if deathtime was passed
           if ($row['deathtime'] < time())
@@ -4793,9 +4793,9 @@ function rdbms_getobject ($object_identifier)
             $errcode = "50739";
             $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
           }
-          elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
+          elseif (!empty ($row['objectpath'])) $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);
         }
-        elseif ($row['objectpath'] != "") $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);  
+        elseif (!empty ($row['objectpath'])) $objectpath = str_replace (array("*page*/", "*comp*/"), array("%page%/", "%comp%/"), $row['objectpath']);  
       }
     }
 
@@ -5825,26 +5825,29 @@ function rdbms_getaccessinfo ($hash)
     {
       $row = $db->rdbms_getresultrow ("select");
 
-      $result['date'] = $row['date'];
-      $result['object_id'] = $row['object_id'];
-      $result['object_ids'] = explode ("|", $row['object_id']);
-      $result['type'] = $row['type']; 
-      $result['user'] = $row['user']; 
-      $result['deathtime'] = $row['deathtime'];
-      $result['formats'] = $row['formats'];
-
-      // if time of death vor link is set
-      if ($result['deathtime'] > 0)
+      if (is_array ($row) && sizeof ($row) > 0)
       {
-        // if deathtime was passed
-        if ($result['deathtime'] < time())
+        $result['date'] = $row['date'];
+        $result['object_id'] = $row['object_id'];
+        $result['object_ids'] = explode ("|", $row['object_id']);
+        $result['type'] = $row['type']; 
+        $result['user'] = $row['user']; 
+        $result['deathtime'] = $row['deathtime'];
+        $result['formats'] = $row['formats'];
+
+        // if time of death vor link is set
+        if ($result['deathtime'] > 0)
         {
-          $sql = 'DELETE FROM accesslink WHERE hash="'.$hash.'"';
+          // if deathtime was passed
+          if ($result['deathtime'] < time())
+          {
+            $sql = 'DELETE FROM accesslink WHERE hash="'.$hash.'"';
 
-          $errcode = "50072";
-          $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
+            $errcode = "50072";
+            $db->rdbms_query ($sql, $errcode, $mgmt_config['today'], "delete");
 
-          $result = false;
+            $result = false;
+          }
         }
       }
     }
@@ -7978,7 +7981,7 @@ function rdbms_externalquery ($sql, $concat_by="")
             // transform objectpath
             foreach ($row as $key=>$value)
             {
-              if (substr ($value, 0, 7) == "*comp*/" || substr ($value, 0, 7) == "*page*/")
+              if (!empty ($value) && is_string ($value) && substr ($value, 0, 7) == "*comp*/" || substr ($value, 0, 7) == "*page*/")
               {
                 $row[$key] = str_replace (array("*comp*/","*page*/"), array("%comp%/","%page%/"), $value);
               }

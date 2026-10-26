@@ -7663,3 +7663,14 @@ Release 06/2026
 - Modifications in funtion createmediacat, renamemediacat, deletemediacat, uploadtomediacat, and deletefrommediacat in the Main API in order to add an onload JS code on success
 - Implementation of the new JS function hcms_goToURL in main.js and main.min.js in order to open URLs in the specified targets
 - Modifications in control_user_menu, media_delete, and media_edit_explorer in order to migrate to the new JS function hcms_goToURL
+
+Version 10.2.12
+Release 10/2026
+- Modifications in userlogin in order to escape the provided user name and password for the display
+- Modifications in function rdbms_externalquery in DBConnect in order to verify that the objectpath is a string
+- Modifications in function rdbms_getaccessinfo in DBConnect in order to verify the results
+- Modifications in function accessgeneral in the Security API in order to verify the path configurations
+- Modifications in service mediadownload and nmediawrapper in order to verify the name of object that has been provided by function getfileinfo
+- Modifications in setmetadata in Metadata API in order to declare and verify the mapping data
+- Modifications in function indexcontent in Media API in order to use array as mapping input for function setmetadata
+- Modifications in function rdbms_getobject in DB Connect in order to verify the result

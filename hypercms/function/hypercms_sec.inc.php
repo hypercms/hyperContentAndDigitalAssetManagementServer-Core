@@ -393,10 +393,10 @@ function accessgeneral ($site, $location, $cat)
     }
 
     // check data root and cms root
-    if (@substr_count ($location, $mgmt_config['abs_path_cms']) == 0 && @substr_count ($location, $mgmt_config['abs_path_data']) == 0)
+    if ($location != "" && @substr_count ($location, $mgmt_config['abs_path_cms']) == 0 && @substr_count ($location, $mgmt_config['abs_path_data']) == 0)
     {
       // check page access
-      if ($cat == "page" && @substr_count ($location, $mgmt_config[$site]['abs_path_page']) > 0 && @substr_count ($location, $mgmt_config['abs_path_rep']) == 0 && @substr_count ($mgmt_config['abs_path_rep'], $location) == 0) 
+      if ($cat == "page" && !empty ($mgmt_config[$site]['abs_path_page']) && @substr_count ($location, $mgmt_config[$site]['abs_path_page']) > 0 && !empty ($mgmt_config['abs_path_rep']) && @substr_count ($location, $mgmt_config['abs_path_rep']) == 0 && @substr_count ($mgmt_config['abs_path_rep'], $location) == 0) 
       {
         return true;
       }

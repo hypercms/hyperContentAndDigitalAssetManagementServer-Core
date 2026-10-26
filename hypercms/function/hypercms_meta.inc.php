@@ -3405,7 +3405,7 @@ function metadata_exists ($mapping, $text_array)
 // Saves meta data of a multimedia file using a provided mapping in the proper fields of the content container. 
 // If no mapping is given a default mapping will be used.
 
-function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="", $containerdata="", $user="", $savecontainer=true)
+function setmetadata ($site, $location="", $object="", $mediafile="", $mapping=array(), $containerdata="", $user="", $savecontainer=true)
 {
   global $eventsystem, $mgmt_config, $hcms_ext;
 
@@ -3416,7 +3416,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
 
   // IPTC-tag and xml-tag name from multimedia file is mapped with text-id of the content container.
   // text-ids need to be defined in the meta data defintion. 
-  if (valid_publicationname ($site) && (!is_array ($mapping) || sizeof ($mapping) == 0) && !empty ($mgmt_config['abs_path_data']))
+  if (valid_publicationname ($site) && (empty ($mapping) || !is_array ($mapping) || sizeof ($mapping) == 0) && !empty ($mgmt_config['abs_path_data']))
   {
     if (!is_file ($mgmt_config['abs_path_data']."config/".$site.".media.map.php"))
     {
@@ -3431,7 +3431,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
     }
   }
 
-  if (valid_publicationname ($site) && ((valid_locationname ($location) && valid_objectname ($object)) || valid_objectname ($mediafile)) && is_array ($mapping) && valid_objectname ($user))
+  if (valid_publicationname ($site) && ((valid_locationname ($location) && valid_objectname ($object)) || valid_objectname ($mediafile)) && !empty ($mapping) && is_array ($mapping) && valid_objectname ($user))
   {
     // get media file if not given
     if ($mediafile == "" || !valid_objectname ($mediafile))
@@ -3458,7 +3458,7 @@ function setmetadata ($site, $location="", $object="", $mediafile="", $mapping="
       // media location
       $medialocation = getmedialocation ($site, $mediafile, "abs_path_media");
 
-      // if symbolic link is used,the full file path will be returned
+      // if symbolic link is used, the full file path will be returned
       if (is_file ($medialocation))
       {
         $mediafile = getobject ($medialocation);
